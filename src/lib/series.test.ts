@@ -32,6 +32,10 @@ describe('extendSeries', () => {
     expect(extendSeries(['Mon', 'Tue'], 5)).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
     expect(extendSeries(['Jan', 'Feb', 'Mar'], 5)).toEqual(['Jan', 'Feb', 'Mar', 'Apr', 'May'])
   })
+  it('prefix+integer pattern extrapolates', () => {
+    expect(extendSeries(['Item 1', 'Item 2'], 4)).toEqual(['Item 1', 'Item 2', 'Item 3', 'Item 4'])
+    expect(extendSeries(['Q3'], 4)).toEqual(['Q3', 'Q4', 'Q5', 'Q6'])
+  })
   it('arbitrary text values cycle', () => {
     expect(extendSeries(['x', 'y'], 5)).toEqual(['x', 'y', 'x', 'y', 'x'])
   })

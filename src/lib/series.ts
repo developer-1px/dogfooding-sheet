@@ -69,6 +69,24 @@ export function extendSeries(source: string[], targetLen: number): string[] {
     }
   }
 
+  // Prefix + integer pattern: "Item 1", "Item 2" → "Item 3"...
+  const prefRe = /^(.*?)(-?\d+)$/
+  const parsed = source.map((s) => prefRe.exec(s))
+  if (parsed.every((p) => !!p) && parsed.every((p) => p![1] === parsed[0]![1])) {
+    const ns = parsed.map((p) => Number(p![2]))
+    let step = 1
+    if (ns.length >= 2) {
+      step = ns[1] - ns[0]
+      for (let i = 2; i < ns.length; i++) if (ns[i] - ns[i - 1] !== step) { step = NaN; break }
+    }
+    if (Number.isFinite(step)) {
+      const out = [...source]
+      const prefix = parsed[0]![1]
+      for (let i = source.length; i < targetLen; i++) out.push(prefix + (ns[ns.length - 1] + step * (i - ns.length + 1)))
+      return out
+    }
+  }
+
   // Cyclic repeat
   const out: string[] = []
   for (let i = 0; i < targetLen; i++) out.push(source[i % source.length])
