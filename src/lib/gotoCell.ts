@@ -13,10 +13,9 @@ export function resolveCellRef(raw: string): string | null {
   return `r${row}-${col}`
 }
 
-/** Prompt for a cell address and call setFocusId. */
-export function gotoCell(setFocusId: (id: string) => void): void {
-  let raw: string | null = null
-  try { raw = window.prompt('이동할 셀 (예: B5)') } catch { return }
+/** Resolve raw input and apply if valid. Returns true if focus was moved. */
+export function gotoCell(raw: string | null, setFocusId: (id: string) => void): boolean {
   const id = raw ? resolveCellRef(raw) : null
-  if (id) setFocusId(id)
+  if (id) { setFocusId(id); return true }
+  return false
 }

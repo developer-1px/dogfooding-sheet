@@ -4,7 +4,6 @@ import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
-import { gotoCell } from '../lib/gotoCell'
 import { idsForCol, idsForRow, idsForAll } from '../lib/range'
 
 interface Args {
@@ -18,6 +17,7 @@ interface Args {
   openFind: () => void
   openReplace: () => void
   openHelp: () => void
+  openGoto: () => void
   toggleBold: () => void
   toggleItalic: () => void
   toggleUnderline: () => void
@@ -36,7 +36,7 @@ export function useShortcuts(args: Args) {
   ref.current = args
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, clearFormat, saveCsv, setSelectedIds, setFocusId } = ref.current
+      const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, openGoto, toggleBold, toggleItalic, toggleUnderline, clearFormat, saveCsv, setSelectedIds, setFocusId } = ref.current
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
       if (!editing && (e.key === 'F1' || (e.key === '?' && !mod) || (mod && e.key === '/'))) {
@@ -48,7 +48,7 @@ export function useShortcuts(args: Args) {
         const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, u: toggleUnderline, s: saveCsv, '\\': clearFormat } as Record<string, () => void>)[ck]
         if (fn) { e.preventDefault(); fn(); return }
       }
-      if (mod && ck === 'g' && !editing) { e.preventDefault(); gotoCell(setFocusId); return }
+      if (mod && ck === 'g' && !editing) { e.preventDefault(); openGoto(); return }
       if (mod && ck === 'a' && !editing) { e.preventDefault(); setSelectedIds(idsForAll(ROW_COUNT)); return }
       if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) { e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return }
       if (mod && e.shiftKey) {

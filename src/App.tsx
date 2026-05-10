@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSheet } from './sheet/useSheet'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/Grid'
@@ -7,12 +8,14 @@ import { rectFromIds, formatRect } from './lib/clipboard'
 import { gotoCell } from './lib/gotoCell'
 import { Find } from './sheet/Find'
 import { HelpDialog } from './sheet/HelpDialog'
+import { PromptDialog } from './sheet/PromptDialog'
 import { Tabs } from './sheet/Tabs'
 import { Toolbar } from './sheet/Toolbar'
 import './App.css'
 
 export default function App() {
-  const ctx = useSheet()
+  const [gotoOpen, setGotoOpen] = useState(false)
+  const ctx = useSheet({ openGoto: () => setGotoOpen(true) })
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
   const rect = ctx.selectedIds.length > 1 ? rectFromIds(ctx.selectedIds) : null
   const addr = rect ? formatRect(rect) : ctx.focusKey
@@ -21,7 +24,7 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
-        onAddrClick={() => gotoCell(ctx.setFocusId)}
+        onAddrClick={() => setGotoOpen(true)}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}
@@ -80,6 +83,14 @@ export default function App() {
         display={ctx.display}
         onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
         writeCell={ctx.writeCell}
+      />
+      <PromptDialog
+        open={gotoOpen}
+        label="이동할 셀 (예: B5)"
+        placeholder="B5"
+        submitLabel="이동"
+        onSubmit={(v) => { gotoCell(v, ctx.setFocusId); setGotoOpen(false) }}
+        onCancel={() => setGotoOpen(false)}
       />
     </div>
   )

@@ -20,7 +20,7 @@ import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 
-export function useSheet() {
+export function useSheet(opts: { openGoto?: () => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const fmt = useFormats()
@@ -69,6 +69,7 @@ export function useSheet() {
     startEdit: edit.startEdit, selectedIds,
     openFind: find.openFind, openReplace: find.openReplace,
     openHelp: () => setHelpOpen(true),
+    openGoto: opts.openGoto ?? (() => {}),
     toggleBold: () => toggle('b'),
     toggleItalic: () => toggle('i'),
     toggleUnderline: () => toggle('u'),

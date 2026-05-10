@@ -66,6 +66,15 @@
   background: #fff; padding: 20px 24px; border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 101; min-width: 360px;
 }
+.prompt-dialog {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: #fff; padding: 20px 24px; border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 101; min-width: 320px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.prompt-dialog label { font-size: 13px; color: #5f6368; }
+.prompt-dialog input { padding: 6px 8px; font-size: 14px; border: 1px solid #dadce0; border-radius: 4px; }
+.prompt-dialog .primary { background: #1a73e8; color: #fff; border-color: #1a73e8; }
 .confirm-dialog {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   background: #fff; padding: 20px 24px; border-radius: 8px;
