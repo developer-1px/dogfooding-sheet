@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useTabsPattern } from '@p/aria-kernel/patterns'
 import { useEditable } from 'editable-lifecycle'
+import { ConfirmDialog } from './ConfirmDialog'
 import type { TabsState } from './useTabs'
 
 interface Props {
@@ -13,6 +15,7 @@ interface Props {
 }
 
 export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet }: Props) {
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
   const ed = useEditable<string>({
     getValue: (id) => id,
     onCommit: (oldName, draft) => {
@@ -54,13 +57,20 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           {state.order.length > 1 && (
             <button
               className="tab-close"
-              onClick={(e) => { e.stopPropagation(); if (confirm(`"${name}" 시트를 삭제하시겠습니까?`)) deleteSheet(name) }}
+              onClick={(e) => { e.stopPropagation(); setPendingDelete(name) }}
               title="시트 삭제"
             >×</button>
           )}
         </span>
       ))}
       <button className="tab-add" onClick={addSheet} title="시트 추가">+</button>
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        message={`"${pendingDelete}" 시트를 삭제하시겠습니까?`}
+        confirmLabel="삭제"
+        onConfirm={() => { if (pendingDelete) deleteSheet(pendingDelete); setPendingDelete(null) }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   )
 }

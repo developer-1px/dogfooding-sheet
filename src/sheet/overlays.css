@@ -66,6 +66,14 @@
   background: #fff; padding: 20px 24px; border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 101; min-width: 360px;
 }
+.confirm-dialog {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: #fff; padding: 20px 24px; border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 101; min-width: 320px;
+}
+.confirm-dialog p { margin: 0 0 16px; font-size: 14px; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.confirm-actions .danger { background: #d93025; color: #fff; border-color: #d93025; }
 .help-dialog h2 { margin: 0 0 12px; font-size: 16px; }
 .help-dialog table { border-collapse: collapse; width: 100%; }
 .help-dialog td { padding: 4px 8px; font-size: 13px; }
