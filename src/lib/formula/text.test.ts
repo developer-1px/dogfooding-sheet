@@ -134,6 +134,12 @@ describe('text functions', () => {
     // Spans a weekend
     expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-15")')).toBe('10')
   })
+  it('ISURL / ISEMAIL', () => {
+    expect(evaluateCell({}, '=ISURL("https://example.com")')).toBe('1')
+    expect(evaluateCell({}, '=ISURL("nope")')).toBe('0')
+    expect(evaluateCell({}, '=ISEMAIL("a@b.co")')).toBe('1')
+    expect(evaluateCell({}, '=ISEMAIL("nope")')).toBe('0')
+  })
   it('TYPE classifies values', () => {
     expect(evaluateCell({}, '=TYPE(42)')).toBe('1')
     expect(evaluateCell({}, '=TYPE("hi")')).toBe('2')

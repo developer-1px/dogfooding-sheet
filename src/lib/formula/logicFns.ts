@@ -7,6 +7,8 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   if (F === 'XOR') return argsN.reduce((a, n) => a ^ (n ? 1 : 0), 0) ? '1' : '0'
   if (F === 'TRUE') return '1'
   if (F === 'FALSE') return '0'
+  if (F === 'ISURL') return /^https?:\/\/[^\s]+$/.test(argsT[0] ?? '') ? '1' : '0'
+  if (F === 'ISEMAIL') return /^[\w.+-]+@[\w.-]+\.\w{2,}$/.test(argsT[0] ?? '') ? '1' : '0'
   if (F === 'ISBLANK') return argsT[0] === '' ? '1' : '0'
   if (F === 'ISNUMBER') return argsT[0] !== '' && Number.isFinite(Number(argsT[0])) ? '1' : '0'
   if (F === 'ISTEXT') return argsT[0] !== '' && !Number.isFinite(Number(argsT[0])) ? '1' : '0'
