@@ -21,6 +21,27 @@ afterEach(() => {
 })
 
 describe('cell edit: Backspace deletes character inside the input', () => {
+  it('regression aria-kernel#140: Backspace inside cell-input is not preventDefault()-d by grid root', async () => {
+    await act(async () => root.render(createElement(App)))
+
+    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
+    const apple = cells.find((c) => c.textContent?.trim() === 'Apple')!
+    act(() => {
+      apple.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
+      apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
+      apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
+    })
+    act(() => window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
+    const input = document.querySelector<HTMLInputElement>('input.cell-input')!
+    expect(input).not.toBeNull()
+
+    const ke = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Backspace' })
+    act(() => { input.dispatchEvent(ke) })
+
+    expect(ke.defaultPrevented, 'Backspace must not be PD-ed by grid built-in chord').toBe(false)
+  })
+
+
   it('typing then Backspace shrinks the draft', async () => {
     await act(async () => root.render(createElement(App)))
 
