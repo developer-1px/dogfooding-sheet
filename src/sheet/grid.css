@@ -62,3 +62,5 @@
 .grid-row.active-row > .row-header { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
 
 .cell.underline { text-decoration: underline; }
+
+.cell.errcell { color: #d93025; font-weight: 600; }
