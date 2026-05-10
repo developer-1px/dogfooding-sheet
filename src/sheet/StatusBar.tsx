@@ -8,10 +8,12 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
   if (selectedIds.length < 2) return <footer className="status-bar"><span>{selectedIds.length} 셀</span></footer>
 
   const nums: number[] = []
+  let nonEmpty = 0
   for (const id of selectedIds) {
     const p = parseId(id)
     if (!p) continue
     const v = display(`${p.col}${p.row + 1}`)
+    if (v.trim() !== '') nonEmpty++
     const n = Number(v)
     if (Number.isFinite(n) && v.trim() !== '') nums.push(n)
   }
@@ -24,6 +26,7 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
   return (
     <footer className="status-bar">
       <span>{selectedIds.length} 셀</span>
+      <span>COUNTA: <b>{nonEmpty}</b></span>
       {nums.length > 0 && (
         <>
           <span>SUM: <b>{fmt(sum)}</b></span>
