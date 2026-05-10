@@ -147,6 +147,14 @@ describe('RANGEHASH', () => {
   })
 })
 
+describe('MAXSTR / MINSTR', () => {
+  it('lexicographic max/min', () => {
+    const cells = { A1: 'banana', A2: 'apple', A3: 'cherry' }
+    expect(evaluateCell(cells, '=MAXSTR(A1:A3)')).toBe('cherry')
+    expect(evaluateCell(cells, '=MINSTR(A1:A3)')).toBe('apple')
+  })
+})
+
 describe('MAXLEN / MINLEN', () => {
   it('max/min string length over range', () => {
     const cells = { A1: 'red', A2: 'green', A3: 'aquamarine' }

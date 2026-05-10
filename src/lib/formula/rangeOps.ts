@@ -44,6 +44,15 @@ export function arrayToText(rangeStr: string, sep: string, cells: Record<string,
   return refs.map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '').join(sep)
 }
 
+/** MAXSTR / MINSTR — lexicographic max/min over range (non-empty values). */
+export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
+  const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
+  if (vals.length === 0) return '#N/A'
+  let best = vals[0]
+  for (let i = 1; i < vals.length; i++) if (F === 'MAXSTR' ? vals[i] > best : vals[i] < best) best = vals[i]
+  return best
+}
+
 /** MAXLEN / MINLEN — max / min string length over range. */
 export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
   const lens = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '').length).filter((n) => n > 0)
