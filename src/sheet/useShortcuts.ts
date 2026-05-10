@@ -27,6 +27,7 @@ interface Args {
   setFocusId: (id: string) => void
   switchTab?: (delta: 1 | -1) => void
   display?: (k: string) => string
+  applyFormat?: (key: 'plain' | 'currency' | 'percent' | 'date') => void
 }
 
 export function useShortcuts(args: Args) {
@@ -49,6 +50,10 @@ export function useShortcuts(args: Args) {
       if (mod && ck === 'g' && !editing) { e.preventDefault(); gotoCell(setFocusId); return }
       if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) {
         e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return
+      }
+      if (mod && e.shiftKey && ref.current.applyFormat) {
+        const f = ({ '1': 'plain', '4': 'currency', '5': 'percent', '3': 'date' } as const)[e.key as '1']
+        if (f) { e.preventDefault(); ref.current.applyFormat(f); return }
       }
       if (mod && e.key === ';' && !e.altKey) { e.preventDefault(); insertNowOrToday(focusId, e.shiftKey, writeCell); return }
       if (mod && !editing && /^Arrow(Up|Down|Left|Right)$/.test(e.key) && focusId) {
