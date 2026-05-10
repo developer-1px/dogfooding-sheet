@@ -167,6 +167,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=HAMMING("karolin", "kathrin")')).toBe('3')
     expect(evaluateCell({}, '=HAMMING("abc", "abcd")')).toBe('#N/A')
   })
+  it('DEACCENT strips combining marks', () => {
+    expect(evaluateCell({}, '=DEACCENT("café résumé naïve")')).toBe('cafe resume naive')
+    expect(evaluateCell({}, '=DEACCENT("Crème brûlée")')).toBe('Creme brulee')
+  })
   it('INITIALS extracts uppercase initial of each word', () => {
     expect(evaluateCell({}, '=INITIALS("john ronald reuel tolkien")')).toBe('JRRT')
     expect(evaluateCell({}, '=INITIALS("")')).toBe('')

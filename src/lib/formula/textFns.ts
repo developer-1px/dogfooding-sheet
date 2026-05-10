@@ -36,6 +36,7 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const m = (argsT[0] ?? '').trim().match(/\S+/g)
     return String(m ? m.length : 0)
   }
+  if (F === 'DEACCENT') return wrap((argsT[0] ?? '').normalize('NFD').replace(/\p{M}/gu, ''))
   if (F === 'INITIALS') {
     const m = (argsT[0] ?? '').trim().match(/\S+/g)
     return wrap(m ? m.map((w) => w[0].toUpperCase()).join('') : '')
