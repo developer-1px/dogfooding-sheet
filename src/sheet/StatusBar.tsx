@@ -1,3 +1,5 @@
+import { numericValue } from '../lib/numeric'
+
 interface Props {
   selectedIds: string[]
   display: (k: string) => string
@@ -16,9 +18,8 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
     rows.add(p.row); cols.add(p.col)
     const v = display(`${p.col}${p.row + 1}`)
     if (v.trim() !== '') nonEmpty++
-    const stripped = v.replace(/[$€₩,%\s]/g, '')
-    const n = Number(stripped)
-    if (Number.isFinite(n) && stripped !== '') nums.push(n)
+    const n = numericValue(v)
+    if (Number.isFinite(n)) nums.push(n)
   }
   const sum = nums.reduce((a, b) => a + b, 0)
   const avg = nums.length ? sum / nums.length : 0

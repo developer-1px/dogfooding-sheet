@@ -1,10 +1,6 @@
-const COL_LETTERS = 'ABCDEFGHIJ'
+import { isNumeric } from './numeric'
 
-const isNumeric = (s: string): boolean => {
-  if (s === '') return false
-  const stripped = s.replace(/[$€₩,%\s]/g, '')
-  return Number.isFinite(Number(stripped))
-}
+const COL_LETTERS = 'ABCDEFGHIJ'
 
 /**
  * SUM of contiguous numeric cells above the given row. Falls back to the
