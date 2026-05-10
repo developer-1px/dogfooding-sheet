@@ -62,6 +62,12 @@ describe('extra math', () => {
     expect(Number(evaluateCell(cells, '=VARP(A1:A8)'))).toBeCloseTo(4, 5)
     expect(Number(evaluateCell(cells, '=STDEVP(A1:A8)'))).toBeCloseTo(2, 5)
   })
+  it('RANK descending by default, asc when order != 0', () => {
+    const cells = { A1: '5', A2: '1', A3: '8', A4: '3', A5: '9' }
+    expect(evaluateCell(cells, '=RANK(8, A1:A5)')).toBe('2')
+    expect(evaluateCell(cells, '=RANK(8, A1:A5, 1)')).toBe('4')
+    expect(evaluateCell(cells, '=RANK(99, A1:A5)')).toBe('#N/A')
+  })
   it('LARGE / SMALL pick Nth largest / smallest', () => {
     const cells = { A1: '5', A2: '1', A3: '8', A4: '3', A5: '9' }
     expect(evaluateCell(cells, '=LARGE(A1:A5,1)')).toBe('9')

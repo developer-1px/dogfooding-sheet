@@ -1,5 +1,5 @@
 import { vlookup, index as indexFn, match as matchFn } from './lookup'
-import { aggregate, largeSmall } from './aggregates'
+import { aggregate, largeSmall, rank } from './aggregates'
 import { countif, sumif, counta, countblank, averageif } from './condAggregates'
 import { dispatchDate } from './dateFns'
 import { dispatchText } from './textFns'
@@ -25,6 +25,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'COUNTBLANK') return String(countblank(argsT[0], c.cells, c.evalRaw))
   if (F === 'AVERAGEIF') return String(averageif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
   if (F === 'LARGE' || F === 'SMALL') return smartReturn(largeSmall(F, splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
+  if (F === 'RANK') return smartReturn(rank(Number(argsT[0]), splitArgs(rawArgs)[1], Number(argsT[2] ?? '0'), c.numFromCell))
 
   const argsN = argsT.map(Number)
 
