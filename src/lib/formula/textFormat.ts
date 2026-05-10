@@ -1,6 +1,7 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'STRINGIFY') return wrap(JSON.stringify(argsT.length === 1 ? argsT[0] : argsT))
   if (F === 'KORNUM') {
     const n = Number(argsT[0])
     if (!Number.isFinite(n)) return wrap('#VALUE!')
