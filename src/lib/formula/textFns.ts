@@ -12,6 +12,8 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'LEN') return String(argsT[0].length)
   if (F === 'LEFT') return wrap(argsT[0].slice(0, Number(argsT[1] ?? '1')))
   if (F === 'RIGHT') return wrap(argsT[0].slice(-Number(argsT[1] ?? '1')))
+  if (F === 'LASTCHAR') { const s = [...(argsT[0] ?? '')]; return wrap(s.length ? s[s.length - 1] : '') }
+  if (F === 'FIRSTCHAR') { const s = [...(argsT[0] ?? '')]; return wrap(s.length ? s[0] : '') }
   if (F === 'CHARAT') return wrap([...(argsT[0] ?? '')][Math.floor(Number(argsT[1] ?? '0'))] ?? '')
   if (F === 'MID') return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
   if (F === 'TRIM') return wrap(argsT[0].trim())
