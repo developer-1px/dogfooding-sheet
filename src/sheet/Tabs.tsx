@@ -9,9 +9,10 @@ interface Props {
   addSheet: () => void
   deleteSheet: (name: string) => void
   renameSheet: (oldName: string, newName: string) => void
+  duplicateSheet: (name: string) => void
 }
 
-export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet }: Props) {
+export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet }: Props) {
   const [editing, setEditing] = useState<{ name: string; draft: string } | null>(null)
   const commit = () => {
     if (!editing) return
@@ -58,6 +59,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet }: P
               }}
             />
           ) : name}
+          <button className="tab-dup" onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }} title="시트 복제">⎘</button>
           {state.order.length > 1 && (
             <button
               className="tab-close"

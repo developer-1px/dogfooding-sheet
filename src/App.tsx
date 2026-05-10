@@ -63,6 +63,7 @@ export default function App() {
         addSheet={ctx.addSheet}
         deleteSheet={ctx.deleteSheet}
         renameSheet={ctx.renameSheet}
+        duplicateSheet={ctx.duplicateSheet}
       />
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
       <HelpDialog open={ctx.helpOpen} onClose={() => ctx.setHelpOpen(false)} />

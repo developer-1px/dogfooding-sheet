@@ -94,3 +94,9 @@
   background: #fff; border: 1px solid #1a73e8; border-radius: 2px;
   padding: 1px 4px; font-size: 13px; width: 90px; outline: none;
 }
+
+.tab-dup {
+  background: transparent; border: none; padding: 0 4px;
+  color: #5f6368; font-size: 11px; cursor: pointer;
+}
+.tab-dup:hover { color: #1a73e8; }

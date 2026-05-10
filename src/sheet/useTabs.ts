@@ -80,12 +80,18 @@ export function tabActions(state: TabsState, setState: (s: TabsState) => void, c
     const newSaved = { ...state.saved }
     newSaved[trimmed] = newSaved[oldName] ?? {}
     if (oldName !== trimmed) delete newSaved[oldName]
-    setState({
-      order: newOrder,
-      active: state.active === oldName ? trimmed : state.active,
-      saved: newSaved,
-    })
+    setState({ order: newOrder, active: state.active === oldName ? trimmed : state.active, saved: newSaved })
   }
 
-  return { switchTab, addSheet, deleteSheet, renameSheet }
+  const duplicateSheet = (name: string) => {
+    const idx = state.order.indexOf(name)
+    if (idx < 0) return
+    const newName = uniqueName(state.order)
+    const snap = snapshot()
+    const cells = { ...(snap.saved[name] ?? {}) }
+    setState({ order: [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)], active: newName, saved: { ...snap.saved, [newName]: cells } })
+    replaceCells(cells)
+  }
+
+  return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet }
 }
