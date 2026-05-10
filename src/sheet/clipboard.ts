@@ -1,6 +1,6 @@
 import { COL_LETTERS, ROW_COUNT, parseCellId, cellKey } from './schema'
 
-interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
+export interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
 
 const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 

@@ -60,6 +60,11 @@ body, html, #root {
 .cell.focused { outline: 2px solid #1a73e8; outline-offset: -2px; z-index: 1; }
 .cell.selected { background: rgba(26, 115, 232, .1); }
 .cell.ref-hi { outline: 2px dashed #34a853; outline-offset: -2px; background: rgba(52, 168, 83, .08); }
+.cell.preview { outline: 2px dashed #1a73e8; outline-offset: -2px; background: rgba(26, 115, 232, .15); }
+.fill-handle {
+  position: absolute; right: -3px; bottom: -3px; width: 7px; height: 7px;
+  background: #1a73e8; border: 1px solid #fff; cursor: crosshair; z-index: 2;
+}
 .ctx-menu {
   position: fixed; z-index: 20; min-width: 180px;
   background: #fff; border: 1px solid #dadce0; border-radius: 4px;

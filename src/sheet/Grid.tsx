@@ -7,14 +7,39 @@ import { useColWidths } from './useColWidths'
 import { ContextMenu } from './ContextMenu'
 import { useCellMenu } from './useCellMenu'
 import { useSheetGrid } from './useSheetGrid'
+import { useAutoFill } from './useAutoFill'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
 
+function isFillCorner(cellId: string, focusId: string | null, selectedIds: string[]): boolean {
+  if (selectedIds.length > 1) {
+    const m = /^r(\d+)-([A-J])$/.exec(cellId)
+    if (!m) return false
+    let maxR = -1, maxC = -1
+    for (const id of selectedIds) {
+      const mm = /^r(\d+)-([A-J])$/.exec(id)
+      if (!mm) continue
+      const r = Number(mm[1]); const c = COL_LETTERS.indexOf(mm[2] as (typeof COL_LETTERS)[number])
+      if (r > maxR) maxR = r
+      if (c > maxC) maxC = c
+    }
+    return Number(m[1]) === maxR && COL_LETTERS.indexOf(m[2] as (typeof COL_LETTERS)[number]) === maxC
+  }
+  return cellId === focusId
+}
+
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, sortByCol })
+  const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
+  const previewIds = new Set<string>()
+  if (fill.preview) {
+    for (let r = fill.preview.rMin; r <= fill.preview.rMax; r++) {
+      for (let c = fill.preview.cMin; c <= fill.preview.cMax; c++) previewIds.add(`r${r}-${COL_LETTERS[c]}`)
+    }
+  }
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -66,7 +91,10 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
               onCancel={cancelEdit}
               onStartEdit={() => startEdit(cell.id)}
               onMouseDown={(e) => drag.onMouseDown(cell.id, e)}
-              onMouseEnter={() => drag.onMouseEnter(cell.id)}
+              onMouseEnter={() => { fill.dragging ? fill.onCellEnterDuringFill(cell.id) : drag.onMouseEnter(cell.id) }}
+              isFillCorner={isFillCorner(cell.id, focusId, selectedIds)}
+              onFillHandleMouseDown={fill.onHandleMouseDown}
+              previewing={previewIds.has(cell.id)}
               onContextMenu={(e) => cellMenu.open(e, cell.id)}
               ref={editing === cell.id ? inputRef : null}
             />
