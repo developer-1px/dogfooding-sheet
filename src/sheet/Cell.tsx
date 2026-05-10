@@ -59,7 +59,9 @@ export function Cell(p: Props) {
             {p.validationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
         ) : (
-          <input className="cell-input" {...p.inputProps} />
+          p.styleClass.includes('wrap')
+            ? <textarea className="cell-input wrap-input" {...(p.inputProps as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> })} />
+            : <input className="cell-input" {...p.inputProps} />
         )
       ) : (
         <>
