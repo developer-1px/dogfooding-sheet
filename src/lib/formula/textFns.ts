@@ -36,6 +36,10 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const m = (argsT[0] ?? '').trim().match(/\S+/g)
     return String(m ? m.length : 0)
   }
+  if (F === 'INITIALS') {
+    const m = (argsT[0] ?? '').trim().match(/\S+/g)
+    return wrap(m ? m.map((w) => w[0].toUpperCase()).join('') : '')
+  }
   if (F === 'OCCURS') {
     const h = argsT[0] ?? '', n = argsT[1] ?? ''
     if (n === '') return '0'

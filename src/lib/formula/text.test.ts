@@ -167,6 +167,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=HAMMING("karolin", "kathrin")')).toBe('3')
     expect(evaluateCell({}, '=HAMMING("abc", "abcd")')).toBe('#N/A')
   })
+  it('INITIALS extracts uppercase initial of each word', () => {
+    expect(evaluateCell({}, '=INITIALS("john ronald reuel tolkien")')).toBe('JRRT')
+    expect(evaluateCell({}, '=INITIALS("")')).toBe('')
+  })
   it('OCCURS counts non-overlapping occurrences', () => {
     expect(evaluateCell({}, '=OCCURS("banana", "an")')).toBe('2')
     expect(evaluateCell({}, '=OCCURS("aaaa", "aa")')).toBe('2')
