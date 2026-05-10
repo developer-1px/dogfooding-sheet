@@ -16,6 +16,7 @@ interface Props {
   onStartEdit: () => void
   onMouseDown: (e: React.MouseEvent) => void
   onMouseEnter: () => void
+  onContextMenu: (e: React.MouseEvent) => void
 }
 
 export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
@@ -26,6 +27,7 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}
+      onContextMenu={p.onContextMenu}
     >
       {p.editing ? (
         <input
