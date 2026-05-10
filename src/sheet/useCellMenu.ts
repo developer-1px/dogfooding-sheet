@@ -23,6 +23,7 @@ interface Args {
   setFreezeRows: (n: number) => void
   setFreezeCols: (n: number) => void
   freeze: { rows: number; cols: number }
+  mergeSelection: () => void
 }
 
 export function useCellMenu(a: Args) {
@@ -60,6 +61,7 @@ export function useCellMenu(a: Args) {
       { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
       { label: a.freeze.rows === row + 1 ? '행 고정 해제' : `${row + 1}행까지 고정`, onClick: () => a.setFreezeRows(a.freeze.rows === row + 1 ? 0 : row + 1) },
       { label: a.freeze.cols === colIdx(col) + 1 ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colIdx(col) + 1 ? 0 : colIdx(col) + 1) },
+      { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
       'separator',
       { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
       { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },
