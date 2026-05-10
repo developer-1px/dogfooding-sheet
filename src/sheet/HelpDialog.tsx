@@ -38,6 +38,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + Shift + M', '셀 노트 추가 / 편집'],
   ['툴바 ☑체크', '선택 셀을 체크박스로 변환 (TRUE/FALSE 토글)'],
   ['Alt + Shift + M', '선택 범위를 병합 / 단일 셀 클릭 시 해제'],
+  ['Alt + Enter (편집 중)', '줄바꿈 입력 (wrap 셀에서 textarea로 자동 전환)'],
   ['툴바 ▢', '셀 테두리 토글'],
   ['Ctrl/⌘ + `', '수식 표시 토글 (값 ↔ 수식 원문)'],
   ['Ctrl/⌘ + Alt + = / -', '현재 위치에 행 삽입 / 삭제'],
