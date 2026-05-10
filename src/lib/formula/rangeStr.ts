@@ -37,17 +37,19 @@ export function rangeHash(rangeStr: string, cells: Record<string, string>, evalR
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
-/** MOSTCOMMON(range) — most frequent non-empty value (string-based). */
-export function mostCommon(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
   const counts = new Map<string, number>()
   for (const r of collectRefs(rangeStr)) {
     const v = evalRaw(cells[r] ?? '')
     if (v !== '') counts.set(v, (counts.get(v) ?? 0) + 1)
   }
-  let best = '', bc = 0
-  for (const [v, c] of counts) if (c > bc) { best = v; bc = c }
-  return bc === 0 ? '#N/A' : best
+  if (counts.size === 0) return '#N/A'
+  let best = '', bc = F === 'MOSTCOMMON' ? -1 : Infinity
+  for (const [v, c] of counts) if (F === 'MOSTCOMMON' ? c > bc : c < bc) { best = v; bc = c }
+  return best
 }
+
+export const mostCommon = (r: string, c: Record<string, string>, e: Eval) => freqStat('MOSTCOMMON', r, c, e)
 
 /** COUNTNUMERIC(range) — number of cells whose evaluated value is finite. */
 export function countNumeric(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {

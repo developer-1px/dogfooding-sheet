@@ -141,6 +141,7 @@ describe('MOSTCOMMON', () => {
   it('returns most frequent value', () => {
     const cells = { A1: 'red', A2: 'blue', A3: 'red', A4: 'green' }
     expect(evaluateCell(cells, '=MOSTCOMMON(A1:A4)')).toBe('red')
+    expect(['blue', 'green']).toContain(evaluateCell(cells, '=LEASTCOMMON(A1:A4)'))
   })
 })
 
