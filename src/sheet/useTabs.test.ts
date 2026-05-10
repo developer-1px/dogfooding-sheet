@@ -46,6 +46,20 @@ describe('tabActions', () => {
     expect(s.reset!.tabs.order).toContain('Sheet3')
     expect(s.reset!.tabs.saved.Sheet3.cells).toEqual({ A1: 'b' })
   })
+  it('switchTab preserves per-tab styles/notes (multi-sheet partition)', () => {
+    const sheet: Sheet = {
+      ...make(),
+      styles: { A1: { b: true } },
+      notes: { A1: 'hello' },
+    }
+    sheet.tabs.saved.Sheet2 = { ...blankBundle(), cells: { A1: 'b' }, styles: { B2: { i: true } }, notes: { B2: 'world' } }
+    const s: Stub = {}
+    tabActions(sheet, stubOps(s)).switchTab('Sheet2')
+    expect(s.reset!.styles).toEqual({ B2: { i: true } })
+    expect(s.reset!.notes).toEqual({ B2: 'world' })
+    expect(s.reset!.tabs.saved.Sheet1.styles).toEqual({ A1: { b: true } })
+    expect(s.reset!.tabs.saved.Sheet1.notes).toEqual({ A1: 'hello' })
+  })
   it('deleteSheet refuses last sheet', () => {
     const sheet: Sheet = { ...initialSheet, tabs: { order: ['Only'], active: 'Only', saved: { Only: blankBundle() } } }
     const s: Stub = {}
