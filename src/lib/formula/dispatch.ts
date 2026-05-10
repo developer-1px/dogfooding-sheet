@@ -1,7 +1,7 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate } from './aggregates'
-import { largeSmall, rank, sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJson, rangeSort, rangeUnique } from './rangeOps'
-import { percentile, quartile, pairStat, trimmean, forecast, percentRank, zScore } from './stats'
+import { sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJson, rangeSort, rangeUnique } from './rangeOps'
+import { dispatchStat } from './statDispatch'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
 import { dispatchDate } from './dateFns'
@@ -65,15 +65,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'ARRAYTOTEXT') { const a = splitArgs(rawArgs); return smartReturn(arrayToText(a[0], argsT[1] ?? ', ', c.cells, c.evalRaw)) }
   if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
-  if (F === 'COVAR' || F === 'CORREL' || F === 'SLOPE' || F === 'INTERCEPT') { const [a, b] = splitArgs(rawArgs); return smartReturn(pairStat(F, a, b, c.numFromCell)) }
-  if (F === 'LARGE' || F === 'SMALL') return smartReturn(largeSmall(F, splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
-  if (F === 'FORECAST') { const a = splitArgs(rawArgs); return smartReturn(forecast(Number(argsT[0]), a[1], a[2], c.numFromCell)) }
-  if (F === 'TRIMMEAN') return smartReturn(trimmean(splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
-  if (F === 'PERCENTILE') return smartReturn(percentile(splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
-  if (F === 'ZSCORE') return smartReturn(zScore(Number(argsT[0]), splitArgs(rawArgs)[1], c.numFromCell))
-  if (F === 'PERCENTRANK') return smartReturn(percentRank(splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
-  if (F === 'QUARTILE') return smartReturn(quartile(splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
-  if (F === 'RANK') return smartReturn(rank(Number(argsT[0]), splitArgs(rawArgs)[1], Number(argsT[2] ?? '0'), c.numFromCell))
+  const stat = dispatchStat(F, argsT, rawArgs, c.numFromCell); if (stat !== null) return stat
 
   const argsN = argsT.map(Number)
 
