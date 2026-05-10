@@ -11,6 +11,7 @@ interface Props {
   display: (k: string) => string
   onJump: (cellId: string) => void
   writeCell: (k: string, v: string) => void
+  skipIds?: Set<string>
 }
 
 const cellIdToKey = (id: string): string | null => {
@@ -18,13 +19,13 @@ const cellIdToKey = (id: string): string | null => {
   return m ? cellKey(m[2], Number(m[1])) : null
 }
 
-export function Find({ open, mode, onClose, cells, display, onJump, writeCell }: Props) {
+export function Find({ open, mode, onClose, cells, display, onJump, writeCell, skipIds }: Props) {
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
   const [caseSensitive, setCS] = useState(false)
   const [regex, setRegex] = useState(false)
 
-  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex })
+  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex, skipIds })
 
   const { rootProps } = useDialogPattern({
     open, modal: false,

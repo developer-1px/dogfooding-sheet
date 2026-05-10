@@ -8,9 +8,10 @@ interface Args {
   onJump: (cellId: string) => void
   caseSensitive?: boolean
   regex?: boolean
+  skipIds?: Set<string>
 }
 
-export function useFind({ query, cells, display, onJump, caseSensitive = false, regex = false }: Args) {
+export function useFind({ query, cells, display, onJump, caseSensitive = false, regex = false, skipIds }: Args) {
   const [idx, setIdx] = useState(0)
 
   const matches = useMemo(() => {
@@ -21,12 +22,13 @@ export function useFind({ query, cells, display, onJump, caseSensitive = false, 
     const out: string[] = []
     for (let row = 0; row < ROW_COUNT; row++) {
       for (const c of COL_LETTERS) {
-        const k = cellKey(c, row)
-        if (test(cells[k] ?? '') || test(display(k))) out.push(`r${row}-${c}`)
+        const k = cellKey(c, row); const id = `r${row}-${c}`
+        if (skipIds?.has(`${row},${COL_LETTERS.indexOf(c)}`)) continue
+        if (test(cells[k] ?? '') || test(display(k))) out.push(id)
       }
     }
     return out
-  }, [query, cells, display, caseSensitive, regex])
+  }, [query, cells, display, caseSensitive, regex, skipIds])
 
   useEffect(() => {
     if (matches.length > 0) onJump(matches[idx % matches.length])

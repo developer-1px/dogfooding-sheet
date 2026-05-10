@@ -83,6 +83,7 @@ export default function App() {
         display={ctx.display}
         onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
         writeCell={ctx.writeCell}
+        skipIds={(() => { const s = new Set<string>(); for (const [rMin, rMax, cMin, cMax] of ctx.merges) for (let r = rMin; r <= rMax; r++) for (let c = cMin; c <= cMax; c++) if (!(r === rMin && c === cMin)) s.add(`${r},${c}`); return s })()}
       />
       {promptDialog}
       {confirmDialog}
