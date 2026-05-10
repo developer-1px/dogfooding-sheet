@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"decision\":\"block\",\"reason\":\"변경사항을 커밋하세요.\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}
