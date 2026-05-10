@@ -40,11 +40,8 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
-  const writeCell = (k: string, v: string) => {
-    if (v === '' && sheet.cells[k] !== undefined) ops.remove(`/cells/${k}`)
-    else if (v !== '' && sheet.cells[k] === undefined) ops.add(`/cells/${k}`, v)
-    else if (v !== '' && sheet.cells[k] !== v) ops.replace(`/cells/${k}`, v)
-  }; const writeCells = (writes: Array<[string, string]>) => writeCellsBatch(ops, sheet.cells, writes)
+  const writeCell = (k: string, v: string) => upsertKey(ops, '/cells', sheet.cells, k, v === '' ? undefined : v)
+  const writeCells = (writes: Array<[string, string]>) => writeCellsBatch(ops, sheet.cells, writes)
 
   const edit = useEditState({ cells: sheet.cells, writeCell })
 
