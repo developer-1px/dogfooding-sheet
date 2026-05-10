@@ -411,6 +411,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('INVERTCOLOR flips RGB', () => {
+    expect(evaluateCell({}, '=INVERTCOLOR("#000000")')).toBe('#ffffff')
+    expect(evaluateCell({}, '=INVERTCOLOR("#ff8800")')).toBe('#0077ff')
+  })
   it('MIX blends two hex colors', () => {
     expect(evaluateCell({}, '=MIX("#000000", "#ffffff", 0.5)')).toBe('#808080')
     expect(evaluateCell({}, '=MIX("#ff0000", "#0000ff", 1)')).toBe('#0000ff')

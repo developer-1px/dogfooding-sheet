@@ -1,6 +1,12 @@
 import { wrap } from './marker'
 
 export function dispatchColor(F: string, argsT: string[]): string | null {
+  if (F === 'INVERTCOLOR') {
+    const m = /^#?([0-9a-f]{6})$/i.exec((argsT[0] ?? '').trim())
+    if (!m) return wrap('#VALUE!')
+    const v = parseInt(m[1], 16)
+    return wrap('#' + (0xffffff ^ v).toString(16).padStart(6, '0'))
+  }
   if (F === 'MIX') {
     const parse = (s: string): [number, number, number] | null => {
       const m = /^#?([0-9a-f]{6})$/i.exec(s.trim())
