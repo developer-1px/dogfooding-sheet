@@ -158,6 +158,15 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
     expect(evaluateCell({}, '=ODD(4)')).toBe('5')
   })
+  it('BASE / DECIMAL / HEX2DEC / DEC2HEX / BIN2DEC / DEC2BIN', () => {
+    expect(evaluateCell({}, '=BASE(255, 16)')).toBe('FF')
+    expect(evaluateCell({}, '=BASE(7, 2, 4)')).toBe('0111')
+    expect(evaluateCell({}, '=DECIMAL("FF", 16)')).toBe('255')
+    expect(evaluateCell({}, '=HEX2DEC("1A")')).toBe('26')
+    expect(evaluateCell({}, '=DEC2HEX(26)')).toBe('1A')
+    expect(evaluateCell({}, '=BIN2DEC("1010")')).toBe('10')
+    expect(evaluateCell({}, '=DEC2BIN(10)')).toBe('1010')
+  })
   it('ROMAN / ARABIC round-trip', () => {
     expect(evaluateCell({}, '=ROMAN(1994)')).toBe('MCMXCIV')
     expect(evaluateCell({}, '=ARABIC("MCMXCIV")')).toBe('1994')

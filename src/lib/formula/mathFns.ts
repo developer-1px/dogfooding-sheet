@@ -26,6 +26,19 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => g(a, b)))
   }
+  if (F === 'BASE') {
+    const [n, base, minLen = 0] = argsN
+    if (base < 2 || base > 36) return wrap('#NUM!')
+    return wrap(Math.floor(n).toString(base).toUpperCase().padStart(minLen, '0'))
+  }
+  if (F === 'DECIMAL') {
+    const n = parseInt(argsT[0] ?? '', argsN[1])
+    return Number.isFinite(n) ? String(n) : wrap('#NUM!')
+  }
+  if (F === 'HEX2DEC') { const n = parseInt(argsT[0] ?? '', 16); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
+  if (F === 'DEC2HEX') return wrap(Math.floor(argsN[0]).toString(16).toUpperCase())
+  if (F === 'BIN2DEC') { const n = parseInt(argsT[0] ?? '', 2); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
+  if (F === 'DEC2BIN') return wrap(Math.floor(argsN[0]).toString(2))
   if (F === 'ROMAN') {
     let n = Math.floor(argsN[0])
     if (n < 0 || n > 3999) return wrap('#VALUE!')
