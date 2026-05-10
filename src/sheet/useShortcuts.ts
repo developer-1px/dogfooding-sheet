@@ -94,10 +94,10 @@ export function useShortcuts(args: Args) {
       const ae = document.activeElement
       const inForm = (ae instanceof HTMLInputElement || ae instanceof HTMLTextAreaElement) && !ae.classList.contains('cell-input')
       if (inForm) return
-      if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); return }
-      if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault() }
+      if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); e.stopPropagation(); return }
+      if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
   }, [])
 }

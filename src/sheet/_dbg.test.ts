@@ -9,20 +9,23 @@ describe('debug', () => {
     localStorage.clear()
     const host = document.createElement('div'); document.body.append(host)
     const root = createRoot(host)
+    const log: string[] = []
+    const note = (s: string) => log.push(s)
     await act(async () => root.render(createElement(App)))
+
     const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
     const a5 = cells[40]
-    console.log('a5 data-id', a5?.getAttribute('data-id'), 'tabindex', a5?.tabIndex)
     act(() => {
       a5.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
       a5.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
       a5.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
     })
-    console.log('after click', document.activeElement?.tagName, (document.activeElement as HTMLElement)?.getAttribute('data-id'))
+    note('focusId via aria? ' + a5?.getAttribute('aria-selected'))
+    note('addr text ' + document.querySelector('.addr')?.textContent)
     act(() => { window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'H' })) })
-    console.log('after H, active', document.activeElement?.tagName, document.activeElement?.className)
-    const input = document.querySelector('input.cell-input')
-    console.log('input present?', !!input, (input as HTMLInputElement)?.value)
-    expect(true).toBe(true)
+    note('addr text after H ' + document.querySelector('.addr')?.textContent)
+    const inputs = [...document.querySelectorAll('input')]
+    note('inputs ' + inputs.map(i => i.className + '=' + JSON.stringify(i.value)).join('; '))
+    expect(log.join('\n')).toBe('SEE_BELOW')
   })
 })
