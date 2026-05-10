@@ -59,6 +59,9 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=REGEXEXTRACT("foo123bar", "\\d+")')).toBe('123')
     expect(evaluateCell({}, '=REGEXREPLACE("a1b2c3", "\\d", "X")')).toBe('aXbXcX')
   })
+  it('NORMALIZE Unicode form', () => {
+    expect(evaluateCell({}, '=NORMALIZE("café", "NFC")').length).toBe(4)
+  })
   it('CLEAN strips control characters', () => {
     expect(evaluateCell({}, '=CLEAN("a\x01b\x1Fc")')).toBe('abc')
   })
