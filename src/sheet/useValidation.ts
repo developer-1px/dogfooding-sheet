@@ -14,7 +14,7 @@ const load = (): Record<string, Rule> => {
     if (!obj || typeof obj !== 'object') return {}
     const out: Record<string, Rule> = {}
     for (const [k, v] of Object.entries(obj)) {
-      const r = v as Partial<ListRule & CheckboxRule>
+      const r = v as { type?: string; options?: unknown }
       if (r?.type === 'list' && Array.isArray(r.options)) out[k] = { type: 'list', options: r.options.map(String) }
       else if (r?.type === 'checkbox') out[k] = { type: 'checkbox' }
     }

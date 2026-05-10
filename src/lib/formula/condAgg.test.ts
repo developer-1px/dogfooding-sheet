@@ -351,7 +351,6 @@ describe('COUNTBLANK', () => {
 
 describe('AVERAGEIF', () => {
   it('averages matching values', () => {
-    expect(evaluateCell(c, '=AVERAGEIF(A1:A5, ">5")')).toBeCloseTo(38 / 3, 5).toString
     const v = Number(evaluateCell(c, '=AVERAGEIF(A1:A5, ">5")'))
     expect(v).toBeCloseTo(38 / 3, 5)
   })

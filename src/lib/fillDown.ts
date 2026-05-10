@@ -7,7 +7,7 @@ type Cells = Record<string, string>
  * selection within the same column. Mimics Google Sheets Cmd+D.
  */
 export function fillDown(selectedIds: string[], cells: Cells, write: (k: string, v: string) => void): void {
-  const ps = selectedIds.map(parseCellId).filter((x): x is { col: string; row: number } => !!x)
+  const ps = selectedIds.map(parseCellId).flatMap((x) => x ? [x] : [])
   if (ps.length < 2) return
   const minRow = Math.min(...ps.map((p) => p.row))
   const sources: Record<string, string> = {}
@@ -17,7 +17,7 @@ export function fillDown(selectedIds: string[], cells: Cells, write: (k: string,
 
 /** Mirror of fillDown: copy left-most cell per row rightward within selection. */
 export function fillRight(selectedIds: string[], cells: Cells, write: (k: string, v: string) => void): void {
-  const ps = selectedIds.map(parseCellId).filter((x): x is { col: string; row: number } => !!x)
+  const ps = selectedIds.map(parseCellId).flatMap((x) => x ? [x] : [])
   if (ps.length < 2) return
   const COLS = 'ABCDEFGHIJ'
   const minColIdx = Math.min(...ps.map((p) => COLS.indexOf(p.col)))

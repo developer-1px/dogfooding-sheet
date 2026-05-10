@@ -15,9 +15,9 @@ export type ColLetter = (typeof COL_LETTERS)[number]
 export const cellKey = (col: string, row: number): string => `${col}${row + 1}`
 
 /** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
-export const parseCellId = (id: string): { col: string; row: number } | null => {
+export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
   const m = /^r(\d+)-([A-J])$/.exec(id)
-  return m ? { row: Number(m[1]), col: m[2] } : null
+  return m ? { row: Number(m[1]), col: m[2] as ColLetter } : null
 }
 
 /** Convert a DOM cell id "r{row}-{col}" to A1 key like "B3". Falls back to input on mismatch. */

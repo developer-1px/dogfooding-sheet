@@ -13,7 +13,7 @@ importers:
         version: file:../ds/packages/aria-kernel(react@19.2.6)
       editable-lifecycle:
         specifier: file:../editable-lifecycle/packages/editable-lifecycle
-        version: file:../editable-lifecycle/packages/editable-lifecycle(react@19.2.6)
+        version: file:../editable-lifecycle/packages/editable-lifecycle(@p/aria-kernel@file:../ds/packages/aria-kernel(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -631,7 +631,17 @@ packages:
   editable-lifecycle@file:../editable-lifecycle/packages/editable-lifecycle:
     resolution: {directory: ../editable-lifecycle/packages/editable-lifecycle, type: directory}
     peerDependencies:
+      '@p/aria-kernel': '*'
       react: '>=18'
+      zod: '>=4'
+      zod-crud: '>=0.9'
+    peerDependenciesMeta:
+      '@p/aria-kernel':
+        optional: true
+      zod:
+        optional: true
+      zod-crud:
+        optional: true
 
   electron-to-chromium@1.5.353:
     resolution: {integrity: sha512-kOrWphBi8TOZyiJZqsgqIle0lw+tzmnQK83pV9dZUd01Nm2POECSyFQMAuarzZdYqQW7FH9RaYOuaRo3h+bQ3w==}
@@ -1839,9 +1849,13 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
-  editable-lifecycle@file:../editable-lifecycle/packages/editable-lifecycle(react@19.2.6):
+  editable-lifecycle@file:../editable-lifecycle/packages/editable-lifecycle(@p/aria-kernel@file:../ds/packages/aria-kernel(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3):
     dependencies:
       react: 19.2.6
+    optionalDependencies:
+      '@p/aria-kernel': file:../ds/packages/aria-kernel(react@19.2.6)
+      zod: 4.4.3
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   electron-to-chromium@1.5.353: {}
 

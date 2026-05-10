@@ -9,7 +9,7 @@ export const formatRect = (rect: Rect): string => {
 }
 
 export function rectFromIds(ids: string[]): Rect | null {
-  const cells = ids.map(parseCellId).filter((x): x is { col: string; row: number } => !!x)
+  const cells = ids.map(parseCellId).flatMap((x) => x ? [x] : [])
   if (cells.length === 0) return null
   let rMin = Infinity, rMax = -Infinity, cMin = Infinity, cMax = -Infinity
   for (const { col, row } of cells) {

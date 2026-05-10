@@ -15,7 +15,7 @@ interface Props {
 }
 
 const colRangeIds = (target: string, anchor: string | null): string[] => {
-  const a = (anchor && COL_LETTERS.indexOf(anchor as (typeof COL_LETTERS)[number])) ?? -1
+  const a = anchor ? COL_LETTERS.indexOf(anchor as (typeof COL_LETTERS)[number]) : -1
   const t = COL_LETTERS.indexOf(target as (typeof COL_LETTERS)[number])
   if (a < 0) return idsForCol(target, ROW_COUNT)
   const ids: string[] = []
