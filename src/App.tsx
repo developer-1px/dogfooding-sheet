@@ -53,6 +53,16 @@ export default function App() {
         canRedo={ctx.ops.canRedo()}
         extra={
           <>
+            {(() => {
+              const focus = ctx.focusKey ? /^([A-J])(\d+)$/.exec(ctx.focusKey) : null
+              const focusRow = focus ? Number(focus[2]) - 1 : 0
+              return (
+                <>
+                  <button onClick={() => ctx.insertRow(focusRow)} title="위에 행 삽입">+행</button>
+                  <button onClick={() => ctx.deleteRow(focusRow)} title="현재 행 삭제">−행</button>
+                </>
+              )
+            })()}
             <FormatButtons
               applyFormat={(f) => {
                 const ids = ctx.selectedIds.length > 0

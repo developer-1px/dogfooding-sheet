@@ -5,6 +5,7 @@ import { evaluateCell, refsInFormula } from './formula'
 import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './useFormats'
+import { insertRow as insertRowOp, deleteRow as deleteRowOp } from './rowOps'
 
 export function useSheet() {
   const [sheet, ops] = useJson(SheetSchema, loadInitial(), { history: 100 })
@@ -56,6 +57,9 @@ export function useSheet() {
 
   const cancelEdit = () => setEditing(null)
 
+  const insertRow = (atRow: number) => ops.replace('/cells' as never, insertRowOp(sheet.cells, atRow) as never)
+  const deleteRow = (atRow: number) => ops.replace('/cells' as never, deleteRowOp(sheet.cells, atRow) as never)
+
   useShortcuts({
     editing, focusId, sheet, ops, writeCell, startEdit, selectedIds,
     openFind: () => { setFindMode('find'); setFindOpen(true) },
@@ -85,5 +89,6 @@ export function useSheet() {
     findOpen, setFindOpen, findMode,
     setFormat: fmt.setFormat,
     formatOf: fmt.formatOf,
+    insertRow, deleteRow,
   }
 }
