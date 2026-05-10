@@ -1,13 +1,13 @@
 import { wrap } from './marker'
 import { dispatchTextCodec } from './textCodec'
+import { dispatchTextCase } from './textCase'
 
 export function dispatchText(F: string, argsT: string[]): string | null {
   const codec = dispatchTextCodec(F, argsT); if (codec !== null) return codec
+  const cas = dispatchTextCase(F, argsT); if (cas !== null) return cas
   if (F === 'CONCAT' || F === 'CONCATENATE') return wrap(argsT.join(''))
   if (F === 'HYPERLINK') return wrap(argsT[1] ? argsT[1] : argsT[0])
   if (F === 'LEN') return String(argsT[0].length)
-  if (F === 'UPPER') return wrap(argsT[0].toUpperCase())
-  if (F === 'LOWER') return wrap(argsT[0].toLowerCase())
   if (F === 'LEFT') return wrap(argsT[0].slice(0, Number(argsT[1] ?? '1')))
   if (F === 'RIGHT') return wrap(argsT[0].slice(-Number(argsT[1] ?? '1')))
   if (F === 'MID') return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
@@ -58,13 +58,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return pos < 0 ? wrap('#VALUE!') : String(pos + 1)
   }
   if (F === 'REPT') return wrap(argsT[0].repeat(Math.max(0, Number(argsT[1] ?? '0'))))
-  if (F === 'SLUG') return wrap((argsT[0] ?? '').toLowerCase().trim().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, ''))
-  if (F === 'CAMELCASE') return wrap((argsT[0] ?? '').replace(/[-_\s]+(.)?/g, (_m, c) => c ? c.toUpperCase() : '').replace(/^./, (c) => c.toLowerCase()))
-  if (F === 'SNAKECASE') return wrap((argsT[0] ?? '').replace(/[A-Z]/g, (c) => '_' + c.toLowerCase()).replace(/[\s-]+/g, '_').replace(/^_+|_+$/g, ''))
-  if (F === 'KEBABCASE') return wrap((argsT[0] ?? '').replace(/[A-Z]/g, (c) => '-' + c.toLowerCase()).replace(/[\s_]+/g, '-').replace(/^-+|-+$/g, ''))
-  if (F === 'PROPER') {
-    return wrap(argsT[0].toLowerCase().replace(/(^|\s)(\p{L})/gu, (_m, sp, ch) => sp + ch.toUpperCase()))
-  }
   if (F === 'JOIN') return wrap(argsT.slice(1).join(argsT[0] ?? ''))
   if (F === 'TEXTJOIN') {
     const sep = argsT[0] ?? ''
