@@ -23,7 +23,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds })
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
-  const { gridTemplateFor, startResize, autoFit } = useColWidths()
+  const { gridTemplateFor, startResize, autoFit } = useColWidths(ctx.sheet.colWidths, ctx.ops)
   const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(`${c}${r + 1}`)))
   const focusM = focusId ? /^r(\d+)-([A-J])$/.exec(focusId) : null
   const focusCol = focusM ? focusM[2] : null

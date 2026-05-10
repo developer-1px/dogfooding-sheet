@@ -42,6 +42,7 @@ export const SheetSchema = z.object({
     active: z.string(),
     saved: z.record(z.string(), z.record(z.string(), z.string())),
   }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {} }),
+  colWidths: z.record(z.string(), z.number()).default({}),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -61,4 +62,5 @@ export const initialSheet: Sheet = {
   freeze: { rows: 0, cols: 0 },
   hidden: { rows: [], cols: [] },
   tabs: { order: ['Sheet1'], active: 'Sheet1', saved: {} },
+  colWidths: {},
 }

@@ -1,33 +1,33 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import type { JsonOps } from 'zod-crud'
 import { COL_LETTERS } from './schema'
+import type { Sheet } from './schema'
 
-const STORAGE_KEY = 'spreadsheet:colwidths:v1'
+const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 const DEFAULT_WIDTH = 100
 const MIN_WIDTH = 40
 
-const load = (): Record<string, number> => {
+function migrateLegacy(widths: Record<string, number>, ops: JsonOps<Sheet>) {
+  if (Object.keys(widths).length > 0) return
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return {}
+    const raw = localStorage.getItem(LEGACY_KEY)
+    if (!raw) return
     const obj = JSON.parse(raw)
-    return obj && typeof obj === 'object' ? obj : {}
-  } catch { return {} }
+    if (obj && typeof obj === 'object' && Object.keys(obj).length > 0) ops.replace('/colWidths', obj as Record<string, number>)
+    localStorage.removeItem(LEGACY_KEY)
+  } catch { /* ignore */ }
 }
 
-export function useColWidths() {
-  const [widths, setWidths] = useState<Record<string, number>>(load)
-  const dragRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
-
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(widths)) } catch { /* quota */ }
-  }, [widths])
+export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>) {
+  const dragRef = useRef<{ col: string; startX: number; startW: number; current: number } | null>(null)
+  useEffect(() => { migrateLegacy(widths, ops) }, [])
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       const d = dragRef.current
       if (!d) return
-      const w = Math.max(MIN_WIDTH, d.startW + (e.clientX - d.startX))
-      setWidths((prev) => ({ ...prev, [d.col]: w }))
+      d.current = Math.max(MIN_WIDTH, d.startW + (e.clientX - d.startX))
+      ops.replace('/colWidths', { ...widths, [d.col]: d.current })
     }
     const onUp = () => { dragRef.current = null; document.body.style.cursor = '' }
     window.addEventListener('mousemove', onMove)
@@ -36,7 +36,7 @@ export function useColWidths() {
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mouseup', onUp)
     }
-  }, [])
+  }, [widths])
 
   const autoFit = (col: string, samples: string[]) => {
     const canvas = document.createElement('canvas')
@@ -48,13 +48,13 @@ export function useColWidths() {
       const w = Math.ceil(ctx.measureText(s).width) + 16
       if (w > max) max = w
     }
-    setWidths((prev) => ({ ...prev, [col]: Math.min(400, max) }))
+    ops.replace('/colWidths', { ...widths, [col]: Math.min(400, max) })
   }
 
   const startResize = (col: string) => (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    dragRef.current = { col, startX: e.clientX, startW: widths[col] ?? DEFAULT_WIDTH }
+    dragRef.current = { col, startX: e.clientX, startW: widths[col] ?? DEFAULT_WIDTH, current: widths[col] ?? DEFAULT_WIDTH }
     document.body.style.cursor = 'col-resize'
   }
 
@@ -63,5 +63,5 @@ export function useColWidths() {
   const gridTemplateFor = (visibleCols: readonly string[] = COL_LETTERS) =>
     `48px ${visibleCols.map((c) => `${widthOf(c)}px`).join(' ')}`
 
-  return { widths, widthOf, gridTemplate: gridTemplateFor(), gridTemplateFor, startResize, autoFit }
+  return { widthOf, gridTemplate: gridTemplateFor(), gridTemplateFor, startResize, autoFit }
 }
