@@ -1,6 +1,19 @@
 import { wrap } from './marker'
 
 export function dispatchColor(F: string, argsT: string[]): string | null {
+  if (F === 'MIX') {
+    const parse = (s: string): [number, number, number] | null => {
+      const m = /^#?([0-9a-f]{6})$/i.exec(s.trim())
+      if (!m) return null
+      const v = parseInt(m[1], 16)
+      return [(v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff]
+    }
+    const a = parse(argsT[0]), b = parse(argsT[1])
+    if (!a || !b) return wrap('#VALUE!')
+    const t = Math.max(0, Math.min(1, Number(argsT[2] ?? '0.5')))
+    const mix = (i: number) => Math.round(a[i] + (b[i] - a[i]) * t).toString(16).padStart(2, '0')
+    return wrap('#' + mix(0) + mix(1) + mix(2))
+  }
   if (F === 'HSL') {
     const h = Number(argsT[0]) / 360, s = Number(argsT[1]) / 100, l = Number(argsT[2]) / 100
     if ([h, s, l].some((v) => !Number.isFinite(v))) return wrap('#VALUE!')

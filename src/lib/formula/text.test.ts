@@ -411,6 +411,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('MIX blends two hex colors', () => {
+    expect(evaluateCell({}, '=MIX("#000000", "#ffffff", 0.5)')).toBe('#808080')
+    expect(evaluateCell({}, '=MIX("#ff0000", "#0000ff", 1)')).toBe('#0000ff')
+  })
   it('HSL converts to hex', () => {
     expect(evaluateCell({}, '=HSL(0, 100, 50)')).toBe('#ff0000')
     expect(evaluateCell({}, '=HSL(120, 100, 50)')).toBe('#00ff00')
