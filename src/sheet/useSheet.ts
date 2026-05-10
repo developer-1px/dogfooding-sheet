@@ -36,9 +36,9 @@ export function useSheet() {
 
   const writeCell = (k: string, v: string) => {
     if (v === '') {
-      if (sheet.cells[k] !== undefined) ops.remove(`/cells/${k}` as never)
-    } else if (sheet.cells[k] === undefined) ops.add(`/cells/${k}` as never, v as never)
-    else if (sheet.cells[k] !== v) ops.replace(`/cells/${k}` as never, v as never)
+      if (sheet.cells[k] !== undefined) ops.remove(`/cells/${k}`)
+    } else if (sheet.cells[k] === undefined) ops.add(`/cells/${k}`, v)
+    else if (sheet.cells[k] !== v) ops.replace(`/cells/${k}`, v)
   }
 
   const edit = useEditState({ cells: sheet.cells, writeCell })
@@ -48,10 +48,10 @@ export function useSheet() {
   data.meta = { ...data.meta, focus: edit.focusId }
   for (const id of selectedIds) data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
 
-  const insertRow = (atRow: number) => ops.replace('/cells' as never, insertRowOp(sheet.cells, atRow, ROW_COUNT) as never)
-  const deleteRow = (atRow: number) => ops.replace('/cells' as never, deleteRowOp(sheet.cells, atRow) as never)
+  const insertRow = (atRow: number) => ops.replace('/cells', insertRowOp(sheet.cells, atRow, ROW_COUNT))
+  const deleteRow = (atRow: number) => ops.replace('/cells', deleteRowOp(sheet.cells, atRow))
   const sortByCol = (col: string, dir: 'asc' | 'desc') =>
-    ops.replace('/cells' as never, sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT }) as never)
+    ops.replace('/cells', sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT }))
 
   useShortcuts({
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
