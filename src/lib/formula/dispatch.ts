@@ -1,4 +1,4 @@
-import { vlookup, index as indexFn, match as matchFn } from './lookup'
+import { vlookup, hlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate, largeSmall, rank } from './aggregates'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { dispatchDate } from './dateFns'
@@ -36,6 +36,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const logic = dispatchLogic(F, argsT, argsN); if (logic !== null) return logic
 
   if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
+  if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
   if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalRaw))
   if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalRaw))
   return '0'

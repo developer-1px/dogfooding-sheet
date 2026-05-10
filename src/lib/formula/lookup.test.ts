@@ -7,6 +7,14 @@ const data = {
   A3: 'Milk', B3: '3.00',
 }
 
+describe('HLOOKUP', () => {
+  it('finds and returns row value', () => {
+    const h = { A1: 'Q1', B1: 'Q2', C1: 'Q3', A2: '10', B2: '20', C2: '30' }
+    expect(evaluateCell(h, '=HLOOKUP("Q2", A1:C2, 2)')).toBe('20')
+    expect(evaluateCell(h, '=HLOOKUP("Q9", A1:C2, 2)')).toBe('#N/A')
+  })
+})
+
 describe('VLOOKUP', () => {
   it('finds and returns column value', () => {
     expect(evaluateCell(data, '=VLOOKUP("Bread", A1:B3, 2)')).toBe('2.25')

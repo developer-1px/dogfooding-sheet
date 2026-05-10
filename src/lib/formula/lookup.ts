@@ -46,6 +46,25 @@ export function vlookup(
   return '#N/A'
 }
 
+export function hlookup(
+  key: string,
+  rangeStr: string,
+  rowIdx: number,
+  cells: Cells,
+  evalRaw: (s: string) => string,
+): string {
+  const r = parseRange(rangeStr)
+  if (!r) return '#REF!'
+  const targetRow = r.rMin + rowIdx - 1
+  if (targetRow > r.rMax) return '#REF!'
+  for (let col = r.cMin; col <= r.cMax; col++) {
+    if (evalCell(cells, col, r.rMin, evalRaw) === key) {
+      return evalCell(cells, col, targetRow, evalRaw)
+    }
+  }
+  return '#N/A'
+}
+
 export function index(rangeStr: string, row: number, col: number, cells: Cells, evalRaw: (s: string) => string): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
