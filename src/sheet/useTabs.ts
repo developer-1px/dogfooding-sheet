@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import { blankBundle, bundleOf, withBundle, type Sheet, type TabBundle } from './schema'
 
 type Cells = Record<string, string>
 export interface TabsState {
   order: string[]
   active: string
-  saved: Record<string, Cells>
+  saved: Record<string, TabBundle>
 }
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
@@ -18,18 +18,18 @@ function migrateLegacy(state: TabsState, ops: JsonOps<Sheet>) {
     if (!raw) return
     const obj = JSON.parse(raw)
     if (Array.isArray(obj?.order) && typeof obj.active === 'string' && obj.saved) {
-      ops.replace('/tabs', obj as TabsState)
+      const upgraded: TabsState = {
+        order: obj.order, active: obj.active,
+        saved: Object.fromEntries(Object.entries(obj.saved as Record<string, Cells>)
+          .map(([k, cells]) => [k, { ...blankBundle(), cells }])),
+      }
+      ops.replace('/tabs', upgraded)
     }
     localStorage.removeItem(LEGACY_KEY)
   } catch { /* ignore */ }
 }
 
-/**
- * Active tab's cells live in `sheet.cells` (live source). Inactive tabs' cells live in
- * `sheet.tabs.saved`. tabActions.snapshot copies cells → saved on switch/add/delete/dup,
- * so no continuous mirror effect is needed (would loop with zod-crud's non-structural sharing).
- */
-export function useTabs(state: TabsState, _currentCells: Cells, ops: JsonOps<Sheet>) {
+export function useTabs(state: TabsState, ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(state, ops) }, [])
   const setState = (s: TabsState) => ops.replace('/tabs', s)
   return { state, setState }
@@ -41,51 +41,53 @@ const uniqueName = (order: string[]): string => {
   return `Sheet${n}`
 }
 
-export function tabActions(state: TabsState, setState: (s: TabsState) => void, currentCells: Cells, replaceCells: (c: Cells) => void) {
-  const snapshot = (): TabsState => ({ ...state, saved: { ...state.saved, [state.active]: currentCells } })
+export function tabActions(sheet: Sheet, ops: JsonOps<Sheet>) {
+  const state = sheet.tabs
+  const snapshotSaved = (): Record<string, TabBundle> => ({ ...state.saved, [state.active]: bundleOf(sheet) })
+  const setTabs = (next: TabsState) => ({ ...sheet, tabs: next })
+  const hydrate = (next: Sheet, name: string, saved: Record<string, TabBundle>): Sheet =>
+    withBundle({ ...next, tabs: { ...next.tabs, active: name } }, saved[name] ?? blankBundle())
 
   const switchTab = (name: string) => {
     if (name === state.active || !state.order.includes(name)) return
-    const snap = snapshot()
-    setState({ ...snap, active: name })
-    replaceCells(snap.saved[name] ?? {})
+    const saved = snapshotSaved()
+    ops.reset(hydrate(setTabs({ ...state, active: name, saved }), name, saved))
   }
 
   const addSheet = () => {
     const name = uniqueName(state.order)
-    const snap = snapshot()
-    setState({ order: [...snap.order, name], active: name, saved: { ...snap.saved, [name]: {} } })
-    replaceCells({})
+    const saved = { ...snapshotSaved(), [name]: blankBundle() }
+    ops.reset(hydrate(setTabs({ order: [...state.order, name], active: name, saved }), name, saved))
   }
 
   const deleteSheet = (name: string) => {
     if (state.order.length <= 1 || !state.order.includes(name)) return
     const newOrder = state.order.filter((n) => n !== name)
-    const newSaved = { ...state.saved }; delete newSaved[name]
+    const saved = snapshotSaved()
+    delete saved[name]
     const newActive = state.active === name ? newOrder[Math.max(0, state.order.indexOf(name) - 1)] : state.active
-    const snap = snapshot()
-    setState({ order: newOrder, active: newActive, saved: { ...newSaved, [state.active]: snap.saved[state.active] ?? currentCells } })
-    if (state.active === name) replaceCells(state.saved[newActive] ?? {})
+    ops.reset(hydrate(setTabs({ order: newOrder, active: newActive, saved }), newActive, saved))
   }
 
   const renameSheet = (oldName: string, newName: string) => {
     const trimmed = newName.trim()
     if (!trimmed || trimmed === oldName || state.order.includes(trimmed)) return
+    const saved = snapshotSaved()
+    saved[trimmed] = saved[oldName] ?? blankBundle()
+    delete saved[oldName]
     const newOrder = state.order.map((n) => (n === oldName ? trimmed : n))
-    const newSaved = { ...state.saved }
-    newSaved[trimmed] = newSaved[oldName] ?? {}
-    if (oldName !== trimmed) delete newSaved[oldName]
-    setState({ order: newOrder, active: state.active === oldName ? trimmed : state.active, saved: newSaved })
+    const active = state.active === oldName ? trimmed : state.active
+    ops.replace('/tabs', { order: newOrder, active, saved })
   }
 
   const duplicateSheet = (name: string) => {
     const idx = state.order.indexOf(name)
     if (idx < 0) return
     const newName = uniqueName(state.order)
-    const snap = snapshot()
-    const cells = { ...(snap.saved[name] ?? {}) }
-    setState({ order: [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)], active: newName, saved: { ...snap.saved, [newName]: cells } })
-    replaceCells(cells)
+    const saved = snapshotSaved()
+    saved[newName] = { ...(saved[name] ?? blankBundle()) }
+    const newOrder = [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)]
+    ops.reset(hydrate(setTabs({ order: newOrder, active: newName, saved }), newName, saved))
   }
 
   const cycleTab = (delta: 1 | -1) => {

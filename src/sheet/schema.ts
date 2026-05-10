@@ -14,8 +14,8 @@ const CellStyleSchema = z.object({
   fg: z.string().optional(),
 })
 
-export const SheetSchema = z.object({
-  cells: z.record(z.string(), z.string()),
+const TabBundleSchema = z.object({
+  cells: z.record(z.string(), z.string()).default({}),
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
   formats: z.record(z.string(), z.enum(['plain', 'currency', 'eur', 'krw', 'percent', 'integer', 'thousand', 'scientific', 'date'])).default({}),
@@ -37,14 +37,33 @@ export const SheetSchema = z.object({
     rows: z.array(z.number()),
     cols: z.array(z.string()),
   }).default({ rows: [], cols: [] }),
+  colWidths: z.record(z.string(), z.number()).default({}),
+})
+export type TabBundle = z.infer<typeof TabBundleSchema>
+
+export const SheetSchema = TabBundleSchema.extend({
   tabs: z.object({
     order: z.array(z.string()),
     active: z.string(),
-    saved: z.record(z.string(), z.record(z.string(), z.string())),
+    saved: z.record(z.string(), TabBundleSchema),
   }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {} }),
-  colWidths: z.record(z.string(), z.number()).default({}),
 })
 export type Sheet = z.infer<typeof SheetSchema>
+
+const emptyBundle: TabBundle = {
+  cells: {}, notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
+  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {},
+}
+
+export const bundleOf = (sheet: Sheet): TabBundle => ({
+  cells: sheet.cells, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats,
+  validation: sheet.validation, condFormat: sheet.condFormat,
+  freeze: sheet.freeze, hidden: sheet.hidden, colWidths: sheet.colWidths,
+})
+
+export const withBundle = (sheet: Sheet, b: TabBundle): Sheet => ({ ...sheet, ...b })
+
+export const blankBundle = (): TabBundle => ({ ...emptyBundle, freeze: { ...emptyBundle.freeze }, hidden: { rows: [], cols: [] } })
 
 export const initialSheet: Sheet = {
   cells: {
@@ -54,13 +73,7 @@ export const initialSheet: Sheet = {
     A4: 'Milk', B4: '1', C4: '3.00', D4: '=B4*C4',
     A6: 'Sum', D6: '=SUM(D2:D4)',
   },
-  notes: {},
-  styles: {},
-  formats: {},
-  validation: {},
-  condFormat: [],
-  freeze: { rows: 0, cols: 0 },
-  hidden: { rows: [], cols: [] },
+  notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
+  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {},
   tabs: { order: ['Sheet1'], active: 'Sheet1', saved: {} },
-  colWidths: {},
 }

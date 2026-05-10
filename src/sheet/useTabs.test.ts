@@ -1,45 +1,55 @@
 import { describe, it, expect } from 'vitest'
-import { tabActions, type TabsState } from './useTabs'
+import { tabActions } from './useTabs'
+import { blankBundle, initialSheet, type Sheet } from './schema'
 
-const state = (): TabsState => ({
-  order: ['Sheet1', 'Sheet2'],
-  active: 'Sheet1',
-  saved: { Sheet1: { A1: 'a' }, Sheet2: { A1: 'b' } },
+const make = (): Sheet => ({
+  ...initialSheet,
+  cells: { A1: 'live' },
+  tabs: {
+    order: ['Sheet1', 'Sheet2'],
+    active: 'Sheet1',
+    saved: {
+      Sheet1: { ...blankBundle(), cells: { A1: 'a' } },
+      Sheet2: { ...blankBundle(), cells: { A1: 'b' } },
+    },
+  },
 })
 
+interface Stub { reset?: Sheet; replace?: { path: string; value: unknown } }
+const stubOps = (s: Stub) => ({
+  reset: (v: Sheet) => { s.reset = v },
+  replace: (path: string, value: unknown) => { s.replace = { path, value } },
+}) as never
+
 describe('tabActions', () => {
-  it('switchTab swaps active and replaces cells', () => {
-    const s = state()
-    let next: TabsState | null = null
-    let replaced: Record<string, string> | null = null
-    const a = tabActions(s, (n) => { next = n }, { A1: 'live' }, (c) => { replaced = c })
-    a.switchTab('Sheet2')
-    expect(next!.active).toBe('Sheet2')
-    expect(next!.saved.Sheet1).toEqual({ A1: 'live' })
-    expect(replaced).toEqual({ A1: 'b' })
+  it('switchTab swaps active, snapshots current bundle, hydrates target', () => {
+    const sheet = make()
+    const s: Stub = {}
+    tabActions(sheet, stubOps(s)).switchTab('Sheet2')
+    expect(s.reset!.tabs.active).toBe('Sheet2')
+    expect(s.reset!.tabs.saved.Sheet1.cells).toEqual({ A1: 'live' })
+    expect(s.reset!.cells).toEqual({ A1: 'b' })
   })
-  it('renameSheet preserves cells under new key', () => {
-    const s = state()
-    let next: TabsState | null = null
-    const a = tabActions(s, (n) => { next = n }, { A1: 'live' }, () => {})
-    a.renameSheet('Sheet1', 'Foo')
-    expect(next!.order).toEqual(['Foo', 'Sheet2'])
-    expect(next!.saved.Foo).toEqual({ A1: 'a' })
-    expect(next!.saved.Sheet1).toBeUndefined()
+  it('renameSheet preserves bundle under new key (no reset)', () => {
+    const sheet = make()
+    const s: Stub = {}
+    tabActions(sheet, stubOps(s)).renameSheet('Sheet1', 'Foo')
+    const tabs = (s.replace!.value as Sheet['tabs'])
+    expect(tabs.order).toEqual(['Foo', 'Sheet2'])
+    expect(tabs.saved.Foo.cells).toEqual({ A1: 'live' })
+    expect(tabs.saved.Sheet1).toBeUndefined()
   })
-  it('duplicateSheet copies cells to a new uniquely-named tab', () => {
-    const s = state()
-    let next: TabsState | null = null
-    const a = tabActions(s, (n) => { next = n }, { A1: 'live' }, () => {})
-    a.duplicateSheet('Sheet2')
-    expect(next!.order).toContain('Sheet3')
-    expect(next!.saved.Sheet3).toEqual({ A1: 'b' })
+  it('duplicateSheet copies bundle to uniquely-named tab', () => {
+    const sheet = make()
+    const s: Stub = {}
+    tabActions(sheet, stubOps(s)).duplicateSheet('Sheet2')
+    expect(s.reset!.tabs.order).toContain('Sheet3')
+    expect(s.reset!.tabs.saved.Sheet3.cells).toEqual({ A1: 'b' })
   })
   it('deleteSheet refuses last sheet', () => {
-    const single: TabsState = { order: ['Only'], active: 'Only', saved: { Only: {} } }
-    let called = false
-    const a = tabActions(single, () => { called = true }, {}, () => {})
-    a.deleteSheet('Only')
-    expect(called).toBe(false)
+    const sheet: Sheet = { ...initialSheet, tabs: { order: ['Only'], active: 'Only', saved: { Only: blankBundle() } } }
+    const s: Stub = {}
+    tabActions(sheet, stubOps(s)).deleteSheet('Only')
+    expect(s.reset).toBeUndefined()
   })
 })

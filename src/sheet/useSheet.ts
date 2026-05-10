@@ -32,8 +32,8 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void } 
   const cond = useCondFormat(sheet.condFormat, ops)
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
-  const tabs = useTabs(sheet.tabs, sheet.cells, ops)
-  const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats, validation: sheet.validation, condFormat: sheet.condFormat, freeze: sheet.freeze, hidden: sheet.hidden, tabs: sheet.tabs, colWidths: sheet.colWidths }))
+  const tabs = useTabs(sheet.tabs, ops)
+  const tabFns = tabActions(sheet, ops)
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
