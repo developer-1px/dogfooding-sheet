@@ -6,6 +6,7 @@ export const ROW_COUNT = 20
 
 export const SheetSchema = z.object({
   cells: z.record(z.string(), z.string()),
+  notes: z.record(z.string(), z.string()).default({}),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -17,4 +18,5 @@ export const initialSheet: Sheet = {
     A4: 'Milk', B4: '1', C4: '3.00', D4: '=B4*C4',
     A6: 'Sum', D6: '=SUM(D2:D4)',
   },
+  notes: {},
 }
