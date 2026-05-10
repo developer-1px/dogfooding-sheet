@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import { useDialogPattern } from '@p/aria-kernel/patterns'
 import { cellKey } from './schema'
 import { useFind } from './useFind'
 
@@ -20,9 +21,11 @@ const cellIdToKey = (id: string): string | null => {
 export function Find({ open, mode, onClose, cells, display, onJump, writeCell }: Props) {
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
-  const inputRef = useRef<HTMLInputElement | null>(null)
 
-  useEffect(() => { if (open) inputRef.current?.focus() }, [open, mode])
+  const { rootProps } = useDialogPattern({
+    open, modal: false,
+    label: mode === 'replace' ? '찾기 및 바꾸기' : '찾기',
+  })
 
   const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump })
 
@@ -43,9 +46,8 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
   }
 
   return (
-    <div className="find-bar" role="dialog" aria-label={mode === 'replace' ? '찾기 및 바꾸기' : '찾기'}>
+    <div {...rootProps} className="find-bar">
       <input
-        ref={inputRef}
         value={q}
         onChange={(e) => { setQ(e.target.value); resetIdx() }}
         onKeyDown={(e) => {
