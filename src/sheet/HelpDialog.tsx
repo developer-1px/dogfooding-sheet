@@ -7,7 +7,7 @@ interface Props {
 
 const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + Z', '실행 취소'],
-  ['Ctrl/⌘ + Shift + Z', '다시 실행'],
+  ['Ctrl/⌘ + Shift + Z / Y', '다시 실행'],
   ['Ctrl/⌘ + C / X / V', '복사 / 잘라내기 / 붙여넣기'],
   ['Ctrl/⌘ + B / I / U', '굵게 / 기울임 / 밑줄'],
   ['Ctrl/⌘ + S', 'CSV 내보내기'],

@@ -54,11 +54,8 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         ;(ck === 'd' ? fillDown : fillRight)(selectedIds, sheet.cells, writeCell)
         return
       }
-      if (mod && ck === 'z') {
-        e.preventDefault()
-        e.shiftKey ? ops.redo() : ops.undo()
-        return
-      }
+      if (mod && ck === 'z') { e.preventDefault(); e.shiftKey ? ops.redo() : ops.undo(); return }
+      if (mod && ck === 'y') { e.preventDefault(); ops.redo(); return }
       const p = focusId ? parseCellId(focusId) : null
       if (!p || !focusId) return
       const k = cellKey(p.col, p.row)
