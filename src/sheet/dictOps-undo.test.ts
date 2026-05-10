@@ -53,6 +53,22 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     expect(apple.className, 'Apple bold should survive — surgical /styles/<key> patch').toContain('bold')
   })
 
+  it('Cmd+X (cut) on multi-cell selection is a single undo entry', async () => {
+    await act(async () => root.render(createElement(App)))
+    const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
+    act(() => click(apple))
+    act(() => {
+      milk.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0, shiftKey: true }))
+      milk.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, shiftKey: true }))
+    })
+    act(() => press('x', { ctrlKey: true }))
+    expect(cellByText('Apple')).toBeUndefined()
+    expect(cellByText('Milk')).toBeUndefined()
+    act(() => press('z', { ctrlKey: true }))
+    expect(cellByText('Apple')).toBeDefined()
+    expect(cellByText('Milk')).toBeDefined()
+  })
+
   it('Cmd+D fillDown across N cells is a single undo entry', async () => {
     await act(async () => root.render(createElement(App)))
     const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
