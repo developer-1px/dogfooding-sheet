@@ -32,6 +32,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
   const cond = useCondFormat(sheet.condFormat, ops)
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
+  const [showFormulas, setShowFormulas] = useState(false)
   const tabs = useTabs(sheet.tabs, ops)
   const tabFns = tabActions(sheet, ops)
 
@@ -45,7 +46,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
 
   const edit = useEditState({ cells: sheet.cells, writeCell })
 
-  const display = (k: string) => applyFormat(evaluateCell(sheet.cells, sheet.cells[k] ?? ''), fmt.formatOf(k))
+  const display = (k: string) => showFormulas ? (sheet.cells[k] ?? '') : applyFormat(evaluateCell(sheet.cells, sheet.cells[k] ?? ''), fmt.formatOf(k))
   const data = buildData((k) => display(k))
   data.meta = { ...data.meta, focus: edit.focusId }
   for (const id of selectedIds) data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
@@ -72,6 +73,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
     setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
+    toggleShowFormulas: () => setShowFormulas((v) => !v),
   })
 
   return {
@@ -82,6 +84,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     helpOpen, setHelpOpen,
+    showFormulas, toggleShowFormulas: () => setShowFormulas((v) => !v),
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,

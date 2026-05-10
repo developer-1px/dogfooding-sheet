@@ -27,6 +27,7 @@ export interface GlobalShortcutCtx {
   applyFormat?: (key: 'plain' | 'currency' | 'percent' | 'date') => void
   editNote?: () => void
   insertLink?: () => void
+  toggleShowFormulas?: () => void
 }
 
 const targetIds = (c: GlobalShortcutCtx) =>
@@ -47,6 +48,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('alt+shift+5', () => get().toggleStrike())
   useShortcut('mod+g', () => get().openGoto())
   useShortcut('mod+k', () => get().insertLink?.())
+  useShortcut('mod+`', () => get().toggleShowFormulas?.())
   useShortcut('mod+a', () => get().setSelectedIds(idsForAll(ROW_COUNT)))
   useShortcut('mod+pageup', () => get().switchTab?.(-1))
   useShortcut('mod+pagedown', () => get().switchTab?.(1))
