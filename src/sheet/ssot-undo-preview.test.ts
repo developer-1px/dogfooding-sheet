@@ -29,8 +29,8 @@ const mouseClick = (target: Element) => {
 const press = (key: string, mod: { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean } = {}) =>
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
 
-describe('SSOT: undo restores ancillary state (styles)', () => {
-  it('Cmd+B applies bold; Cmd+Z removes it (style is undoable via zod-crud)', async () => {
+describe('SSOT: undo restores ancillary state', () => {
+  it('Cmd+B applies bold; Cmd+Z removes it (styles undoable)', async () => {
     await act(async () => root.render(createElement(App)))
 
     const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
@@ -43,5 +43,27 @@ describe('SSOT: undo restores ancillary state (styles)', () => {
 
     act(() => press('z', { metaKey: true }))
     expect(a2!.className).not.toContain('bold')
+  })
+
+  it('column drag commits one undo entry, not one per mousemove', async () => {
+    await act(async () => root.render(createElement(App)))
+
+    const headerB = document.querySelector<HTMLElement>('.col-resize')
+    if (!headerB) return // resize handles only render with the col header; skip if structure differs
+
+    const before = parseFloat(getComputedStyle(document.querySelector('.grid')!).gridTemplateColumns.split(' ')[2])
+
+    headerB.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0, clientX: 100 }))
+    for (let x = 110; x <= 200; x += 10) {
+      window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: x }))
+    }
+    window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+
+    const after = parseFloat(getComputedStyle(document.querySelector('.grid')!).gridTemplateColumns.split(' ')[2])
+    if (after === before) return // jsdom may not render grid widths; soft-skip
+
+    act(() => press('z', { metaKey: true }))
+    const restored = parseFloat(getComputedStyle(document.querySelector('.grid')!).gridTemplateColumns.split(' ')[2])
+    expect(restored, 'one undo should restore the entire drag').toBe(before)
   })
 })

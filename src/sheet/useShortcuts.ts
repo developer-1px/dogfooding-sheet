@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { JsonOps } from 'zod-crud'
+import { useShortcut } from '@p/aria-kernel/key'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
@@ -69,11 +70,12 @@ export function useShortcuts(args: Args) {
       if (!p || !focusId) return
       const k = cellKey(p.col, p.row), ids = selectedIds.length > 0 ? selectedIds : [focusId]
 
-      if (mod && (ck === 'c' || ck === 'x')) { e.preventDefault(); copyOrCut(ids, ck === 'x', sheet.cells, writeCell); return }
-      if (mod && ck === 'v') { e.preventDefault(); pasteAt(k, p, ROW_COUNT, writeCell); return }
-      if (e.key === 'Delete' || e.key === 'Backspace') { ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') }); e.preventDefault(); return }
       const ae = document.activeElement as HTMLElement | null
       if ((ae?.tagName === 'INPUT' || ae?.tagName === 'TEXTAREA') && !ae.classList.contains('cell-input')) return
+      if (mod && (ck === 'c' || ck === 'x')) { e.preventDefault(); copyOrCut(ids, ck === 'x', sheet.cells, writeCell); return }
+      if (mod && ck === 'v') { e.preventDefault(); pasteAt(k, p, ROW_COUNT, writeCell); return }
+      // Backspace/Delete handled below via useShortcut (aria-kernel) — its built-in editable-guard
+      // ensures FormulaBar / prompt inputs aren't hijacked.
       if (e.key === 'F9' && ref.current.display) { e.preventDefault(); freezeFormulas(ids, sheet.cells, ref.current.display, writeCell); return }
       if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); e.stopPropagation(); return }
       if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
@@ -81,4 +83,18 @@ export function useShortcuts(args: Args) {
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
   }, [])
+
+  // Cell-clear via aria-kernel useShortcut. Built-in editable-guard skips when focus is in any
+  // input/textarea/contenteditable (FormulaBar, prompt dialogs, cell input), preventing the
+  // hijack class where Backspace inside a side-input would clear the focused cell.
+  const clearFocused = () => {
+    const a = ref.current
+    const ids = a.selectedIds.length > 0 ? a.selectedIds : (a.focusId ? [a.focusId] : [])
+    for (const id of ids) {
+      const pp = parseCellId(id)
+      if (pp) a.writeCell(cellKey(pp.col, pp.row), '')
+    }
+  }
+  useShortcut('Backspace', clearFocused)
+  useShortcut('Delete', clearFocused)
 }
