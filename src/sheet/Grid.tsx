@@ -8,22 +8,18 @@ import { ContextMenu } from './ContextMenu'
 import { useCellMenu } from './useCellMenu'
 import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
-import { isFillCorner } from './fillCorner'
+import { isFillCorner, rectToIdSet } from './fillCorner'
+import { styleToProps } from './useStyles'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, sortByCol })
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
-  const previewIds = new Set<string>()
-  if (fill.preview) {
-    for (let r = fill.preview.rMin; r <= fill.preview.rMax; r++) {
-      for (let c = fill.preview.cMin; c <= fill.preview.cMax; c++) previewIds.add(`r${r}-${COL_LETTERS[c]}`)
-    }
-  }
+  const previewIds = rectToIdSet(fill.preview)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -59,7 +55,10 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
       {dataRows.map((row, rIdx) => (
         <div key={row.id} {...rowProps(row.id)} className="grid-row" style={{ gridTemplateColumns: gridTemplate }}>
           <span className="row-header" onClick={() => setSelectedIds(idsForRow(rIdx))}>{rIdx + 1}</span>
-          {row.cells.map((cell) => (
+          {row.cells.map((cell) => {
+            const m = /^r(\d+)-([A-J])$/.exec(cell.id)
+            const k = m ? `${m[2]}${Number(m[1]) + 1}` : ''
+            return (
             <Cell
               key={cell.id}
               cellProps={cellProps(cell.id)}
@@ -68,6 +67,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
               focused={focusId === cell.id}
               highlighted={hiSet.has(cell.id)}
               isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
+              styleClass={styleToProps(styleOf(k)).className}
               editing={editing === cell.id}
               draft={draft}
               setDraft={setDraft}
@@ -82,7 +82,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
               onContextMenu={(e) => cellMenu.open(e, cell.id)}
               ref={editing === cell.id ? inputRef : null}
             />
-          ))}
+          )})}
         </div>
       ))}
       {cellMenu.menu && (

@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from './csv'
 import type { Format } from './useFormats'
+import type { CellStyle } from './useStyles'
 
 interface Props {
   display: (k: string) => string
@@ -11,6 +12,8 @@ interface Props {
   insertRow: (atRow: number) => void
   deleteRow: (atRow: number) => void
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
+  updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
+  styleOf: (k: string) => CellStyle | undefined
 }
 
 const cellIdToKey = (id: string): string => {
@@ -18,7 +21,7 @@ const cellIdToKey = (id: string): string => {
   return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
 
   const onExport = () => downloadFile('sheet.csv', exportCsv((k) => display(k)))
@@ -26,10 +29,17 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
 
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
-  const applyF = (f: Format) => {
+  const targetKeys = (): string[] => {
     const ids = selectedIds.length > 0 ? selectedIds : (focusKey ? [focusKey] : [])
-    setFormat(ids.map((id) => id.includes('-') ? cellIdToKey(id) : id), f)
+    return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
   }
+  const applyF = (f: Format) => setFormat(targetKeys(), f)
+  const toggle = (k: 'b' | 'i') => {
+    const keys = targetKeys()
+    const cur = focusKey ? styleOf(focusKey)?.[k] : undefined
+    updateStyle(keys, { [k]: !cur })
+  }
+  const setAlign = (a: CellStyle['a']) => updateStyle(targetKeys(), { a })
 
   return (
     <>
@@ -37,6 +47,11 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => deleteRow(focusRow)} title="현재 행 삭제">−행</button>
       <button onClick={() => focus && sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button>
       <button onClick={() => focus && sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
+      <button onClick={() => toggle('b')} title="굵게"><b>B</b></button>
+      <button onClick={() => toggle('i')} title="기울임"><i>I</i></button>
+      <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
+      <button onClick={() => setAlign('center')} title="가운데 정렬">⇔</button>
+      <button onClick={() => setAlign('right')} title="오른쪽 정렬">⇥</button>
       <button onClick={() => applyF('currency')} title="통화">$</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>

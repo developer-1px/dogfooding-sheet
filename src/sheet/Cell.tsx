@@ -20,13 +20,14 @@ interface Props {
   isFillCorner: boolean
   previewing: boolean
   onFillHandleMouseDown: (e: React.MouseEvent) => void
+  styleClass: string
 }
 
 export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
   return (
     <span
       {...p.cellProps}
-      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}`}
+      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}

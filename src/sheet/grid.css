@@ -25,6 +25,11 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cell.numeric { text-align: right; font-variant-numeric: tabular-nums; }
+.cell.bold { font-weight: 700; }
+.cell.italic { font-style: italic; }
+.cell.align-left { text-align: left; }
+.cell.align-center { text-align: center; }
+.cell.align-right { text-align: right; }
 .cell.focused { outline: 2px solid #1a73e8; outline-offset: -2px; z-index: 1; }
 .cell.selected { background: rgba(26, 115, 232, .1); }
 .cell.ref-hi { outline: 2px dashed #34a853; outline-offset: -2px; background: rgba(52, 168, 83, .08); }

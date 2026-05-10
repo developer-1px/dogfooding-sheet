@@ -5,6 +5,7 @@ import { evaluateCell } from './formula'
 import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './useFormats'
+import { useStyles } from './useStyles'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp } from './rowOps'
 import { sortByColumn } from './sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -17,6 +18,7 @@ export function useSheet() {
   const [draft, setDraft] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const fmt = useFormats()
+  const styles = useStyles()
   const find = useFindState()
   const tabs = useTabs(sheet.cells)
   const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c }))
@@ -76,6 +78,7 @@ export function useSheet() {
     highlightedIds: highlightedIdsFor(editing, draft),
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
+    updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     insertRow, deleteRow, sortByCol,
     tabs: tabs.state, ...tabFns,
   }
