@@ -15,6 +15,13 @@ describe('HLOOKUP', () => {
   })
 })
 
+describe('ADDRESS', () => {
+  it('builds A1 ref from row/col', () => {
+    expect(evaluateCell({}, '=ADDRESS(5, 2)')).toBe('B5')
+    expect(evaluateCell({}, '=ADDRESS(1, 27)')).toBe('#VALUE!')
+  })
+})
+
 describe('ROW / COLUMN', () => {
   it('return ref position', () => {
     expect(evaluateCell({}, '=ROW(B5)')).toBe('5')
