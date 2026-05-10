@@ -14,6 +14,10 @@ describe('applyFormat', () => {
   it('integer rounds', () => {
     expect(applyFormat('3.7', 'integer')).toBe('4')
   })
+  it('eur / krw format with locale symbol', () => {
+    expect(applyFormat('1234', 'eur')).toContain('€')
+    expect(applyFormat('1234', 'krw')).toContain('₩')
+  })
   it('thousand groups digits', () => {
     expect(applyFormat('1234567', 'thousand')).toBe('1,234,567')
   })

@@ -86,7 +86,9 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
         title="유효성 검사 (드롭다운 목록)"
       >▾목록</button>
       <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} />
-      <button onClick={() => applyF('currency')} title="통화">$</button>
+      <button onClick={() => applyF('currency')} title="USD">$</button>
+      <button onClick={() => applyF('eur')} title="EUR">€</button>
+      <button onClick={() => applyF('krw')} title="KRW">₩</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>
       <button onClick={() => applyF('thousand')} title="1,000 천단위">1,K</button>
