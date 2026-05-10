@@ -158,6 +158,13 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
     expect(evaluateCell({}, '=ODD(4)')).toBe('5')
   })
+  it('BITAND / BITOR / BITXOR / BITLSHIFT / BITRSHIFT', () => {
+    expect(evaluateCell({}, '=BITAND(12, 10)')).toBe('8')
+    expect(evaluateCell({}, '=BITOR(12, 10)')).toBe('14')
+    expect(evaluateCell({}, '=BITXOR(12, 10)')).toBe('6')
+    expect(evaluateCell({}, '=BITLSHIFT(1, 3)')).toBe('8')
+    expect(evaluateCell({}, '=BITRSHIFT(16, 2)')).toBe('4')
+  })
   it('MROUND / QUOTIENT / SQRTPI', () => {
     expect(evaluateCell({}, '=MROUND(17, 5)')).toBe('15')
     expect(evaluateCell({}, '=MROUND(18, 5)')).toBe('20')

@@ -26,6 +26,11 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => g(a, b)))
   }
+  if (F === 'BITAND') return String(argsN.reduce((a, b) => a & b))
+  if (F === 'BITOR') return String(argsN.reduce((a, b) => a | b))
+  if (F === 'BITXOR') return String(argsN.reduce((a, b) => a ^ b))
+  if (F === 'BITLSHIFT') return String(argsN[0] << argsN[1])
+  if (F === 'BITRSHIFT') return String(argsN[0] >>> argsN[1])
   if (F === 'MROUND') { const [n, m] = argsN; return m === 0 ? '0' : String(Math.round(n / m) * m) }
   if (F === 'QUOTIENT') { const [n, d] = argsN; return d === 0 ? wrap('#DIV/0!') : String(Math.trunc(n / d)) }
   if (F === 'SQRTPI') return String(Math.sqrt(argsN[0] * Math.PI))
