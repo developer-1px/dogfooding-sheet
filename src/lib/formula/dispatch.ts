@@ -1,5 +1,6 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
-import { aggregate, largeSmall, rank, sumproduct, sample, weightAvg } from './aggregates'
+import { aggregate } from './aggregates'
+import { largeSmall, rank, sumproduct, sample, weightAvg } from './rangeOps'
 import { percentile, quartile, pairStat, trimmean, forecast } from './stats'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
