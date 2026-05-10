@@ -16,9 +16,10 @@ interface Props {
   confirm: (opts: ConfirmOptions) => Promise<boolean>
   showFormulas: boolean
   toggleShowFormulas: () => void
+  clearAllFormats: () => void
 }
 
-export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas }: Props) {
+export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, clearAllFormats }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
@@ -43,6 +44,7 @@ export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, 
     { id: 'json-export', label: 'JSON 내보내기', action: exportJson },
     { id: 'json-import', label: 'JSON 가져오기', action: () => jsonRef.current?.click() },
     { id: 'clear-all', label: '전체 셀 지우기', action: () => { confirm({ message: '모든 셀을 지우시겠습니까? (실행 취소 가능)', confirmLabel: '지우기' }).then((ok) => { if (ok) resetCells({}) }) } },
+    { id: 'clear-formats', label: '전체 서식 지우기', action: () => { confirm({ message: '모든 셀 서식·스타일·조건부 서식을 지우시겠습니까? (실행 취소 가능)', confirmLabel: '지우기' }).then((ok) => { if (ok) clearAllFormats() }) } },
   ]
   const data = fromList(items.map(({ id, label }) => ({ id, label })))
 
