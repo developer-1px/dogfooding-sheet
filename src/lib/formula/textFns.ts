@@ -36,6 +36,13 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const m = (argsT[0] ?? '').trim().match(/\S+/g)
     return String(m ? m.length : 0)
   }
+  if (F === 'OCCURS') {
+    const h = argsT[0] ?? '', n = argsT[1] ?? ''
+    if (n === '') return '0'
+    let i = 0, c = 0
+    while ((i = h.indexOf(n, i)) >= 0) { c++; i += n.length }
+    return String(c)
+  }
   if (F === 'LPAD') return wrap(argsT[0].padStart(Number(argsT[1] ?? '0'), argsT[2] || ' '))
   if (F === 'RPAD') return wrap(argsT[0].padEnd(Number(argsT[1] ?? '0'), argsT[2] || ' '))
   if (F === 'REVERSE') return wrap([...argsT[0]].reverse().join(''))

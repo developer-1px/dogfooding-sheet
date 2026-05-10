@@ -167,6 +167,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=HAMMING("karolin", "kathrin")')).toBe('3')
     expect(evaluateCell({}, '=HAMMING("abc", "abcd")')).toBe('#N/A')
   })
+  it('OCCURS counts non-overlapping occurrences', () => {
+    expect(evaluateCell({}, '=OCCURS("banana", "an")')).toBe('2')
+    expect(evaluateCell({}, '=OCCURS("aaaa", "aa")')).toBe('2')
+    expect(evaluateCell({}, '=OCCURS("hi", "")')).toBe('0')
+  })
   it('DICE bigram similarity', () => {
     expect(evaluateCell({}, '=DICE("night", "nacht")')).toBe('0.25')
     expect(Number(evaluateCell({}, '=DICE("hello", "hello")'))).toBeCloseTo(1)
