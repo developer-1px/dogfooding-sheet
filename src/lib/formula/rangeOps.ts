@@ -38,6 +38,12 @@ export function sample(rangeStr: string, cells: Record<string, string>, evalRaw:
   return vals[Math.floor(Math.random() * vals.length)]
 }
 
+/** ARRAYTOTEXT(range, [sep=", "]) — flatten non-empty values to a separated string. */
+export function arrayToText(rangeStr: string, sep: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
+  const refs = collectRefs(rangeStr)
+  return refs.map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '').join(sep)
+}
+
 export function rank(value: number, rangeStr: string, order: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
   if (!nums.includes(value)) return '#N/A'

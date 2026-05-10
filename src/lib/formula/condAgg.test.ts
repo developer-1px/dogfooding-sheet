@@ -129,6 +129,14 @@ describe('WEIGHTAVG', () => {
   })
 })
 
+describe('ARRAYTOTEXT', () => {
+  it('joins non-empty values', () => {
+    const cells = { A1: 'red', A2: '', A3: 'blue', A4: 'green' }
+    expect(evaluateCell(cells, '=ARRAYTOTEXT(A1:A4)')).toBe('red, blue, green')
+    expect(evaluateCell(cells, '=ARRAYTOTEXT(A1:A4, "|")')).toBe('red|blue|green')
+  })
+})
+
 describe('SAMPLE', () => {
   it('picks one of the non-empty values', () => {
     const cells = { A1: 'a', A2: 'b', A3: '', A4: 'c' }
