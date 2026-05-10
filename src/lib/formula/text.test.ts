@@ -9,6 +9,9 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TRUE()')).toBe('1')
     expect(evaluateCell({}, '=FALSE()')).toBe('0')
   })
+  it('ENCODEURL escapes special characters', () => {
+    expect(evaluateCell({}, '=ENCODEURL("hello world & co")')).toBe('hello%20world%20%26%20co')
+  })
   it('HYPERLINK uses label when given, else URL', () => {
     expect(evaluateCell({}, '=HYPERLINK("https://example.com", "click")')).toBe('click')
     expect(evaluateCell({}, '=HYPERLINK("https://example.com")')).toBe('https://example.com')
