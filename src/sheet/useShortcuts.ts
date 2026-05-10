@@ -54,6 +54,11 @@ export function useShortcuts(args: Args) {
         const next = jumpToEdge(focusId, sheet.cells, ROW_COUNT, e.key as 'ArrowUp'); if (!next) return
         e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : setFocusId(next); return
       }
+      if (!editing && focusId && (e.key === 'PageUp' || e.key === 'PageDown')) {
+        const p = parseCellId(focusId); if (!p) return
+        const target = Math.max(0, Math.min(ROW_COUNT - 1, p.row + (e.key === 'PageUp' ? -10 : 10)))
+        setFocusId(`r${target}-${p.col}`); e.preventDefault(); return
+      }
       if (!editing && focusId && (e.key === 'Home' || e.key === 'End')) {
         const t = homeEndTarget(focusId, ROW_COUNT, e.key, mod); if (t) { setFocusId(t); e.preventDefault() }
         return
