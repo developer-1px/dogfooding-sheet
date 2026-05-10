@@ -29,6 +29,7 @@ interface Props {
   styleOf: (k: string) => CellStyle | undefined
   noteOf: (k: string) => string | undefined
   ruleOf: (k: string) => { type: 'list'; options: string[] } | undefined
+  condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
   previewIds: Set<string>
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
@@ -53,6 +54,8 @@ export function GridRow(p: Props) {
         const k = m ? `${m[2]}${Number(m[1]) + 1}` : ''
         const extra = p.freezeFirstCol && cIdx === 0 ? ' freeze-col' : ''
         const sp = styleToProps(p.styleOf(k))
+        const condBg = m ? p.condBgOf(m[2], cell.label) : undefined
+        const styleInline = condBg ? { ...sp.style, background: condBg } : sp.style
         return (
           <Cell
             key={cell.id}
@@ -63,7 +66,7 @@ export function GridRow(p: Props) {
             highlighted={p.hiSet.has(cell.id)}
             isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
             styleClass={sp.className + extra}
-            styleInline={sp.style}
+            styleInline={styleInline}
             note={p.noteOf(k)}
             validationOptions={p.ruleOf(k)?.options}
             editing={p.editing === cell.id}

@@ -49,6 +49,8 @@ export default function App() {
             setListRule={ctx.setListRule}
             clearRule={ctx.clearRule}
             openHelp={() => ctx.setHelpOpen(true)}
+            addCondRule={ctx.addCondRule}
+            clearCondRules={ctx.clearCondRules}
           />
         }
       />

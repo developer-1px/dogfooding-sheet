@@ -1,6 +1,7 @@
 import type { Format } from './useFormats'
 import type { CellStyle } from './useStyles'
 import { OverflowMenu } from './OverflowMenu'
+import { CondFmtButtons } from './CondFmtButtons'
 
 interface Props {
   display: (k: string) => string
@@ -24,6 +25,8 @@ interface Props {
   setListRule: (keys: string[], options: string[]) => void
   clearRule: (keys: string[]) => void
   openHelp: () => void
+  addCondRule: (r: { col: string; op: '>' | '<' | '=' | '!=' | 'contains'; value: string; color: string }) => void
+  clearCondRules: () => void
 }
 
 const cellIdToKey = (id: string): string => {
@@ -31,7 +34,7 @@ const cellIdToKey = (id: string): string => {
   return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp, addCondRule, clearCondRules }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => {
@@ -62,17 +65,12 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => updateStyle(targetKeys(), { bg: '', fg: '' })} title="색상 초기화">✕색</button>
       <button onClick={toggleFreezeRows} title="첫 행 고정" style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행</button>
       <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
-      <button
-        onClick={() => {
-          if (!focus) return
-          const t = window.prompt(`${focus[1]}열에서 찾을 값`, filter?.text ?? '')
-          if (t === null) return
-          if (t === '') clearFilter()
-          else applyFilter(focus[1], t)
-        }}
-        title="현재 열로 행 필터"
-        style={filter ? { background: '#e8f0fe' } : undefined}
-      >🔽필터{filter ? ` ${filter.col}` : ''}</button>
+      <button onClick={() => {
+        if (!focus) return
+        const t = window.prompt(`${focus[1]}열에서 찾을 값`, filter?.text ?? '')
+        if (t === null) return
+        if (t === '') clearFilter(); else applyFilter(focus[1], t)
+      }} title="현재 열로 행 필터" style={filter ? { background: '#e8f0fe' } : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button onClick={clearFilter} title="필터 해제">✕</button>}
       {hasHidden && <button onClick={showAll} title="숨김 행/열 모두 표시">👁모두표시</button>}
       <button
@@ -87,6 +85,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
         }}
         title="유효성 검사 (드롭다운 목록)"
       >▾목록</button>
+      <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} />
       <button onClick={() => applyF('currency')} title="통화">$</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>

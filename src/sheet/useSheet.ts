@@ -11,6 +11,7 @@ import { useFilter, hiddenRows } from './useFilter'
 import { useHidden } from './useHidden'
 import { useNotes } from './useNotes'
 import { useValidation } from './useValidation'
+import { useCondFormat } from './useCondFormat'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp } from '../lib/rowOps'
 import { sortByColumn } from '../lib/sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -27,6 +28,7 @@ export function useSheet() {
   const hidden = useHidden()
   const notes = useNotes()
   const validation = useValidation()
+  const cond = useCondFormat()
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
   const tabs = useTabs(sheet.cells)
@@ -77,6 +79,7 @@ export function useSheet() {
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
     setNote: notes.setNote, noteOf: notes.noteOf,
     setListRule: validation.setListRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
+    condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, sortByCol,
     tabs: tabs.state, ...tabFns,
   }
