@@ -50,11 +50,9 @@ describe('spreadsheet preview interactions', () => {
 
     expect(a5).not.toBeUndefined()
 
-    act(() => {
-      mouseClick(a5)
-      for (const key of 'Hello') typeKey(key)
-      typeKey('Enter')
-    })
+    act(() => mouseClick(a5))
+    for (const key of 'Hello') act(() => typeKey(key))
+    act(() => typeKey('Enter'))
 
     expect(a5.textContent).toContain('Hello')
   })

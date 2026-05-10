@@ -91,6 +91,9 @@ export function useShortcuts(args: Args) {
         return
       }
       if (e.key === 'Delete' || e.key === 'Backspace') { ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') }); e.preventDefault(); return }
+      const ae = document.activeElement
+      const inForm = (ae instanceof HTMLInputElement || ae instanceof HTMLTextAreaElement) && !ae.classList.contains('cell-input')
+      if (inForm) return
       if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); return }
       if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault() }
     }
