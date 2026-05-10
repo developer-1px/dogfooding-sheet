@@ -35,6 +35,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       setCheckboxRule={ctx.setCheckboxRule}
       clearRule={ctx.clearRule}
       openHelp={() => ctx.setHelpOpen(true)}
+      insertLink={ctx.insertLink}
       addCondRule={ctx.addCondRule}
       clearCondRules={ctx.clearCondRules}
       sheet={ctx.sheet}

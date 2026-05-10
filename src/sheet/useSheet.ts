@@ -87,7 +87,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     hiddenRowSet: hiddenRows(filter.filter, ROW_COUNT, display),
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
-    setNote: notes.setNote, noteOf: notes.noteOf, editNote: opts.openNote ?? (() => {}),
+    setNote: notes.setNote, noteOf: notes.noteOf, editNote: opts.openNote ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
     setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,
