@@ -1,8 +1,6 @@
-import { COL_LETTERS, ROW_COUNT, parseCellId, cellKey } from './schema'
+import { COL_LETTERS, parseCellId, cellKey, colIndex } from './a1'
 
 export interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
-
-const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 
 export const formatRect = (rect: Rect): string => {
   const a = `${COL_LETTERS[rect.cMin]}${rect.rMin + 1}`
@@ -15,7 +13,7 @@ export function rectFromIds(ids: string[]): Rect | null {
   if (cells.length === 0) return null
   let rMin = Infinity, rMax = -Infinity, cMin = Infinity, cMax = -Infinity
   for (const { col, row } of cells) {
-    const ci = colIdx(col)
+    const ci = colIndex(col)
     if (row < rMin) rMin = row
     if (row > rMax) rMax = row
     if (ci < cMin) cMin = ci
@@ -40,15 +38,18 @@ export function pasteTsv(
   tsv: string,
   anchor: { col: string; row: number },
   write: (k: string, v: string) => void,
+  bounds: { maxRow?: number; maxCol?: number } = {},
 ) {
+  const maxRow = bounds.maxRow ?? Infinity
+  const maxCol = bounds.maxCol ?? COL_LETTERS.length
   const rows = tsv.replace(/\r\n?/g, '\n').replace(/\n$/, '').split('\n')
-  const c0 = colIdx(anchor.col)
+  const c0 = colIndex(anchor.col)
   for (let r = 0; r < rows.length; r++) {
     const cols = rows[r].split('\t')
     for (let c = 0; c < cols.length; c++) {
       const tr = anchor.row + r
       const tc = c0 + c
-      if (tr >= ROW_COUNT || tc >= COL_LETTERS.length) continue
+      if (tr >= maxRow || tc >= maxCol) continue
       write(cellKey(COL_LETTERS[tc], tr), cols[c])
     }
   }

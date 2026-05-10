@@ -1,5 +1,5 @@
 import { COL_LETTERS } from './schema'
-import { rectFromIds, type Rect } from './clipboard'
+import { rectFromIds, type Rect } from '../lib/clipboard'
 
 export function rectToIdSet(rect: Rect | null): Set<string> {
   const out = new Set<string>()

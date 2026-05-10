@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
-import { cellKey, parseCellId, type Sheet } from './schema'
-import { rectFromIds, rectToTsv, pasteTsv } from './clipboard'
+import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
+import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
 
 interface Args {
   editing: string | null
@@ -56,7 +56,7 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       if (mod && ck === 'v') {
         e.preventDefault()
         navigator.clipboard?.readText().then((t) => {
-          if (t.includes('\t') || t.includes('\n')) pasteTsv(t, p, writeCell)
+          if (t.includes('\t') || t.includes('\n')) pasteTsv(t, p, writeCell, { maxRow: ROW_COUNT })
           else writeCell(k, t)
         }).catch(() => {})
         return

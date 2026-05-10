@@ -1,5 +1,5 @@
 import { COL_LETTERS, cellKey } from './schema'
-import type { Rect } from './clipboard'
+import type { Rect } from '../lib/clipboard'
 import { extendSeries } from '../lib/series'
 
 export function applyFill(
