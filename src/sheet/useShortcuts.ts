@@ -3,7 +3,7 @@ import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
 import { fillDown, fillRight } from '../lib/fillDown'
-import { jumpToEdge, idsBetween } from '../lib/jumpEdge'
+import { jumpToEdge, idsBetween, homeEndTarget } from '../lib/jumpEdge'
 import { idsForCol, idsForRow } from '../lib/range'
 
 interface Args {
@@ -51,24 +51,18 @@ export function useShortcuts(args: Args) {
         return
       }
       if (mod && !editing && /^Arrow(Up|Down|Left|Right)$/.test(e.key) && focusId) {
-        const next = jumpToEdge(focusId, sheet.cells, ROW_COUNT, e.key as 'ArrowUp')
-        if (!next) return
-        if (e.shiftKey) setSelectedIds(idsBetween(focusId, next))
-        else setFocusId(next)
-        e.preventDefault()
+        const next = jumpToEdge(focusId, sheet.cells, ROW_COUNT, e.key as 'ArrowUp'); if (!next) return
+        e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : setFocusId(next); return
+      }
+      if (!editing && focusId && (e.key === 'Home' || e.key === 'End')) {
+        const t = homeEndTarget(focusId, ROW_COUNT, e.key, mod); if (t) { setFocusId(t); e.preventDefault() }
         return
       }
       if (!editing && focusId && e.key === ' ' && (e.ctrlKey !== e.shiftKey)) {
         const p = parseCellId(focusId); if (!p) return
-        setSelectedIds(e.ctrlKey ? idsForCol(p.col, ROW_COUNT) : idsForRow(p.row))
-        e.preventDefault()
-        return
+        setSelectedIds(e.ctrlKey ? idsForCol(p.col, ROW_COUNT) : idsForRow(p.row)); e.preventDefault(); return
       }
-      if (e.key === 'Escape' && !editing && selectedIds.length > 0) {
-        setSelectedIds([])
-        e.preventDefault()
-        return
-      }
+      if (e.key === 'Escape' && !editing && selectedIds.length > 0) { setSelectedIds([]); e.preventDefault(); return }
       if (editing) return
       if (mod && (ck === 'd' || ck === 'r') && selectedIds.length > 1) { e.preventDefault(); (ck === 'd' ? fillDown : fillRight)(selectedIds, sheet.cells, writeCell); return }
       if (mod && ck === 'z') { e.preventDefault(); e.shiftKey ? ops.redo() : ops.undo(); return }

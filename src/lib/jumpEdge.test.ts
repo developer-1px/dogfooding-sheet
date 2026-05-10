@@ -14,7 +14,20 @@ describe('jumpToEdge', () => {
   })
 })
 
-import { idsBetween } from './jumpEdge'
+import { idsBetween, homeEndTarget } from './jumpEdge'
+describe('homeEndTarget', () => {
+  it('Home goes to col A in same row', () => {
+    expect(homeEndTarget('r3-E', 20, 'Home', false)).toBe('r3-A')
+  })
+  it('End goes to col J in same row', () => {
+    expect(homeEndTarget('r3-E', 20, 'End', false)).toBe('r3-J')
+  })
+  it('Ctrl+Home = A1, Ctrl+End = J{last}', () => {
+    expect(homeEndTarget('r3-E', 20, 'Home', true)).toBe('r0-A')
+    expect(homeEndTarget('r3-E', 20, 'End', true)).toBe('r19-J')
+  })
+})
+
 describe('idsBetween', () => {
   it('lists rectangle inclusive', () => {
     expect(idsBetween('r0-A', 'r1-B')).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])

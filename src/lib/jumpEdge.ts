@@ -19,6 +19,15 @@ export function jumpToEdge(
   return `r${r}-${COL_LETTERS[c]}`
 }
 
+/** Home / End / Ctrl+Home / Ctrl+End target cell id. */
+export function homeEndTarget(focusId: string, rowCount: number, key: 'Home' | 'End', ctrl: boolean): string | null {
+  const p = parseCellId(focusId); if (!p) return null
+  const lastIdx = COL_LETTERS.length - 1
+  const targetRow = ctrl ? (key === 'Home' ? 0 : rowCount - 1) : p.row
+  const targetCol = key === 'Home' ? COL_LETTERS[0] : COL_LETTERS[lastIdx]
+  return `r${targetRow}-${targetCol}`
+}
+
 /** Cell ids covering the rectangular area between two cells (inclusive). */
 export function idsBetween(a: string, b: string): string[] {
   const A = parseCellId(a), B = parseCellId(b)
