@@ -14,6 +14,7 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'LOG') return String(argsN.length > 1 ? Math.log(argsN[0]) / Math.log(argsN[1]) : Math.log10(argsN[0]))
   if (F === 'LOG10') return String(Math.log10(argsN[0]))
   if (F === 'LOG2') return String(Math.log2(argsN[0]))
+  if (F === 'MAGNITUDE') { const n = Math.abs(argsN[0]); return String(n === 0 ? 0 : Math.floor(Math.log10(n))) }
   if (F === 'EXP') return String(Math.exp(argsN[0]))
   if (F === 'EXP10') return String(10 ** argsN[0])
   if (F === 'EXP2') return String(2 ** argsN[0])
