@@ -170,6 +170,15 @@ describe('RANGESORT', () => {
   })
 })
 
+describe('PERCENTRANK', () => {
+  it('returns fraction of values less than given value', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }
+    expect(evaluateCell(cells, '=PERCENTRANK(A1:A5, 3)')).toBe('0.5')
+    expect(evaluateCell(cells, '=PERCENTRANK(A1:A5, 1)')).toBe('0')
+    expect(evaluateCell(cells, '=PERCENTRANK(A1:A5, 5)')).toBe('1')
+  })
+})
+
 describe('RANGEUNIQUE', () => {
   it('returns unique values in first-occurrence order', () => {
     const cells = { A1: 'b', A2: 'a', A3: 'b', A4: 'c', A5: 'a' }

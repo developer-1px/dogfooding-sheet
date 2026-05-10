@@ -53,6 +53,14 @@ export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell
   return String(lo === hi ? nums[lo] : nums[lo] + (nums[hi] - nums[lo]) * (idx - lo))
 }
 
+/** PERCENTRANK(range, value) — fraction of values strictly less than value, in [0,1]. */
+export function percentRank(rangeStr: string, value: number, numFromCell: NumFromCell): string {
+  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
+  if (nums.length === 0) return '#N/A'
+  if (value < Math.min(...nums) || value > Math.max(...nums)) return '#N/A'
+  return String(nums.filter((n) => n < value).length / (nums.length - 1 || 1))
+}
+
 /** QUARTILE(range, q) — q in 0..4 mapped to PERCENTILE 0/.25/.5/.75/1. */
 export function quartile(rangeStr: string, q: number, numFromCell: NumFromCell): string {
   if (q < 0 || q > 4 || !Number.isInteger(q)) return '#NUM!'
