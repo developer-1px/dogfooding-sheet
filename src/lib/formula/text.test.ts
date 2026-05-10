@@ -158,6 +158,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
     expect(evaluateCell({}, '=ODD(4)')).toBe('5')
   })
+  it('ROMAN / ARABIC round-trip', () => {
+    expect(evaluateCell({}, '=ROMAN(1994)')).toBe('MCMXCIV')
+    expect(evaluateCell({}, '=ARABIC("MCMXCIV")')).toBe('1994')
+    expect(evaluateCell({}, '=ROMAN(4000)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ARABIC("XYZ")')).toBe('#VALUE!')
+  })
   it('BITAND / BITOR / BITXOR / BITLSHIFT / BITRSHIFT', () => {
     expect(evaluateCell({}, '=BITAND(12, 10)')).toBe('8')
     expect(evaluateCell({}, '=BITOR(12, 10)')).toBe('14')

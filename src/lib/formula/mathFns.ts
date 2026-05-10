@@ -26,6 +26,25 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => g(a, b)))
   }
+  if (F === 'ROMAN') {
+    let n = Math.floor(argsN[0])
+    if (n < 0 || n > 3999) return wrap('#VALUE!')
+    const map: Array<[number, string]> = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]
+    let out = ''
+    for (const [v, s] of map) while (n >= v) { out += s; n -= v }
+    return wrap(out)
+  }
+  if (F === 'ARABIC') {
+    const s = (argsT[0] ?? '').toUpperCase()
+    if (!/^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(s)) return wrap('#VALUE!')
+    const m: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }
+    let total = 0
+    for (let i = 0; i < s.length; i++) {
+      const cur = m[s[i]], next = m[s[i + 1]]
+      total += next > cur ? -cur : cur
+    }
+    return String(total)
+  }
   if (F === 'BITAND') return String(argsN.reduce((a, b) => a & b))
   if (F === 'BITOR') return String(argsN.reduce((a, b) => a | b))
   if (F === 'BITXOR') return String(argsN.reduce((a, b) => a ^ b))
