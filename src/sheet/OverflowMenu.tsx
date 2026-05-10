@@ -14,9 +14,11 @@ interface Props {
   resetSheet: (s: Sheet) => void
   resetCells: (cells: Record<string, string>) => void
   confirm: (opts: ConfirmOptions) => Promise<boolean>
+  showFormulas: boolean
+  toggleShowFormulas: () => void
 }
 
-export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, resetSheet, resetCells, confirm }: Props) {
+export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
@@ -31,6 +33,7 @@ export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, 
 
   const items = [
     { id: 'help', label: '도움말 (F1)', action: openHelp },
+    { id: 'show-formulas', label: `${showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)`, action: toggleShowFormulas },
     { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', action: insertLink },
     { id: 'csv-export', label: 'CSV 내보내기', action: exportCsvFile },
     { id: 'csv-import', label: 'CSV 가져오기', action: () => fileRef.current?.click() },

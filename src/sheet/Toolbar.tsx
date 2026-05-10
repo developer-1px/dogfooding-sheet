@@ -43,13 +43,11 @@ interface Props {
   resetCells: (c: Record<string, string>) => void
   ask: (opts: PromptOptions) => Promise<string | null>
   confirm: (opts: ConfirmOptions) => Promise<boolean>
-  undo: () => void
-  redo: () => void
-  canUndo: boolean
-  canRedo: boolean
+  undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean
+  showFormulas: boolean; toggleShowFormulas: () => void
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, resetCells, ask, confirm, undo, redo, canUndo, canRedo }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, resetCells, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
@@ -94,7 +92,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => { const keys = targetKeys(); if (keys.length) setCheckboxRule(keys) }} title="체크박스로 변환">☑체크</button>
       <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
       <FormatButtons apply={applyF} current={focusKey ? formatOf(focusKey) : 'plain'} />
-      <OverflowMenu display={display} writeCell={writeCell} openHelp={openHelp} insertLink={insertLink} sheet={sheet} resetSheet={resetSheet} resetCells={resetCells} confirm={confirm} />
+      <OverflowMenu display={display} writeCell={writeCell} openHelp={openHelp} insertLink={insertLink} sheet={sheet} resetSheet={resetSheet} resetCells={resetCells} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} />
     </>
   )
 }

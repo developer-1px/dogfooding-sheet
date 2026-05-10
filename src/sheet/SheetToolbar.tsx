@@ -45,6 +45,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       redo={() => ctx.ops.redo()}
       canUndo={ctx.ops.canUndo()}
       canRedo={ctx.ops.canRedo()}
+      showFormulas={ctx.showFormulas}
+      toggleShowFormulas={ctx.toggleShowFormulas}
       ask={ask}
       confirm={confirm}
     />
