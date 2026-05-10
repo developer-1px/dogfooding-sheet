@@ -25,6 +25,8 @@ interface Props {
   note?: string
   tooltip?: string
   validationOptions?: string[]
+  isCheckbox?: boolean
+  onCheckboxToggle?: () => void
   inputProps: InputProps
   selectProps: SelectProps
 }
@@ -41,7 +43,15 @@ export function Cell(p: Props) {
       onContextMenu={p.onContextMenu}
       title={p.note ?? p.tooltip}
     >
-      {p.editing ? (
+      {p.isCheckbox ? (
+        <input
+          type="checkbox"
+          className="cell-checkbox"
+          checked={p.label === 'TRUE'}
+          onChange={p.onCheckboxToggle}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ) : p.editing ? (
         p.validationOptions ? (
           <select className="cell-input" {...p.selectProps}>
             <option value="">—</option>

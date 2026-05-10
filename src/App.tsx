@@ -51,6 +51,7 @@ export default function App() {
             hasHidden={ctx.hasHidden}
             showAll={ctx.showAll}
             setListRule={ctx.setListRule}
+            setCheckboxRule={ctx.setCheckboxRule}
             clearRule={ctx.clearRule}
             openHelp={() => ctx.setHelpOpen(true)}
             addCondRule={ctx.addCondRule}

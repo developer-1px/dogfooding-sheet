@@ -27,6 +27,7 @@ interface Props {
   hasHidden: boolean
   showAll: () => void
   setListRule: (keys: string[], options: string[]) => void
+  setCheckboxRule: (keys: string[]) => void
   clearRule: (keys: string[]) => void
   openHelp: () => void
   addCondRule: (r: { col: string; op: '>' | '<' | '=' | '!=' | 'contains'; value: string; color: string }) => void
@@ -35,7 +36,7 @@ interface Props {
   resetCells: (c: Record<string, string>) => void
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp, addCondRule, clearCondRules, cells, resetCells }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, addCondRule, clearCondRules, cells, resetCells }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
@@ -81,6 +82,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
         const opts = csv.split(',').map((s) => s.trim()).filter(Boolean)
         if (opts.length === 0) clearRule(keys); else setListRule(keys, opts)
       }} title="유효성 검사 (드롭다운 목록)">▾목록</button>
+      <button onClick={() => { const keys = targetKeys(); if (keys.length) setCheckboxRule(keys) }} title="체크박스로 변환">☑체크</button>
       <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} />
       <button onClick={() => applyF('currency')} title="USD">$</button>
       <button onClick={() => applyF('eur')} title="EUR">€</button>

@@ -92,7 +92,7 @@ export function useSheet() {
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
     setNote: notes.setNote, noteOf: notes.noteOf,
-    setListRule: validation.setListRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
+    setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,
     tabs: tabs.state, ...tabFns,

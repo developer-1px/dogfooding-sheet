@@ -29,7 +29,8 @@ interface Props {
   styleOf: (k: string) => CellStyle | undefined
   noteOf: (k: string) => string | undefined
   rawOf: (k: string) => string | undefined
-  ruleOf: (k: string) => { type: 'list'; options: string[] } | undefined
+  ruleOf: (k: string) => { type: 'list'; options: string[] } | { type: 'checkbox' } | undefined
+  writeCell: (k: string, v: string) => void
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
   previewIds: Set<string>
@@ -71,7 +72,9 @@ export function GridRow(p: Props) {
             styleInline={styleInline}
             note={p.noteOf(k)}
             tooltip={p.rawOf(k)?.startsWith('=') ? p.rawOf(k) : undefined}
-            validationOptions={p.ruleOf(k)?.options}
+            validationOptions={p.ruleOf(k)?.type === 'list' ? (p.ruleOf(k) as { options: string[] }).options : undefined}
+            isCheckbox={p.ruleOf(k)?.type === 'checkbox'}
+            onCheckboxToggle={() => p.writeCell(k, p.rawOf(k) === 'TRUE' ? 'FALSE' : 'TRUE')}
             editing={p.editing === cell.id}
             draft={p.draft}
             setDraft={p.setDraft}

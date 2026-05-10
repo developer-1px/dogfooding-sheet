@@ -72,6 +72,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             noteOf={noteOf}
             rawOf={(k) => sheet.cells[k]}
             ruleOf={ruleOf}
+            writeCell={writeCell}
             condBgOf={condBgOf}
             hiSet={hiSet}
             previewIds={previewIds}
