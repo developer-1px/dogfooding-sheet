@@ -172,6 +172,14 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=COMMONPREFIX("dog", "cat")')).toBe('')
     expect(evaluateCell({}, '=COMMONSUFFIX("walking", "running")')).toBe('ing')
   })
+  it('ROT13 transforms ASCII letters', () => {
+    expect(evaluateCell({}, '=ROT13("Hello")')).toBe('Uryyb')
+    expect(evaluateCell({}, '=ROT13(ROT13("test"))')).toBe('test')
+  })
+  it('RANDSTRING produces requested length', () => {
+    expect(evaluateCell({}, '=LEN(RANDSTRING(12))')).toBe('12')
+    expect(/^[ab]+$/.test(evaluateCell({}, '=RANDSTRING(20, "ab")'))).toBe(true)
+  })
   it('SQUEEZE collapses runs of whitespace and trims', () => {
     expect(evaluateCell({}, '=SQUEEZE("  hello   world  ")')).toBe('hello world')
     expect(evaluateCell({}, '=SQUEEZE("foo  bar    baz")')).toBe('foo bar baz')

@@ -16,6 +16,14 @@ export function dispatchTextOps(F: string, argsT: string[]): string | null {
     while (i < n && a[a.length - 1 - i] === b[b.length - 1 - i]) i++
     return wrap(i === 0 ? '' : a.slice(a.length - i))
   }
+  if (F === 'ROT13') return wrap((argsT[0] ?? '').replace(/[A-Za-z]/g, (c) => String.fromCharCode(c.charCodeAt(0) + (c.toLowerCase() < 'n' ? 13 : -13))))
+  if (F === 'RANDSTRING') {
+    const n = Math.max(0, Math.floor(Number(argsT[0] ?? '8')))
+    const cs = argsT[1] || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let s = ''
+    for (let i = 0; i < n; i++) s += cs[Math.floor(Math.random() * cs.length)]
+    return wrap(s)
+  }
   if (F === 'SQUEEZE') return wrap((argsT[0] ?? '').replace(/\s+/g, ' ').trim())
   if (F === 'DEACCENT') return wrap((argsT[0] ?? '').normalize('NFD').replace(/\p{M}/gu, ''))
   if (F === 'TRUNCATE') {
