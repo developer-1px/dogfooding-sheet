@@ -20,6 +20,11 @@ describe('text functions', () => {
   it('TRIM removes whitespace', () => {
     expect(evaluateCell({}, '=TRIM("  hi  ")')).toBe('hi')
   })
+  it('REGEXMATCH / REGEXEXTRACT / REGEXREPLACE', () => {
+    expect(evaluateCell({}, '=REGEXMATCH("foo123", "\\d+")')).toBe('1')
+    expect(evaluateCell({}, '=REGEXEXTRACT("foo123bar", "\\d+")')).toBe('123')
+    expect(evaluateCell({}, '=REGEXREPLACE("a1b2c3", "\\d", "X")')).toBe('aXbXcX')
+  })
   it('CLEAN strips control characters', () => {
     expect(evaluateCell({}, '=CLEAN("a\x01b\x1Fc")')).toBe('abc')
   })

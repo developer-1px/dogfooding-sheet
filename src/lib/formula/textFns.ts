@@ -10,6 +10,15 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'MID') return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
   if (F === 'TRIM') return wrap(argsT[0].trim())
   if (F === 'CLEAN') return wrap(argsT[0].replace(/[\x00-\x1F\x7F]/g, ''))
+  if (F === 'REGEXMATCH') {
+    try { return new RegExp(argsT[1] ?? '').test(argsT[0]) ? '1' : '0' } catch { return wrap('#VALUE!') }
+  }
+  if (F === 'REGEXEXTRACT') {
+    try { const m = new RegExp(argsT[1] ?? '').exec(argsT[0]); return wrap(m ? (m[1] ?? m[0]) : '#N/A') } catch { return wrap('#VALUE!') }
+  }
+  if (F === 'REGEXREPLACE') {
+    try { return wrap(argsT[0].replace(new RegExp(argsT[1] ?? '', 'g'), argsT[2] ?? '')) } catch { return wrap('#VALUE!') }
+  }
   if (F === 'T') return /^-?\d/.test(argsT[0]) ? wrap('') : wrap(argsT[0])
   if (F === 'SUBSTITUTE') return wrap(argsT[0].split(argsT[1] ?? '').join(argsT[2] ?? ''))
   if (F === 'FIND') {
