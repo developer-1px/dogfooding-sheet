@@ -15,6 +15,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       focusKey={ctx.focusKey}
       selectedIds={ctx.selectedIds}
       setFormat={ctx.setFormat}
+      formatOf={ctx.formatOf}
       insertRow={ctx.insertRow}
       deleteRow={ctx.deleteRow}
       insertCol={ctx.insertCol}

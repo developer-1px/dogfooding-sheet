@@ -12,11 +12,11 @@ const FORMATS: Array<[Format, string, string]> = [
   ['plain', '123', '일반'],
 ]
 
-export function FormatButtons({ apply }: { apply: (f: Format) => void }) {
+export function FormatButtons({ apply, current }: { apply: (f: Format) => void; current: Format }) {
   return (
     <>
       {FORMATS.map(([f, label, title]) => (
-        <button key={f} onClick={() => apply(f)} title={title}>{label}</button>
+        <button key={f} onClick={() => apply(f)} aria-pressed={current === f} title={title}>{label}</button>
       ))}
     </>
   )
