@@ -86,6 +86,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=DATEDIF("2026-01-15","2026-05-11","M")')).toBe('3')
     expect(evaluateCell({}, '=DATEDIF("2026-05-01","2026-05-11","D")')).toBe('10')
   })
+  it('TIME / HOUR / MINUTE / SECOND', () => {
+    expect(evaluateCell({}, '=TIME(13,5,30)')).toBe('13:05:30')
+    expect(evaluateCell({}, '=HOUR("13:05:30")')).toBe('13')
+    expect(evaluateCell({}, '=MINUTE("13:05:30")')).toBe('5')
+    expect(evaluateCell({}, '=SECOND("13:05:30")')).toBe('30')
+  })
   it('NETWORKDAYS counts weekdays inclusive', () => {
     // 2026-05-04 (Mon) to 2026-05-08 (Fri) = 5 weekdays
     expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-08")')).toBe('5')

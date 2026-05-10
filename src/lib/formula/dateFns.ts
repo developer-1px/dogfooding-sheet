@@ -32,6 +32,11 @@ export const days = (end: string, start: string): number => {
   return Math.round((b.getTime() - a.getTime()) / 86400000)
 }
 
+const parseTime = (s: string): { h: number; m: number; sec: number } | null => {
+  const m = /^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/.exec(s.trim())
+  return m ? { h: Number(m[1]), m: Number(m[2]), sec: Number(m[3] ?? '0') } : null
+}
+
 export function dispatchDate(F: string, argsT: string[]): string | null {
   if (F === 'TODAY') return wrap(today())
   if (F === 'NOW') return wrap(now())
@@ -40,6 +45,13 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
   if (F === 'MONTH') return String(month(argsT[0]))
   if (F === 'DAY') return String(day(argsT[0]))
   if (F === 'DAYS') return String(days(argsT[0], argsT[1]))
+  if (F === 'HOUR') { const t = parseTime(argsT[0]); return t ? String(t.h) : wrap('#VALUE!') }
+  if (F === 'MINUTE') { const t = parseTime(argsT[0]); return t ? String(t.m) : wrap('#VALUE!') }
+  if (F === 'SECOND') { const t = parseTime(argsT[0]); return t ? String(t.sec) : wrap('#VALUE!') }
+  if (F === 'TIME') {
+    const h = Number(argsT[0]) || 0, m = Number(argsT[1]) || 0, s = Number(argsT[2]) || 0
+    return wrap(`${pad(h)}:${pad(m)}:${pad(s)}`)
+  }
   if (F === 'WEEKDAY') {
     const d = parseDate(argsT[0])
     if (!d) return wrap('#VALUE!')
