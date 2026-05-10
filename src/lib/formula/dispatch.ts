@@ -48,6 +48,16 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
   if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
+  if (F === 'OFFSET') {
+    const base = (splitArgs(rawArgs)[0] ?? '').trim()
+    const m = /^([A-J])(\d+)$/.exec(base)
+    if (!m) return smartReturn('#REF!')
+    const dr = Number(argsT[1]), dc = Number(argsT[2])
+    const col = m[1].charCodeAt(0) - 65 + dc, row = Number(m[2]) - 1 + dr
+    if (col < 0 || col > 9 || row < 0) return smartReturn('#REF!')
+    const ref = String.fromCharCode(65 + col) + (row + 1)
+    return smartReturn(c.evalRaw(c.cells[ref] ?? ''))
+  }
   if (F === 'INDIRECT') {
     const ref = (argsT[0] ?? '').trim()
     if (!/^[A-J]\d+$/.test(ref)) return smartReturn('#REF!')

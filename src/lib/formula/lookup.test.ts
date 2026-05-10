@@ -15,6 +15,15 @@ describe('HLOOKUP', () => {
   })
 })
 
+describe('OFFSET', () => {
+  it('returns value at base + (rows, cols)', () => {
+    const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
+    expect(evaluateCell(cells, '=OFFSET(A1, 1, 1)')).toBe('d')
+    expect(evaluateCell(cells, '=OFFSET(A1, 0, 1)')).toBe('b')
+    expect(evaluateCell(cells, '=OFFSET(A1, -1, 0)')).toBe('#REF!')
+  })
+})
+
 describe('INDIRECT', () => {
   it('resolves ref string to cell value', () => {
     expect(evaluateCell({ B5: 'hi' }, '=INDIRECT("B5")')).toBe('hi')
