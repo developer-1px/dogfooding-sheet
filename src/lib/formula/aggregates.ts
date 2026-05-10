@@ -8,8 +8,8 @@ export function largeSmall(F: 'LARGE' | 'SMALL', rangeStr: string, k: number, nu
   return String(F === 'LARGE' ? nums[nums.length - k] : nums[k - 1])
 }
 
-/** COVAR / CORREL — element-wise stats over two same-shape ranges. */
-export function pairStat(F: 'COVAR' | 'CORREL', aStr: string, bStr: string, numFromCell: NumFromCell): string {
+/** Paired stats: COVAR, CORREL, SLOPE (y on x), INTERCEPT (y on x). */
+export function pairStat(F: 'COVAR' | 'CORREL' | 'SLOPE' | 'INTERCEPT', aStr: string, bStr: string, numFromCell: NumFromCell): string {
   const A = collectRefs(aStr).map(numFromCell)
   const B = collectRefs(bStr).map(numFromCell)
   const n = Math.min(A.length, B.length)
@@ -22,6 +22,8 @@ export function pairStat(F: 'COVAR' | 'CORREL', aStr: string, bStr: string, numF
     cov += da * db; va += da * da; vb += db * db
   }
   if (F === 'COVAR') return String(cov / n)
+  if (F === 'SLOPE') return vb === 0 ? '#DIV/0!' : String(cov / vb)
+  if (F === 'INTERCEPT') return vb === 0 ? '#DIV/0!' : String(ma - (cov / vb) * mb)
   return va === 0 || vb === 0 ? '#DIV/0!' : String(cov / Math.sqrt(va * vb))
 }
 

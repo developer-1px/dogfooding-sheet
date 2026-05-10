@@ -52,6 +52,14 @@ describe('MINIFS / MAXIFS', () => {
   })
 })
 
+describe('SLOPE / INTERCEPT', () => {
+  it('linear regression on perfect line y=2x+1', () => {
+    const cells = { A1: '3', A2: '5', A3: '7', A4: '9', B1: '1', B2: '2', B3: '3', B4: '4' }
+    expect(evaluateCell(cells, '=SLOPE(A1:A4, B1:B4)')).toBe('2')
+    expect(evaluateCell(cells, '=INTERCEPT(A1:A4, B1:B4)')).toBe('1')
+  })
+})
+
 describe('COVAR / CORREL', () => {
   it('measure paired variance / linear correlation', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', B1: '2', B2: '4', B3: '6', B4: '8' }
