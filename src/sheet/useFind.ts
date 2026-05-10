@@ -6,25 +6,25 @@ interface Args {
   cells: Record<string, string>
   display: (k: string) => string
   onJump: (cellId: string) => void
+  caseSensitive?: boolean
 }
 
-export function useFind({ query, cells, display, onJump }: Args) {
+export function useFind({ query, cells, display, onJump, caseSensitive = false }: Args) {
   const [idx, setIdx] = useState(0)
 
   const matches = useMemo(() => {
     if (!query) return []
-    const needle = query.toLowerCase()
+    const fold = (s: string) => caseSensitive ? s : s.toLowerCase()
+    const needle = fold(query)
     const out: string[] = []
     for (let row = 0; row < ROW_COUNT; row++) {
       for (const c of COL_LETTERS) {
         const k = cellKey(c, row)
-        const raw = (cells[k] ?? '').toLowerCase()
-        const shown = display(k).toLowerCase()
-        if (raw.includes(needle) || shown.includes(needle)) out.push(`r${row}-${c}`)
+        if (fold(cells[k] ?? '').includes(needle) || fold(display(k)).includes(needle)) out.push(`r${row}-${c}`)
       }
     }
     return out
-  }, [query, cells, display])
+  }, [query, cells, display, caseSensitive])
 
   useEffect(() => {
     if (matches.length > 0) onJump(matches[idx % matches.length])

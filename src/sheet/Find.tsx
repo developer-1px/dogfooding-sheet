@@ -21,6 +21,7 @@ const cellIdToKey = (id: string): string | null => {
 export function Find({ open, mode, onClose, cells, display, onJump, writeCell }: Props) {
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
+  const [caseSensitive, setCS] = useState(false)
 
   const { rootProps } = useDialogPattern({
     open, modal: false,
@@ -28,7 +29,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
     onOpenChange: (next) => { if (!next) onClose() },
   })
 
-  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump })
+  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive })
 
   if (!open) return null
 
@@ -63,6 +64,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
           placeholder="바꾸기"
         />
       )}
+      <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} />Aa</label>
       <span className="count">{counter}</span>
       <button onClick={() => jump(-1)} disabled={matches.length === 0}>↑</button>
       <button onClick={() => jump(1)} disabled={matches.length === 0}>↓</button>
