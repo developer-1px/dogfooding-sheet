@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react'
-import { type UiEvent } from '@p/aria-kernel'
-import { useGridPattern } from '@p/aria-kernel/patterns'
-import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
+import { COL_LETTERS } from './schema'
 import { idsForCol, idsForRow, idsForAll } from './range'
 import { Cell } from './Cell'
 import { useDragSelect } from './useDragSelect'
 import { useColWidths } from './useColWidths'
 import { ContextMenu } from './ContextMenu'
 import { useCellMenu } from './useCellMenu'
+import { useSheetGrid } from './useSheetGrid'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
@@ -26,26 +25,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
     }
   }, [editing])
 
-  const onEvent = (e: UiEvent) => {
-    if (e.type === 'navigate' && e.id) { setFocusId(e.id); setSelectedIds([]); return }
-    if (e.type === 'activate' && e.id && parseCellId(e.id)) { startEdit(e.id); return }
-    if (e.type === 'select') {
-      if (e.to === undefined) setSelectedIds(e.ids)
-      else if (e.to) setSelectedIds((p) => [...new Set([...p, ...e.ids])])
-      else setSelectedIds((p) => p.filter((id) => !e.ids.includes(id)))
-    }
-  }
-
-  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useGridPattern(
-    data, onEvent,
-    {
-      label: 'Spreadsheet',
-      rowCount: ROW_COUNT + 1,
-      colCount: COL_LETTERS.length,
-      editable: true,
-      selectionMode: 'rect',
-    },
-  )
+  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit })
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
   const { gridTemplate, startResize } = useColWidths()
