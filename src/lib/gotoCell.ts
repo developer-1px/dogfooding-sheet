@@ -12,9 +12,30 @@ export function resolveCellRef(raw: string): string | null {
   return `r${row}-${col}`
 }
 
-/** Resolve raw input and apply if valid. Returns true if focus was moved. */
-export function gotoCell(raw: string | null, setFocusId: (id: string) => void): boolean {
-  const id = raw ? resolveCellRef(raw) : null
-  if (id) { setFocusId(id); return true }
+/** Resolve a range like "A1:B5" to a list of cell ids, or null on bad input. */
+export function resolveRange(raw: string): string[] | null {
+  const parts = raw.trim().split(':')
+  if (parts.length !== 2) return null
+  const a = resolveCellRef(parts[0]); const b = resolveCellRef(parts[1])
+  if (!a || !b) return null
+  const ma = /^r(\d+)-([A-J])$/.exec(a)!; const mb = /^r(\d+)-([A-J])$/.exec(b)!
+  const r1 = Math.min(Number(ma[1]), Number(mb[1])), r2 = Math.max(Number(ma[1]), Number(mb[1]))
+  const c1i = COL_LETTERS.indexOf(ma[2] as (typeof COL_LETTERS)[number])
+  const c2i = COL_LETTERS.indexOf(mb[2] as (typeof COL_LETTERS)[number])
+  const cMin = Math.min(c1i, c2i), cMax = Math.max(c1i, c2i)
+  const out: string[] = []
+  for (let r = r1; r <= r2; r++) for (let c = cMin; c <= cMax; c++) out.push(`r${r}-${COL_LETTERS[c]}`)
+  return out
+}
+
+/** Resolve raw input and apply if valid. Accepts "B5" or "A1:B5". */
+export function gotoCell(raw: string | null, setFocusId: (id: string) => void, setSelectedIds?: (ids: string[]) => void): boolean {
+  if (!raw) return false
+  if (raw.includes(':')) {
+    const ids = resolveRange(raw); if (!ids || ids.length === 0) return false
+    setFocusId(ids[0]); setSelectedIds?.(ids); return true
+  }
+  const id = resolveCellRef(raw)
+  if (id) { setFocusId(id); setSelectedIds?.([]); return true }
   return false
 }

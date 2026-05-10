@@ -19,8 +19,8 @@ export default function App() {
   const { confirm, dialog: confirmDialog } = useConfirm()
   const ctxRef = useRef<ReturnType<typeof useSheet> | null>(null)
   const ctx = useSheet({
-    openGoto: () => ask({ label: '이동할 셀 (예: B5)', placeholder: 'B5', submitLabel: '이동' })
-      .then((v) => { if (v && ctxRef.current) gotoCell(v, ctxRef.current.setFocusId) }),
+    openGoto: () => ask({ label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' })
+      .then((v) => { if (v && ctxRef.current) gotoCell(v, ctxRef.current.setFocusId, ctxRef.current.setSelectedIds) }),
     openNote: () => {
       const c = ctxRef.current; const k = c?.focusKey; if (!c || !k) return
       ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' })
@@ -46,7 +46,7 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
-        onAddrClick={() => ask({ label: '이동할 셀 (예: B5)', placeholder: 'B5', submitLabel: '이동' }).then((v) => { if (v) gotoCell(v, ctx.setFocusId) })}
+        onAddrClick={() => ask({ label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' }).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds) })}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}
