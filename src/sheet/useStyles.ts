@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import type { JsonOps } from 'zod-crud'
+import type { Sheet } from './schema'
 
 export interface CellStyle {
   b?: boolean
@@ -10,16 +12,7 @@ export interface CellStyle {
   fg?: string
 }
 
-const STORAGE_KEY = 'spreadsheet:styles:v1'
-
-const load = (): Record<string, CellStyle> => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return {}
-    const obj = JSON.parse(raw)
-    return obj && typeof obj === 'object' ? obj : {}
-  } catch { return {} }
-}
+const LEGACY_KEY = 'spreadsheet:styles:v1'
 
 const merge = (a: CellStyle | undefined, b: Partial<CellStyle>): CellStyle | undefined => {
   const next: CellStyle = { ...(a ?? {}), ...b }
@@ -33,28 +26,31 @@ const merge = (a: CellStyle | undefined, b: Partial<CellStyle>): CellStyle | und
   return Object.keys(next).length === 0 ? undefined : next
 }
 
-export function useStyles() {
-  const [styles, setStyles] = useState<Record<string, CellStyle>>(load)
+function migrateLegacy(styles: Record<string, CellStyle>, ops: JsonOps<Sheet>) {
+  if (Object.keys(styles).length > 0) return
+  try {
+    const raw = localStorage.getItem(LEGACY_KEY)
+    if (!raw) return
+    const obj = JSON.parse(raw)
+    if (obj && typeof obj === 'object' && Object.keys(obj).length > 0) ops.replace('/styles', obj as Record<string, CellStyle>)
+    localStorage.removeItem(LEGACY_KEY)
+  } catch { /* ignore */ }
+}
 
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(styles)) } catch { /* quota */ }
-  }, [styles])
+export function useStyles(styles: Record<string, CellStyle>, ops: JsonOps<Sheet>) {
+  useEffect(() => { migrateLegacy(styles, ops) }, [])
 
   const updateStyle = (keys: string[], patch: Partial<CellStyle>) => {
-    setStyles((prev) => {
-      const next = { ...prev }
-      for (const k of keys) {
-        const merged = merge(next[k], patch)
-        if (merged) next[k] = merged
-        else delete next[k]
-      }
-      return next
-    })
+    const next = { ...styles }
+    for (const k of keys) {
+      const merged = merge(next[k], patch)
+      if (merged) next[k] = merged
+      else delete next[k]
+    }
+    ops.replace('/styles', next)
   }
 
-  const styleOf = (k: string): CellStyle | undefined => styles[k]
-
-  return { styles, updateStyle, styleOf }
+  return { updateStyle, styleOf: (k: string) => styles[k] }
 }
 
 export const styleToProps = (s: CellStyle | undefined): { className: string; style: React.CSSProperties } => {

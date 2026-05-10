@@ -4,9 +4,20 @@ export { COL_LETTERS, cellKey, parseCellId } from '../lib/a1'
 
 export const ROW_COUNT = 20
 
+const CellStyleSchema = z.object({
+  b: z.boolean().optional(),
+  i: z.boolean().optional(),
+  u: z.boolean().optional(),
+  w: z.boolean().optional(),
+  a: z.enum(['left', 'center', 'right']).optional(),
+  bg: z.string().optional(),
+  fg: z.string().optional(),
+})
+
 export const SheetSchema = z.object({
   cells: z.record(z.string(), z.string()),
   notes: z.record(z.string(), z.string()).default({}),
+  styles: z.record(z.string(), CellStyleSchema).default({}),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -19,4 +30,5 @@ export const initialSheet: Sheet = {
     A6: 'Sum', D6: '=SUM(D2:D4)',
   },
   notes: {},
+  styles: {},
 }
