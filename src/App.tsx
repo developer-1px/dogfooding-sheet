@@ -1,6 +1,8 @@
 import { useSheet } from './sheet/useSheet'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/Grid'
+import { StatusBar } from './sheet/StatusBar'
+import { parseCellId } from './sheet/schema'
 import './App.css'
 
 export default function App() {
@@ -19,6 +21,7 @@ export default function App() {
         canRedo={ctx.ops.canRedo()}
       />
       <Grid ctx={ctx} />
+      <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
     </div>
   )
 }

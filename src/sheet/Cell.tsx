@@ -1,0 +1,50 @@
+import { forwardRef } from 'react'
+import type { ItemProps } from '@p/aria-kernel/patterns/types'
+
+interface Props {
+  cellProps: ItemProps
+  label: string
+  selected: boolean
+  focused: boolean
+  isNum: boolean
+  editing: boolean
+  draft: string
+  setDraft: (v: string) => void
+  onCommit: (move?: { dRow: number; dCol: number }) => void
+  onCancel: () => void
+  onStartEdit: () => void
+}
+
+export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
+  return (
+    <span
+      {...p.cellProps}
+      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}`}
+      onDoubleClick={p.onStartEdit}
+    >
+      {p.editing ? (
+        <input
+          ref={ref}
+          className="cell-input"
+          value={p.draft}
+          onChange={(e) => p.setDraft(e.target.value)}
+          onBlur={() => p.onCommit()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              p.onCommit({ dRow: e.shiftKey ? -1 : 1, dCol: 0 })
+            } else if (e.key === 'Tab') {
+              e.preventDefault()
+              p.onCommit({ dRow: 0, dCol: e.shiftKey ? -1 : 1 })
+            } else if (e.key === 'Escape') {
+              e.preventDefault()
+              p.onCancel()
+            }
+          }}
+        />
+      ) : (
+        p.label
+      )}
+    </span>
+  )
+})

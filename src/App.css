@@ -42,7 +42,7 @@ body, html, #root {
   padding: 6px 8px; text-align: center; user-select: none;
   border-right: 1px solid #e0e0e0;
 }
-.corner-cell, .row-header { background: #f8f9fa; color: #5f6368; font-size: 12px; }
+.corner-cell, .row-header { background: #f8f9fa; color: #5f6368; font-size: 12px; cursor: pointer; }
 .row-header { position: sticky; left: 0; z-index: 1; }
 .header-cell { cursor: pointer; }
 .header-cell:hover { background: #e8f0fe; }
@@ -55,6 +55,15 @@ body, html, #root {
 .cell.numeric { text-align: right; font-variant-numeric: tabular-nums; }
 .cell.focused { outline: 2px solid #1a73e8; outline-offset: -2px; z-index: 1; }
 .cell.selected { background: rgba(26, 115, 232, .1); }
+.status-bar {
+  display: flex; gap: 16px; align-items: center;
+  padding: 6px 16px; background: #f8f9fa; color: #5f6368;
+  border-top: 1px solid #e0e0e0; font-size: 12px;
+}
+.status-bar b { color: #202124; font-weight: 600; }
+.corner-cell { cursor: pointer; }
+.corner-cell:hover, .row-header:hover { background: #e8f0fe; }
+
 .cell-input {
   position: absolute; inset: 0; width: 100%; padding: 4px 6px;
   font: inherit; outline: none; background: #fff;

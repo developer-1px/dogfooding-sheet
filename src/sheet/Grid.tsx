@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import { type UiEvent } from '@p/aria-kernel'
 import { useGridPattern } from '@p/aria-kernel/patterns'
 import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
+import { idsForCol, idsForRow, idsForAll } from './range'
+import { Cell } from './Cell'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
@@ -44,50 +46,36 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   return (
     <div {...rootProps} className="grid">
       <div role="row" className="grid-row header-row">
-        <span className="corner-cell" aria-hidden />
+        <span className="corner-cell" onClick={() => setSelectedIds(idsForAll())} />
         {COL_LETTERS.map((c) => (
-          <span key={c} {...columnHeaderProps(`h-${c}`)} className="header-cell">{c}</span>
+          <span
+            key={c}
+            {...columnHeaderProps(`h-${c}`)}
+            className="header-cell"
+            onClick={() => setSelectedIds(idsForCol(c))}
+          >{c}</span>
         ))}
       </div>
       {dataRows.map((row, rIdx) => (
         <div key={row.id} {...rowProps(row.id)} className="grid-row">
-          <span className="row-header" aria-hidden>{rIdx + 1}</span>
-          {row.cells.map((cell) => {
-            const isEditing = editing === cell.id
-            const isNum = cell.label !== '' && !Number.isNaN(Number(cell.label))
-            return (
-              <span
-                key={cell.id}
-                {...cellProps(cell.id)}
-                className={`cell${cell.selected ? ' selected' : ''}${focusId === cell.id ? ' focused' : ''}${isNum ? ' numeric' : ''}`}
-                onDoubleClick={() => startEdit(cell.id)}
-              >
-                {isEditing ? (
-                  <input
-                    ref={inputRef}
-                    className="cell-input"
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onBlur={() => commitEdit()}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault()
-                        commitEdit({ dRow: e.shiftKey ? -1 : 1, dCol: 0 })
-                      } else if (e.key === 'Tab') {
-                        e.preventDefault()
-                        commitEdit({ dRow: 0, dCol: e.shiftKey ? -1 : 1 })
-                      } else if (e.key === 'Escape') {
-                        e.preventDefault()
-                        cancelEdit()
-                      }
-                    }}
-                  />
-                ) : (
-                  cell.label
-                )}
-              </span>
-            )
-          })}
+          <span className="row-header" onClick={() => setSelectedIds(idsForRow(rIdx))}>{rIdx + 1}</span>
+          {row.cells.map((cell) => (
+            <Cell
+              key={cell.id}
+              cellProps={cellProps(cell.id)}
+              label={cell.label}
+              selected={cell.selected}
+              focused={focusId === cell.id}
+              isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
+              editing={editing === cell.id}
+              draft={draft}
+              setDraft={setDraft}
+              onCommit={commitEdit}
+              onCancel={cancelEdit}
+              onStartEdit={() => startEdit(cell.id)}
+              ref={editing === cell.id ? inputRef : null}
+            />
+          ))}
         </div>
       ))}
     </div>
