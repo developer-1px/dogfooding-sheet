@@ -503,6 +503,14 @@ describe('text functions', () => {
     expect(Number(evaluateCell({}, '=TANH(0)'))).toBe(0)
     expect(evaluateCell({}, '=ROUND(ASINH(SINH(2)),4)')).toBe('2')
   })
+  it('reciprocal trig: SEC/CSC/COT + hyperbolic SECH/CSCH/COTH', () => {
+    expect(evaluateCell({}, '=ROUND(SEC(0),4)')).toBe('1')
+    expect(evaluateCell({}, '=ROUND(CSC(RADIANS(30)),4)')).toBe('2')
+    expect(evaluateCell({}, '=ROUND(COT(RADIANS(45)),4)')).toBe('1')
+    expect(evaluateCell({}, '=ROUND(SECH(0),4)')).toBe('1')
+    expect(Number(evaluateCell({}, '=CSCH(1)'))).toBeCloseTo(0.8509, 3)
+    expect(Number(evaluateCell({}, '=COTH(1)'))).toBeCloseTo(1.3130, 3)
+  })
   it('trig: SIN/COS/TAN + DEGREES/RADIANS', () => {
     expect(evaluateCell({}, '=ROUND(SIN(RADIANS(30)),4)')).toBe('0.5')
     expect(evaluateCell({}, '=ROUND(COS(0),4)')).toBe('1')
