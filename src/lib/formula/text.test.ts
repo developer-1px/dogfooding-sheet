@@ -133,6 +133,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
   })
+  it('SOUNDEX phonetic code', () => {
+    expect(evaluateCell({}, '=SOUNDEX("Robert")')).toBe('R163')
+    expect(evaluateCell({}, '=SOUNDEX("Rupert")')).toBe('R163')
+  })
   it('LCS longest common subsequence length', () => {
     expect(evaluateCell({}, '=LCS("abcde", "ace")')).toBe('3')
     expect(evaluateCell({}, '=LCS("abc", "xyz")')).toBe('0')
