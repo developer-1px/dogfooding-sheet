@@ -15,6 +15,13 @@ describe('jumpToEdge', () => {
 })
 
 import { idsBetween, homeEndTarget } from './jumpEdge'
+import { tabTarget } from './jumpEdge'
+describe('tabTarget', () => {
+  it('moves right by 1', () => { expect(tabTarget('r0-A', false)).toBe('r0-B') })
+  it('shift moves left', () => { expect(tabTarget('r0-B', true)).toBe('r0-A') })
+  it('null at edge', () => { expect(tabTarget('r0-J', false)).toBeNull(); expect(tabTarget('r0-A', true)).toBeNull() })
+})
+
 describe('homeEndTarget', () => {
   it('Home goes to col A in same row', () => {
     expect(homeEndTarget('r3-E', 20, 'Home', false)).toBe('r3-A')

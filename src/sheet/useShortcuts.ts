@@ -3,7 +3,7 @@ import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
 import { fillDown, fillRight } from '../lib/fillDown'
-import { jumpToEdge, idsBetween, homeEndTarget } from '../lib/jumpEdge'
+import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { idsForCol, idsForRow } from '../lib/range'
 
 interface Args {
@@ -54,14 +54,16 @@ export function useShortcuts(args: Args) {
         const next = jumpToEdge(focusId, sheet.cells, ROW_COUNT, e.key as 'ArrowUp'); if (!next) return
         e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : setFocusId(next); return
       }
+      if (!editing && focusId && e.key === 'Tab') {
+        const t = tabTarget(focusId, e.shiftKey); if (t) { setFocusId(t); e.preventDefault() }
+        return
+      }
       if (!editing && focusId && (e.key === 'PageUp' || e.key === 'PageDown')) {
         const p = parseCellId(focusId); if (!p) return
-        const target = Math.max(0, Math.min(ROW_COUNT - 1, p.row + (e.key === 'PageUp' ? -10 : 10)))
-        setFocusId(`r${target}-${p.col}`); e.preventDefault(); return
+        setFocusId(`r${Math.max(0, Math.min(ROW_COUNT - 1, p.row + (e.key === 'PageUp' ? -10 : 10)))}-${p.col}`); e.preventDefault(); return
       }
       if (!editing && focusId && (e.key === 'Home' || e.key === 'End')) {
-        const t = homeEndTarget(focusId, ROW_COUNT, e.key, mod); if (t) { setFocusId(t); e.preventDefault() }
-        return
+        const t = homeEndTarget(focusId, ROW_COUNT, e.key, mod); if (t) { setFocusId(t); e.preventDefault() }; return
       }
       if (!editing && focusId && e.key === ' ' && (e.ctrlKey !== e.shiftKey)) {
         const p = parseCellId(focusId); if (!p) return
@@ -83,11 +85,7 @@ export function useShortcuts(args: Args) {
         if (ck === 'x') ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') })
         return
       }
-      if (mod && ck === 'v') {
-        e.preventDefault()
-        navigator.clipboard?.readText().then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow: ROW_COUNT }) : writeCell(k, t)).catch(() => {})
-        return
-      }
+      if (mod && ck === 'v') { e.preventDefault(); navigator.clipboard?.readText().then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow: ROW_COUNT }) : writeCell(k, t)).catch(() => {}); return }
       if (e.key === 'Delete' || e.key === 'Backspace') { ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') }); e.preventDefault(); return }
       const ae = document.activeElement as HTMLElement | null
       if ((ae?.tagName === 'INPUT' || ae?.tagName === 'TEXTAREA') && !ae.classList.contains('cell-input')) return

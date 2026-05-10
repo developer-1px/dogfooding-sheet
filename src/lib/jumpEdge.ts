@@ -19,6 +19,13 @@ export function jumpToEdge(
   return `r${r}-${COL_LETTERS[c]}`
 }
 
+/** Tab / Shift-Tab target — one column right / left within bounds. Returns null at edge. */
+export function tabTarget(focusId: string, shift: boolean): string | null {
+  const p = parseCellId(focusId); if (!p) return null
+  const ci = COL_LETTERS.indexOf(p.col), nci = ci + (shift ? -1 : 1)
+  return nci < 0 || nci >= COL_LETTERS.length ? null : `r${p.row}-${COL_LETTERS[nci]}`
+}
+
 /** Home / End / Ctrl+Home / Ctrl+End target cell id. */
 export function homeEndTarget(focusId: string, rowCount: number, key: 'Home' | 'End', ctrl: boolean): string | null {
   const p = parseCellId(focusId); if (!p) return null
