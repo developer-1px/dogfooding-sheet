@@ -41,7 +41,7 @@ export function Cell(p: Props) {
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}
       onContextMenu={p.onContextMenu}
-      title={p.note ?? p.tooltip}
+      title={p.note ?? p.tooltip ?? (p.label.length > 20 ? p.label : undefined)}
     >
       {p.isCheckbox ? (
         <input
