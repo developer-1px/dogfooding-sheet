@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
+import { fillDown } from '../lib/fillDown'
 
 interface Args {
   editing: string | null
@@ -35,17 +36,19 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       }
       if (mod && e.key === ';' && !e.altKey) {
         e.preventDefault()
-        const id = focusId
-        const p = id ? parseCellId(id) : null
+        const p = focusId ? parseCellId(focusId) : null
         if (p) {
-          const d = new Date()
-          const pad = (n: number) => String(n).padStart(2, '0')
-          const v = e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-          writeCell(cellKey(p.col, p.row), v)
+          const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
+          writeCell(cellKey(p.col, p.row), e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
         }
         return
       }
       if (editing) return
+      if (mod && ck === 'd' && selectedIds.length > 1) {
+        e.preventDefault()
+        fillDown(selectedIds, sheet.cells, writeCell)
+        return
+      }
       if (mod && ck === 'z') {
         e.preventDefault()
         e.shiftKey ? ops.redo() : ops.undo()
