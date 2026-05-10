@@ -9,6 +9,8 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'RIGHT') return wrap(argsT[0].slice(-Number(argsT[1] ?? '1')))
   if (F === 'MID') return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
   if (F === 'TRIM') return wrap(argsT[0].trim())
+  if (F === 'CLEAN') return wrap(argsT[0].replace(/[\x00-\x1F\x7F]/g, ''))
+  if (F === 'T') return /^-?\d/.test(argsT[0]) ? wrap('') : wrap(argsT[0])
   if (F === 'SUBSTITUTE') return wrap(argsT[0].split(argsT[1] ?? '').join(argsT[2] ?? ''))
   if (F === 'FIND') {
     const pos = argsT[1].indexOf(argsT[0])

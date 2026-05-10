@@ -20,6 +20,13 @@ describe('text functions', () => {
   it('TRIM removes whitespace', () => {
     expect(evaluateCell({}, '=TRIM("  hi  ")')).toBe('hi')
   })
+  it('CLEAN strips control characters', () => {
+    expect(evaluateCell({}, '=CLEAN("a\x01b\x1Fc")')).toBe('abc')
+  })
+  it('T returns text only (empty for numbers)', () => {
+    expect(evaluateCell({}, '=T("hello")')).toBe('hello')
+    expect(evaluateCell({}, '=T(42)')).toBe('')
+  })
   it('SUBSTITUTE replaces all occurrences', () => {
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/")')).toBe('a/b/c')
   })
