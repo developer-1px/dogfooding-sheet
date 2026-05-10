@@ -32,6 +32,9 @@ export interface GlobalShortcutCtx {
   deleteRowAtFocus?: () => void
   insertColAtFocus?: () => void
   deleteColAtFocus?: () => void
+  hideRowAtFocus?: () => void
+  hideColAtFocus?: () => void
+  showAll?: () => void
 }
 
 const targetIds = (c: GlobalShortcutCtx) =>
@@ -57,6 +60,9 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+alt+-', () => get().deleteRowAtFocus?.())
   useShortcut('mod+alt+shift+=', () => get().insertColAtFocus?.())
   useShortcut('mod+alt+shift+-', () => get().deleteColAtFocus?.())
+  useShortcut('mod+alt+9', () => get().hideRowAtFocus?.())
+  useShortcut('mod+alt+0', () => get().hideColAtFocus?.())
+  useShortcut('mod+shift+0', () => get().showAll?.())
   useShortcut('mod+a', () => get().setSelectedIds(idsForAll(ROW_COUNT)))
   useShortcut('mod+pageup', () => get().switchTab?.(-1))
   useShortcut('mod+pagedown', () => get().switchTab?.(1))

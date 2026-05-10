@@ -3,6 +3,8 @@ interface Mut {
   deleteRow: (r: number) => void
   insertCol: (c: string) => void
   deleteCol: (c: string) => void
+  hideRow: (r: number) => void
+  hideCol: (c: string) => void
 }
 
 export function rowColAtFocus(focusKey: string | null, m: Mut) {
@@ -12,5 +14,7 @@ export function rowColAtFocus(focusKey: string | null, m: Mut) {
     deleteRowAtFocus: () => { const p = at(); if (p) m.deleteRow(Number(p[2]) - 1) },
     insertColAtFocus: () => { const p = at(); if (p) m.insertCol(p[1]) },
     deleteColAtFocus: () => { const p = at(); if (p) m.deleteCol(p[1]) },
+    hideRowAtFocus: () => { const p = at(); if (p) m.hideRow(Number(p[2]) - 1) },
+    hideColAtFocus: () => { const p = at(); if (p) m.hideCol(p[1]) },
   }
 }

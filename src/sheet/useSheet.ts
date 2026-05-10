@@ -72,7 +72,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
     setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
     toggleShowFormulas,
-    ...rowColAtFocus(edit.focusKey, { insertRow, deleteRow, insertCol, deleteCol }),
+    ...rowColAtFocus(edit.focusKey, { insertRow, deleteRow, insertCol, deleteCol, hideRow: hidden.hideRow, hideCol: hidden.hideCol }), showAll: hidden.showAll,
   })
 
   return {
