@@ -8,12 +8,13 @@ interface Args {
   focusId: string | null
   cells: Record<string, string>
   writeCell: (k: string, v: string) => void
+  writeCells?: (writes: Array<[string, string]>) => void
   setSelectedIds: (ids: string[]) => void
 }
 
 const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 
-export function useAutoFill({ selectedIds, focusId, cells, writeCell, setSelectedIds }: Args) {
+export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds }: Args) {
   const [preview, setPreview] = useState<Rect | null>(null)
   const sourceRef = useRef<Rect | null>(null)
 
@@ -60,7 +61,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, setSelecte
       sourceRef.current = null
       setPreview(null)
       if (!tgt || (tgt.rMax === src.rMax && tgt.cMax === src.cMax)) return
-      applyFill(src, tgt, cells, writeCell)
+      applyFill(src, tgt, cells, writeCell, writeCells)
       // Re-select the filled rect
       const ids: string[] = []
       for (let r = tgt.rMin; r <= tgt.rMax; r++) {

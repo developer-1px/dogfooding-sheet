@@ -78,7 +78,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
   return {
     sheet, ops, data,
     ...edit,
-    writeCell, display,
+    writeCell, writeCells, display,
     selectedIds, setSelectedIds,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
