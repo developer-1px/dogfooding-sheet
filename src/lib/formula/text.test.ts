@@ -281,6 +281,8 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TRUNC(3.789, 1)')).toBe('3.7')
     expect(evaluateCell({}, '=SIGN(-5)')).toBe('-1')
     expect(evaluateCell({}, '=ROUND(PI(), 4)')).toBe('3.1416')
+    expect(evaluateCell({}, '=ROUND(TAU(), 4)')).toBe('6.2832')
+    expect(evaluateCell({}, '=ROUND(E(), 4)')).toBe('2.7183')
     expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
     expect(evaluateCell({}, '=ODD(4)')).toBe('5')
   })
