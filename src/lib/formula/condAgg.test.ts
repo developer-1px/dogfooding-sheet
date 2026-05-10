@@ -93,6 +93,13 @@ describe('COVAR / CORREL', () => {
   })
 })
 
+describe('FORECAST', () => {
+  it('predicts y for given x on perfect line y=2x+1', () => {
+    const cells = { A1: '3', A2: '5', A3: '7', A4: '9', B1: '1', B2: '2', B3: '3', B4: '4' }
+    expect(evaluateCell(cells, '=FORECAST(5, A1:A4, B1:B4)')).toBe('11')
+  })
+})
+
 describe('TRIMMEAN', () => {
   it('drops outliers from each end', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5', A6: '6', A7: '7', A8: '8', A9: '9', A10: '100' }

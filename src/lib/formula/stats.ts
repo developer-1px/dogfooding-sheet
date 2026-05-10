@@ -2,6 +2,20 @@ import { collectRefs } from './parse'
 
 type NumFromCell = (ref: string) => number
 
+/** FORECAST(x, known_y, known_x) — predict y for given x via linear regression. */
+export function forecast(x: number, yStr: string, xStr: string, numFromCell: NumFromCell): string {
+  const Y = collectRefs(yStr).map(numFromCell)
+  const X = collectRefs(xStr).map(numFromCell)
+  const n = Math.min(Y.length, X.length)
+  if (n === 0) return '#N/A'
+  const my = Y.slice(0, n).reduce((s, v) => s + v, 0) / n
+  const mx = X.slice(0, n).reduce((s, v) => s + v, 0) / n
+  let cov = 0, vx = 0
+  for (let i = 0; i < n; i++) { const dx = X[i] - mx; cov += dx * (Y[i] - my); vx += dx * dx }
+  if (vx === 0) return '#DIV/0!'
+  return String(my + (cov / vx) * (x - mx))
+}
+
 /** Paired stats: COVAR, CORREL, SLOPE (y on x), INTERCEPT (y on x). */
 export function pairStat(F: 'COVAR' | 'CORREL' | 'SLOPE' | 'INTERCEPT', aStr: string, bStr: string, numFromCell: NumFromCell): string {
   const A = collectRefs(aStr).map(numFromCell)
