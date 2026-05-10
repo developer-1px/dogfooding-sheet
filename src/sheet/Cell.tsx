@@ -1,5 +1,5 @@
-import { forwardRef } from 'react'
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
+import type { InputProps } from 'editable-lifecycle'
 
 interface Props {
   cellProps: ItemProps
@@ -24,9 +24,10 @@ interface Props {
   styleInline: React.CSSProperties
   note?: string
   validationOptions?: string[]
+  inputProps: InputProps
 }
 
-export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
+export function Cell(p: Props) {
   return (
     <span
       {...p.cellProps}
@@ -52,25 +53,7 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
             {p.validationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
         ) : (
-        <input
-          ref={ref}
-          className="cell-input"
-          value={p.draft}
-          onChange={(e) => p.setDraft(e.target.value)}
-          onBlur={() => p.onCommit()}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              p.onCommit({ dRow: e.shiftKey ? -1 : 1, dCol: 0 })
-            } else if (e.key === 'Tab') {
-              e.preventDefault()
-              p.onCommit({ dRow: 0, dCol: e.shiftKey ? -1 : 1 })
-            } else if (e.key === 'Escape') {
-              e.preventDefault()
-              p.onCancel()
-            }
-          }}
-        />
+          <input className="cell-input" {...p.inputProps} />
         )
       ) : (
         <>
@@ -84,4 +67,4 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
       )}
     </span>
   )
-})
+}

@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import { COL_LETTERS, ROW_COUNT } from './schema'
 import { GridHeader } from './GridHeader'
 import { GridRow } from './GridRow'
@@ -14,20 +13,11 @@ import type { useSheet } from './useSheet'
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote })
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
   const previewIds = rectToIdSet(fill.preview)
-  const inputRef = useRef<HTMLInputElement | null>(null)
-
-  useEffect(() => {
-    if (editing && inputRef.current) {
-      inputRef.current.focus()
-      const len = inputRef.current.value.length
-      inputRef.current.setSelectionRange(len, len)
-    }
-  }, [editing])
 
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit })
 
@@ -83,7 +73,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             onCellMouseEnter={(id) => fill.dragging ? fill.onCellEnterDuringFill(id) : drag.onMouseEnter(id)}
             onFillHandleMouseDown={fill.onHandleMouseDown}
             onCellContextMenu={(e, id) => cellMenu.open(e, id)}
-            inputRef={inputRef}
+            inputProps={inputProps}
           />
         )
       })}

@@ -1,4 +1,4 @@
-import { type RefObject } from 'react'
+import type { InputProps } from 'editable-lifecycle'
 import { COL_LETTERS } from './schema'
 import { idsForRow } from '../lib/range'
 import { Cell } from './Cell'
@@ -36,7 +36,7 @@ interface Props {
   onCellMouseEnter: (id: string) => void
   onFillHandleMouseDown: (e: React.MouseEvent) => void
   onCellContextMenu: (e: React.MouseEvent, id: string) => void
-  inputRef: RefObject<HTMLInputElement | null>
+  inputProps: InputProps
 }
 
 export function GridRow(p: Props) {
@@ -81,7 +81,7 @@ export function GridRow(p: Props) {
             onFillHandleMouseDown={p.onFillHandleMouseDown}
             previewing={p.previewIds.has(cell.id)}
             onContextMenu={(e) => p.onCellContextMenu(e, cell.id)}
-            ref={p.editing === cell.id ? p.inputRef : null}
+            inputProps={p.inputProps}
           />
         )
       })}

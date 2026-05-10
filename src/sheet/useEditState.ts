@@ -50,6 +50,7 @@ export function useEditState({ cells, writeCell }: Args) {
     startEdit: ed.startEdit,
     commitEdit,
     cancelEdit: ed.cancelEdit,
+    inputProps: ed.inputProps,
     focusKey,
   }
 }
