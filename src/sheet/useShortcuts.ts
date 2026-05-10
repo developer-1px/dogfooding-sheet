@@ -12,9 +12,10 @@ interface Args {
   startEdit: (id: string, prefill?: string) => void
   selectedIds: string[]
   openFind: () => void
+  openReplace: () => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
@@ -22,6 +23,11 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       if (mod && ck === 'f') {
         e.preventDefault()
         openFind()
+        return
+      }
+      if (mod && ck === 'h') {
+        e.preventDefault()
+        openReplace()
         return
       }
       if (editing) return

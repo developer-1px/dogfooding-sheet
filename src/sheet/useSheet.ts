@@ -12,6 +12,7 @@ export function useSheet() {
   const [draft, setDraft] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [findOpen, setFindOpen] = useState(false)
+  const [findMode, setFindMode] = useState<'find' | 'replace'>('find')
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
@@ -52,7 +53,11 @@ export function useSheet() {
 
   const cancelEdit = () => setEditing(null)
 
-  useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind: () => setFindOpen(true) })
+  useShortcuts({
+    editing, focusId, sheet, ops, writeCell, startEdit, selectedIds,
+    openFind: () => { setFindMode('find'); setFindOpen(true) },
+    openReplace: () => { setFindMode('replace'); setFindOpen(true) },
+  })
 
   const focusCell = focusId ? parseCellId(focusId) : null
   const focusKey = focusCell ? cellKey(focusCell.col, focusCell.row) : null
@@ -74,6 +79,6 @@ export function useSheet() {
     focusKey,
     selectedIds, setSelectedIds,
     highlightedIds,
-    findOpen, setFindOpen,
+    findOpen, setFindOpen, findMode,
   }
 }

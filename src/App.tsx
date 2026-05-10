@@ -61,10 +61,12 @@ export default function App() {
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
       <Find
         open={ctx.findOpen}
+        mode={ctx.findMode}
         onClose={() => ctx.setFindOpen(false)}
         cells={ctx.sheet.cells}
         display={ctx.display}
         onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
+        writeCell={ctx.writeCell}
       />
     </div>
   )
