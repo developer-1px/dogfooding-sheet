@@ -227,6 +227,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=DEC2BIN(10)')).toBe('1010')
     expect(evaluateCell({}, '=OCT2DEC("17")')).toBe('15')
     expect(evaluateCell({}, '=DEC2OCT(15)')).toBe('17')
+    expect(evaluateCell({}, '=BIN2HEX("1111")')).toBe('F')
+    expect(evaluateCell({}, '=HEX2BIN("F")')).toBe('1111')
+    expect(evaluateCell({}, '=OCT2BIN("17")')).toBe('1111')
+    expect(evaluateCell({}, '=OCT2HEX("17")')).toBe('F')
+    expect(evaluateCell({}, '=BIN2OCT("1111")')).toBe('17')
+    expect(evaluateCell({}, '=HEX2OCT("F")')).toBe('17')
   })
   it('ROMAN / ARABIC round-trip', () => {
     expect(evaluateCell({}, '=ROMAN(1994)')).toBe('MCMXCIV')
