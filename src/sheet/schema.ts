@@ -48,7 +48,8 @@ export const SheetSchema = TabBundleSchema.extend({
     order: z.array(z.string()),
     active: z.string(),
     saved: z.record(z.string(), TabBundleSchema),
-  }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {} }),
+    colors: z.record(z.string(), z.string()).default({}),
+  }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -77,5 +78,5 @@ export const initialSheet: Sheet = {
   },
   notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
   freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {},
-  tabs: { order: ['Sheet1'], active: 'Sheet1', saved: {} },
+  tabs: { order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} },
 }

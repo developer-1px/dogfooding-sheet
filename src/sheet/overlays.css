@@ -117,3 +117,4 @@
   color: #5f6368; font-size: 11px; cursor: pointer;
 }
 .tab-dup:hover { color: #1a73e8; }
+.tab-color { width: 14px; height: 14px; padding: 0; border: none; background: transparent; cursor: pointer; margin-left: 2px; }

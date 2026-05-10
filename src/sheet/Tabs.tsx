@@ -11,10 +11,11 @@ interface Props {
   deleteSheet: (name: string) => void
   renameSheet: (oldName: string, newName: string) => void
   duplicateSheet: (name: string) => void
+  setTabColor: (name: string, color: string) => void
   confirm: (opts: ConfirmOptions) => Promise<boolean>
 }
 
-export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, confirm }: Props) {
+export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, setTabColor, confirm }: Props) {
   const ed = useEditable<string>({
     getValue: (id) => id,
     onCommit: (oldName, draft) => {
@@ -44,11 +45,13 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           {...tabProps(name)}
           className={`tab${name === state.active ? ' active' : ''}`}
           onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
-          title="더블클릭으로 이름 변경"
+          style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
+          title="더블클릭=이름 변경 / 우클릭=색상"
         >
           {ed.editing === name ? (
             <input className="tab-rename" {...ed.inputProps} />
           ) : name}
+          <input type="color" className="tab-color" value={state.colors[name] ?? '#cccccc'} onChange={(e) => setTabColor(name, e.target.value)} onClick={(e) => e.stopPropagation()} title="탭 색상" />
           <button className="tab-dup" onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }} title="시트 복제">⎘</button>
           {state.order.length > 1 && (
             <button

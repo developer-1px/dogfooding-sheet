@@ -8,6 +8,7 @@ export interface TabsState {
   order: string[]
   active: string
   saved: Record<string, TabBundle>
+  colors: Record<string, string>
 }
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
@@ -18,7 +19,7 @@ const migrateLegacy = (state: TabsState, ops: JsonOps<Sheet>) =>
       const o = raw as { order?: unknown; active?: unknown; saved?: unknown } | null
       if (!Array.isArray(o?.order) || typeof o.active !== 'string' || !o.saved) return undefined
       return {
-        order: o.order as string[], active: o.active,
+        order: o.order as string[], active: o.active, colors: {},
         saved: Object.fromEntries(Object.entries(o.saved as Record<string, Cells>)
           .map(([k, cells]) => [k, { ...blankBundle(), cells }])),
       } as TabsState
@@ -54,7 +55,7 @@ export function tabActions(sheet: Sheet, ops: JsonOps<Sheet>) {
   const addSheet = () => {
     const name = uniqueName(state.order)
     const saved = { ...snapshotSaved(), [name]: blankBundle() }
-    ops.reset(hydrate(setTabs({ order: [...state.order, name], active: name, saved }), name, saved))
+    ops.reset(hydrate(setTabs({ ...state, order: [...state.order, name], active: name, saved }), name, saved))
   }
 
   const deleteSheet = (name: string) => {
@@ -62,8 +63,9 @@ export function tabActions(sheet: Sheet, ops: JsonOps<Sheet>) {
     const newOrder = state.order.filter((n) => n !== name)
     const saved = snapshotSaved()
     delete saved[name]
+    const colors = { ...state.colors }; delete colors[name]
     const newActive = state.active === name ? newOrder[Math.max(0, state.order.indexOf(name) - 1)] : state.active
-    ops.reset(hydrate(setTabs({ order: newOrder, active: newActive, saved }), newActive, saved))
+    ops.reset(hydrate(setTabs({ ...state, order: newOrder, active: newActive, saved, colors }), newActive, saved))
   }
 
   const renameSheet = (oldName: string, newName: string) => {
@@ -74,7 +76,8 @@ export function tabActions(sheet: Sheet, ops: JsonOps<Sheet>) {
     delete saved[oldName]
     const newOrder = state.order.map((n) => (n === oldName ? trimmed : n))
     const active = state.active === oldName ? trimmed : state.active
-    ops.replace('/tabs', { order: newOrder, active, saved })
+    const colors = { ...state.colors }; if (colors[oldName]) { colors[trimmed] = colors[oldName]; delete colors[oldName] }
+    ops.replace('/tabs', { order: newOrder, active, saved, colors })
   }
 
   const duplicateSheet = (name: string) => {
@@ -84,13 +87,13 @@ export function tabActions(sheet: Sheet, ops: JsonOps<Sheet>) {
     const saved = snapshotSaved()
     saved[newName] = { ...(saved[name] ?? blankBundle()) }
     const newOrder = [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)]
-    ops.reset(hydrate(setTabs({ order: newOrder, active: newName, saved }), newName, saved))
+    ops.reset(hydrate(setTabs({ ...state, order: newOrder, active: newName, saved }), newName, saved))
   }
 
   const cycleTab = (delta: 1 | -1) => {
     const i = state.order.indexOf(state.active), n = state.order.length
     switchTab(state.order[(i + delta + n) % n])
   }
-
-  return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, cycleTab }
+  const setTabColor = (name: string, color: string) => { const colors = { ...state.colors }; if (color) colors[name] = color; else delete colors[name]; ops.replace('/tabs', { ...state, colors }) }
+  return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, cycleTab, setTabColor }
 }

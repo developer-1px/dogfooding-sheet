@@ -63,6 +63,7 @@ export default function App() {
         deleteSheet={ctx.deleteSheet}
         renameSheet={ctx.renameSheet}
         duplicateSheet={ctx.duplicateSheet}
+        setTabColor={ctx.setTabColor}
         confirm={confirm}
       />
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
