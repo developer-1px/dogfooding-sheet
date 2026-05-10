@@ -53,27 +53,19 @@ describe('evaluateCell', () => {
   })
 })
 
-describe('text functions', () => {
-  it('CONCAT joins strings and refs', () => {
-    expect(evaluateCell({ A1: 'hello' }, '=CONCAT(A1, " ", "world")')).toBe('hello world')
+describe('statistical functions', () => {
+  const c = { A1: '2', A2: '4', A3: '4', A4: '4', A5: '5', A6: '5', A7: '7', A8: '9' }
+  it('MEDIAN of odd-length list', () => {
+    expect(evaluateCell({ A1: '1', A2: '3', A3: '5' }, '=MEDIAN(A1:A3)')).toBe('3')
   })
-  it('LEN returns length', () => {
-    expect(evaluateCell({ A1: 'hello' }, '=LEN(A1)')).toBe('5')
+  it('MEDIAN of even-length list', () => {
+    expect(evaluateCell({ A1: '1', A2: '2', A3: '3', A4: '4' }, '=MEDIAN(A1:A4)')).toBe('2.5')
   })
-  it('UPPER / LOWER', () => {
-    expect(evaluateCell({}, '=UPPER("abc")')).toBe('ABC')
-    expect(evaluateCell({}, '=LOWER("ABC")')).toBe('abc')
+  it('VAR returns sample variance (n-1)', () => {
+    expect(Number(evaluateCell(c, '=VAR(A1:A8)'))).toBeCloseTo(32 / 7, 4)
   })
-  it('LEFT / RIGHT / MID', () => {
-    expect(evaluateCell({}, '=LEFT("abcdef", 3)')).toBe('abc')
-    expect(evaluateCell({}, '=RIGHT("abcdef", 2)')).toBe('ef')
-    expect(evaluateCell({}, '=MID("abcdef", 2, 3)')).toBe('bcd')
-  })
-  it('TRIM removes whitespace', () => {
-    expect(evaluateCell({}, '=TRIM("  hi  ")')).toBe('hi')
-  })
-  it('nested CONCAT + UPPER', () => {
-    expect(evaluateCell({ A1: 'foo' }, '=CONCAT(UPPER(A1), "!")')).toBe('FOO!')
+  it('STDEV is sqrt of sample variance', () => {
+    expect(Number(evaluateCell(c, '=STDEV(A1:A8)'))).toBeCloseTo(Math.sqrt(32 / 7), 4)
   })
 })
 

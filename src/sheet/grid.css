@@ -30,6 +30,9 @@
 .cell.align-left { text-align: left; }
 .cell.align-center { text-align: center; }
 .cell.align-right { text-align: right; }
+.cell.freeze-col { position: sticky; left: 48px; z-index: 1; background: #fff; }
+.grid-row.freeze-row { position: sticky; top: 30px; z-index: 2; background: #fff; }
+.grid-row.freeze-row .cell.freeze-col { z-index: 3; }
 .cell.focused { outline: 2px solid #1a73e8; outline-offset: -2px; z-index: 1; }
 .cell.selected { background: rgba(26, 115, 232, .1); }
 .cell.ref-hi { outline: 2px dashed #34a853; outline-offset: -2px; background: rgba(52, 168, 83, .08); }

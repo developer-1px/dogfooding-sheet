@@ -37,6 +37,9 @@ export default function App() {
             sortByCol={ctx.sortByCol}
             updateStyle={ctx.updateStyle}
             styleOf={ctx.styleOf}
+            freeze={ctx.freeze}
+            toggleFreezeRows={ctx.toggleFreezeRows}
+            toggleFreezeCols={ctx.toggleFreezeCols}
           />
         }
       />

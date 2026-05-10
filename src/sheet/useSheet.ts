@@ -6,6 +6,7 @@ import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './useFormats'
 import { useStyles } from './useStyles'
+import { useFreeze } from './useFreeze'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp } from './rowOps'
 import { sortByColumn } from './sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -19,6 +20,7 @@ export function useSheet() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const fmt = useFormats()
   const styles = useStyles()
+  const freeze = useFreeze()
   const find = useFindState()
   const tabs = useTabs(sheet.cells)
   const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c }))
@@ -79,6 +81,7 @@ export function useSheet() {
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
+    freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols,
     insertRow, deleteRow, sortByCol,
     tabs: tabs.state, ...tabFns,
   }

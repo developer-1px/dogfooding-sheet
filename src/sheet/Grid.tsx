@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { COL_LETTERS } from './schema'
-import { idsForCol, idsForRow, idsForAll } from './range'
+import { idsForRow } from './range'
 import { Cell } from './Cell'
+import { GridHeader } from './GridHeader'
 import { useDragSelect } from './useDragSelect'
 import { useColWidths } from './useColWidths'
 import { ContextMenu } from './ContextMenu'
@@ -15,7 +16,7 @@ import type { useSheet } from './useSheet'
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, freeze } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, sortByCol })
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
@@ -38,26 +39,21 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
 
   return (
     <div {...rootProps} className="grid">
-      <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
-        <span className="corner-cell" onClick={() => setSelectedIds(idsForAll())} />
-        {COL_LETTERS.map((c) => (
-          <span
-            key={c}
-            {...columnHeaderProps(`h-${c}`)}
-            className="header-cell"
-            onClick={() => setSelectedIds(idsForCol(c))}
-          >
-            {c}
-            <span className="col-resizer" onMouseDown={startResize(c)} />
-          </span>
-        ))}
-      </div>
-      {dataRows.map((row, rIdx) => (
-        <div key={row.id} {...rowProps(row.id)} className="grid-row" style={{ gridTemplateColumns: gridTemplate }}>
+      <GridHeader
+        gridTemplate={gridTemplate}
+        columnHeaderProps={columnHeaderProps}
+        startResize={startResize}
+        setSelectedIds={setSelectedIds}
+      />
+      {dataRows.map((row, rIdx) => {
+        const rowCls = `grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}`
+        return (
+        <div key={row.id} {...rowProps(row.id)} className={rowCls} style={{ gridTemplateColumns: gridTemplate }}>
           <span className="row-header" onClick={() => setSelectedIds(idsForRow(rIdx))}>{rIdx + 1}</span>
-          {row.cells.map((cell) => {
+          {row.cells.map((cell, cIdx) => {
             const m = /^r(\d+)-([A-J])$/.exec(cell.id)
             const k = m ? `${m[2]}${Number(m[1]) + 1}` : ''
+            const extra = freeze.cols && cIdx === 0 ? ' freeze-col' : ''
             return (
             <Cell
               key={cell.id}
@@ -67,7 +63,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
               focused={focusId === cell.id}
               highlighted={hiSet.has(cell.id)}
               isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
-              styleClass={styleToProps(styleOf(k)).className}
+              styleClass={styleToProps(styleOf(k)).className + extra}
               styleInline={styleToProps(styleOf(k)).style}
               editing={editing === cell.id}
               draft={draft}
@@ -85,7 +81,8 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             />
           )})}
         </div>
-      ))}
+        )
+      })}
       {cellMenu.menu && (
         <ContextMenu
           x={cellMenu.menu.x}

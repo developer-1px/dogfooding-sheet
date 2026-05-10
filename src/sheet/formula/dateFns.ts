@@ -1,3 +1,5 @@
+import { wrap } from './marker'
+
 const pad = (n: number) => String(n).padStart(2, '0')
 
 export const today = (): string => {
@@ -28,4 +30,15 @@ export const days = (end: string, start: string): number => {
   const a = parseDate(start), b = parseDate(end)
   if (!a || !b) return NaN
   return Math.round((b.getTime() - a.getTime()) / 86400000)
+}
+
+export function dispatchDate(F: string, argsT: string[]): string | null {
+  if (F === 'TODAY') return wrap(today())
+  if (F === 'NOW') return wrap(now())
+  if (F === 'DATE') return wrap(date(Number(argsT[0]), Number(argsT[1]), Number(argsT[2])))
+  if (F === 'YEAR') return String(year(argsT[0]))
+  if (F === 'MONTH') return String(month(argsT[0]))
+  if (F === 'DAY') return String(day(argsT[0]))
+  if (F === 'DAYS') return String(days(argsT[0], argsT[1]))
+  return null
 }

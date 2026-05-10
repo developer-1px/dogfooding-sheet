@@ -14,6 +14,9 @@ interface Props {
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
   updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
   styleOf: (k: string) => CellStyle | undefined
+  freeze: { rows: 0 | 1; cols: 0 | 1 }
+  toggleFreezeRows: () => void
+  toggleFreezeCols: () => void
 }
 
 const cellIdToKey = (id: string): string => {
@@ -21,7 +24,7 @@ const cellIdToKey = (id: string): string => {
   return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
 
   const onExport = () => downloadFile('sheet.csv', exportCsv((k) => display(k)))
@@ -59,6 +62,8 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
         A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} />
       </label>
       <button onClick={() => updateStyle(targetKeys(), { bg: '', fg: '' })} title="색상 초기화">✕색</button>
+      <button onClick={toggleFreezeRows} title="첫 행 고정" style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행</button>
+      <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
       <button onClick={() => applyF('currency')} title="통화">$</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>
