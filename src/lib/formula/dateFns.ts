@@ -40,5 +40,21 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
   if (F === 'MONTH') return String(month(argsT[0]))
   if (F === 'DAY') return String(day(argsT[0]))
   if (F === 'DAYS') return String(days(argsT[0], argsT[1]))
+  if (F === 'WEEKDAY') {
+    const d = parseDate(argsT[0])
+    if (!d) return wrap('#VALUE!')
+    const type = Number(argsT[1] ?? '1')
+    const w = d.getUTCDay()
+    if (type === 2) return String(((w + 6) % 7) + 1)
+    if (type === 3) return String((w + 6) % 7)
+    return String(w + 1)
+  }
+  if (F === 'EDATE') {
+    const d = parseDate(argsT[0])
+    if (!d) return wrap('#VALUE!')
+    const m = Number(argsT[1])
+    const r = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m, d.getUTCDate()))
+    return wrap(`${r.getUTCFullYear()}-${pad(r.getUTCMonth() + 1)}-${pad(r.getUTCDate())}`)
+  }
   return null
 }

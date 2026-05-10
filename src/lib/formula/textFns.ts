@@ -22,5 +22,17 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'PROPER') {
     return wrap(argsT[0].toLowerCase().replace(/(^|\s)(\p{L})/gu, (_m, sp, ch) => sp + ch.toUpperCase()))
   }
+  if (F === 'TEXTJOIN') {
+    const sep = argsT[0] ?? ''
+    const ignoreEmpty = (argsT[1] ?? '1') !== '0'
+    const parts = argsT.slice(2)
+    return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
+  }
+  if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
+  if (F === 'REPLACE') {
+    const start = Number(argsT[1]) - 1
+    const len = Number(argsT[2])
+    return wrap(argsT[0].slice(0, start) + (argsT[3] ?? '') + argsT[0].slice(start + len))
+  }
   return null
 }
