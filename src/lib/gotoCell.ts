@@ -1,6 +1,5 @@
 import { COL_LETTERS } from './a1'
-
-const ROW_LIMIT = 20
+import { ROW_COUNT } from '../sheet/schema'
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
 export function resolveCellRef(raw: string): string | null {
@@ -9,7 +8,7 @@ export function resolveCellRef(raw: string): string | null {
   const col = m[1].toUpperCase()
   if (!COL_LETTERS.includes(col as (typeof COL_LETTERS)[number])) return null
   const row = Number(m[2]) - 1
-  if (row < 0 || row >= ROW_LIMIT) return null
+  if (row < 0 || row >= ROW_COUNT) return null
   return `r${row}-${col}`
 }
 
