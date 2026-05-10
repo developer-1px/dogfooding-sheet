@@ -1,7 +1,6 @@
-import { useRef } from 'react'
-import { exportCsv, importCsvInto, downloadFile, parseCsv } from './csv'
 import type { Format } from './useFormats'
 import type { CellStyle } from './useStyles'
+import { CsvButtons } from './CsvButtons'
 
 interface Props {
   display: (k: string) => string
@@ -17,6 +16,9 @@ interface Props {
   freeze: { rows: 0 | 1; cols: 0 | 1 }
   toggleFreezeRows: () => void
   toggleFreezeCols: () => void
+  filter: { col: string; text: string } | null
+  applyFilter: (col: string, text: string) => void
+  clearFilter: () => void
 }
 
 const cellIdToKey = (id: string): string => {
@@ -24,12 +26,7 @@ const cellIdToKey = (id: string): string => {
   return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols }: Props) {
-  const fileRef = useRef<HTMLInputElement | null>(null)
-
-  const onExport = () => downloadFile('sheet.csv', exportCsv((k) => display(k)))
-  const onImport = (file: File) => file.text().then((t) => { parseCsv(t); importCsvInto(t, writeCell) })
-
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => {
@@ -64,23 +61,23 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => updateStyle(targetKeys(), { bg: '', fg: '' })} title="색상 초기화">✕색</button>
       <button onClick={toggleFreezeRows} title="첫 행 고정" style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행</button>
       <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
+      <button
+        onClick={() => {
+          if (!focus) return
+          const t = window.prompt(`${focus[1]}열에서 찾을 값`, filter?.text ?? '')
+          if (t === null) return
+          if (t === '') clearFilter()
+          else applyFilter(focus[1], t)
+        }}
+        title="현재 열로 행 필터"
+        style={filter ? { background: '#e8f0fe' } : undefined}
+      >🔽필터{filter ? ` ${filter.col}` : ''}</button>
+      {filter && <button onClick={clearFilter} title="필터 해제">✕</button>}
       <button onClick={() => applyF('currency')} title="통화">$</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>
       <button onClick={() => applyF('plain')} title="일반">123</button>
-      <button onClick={onExport} title="CSV로 내보내기">⬇ CSV</button>
-      <button onClick={() => fileRef.current?.click()} title="CSV 가져오기">⬆ CSV</button>
-      <input
-        ref={fileRef}
-        type="file"
-        accept=".csv,text/csv"
-        style={{ display: 'none' }}
-        onChange={(e) => {
-          const f = e.target.files?.[0]
-          if (f) onImport(f)
-          e.target.value = ''
-        }}
-      />
+      <CsvButtons display={display} writeCell={writeCell} />
     </>
   )
 }

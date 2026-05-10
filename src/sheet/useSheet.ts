@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useJson } from 'zod-crud'
-import { SheetSchema, cellKey, parseCellId } from './schema'
+import { SheetSchema, cellKey, parseCellId, ROW_COUNT } from './schema'
 import { evaluateCell } from './formula'
 import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './useFormats'
 import { useStyles } from './useStyles'
 import { useFreeze } from './useFreeze'
+import { useFilter, hiddenRows } from './useFilter'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp } from './rowOps'
 import { sortByColumn } from './sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -21,6 +22,7 @@ export function useSheet() {
   const fmt = useFormats()
   const styles = useStyles()
   const freeze = useFreeze()
+  const filter = useFilter()
   const find = useFindState()
   const tabs = useTabs(sheet.cells)
   const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c }))
@@ -82,6 +84,8 @@ export function useSheet() {
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols,
+    filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
+    hiddenRowSet: hiddenRows(filter.filter, ROW_COUNT, display),
     insertRow, deleteRow, sortByCol,
     tabs: tabs.state, ...tabFns,
   }

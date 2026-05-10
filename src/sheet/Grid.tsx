@@ -16,7 +16,7 @@ import type { useSheet } from './useSheet'
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, freeze } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, freeze, hiddenRowSet } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, sortByCol })
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
@@ -46,6 +46,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         setSelectedIds={setSelectedIds}
       />
       {dataRows.map((row, rIdx) => {
+        if (hiddenRowSet.has(rIdx)) return null
         const rowCls = `grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}`
         return (
         <div key={row.id} {...rowProps(row.id)} className={rowCls} style={{ gridTemplateColumns: gridTemplate }}>

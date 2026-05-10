@@ -40,6 +40,9 @@ export default function App() {
             freeze={ctx.freeze}
             toggleFreezeRows={ctx.toggleFreezeRows}
             toggleFreezeCols={ctx.toggleFreezeCols}
+            filter={ctx.filter}
+            applyFilter={ctx.applyFilter}
+            clearFilter={ctx.clearFilter}
           />
         }
       />
