@@ -137,6 +137,13 @@ describe('MAX_BY / MIN_BY', () => {
   })
 })
 
+describe('MOSTCOMMON', () => {
+  it('returns most frequent value', () => {
+    const cells = { A1: 'red', A2: 'blue', A3: 'red', A4: 'green' }
+    expect(evaluateCell(cells, '=MOSTCOMMON(A1:A4)')).toBe('red')
+  })
+})
+
 describe('COUNTNUMERIC', () => {
   it('counts cells holding finite numbers', () => {
     const cells = { A1: '5', A2: 'x', A3: '3.14', A4: '', A5: 'NaN' }
