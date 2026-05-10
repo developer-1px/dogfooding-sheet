@@ -40,6 +40,15 @@ export function dispatchTextAlgo(F: string, argsT: string[]): string | null {
     for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++
     return String(d)
   }
+  if (F === 'DICE') {
+    const a = argsT[0] ?? '', b = argsT[1] ?? ''
+    if (a.length < 2 || b.length < 2) return '#N/A'
+    const bigrams = (s: string) => { const m = new Map<string, number>(); for (let i = 0; i < s.length - 1; i++) { const k = s.slice(i, i + 2); m.set(k, (m.get(k) ?? 0) + 1) } return m }
+    const A = bigrams(a), B = bigrams(b)
+    let inter = 0
+    for (const [k, v] of A) inter += Math.min(v, B.get(k) ?? 0)
+    return String((2 * inter) / (a.length + b.length - 2))
+  }
   if (F === 'LCS') {
     const a = argsT[0] ?? '', b = argsT[1] ?? ''
     const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0))
