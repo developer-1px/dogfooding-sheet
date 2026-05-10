@@ -1,18 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import type { JsonOps } from 'zod-crud'
+import type { Sheet } from './schema'
 
-const KEY = 'spreadsheet:condfmt:v1'
+const LEGACY_KEY = 'spreadsheet:condfmt:v1'
 
 export type CondOp = '>' | '<' | '=' | '!=' | 'contains'
 export interface CondRule { col: string; op: CondOp; value: string; color: string }
-
-const load = (): CondRule[] => {
-  try {
-    const raw = localStorage.getItem(KEY)
-    if (!raw) return []
-    const a = JSON.parse(raw)
-    return Array.isArray(a) ? a : []
-  } catch { return [] }
-}
 
 export const matchRule = (rule: CondRule, displayed: string): boolean => {
   if (rule.op === 'contains') return displayed.toLowerCase().includes(rule.value.toLowerCase())
@@ -23,13 +16,23 @@ export const matchRule = (rule: CondRule, displayed: string): boolean => {
   return rule.op === '>' ? a > b : a < b
 }
 
-export function useCondFormat() {
-  const [rules, setRules] = useState<CondRule[]>(load)
-  useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(rules)) } catch { /* quota */ } }, [rules])
+function migrateLegacy(rules: CondRule[], ops: JsonOps<Sheet>) {
+  if (rules.length > 0) return
+  try {
+    const raw = localStorage.getItem(LEGACY_KEY)
+    if (!raw) return
+    const a = JSON.parse(raw)
+    if (Array.isArray(a) && a.length > 0) ops.replace('/condFormat', a as CondRule[])
+    localStorage.removeItem(LEGACY_KEY)
+  } catch { /* ignore */ }
+}
 
-  const addRule = (r: CondRule) => setRules((prev) => [...prev.filter((x) => x.col !== r.col), r])
-  const clearRule = (col: string) => setRules((prev) => prev.filter((x) => x.col !== col))
-  const clearAll = () => setRules([])
+export function useCondFormat(rules: CondRule[], ops: JsonOps<Sheet>) {
+  useEffect(() => { migrateLegacy(rules, ops) }, [])
+
+  const addRule = (r: CondRule) => ops.replace('/condFormat', [...rules.filter((x) => x.col !== r.col), r])
+  const clearRule = (col: string) => ops.replace('/condFormat', rules.filter((x) => x.col !== col))
+  const clearAll = () => ops.replace('/condFormat', [])
 
   const bgFor = (col: string, displayed: string): string | undefined => {
     for (const r of rules) {
@@ -38,5 +41,5 @@ export function useCondFormat() {
     return undefined
   }
 
-  return { rules, addRule, clearRule, clearAll, bgFor }
+  return { addRule, clearRule, clearAll, bgFor }
 }

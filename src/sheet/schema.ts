@@ -23,6 +23,12 @@ export const SheetSchema = z.object({
     z.object({ type: z.literal('list'), options: z.array(z.string()) }),
     z.object({ type: z.literal('checkbox') }),
   ])).default({}),
+  condFormat: z.array(z.object({
+    col: z.string(),
+    op: z.enum(['>', '<', '=', '!=', 'contains']),
+    value: z.string(),
+    color: z.string(),
+  })).default([]),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -38,4 +44,5 @@ export const initialSheet: Sheet = {
   styles: {},
   formats: {},
   validation: {},
+  condFormat: [],
 }
