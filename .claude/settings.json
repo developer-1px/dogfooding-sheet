@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"decision\":\"block\",\"reason\":\"변경사항을 커밋하세요.\"}'"
+            "command": "bash .claude/stop-hook.sh"
           }
         ]
       }
