@@ -35,8 +35,10 @@ export function useHidden(hidden: HiddenState, ops: JsonOps<Sheet>) {
     ops.add('/hidden/cols/-' as never, col as never)
   }
   const showAll = () => {
-    if (hidden.rows.length) ops.replace('/hidden/rows', [])
-    if (hidden.cols.length) ops.replace('/hidden/cols', [])
+    const patch: Array<{ op: 'replace'; path: string; value: unknown }> = []
+    if (hidden.rows.length) patch.push({ op: 'replace', path: '/hidden/rows', value: [] })
+    if (hidden.cols.length) patch.push({ op: 'replace', path: '/hidden/cols', value: [] })
+    if (patch.length) ops.patch(patch as never)
   }
 
   return {
