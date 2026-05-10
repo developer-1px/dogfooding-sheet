@@ -1,6 +1,7 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'RANDCOLOR') return wrap('#' + Math.floor(Math.random() * 0x1000000).toString(16).padStart(6, '0'))
   if (F === 'RGB') {
     const clamp = (n: number) => Math.max(0, Math.min(255, Math.round(n)))
     const hex = (n: number) => clamp(n).toString(16).padStart(2, '0')

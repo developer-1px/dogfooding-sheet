@@ -411,6 +411,9 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('RANDCOLOR returns hex color', () => {
+    expect(evaluateCell({}, '=RANDCOLOR()')).toMatch(/^#[0-9a-f]{6}$/)
+  })
   it('RGB returns hex color', () => {
     expect(evaluateCell({}, '=RGB(255, 128, 0)')).toBe('#ff8000')
     expect(evaluateCell({}, '=RGB(300, -10, 50)')).toBe('#ff0032')
