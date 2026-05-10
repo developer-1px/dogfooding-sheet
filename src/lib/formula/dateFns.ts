@@ -76,5 +76,12 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
     const r = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m, d.getUTCDate()))
     return wrap(`${r.getUTCFullYear()}-${pad(r.getUTCMonth() + 1)}-${pad(r.getUTCDate())}`)
   }
+  if (F === 'EOMONTH') {
+    const d = parseDate(argsT[0])
+    if (!d) return wrap('#VALUE!')
+    const m = Number(argsT[1])
+    const r = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m + 1, 0))
+    return wrap(`${r.getUTCFullYear()}-${pad(r.getUTCMonth() + 1)}-${pad(r.getUTCDate())}`)
+  }
   return null
 }

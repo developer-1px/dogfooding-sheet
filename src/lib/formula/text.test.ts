@@ -76,6 +76,11 @@ describe('text functions', () => {
   it('EDATE shifts months', () => {
     expect(evaluateCell({}, '=EDATE("2026-01-31",1)')).toBe('2026-03-03')
   })
+  it('EOMONTH returns end of month +N', () => {
+    expect(evaluateCell({}, '=EOMONTH("2026-01-15",0)')).toBe('2026-01-31')
+    expect(evaluateCell({}, '=EOMONTH("2026-01-15",1)')).toBe('2026-02-28')
+    expect(evaluateCell({}, '=EOMONTH("2024-01-15",1)')).toBe('2024-02-29')
+  })
   it('DATEDIF Y/M/D units', () => {
     expect(evaluateCell({}, '=DATEDIF("2020-01-01","2026-05-11","Y")')).toBe('6')
     expect(evaluateCell({}, '=DATEDIF("2026-01-15","2026-05-11","M")')).toBe('3')
