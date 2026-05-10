@@ -243,6 +243,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=LCM(4,6)')).toBe('12')
     expect(evaluateCell({}, '=GCD(24,36,60)')).toBe('12')
   })
+  it('MAPRANGE remaps value', () => {
+    expect(evaluateCell({}, '=MAPRANGE(5, 0, 10, 0, 100)')).toBe('50')
+    expect(evaluateCell({}, '=MAPRANGE(5, 0, 0, 0, 100)')).toBe('#DIV/0!')
+  })
   it('LERP / CLAMP', () => {
     expect(evaluateCell({}, '=LERP(0, 10, 0.25)')).toBe('2.5')
     expect(evaluateCell({}, '=CLAMP(15, 0, 10)')).toBe('10')
