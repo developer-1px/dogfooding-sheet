@@ -1,3 +1,5 @@
+import { fromList, type UiEvent } from '@p/aria-kernel'
+import { useTabsPattern } from '@p/aria-kernel/patterns'
 import type { TabsState } from './useTabs'
 
 interface Props {
@@ -9,13 +11,30 @@ interface Props {
 }
 
 export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet }: Props) {
+  const data = fromList(state.order.map((name) => ({ id: name, label: name })))
+  data.meta = { ...data.meta, focus: state.active }
+  for (const name of state.order) {
+    data.entities[name] = { ...(data.entities[name] ?? {}), selected: name === state.active }
+  }
+
+  const onEvent = (e: UiEvent) => {
+    if (e.type === 'navigate' && e.id) switchTab(e.id)
+    else if (e.type === 'activate' && e.id) switchTab(e.id)
+    else if (e.type === 'select' && e.ids[0]) switchTab(e.ids[0])
+  }
+
+  const { rootProps, tabProps } = useTabsPattern(data, onEvent, {
+    label: '시트 탭',
+    activationMode: 'automatic',
+  })
+
   return (
-    <div className="tabs-bar">
+    <div {...rootProps} className="tabs-bar">
       {state.order.map((name) => (
         <span
           key={name}
+          {...tabProps(name)}
           className={`tab${name === state.active ? ' active' : ''}`}
-          onClick={() => switchTab(name)}
           onDoubleClick={() => {
             const next = window.prompt('시트 이름', name)
             if (next != null) renameSheet(name, next)
