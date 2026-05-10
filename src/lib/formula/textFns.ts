@@ -37,6 +37,11 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'STARTSWITH') return argsT[0].startsWith(argsT[1] ?? '') ? '1' : '0'
   if (F === 'ENDSWITH') return argsT[0].endsWith(argsT[1] ?? '') ? '1' : '0'
   if (F === 'CONTAINS') return argsT[0].includes(argsT[1] ?? '') ? '1' : '0'
+  if (F === 'SPLITN') {
+    const parts = (argsT[0] ?? '').split(argsT[1] ?? '')
+    const n = Math.floor(Number(argsT[2] ?? '1'))
+    return wrap(n >= 1 && n <= parts.length ? parts[n - 1] : '#N/A')
+  }
   if (F === 'TEXTBEFORE') {
     const i = argsT[0].indexOf(argsT[1] ?? '')
     return wrap(i < 0 ? argsT[0] : argsT[0].slice(0, i))

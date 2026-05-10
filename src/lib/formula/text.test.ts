@@ -77,6 +77,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=CONTAINS("hello", "ell")')).toBe('1')
     expect(evaluateCell({}, '=STARTSWITH("hello", "X")')).toBe('0')
   })
+  it('SPLITN extracts Nth field', () => {
+    expect(evaluateCell({}, '=SPLITN("a-b-c-d", "-", 3)')).toBe('c')
+    expect(evaluateCell({}, '=SPLITN("a-b", "-", 5)')).toBe('#N/A')
+  })
   it('TEXTBEFORE / TEXTAFTER split by delimiter', () => {
     expect(evaluateCell({}, '=TEXTBEFORE("hello@example.com","@")')).toBe('hello')
     expect(evaluateCell({}, '=TEXTAFTER("hello@example.com","@")')).toBe('example.com')
