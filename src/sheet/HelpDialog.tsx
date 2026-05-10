@@ -42,12 +42,13 @@ const SHORTCUTS: Array<[string, string]> = [
 export function HelpDialog({ open, onClose }: Props) {
   const { rootProps } = useDialogPattern({
     open, modal: true, label: '키보드 단축키',
+    onOpenChange: (next) => { if (!next) onClose() },
   })
   if (!open) return null
   return (
     <>
       <div className="dialog-backdrop" onClick={onClose} />
-      <div {...rootProps} className="help-dialog" onKeyDown={(e) => { if (e.key === 'Escape') onClose() }}>
+      <div {...rootProps} className="help-dialog">
         <h2 id="help-title">키보드 단축키</h2>
         <table>
           <tbody>
