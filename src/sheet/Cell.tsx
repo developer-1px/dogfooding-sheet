@@ -35,7 +35,7 @@ export function Cell(p: Props) {
   return (
     <span
       {...p.cellProps}
-      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${/^#[A-Z/]+!?$/.test(p.label) ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
+      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.isNum && /^-/.test(p.label) ? ' negative' : ''}${/^#[A-Z/]+!?$/.test(p.label) ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
       style={p.styleInline}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
