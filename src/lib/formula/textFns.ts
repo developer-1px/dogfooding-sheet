@@ -66,6 +66,14 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     if (!Number.isFinite(n)) return wrap('#VALUE!')
     return wrap('$' + n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }))
   }
+  if (F === 'UNICHAR') {
+    const n = Number(argsT[0])
+    return Number.isFinite(n) && n > 0 ? wrap(String.fromCodePoint(n)) : wrap('#VALUE!')
+  }
+  if (F === 'UNICODE') {
+    const cp = argsT[0].codePointAt(0)
+    return cp !== undefined ? String(cp) : wrap('#VALUE!')
+  }
   if (F === 'CHAR') {
     const n = Number(argsT[0])
     return Number.isFinite(n) ? wrap(String.fromCharCode(n)) : wrap('#VALUE!')

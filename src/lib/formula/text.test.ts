@@ -147,6 +147,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2),"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')
   })
+  it('UNICHAR / UNICODE handle codepoints', () => {
+    expect(evaluateCell({}, '=UNICHAR(128512)')).toBe('😀')
+    expect(evaluateCell({}, '=UNICODE("😀")')).toBe('128512')
+  })
   it('CHAR / CODE round-trip', () => {
     expect(evaluateCell({}, '=CHAR(65)')).toBe('A')
     expect(evaluateCell({}, '=CODE("A")')).toBe('65')
