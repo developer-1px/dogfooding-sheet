@@ -49,6 +49,17 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
     if (type === 3) return String((w + 6) % 7)
     return String(w + 1)
   }
+  if (F === 'NETWORKDAYS') {
+    const a = parseDate(argsT[0]), b = parseDate(argsT[1])
+    if (!a || !b) return wrap('#VALUE!')
+    const [start, end] = a <= b ? [a, b] : [b, a]
+    let n = 0
+    for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+      const w = d.getUTCDay()
+      if (w !== 0 && w !== 6) n++
+    }
+    return String(n)
+  }
   if (F === 'EDATE') {
     const d = parseDate(argsT[0])
     if (!d) return wrap('#VALUE!')

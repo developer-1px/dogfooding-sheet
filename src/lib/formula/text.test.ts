@@ -76,6 +76,12 @@ describe('text functions', () => {
   it('EDATE shifts months', () => {
     expect(evaluateCell({}, '=EDATE("2026-01-31",1)')).toBe('2026-03-03')
   })
+  it('NETWORKDAYS counts weekdays inclusive', () => {
+    // 2026-05-04 (Mon) to 2026-05-08 (Fri) = 5 weekdays
+    expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-08")')).toBe('5')
+    // Spans a weekend
+    expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-15")')).toBe('10')
+  })
   it('ISERROR / ISEVEN / ISODD predicates', () => {
     expect(evaluateCell({}, '=ISERROR(VLOOKUP("z","A1:B1",2))')).toBe('1')
     expect(evaluateCell({}, '=ISERROR(5)')).toBe('0')
