@@ -32,6 +32,25 @@ export function extendSeries(source: string[], targetLen: number): string[] {
     }
   }
 
+  const dateRe = /^(\d{4})-(\d{2})-(\d{2})$/
+  if (source.every((s) => dateRe.test(s))) {
+    const days = source.map((s) => Math.floor(new Date(s + 'T00:00:00Z').getTime() / 86400000))
+    let step = 1
+    if (days.length >= 2) {
+      step = days[1] - days[0]
+      for (let i = 2; i < days.length; i++) if (days[i] - days[i - 1] !== step) { step = NaN; break }
+    }
+    if (Number.isFinite(step)) {
+      const out = [...source]
+      const pad = (n: number) => String(n).padStart(2, '0')
+      for (let i = source.length; i < targetLen; i++) {
+        const d = new Date((days[days.length - 1] + step * (i - days.length + 1)) * 86400000)
+        out.push(`${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`)
+      }
+      return out
+    }
+  }
+
   // Cyclic repeat
   const out: string[] = []
   for (let i = 0; i < targetLen; i++) out.push(source[i % source.length])

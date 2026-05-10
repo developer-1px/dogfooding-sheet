@@ -26,6 +26,10 @@ describe('extendSeries', () => {
     expect(extendSeries(['Mon', 'Tue'], 5)).toEqual(['Mon', 'Tue', 'Mon', 'Tue', 'Mon'])
   })
 
+  it('extends ISO date series by day step', () => {
+    expect(extendSeries(['2026-01-01', '2026-01-02'], 4)).toEqual(['2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04'])
+    expect(extendSeries(['2026-01-31'], 3)).toEqual(['2026-01-31', '2026-02-01', '2026-02-02'])
+  })
   it('empty source produces empty cells', () => {
     expect(extendSeries([], 3)).toEqual(['', '', ''])
   })
