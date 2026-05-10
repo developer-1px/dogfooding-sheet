@@ -196,6 +196,11 @@ describe('text functions', () => {
     const cells = { A1: '100', A2: '200', A3: '300' }
     expect(Number(evaluateCell(cells, '=NPV(0.1, A1:A3)'))).toBeCloseTo(481.59, 1)
   })
+  it('FLOOR / CEILING with significance', () => {
+    expect(evaluateCell({}, '=FLOOR(13, 5)')).toBe('10')
+    expect(evaluateCell({}, '=CEILING(13, 5)')).toBe('15')
+    expect(evaluateCell({}, '=FLOOR(13)')).toBe('13')
+  })
   it('FACT / COMBIN / PERMUT', () => {
     expect(evaluateCell({}, '=FACT(5)')).toBe('120')
     expect(evaluateCell({}, '=FACT(0)')).toBe('1')

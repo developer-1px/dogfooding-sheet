@@ -3,8 +3,8 @@ import { wrap } from './marker'
 export function dispatchMath(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'ROUND') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.round(n * m) / m) }
   if (F === 'ABS') return String(Math.abs(argsN[0]))
-  if (F === 'FLOOR') return String(Math.floor(argsN[0]))
-  if (F === 'CEIL') return String(Math.ceil(argsN[0]))
+  if (F === 'FLOOR') { const [n, s = 1] = argsN; return s === 0 ? '0' : String(Math.floor(n / s) * s) }
+  if (F === 'CEIL' || F === 'CEILING') { const [n, s = 1] = argsN; return s === 0 ? '0' : String(Math.ceil(n / s) * s) }
   if (F === 'SQRT') return String(Math.sqrt(argsN[0]))
   if (F === 'POWER') return String(Math.pow(argsN[0], argsN[1]))
   if (F === 'MOD') return String(argsN[0] % argsN[1])
