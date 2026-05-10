@@ -23,6 +23,12 @@ export function dispatchCalendar(F: string, argsT: string[]): string | null {
     const days0 = Math.floor((d.getTime() - start.getTime()) / 86400000)
     return String(Math.floor((days0 + start.getUTCDay()) / 7) + 1)
   }
+  if (F === 'DAYS360') {
+    const a = parseDate(argsT[0]), b = parseDate(argsT[1])
+    if (!a || !b) return wrap('#VALUE!')
+    const day = (d: Date) => Math.min(30, d.getUTCDate())
+    return String(360 * (b.getUTCFullYear() - a.getUTCFullYear()) + 30 * (b.getUTCMonth() - a.getUTCMonth()) + (day(b) - day(a)))
+  }
   if (F === 'DATEDIF') {
     const a = parseDate(argsT[0]), b = parseDate(argsT[1])
     if (!a || !b) return wrap('#VALUE!')

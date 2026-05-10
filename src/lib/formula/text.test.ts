@@ -111,6 +111,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=EOMONTH("2026-01-15",1)')).toBe('2026-02-28')
     expect(evaluateCell({}, '=EOMONTH("2024-01-15",1)')).toBe('2024-02-29')
   })
+  it('DAYS360 uses 30/360 day count', () => {
+    expect(evaluateCell({}, '=DAYS360("2026-01-01","2027-01-01")')).toBe('360')
+    expect(evaluateCell({}, '=DAYS360("2026-01-15","2026-02-15")')).toBe('30')
+  })
   it('DATEDIF Y/M/D units', () => {
     expect(evaluateCell({}, '=DATEDIF("2020-01-01","2026-05-11","Y")')).toBe('6')
     expect(evaluateCell({}, '=DATEDIF("2026-01-15","2026-05-11","M")')).toBe('3')
