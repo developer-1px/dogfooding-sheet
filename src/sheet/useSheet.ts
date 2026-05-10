@@ -22,7 +22,7 @@ import { useEditState } from './useEditState'
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const fmt = useFormats()
+  const fmt = useFormats(sheet.formats, ops)
   const styles = useStyles(sheet.styles, ops)
   const freeze = useFreeze()
   const filter = useFilter()
@@ -33,7 +33,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void } 
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
   const tabs = useTabs(sheet.cells)
-  const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c, notes: sheet.notes, styles: sheet.styles }))
+  const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats }))
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 

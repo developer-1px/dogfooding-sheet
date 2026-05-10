@@ -18,6 +18,7 @@ export const SheetSchema = z.object({
   cells: z.record(z.string(), z.string()),
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
+  formats: z.record(z.string(), z.enum(['plain', 'currency', 'eur', 'krw', 'percent', 'integer', 'thousand', 'scientific', 'date'])).default({}),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -31,4 +32,5 @@ export const initialSheet: Sheet = {
   },
   notes: {},
   styles: {},
+  formats: {},
 }

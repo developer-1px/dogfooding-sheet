@@ -1,38 +1,34 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import type { JsonOps } from 'zod-crud'
+import type { Sheet } from './schema'
 
 export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date'
-const STORAGE_KEY = 'spreadsheet:formats:v1'
+const LEGACY_KEY = 'spreadsheet:formats:v1'
 
-const load = (): Record<string, Format> => {
+function migrateLegacy(formats: Record<string, Format>, ops: JsonOps<Sheet>) {
+  if (Object.keys(formats).length > 0) return
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return {}
+    const raw = localStorage.getItem(LEGACY_KEY)
+    if (!raw) return
     const obj = JSON.parse(raw)
-    return obj && typeof obj === 'object' ? obj : {}
-  } catch { return {} }
+    if (obj && typeof obj === 'object' && Object.keys(obj).length > 0) ops.replace('/formats', obj as Record<string, Format>)
+    localStorage.removeItem(LEGACY_KEY)
+  } catch { /* ignore */ }
 }
 
-export function useFormats() {
-  const [formats, setFormats] = useState<Record<string, Format>>(load)
-
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(formats)) } catch { /* quota */ }
-  }, [formats])
+export function useFormats(formats: Record<string, Format>, ops: JsonOps<Sheet>) {
+  useEffect(() => { migrateLegacy(formats, ops) }, [])
 
   const setFormat = (keys: string[], fmt: Format) => {
-    setFormats((prev) => {
-      const next = { ...prev }
-      for (const k of keys) {
-        if (fmt === 'plain') delete next[k]
-        else next[k] = fmt
-      }
-      return next
-    })
+    const next = { ...formats }
+    for (const k of keys) {
+      if (fmt === 'plain') delete next[k]
+      else next[k] = fmt
+    }
+    ops.replace('/formats', next)
   }
 
-  const formatOf = (k: string): Format => formats[k] ?? 'plain'
-
-  return { formats, setFormat, formatOf }
+  return { setFormat, formatOf: (k: string): Format => formats[k] ?? 'plain' }
 }
 
 const CURRENCY = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
@@ -51,7 +47,6 @@ export function applyFormat(value: string, fmt: Format): string {
   if (fmt === 'thousand') return n.toLocaleString('en-US')
   if (fmt === 'scientific') return n.toExponential(2)
   if (fmt === 'date') {
-    // Treat numbers > 10^10 as JS milliseconds, else assume epoch seconds.
     const ms = n > 1e10 ? n : n * 1000
     const d = new Date(ms)
     if (isNaN(d.getTime())) return value
