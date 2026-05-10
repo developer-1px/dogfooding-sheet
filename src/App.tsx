@@ -53,6 +53,8 @@ export default function App() {
             openHelp={() => ctx.setHelpOpen(true)}
             addCondRule={ctx.addCondRule}
             clearCondRules={ctx.clearCondRules}
+            cells={ctx.sheet.cells}
+            resetCells={(c) => ctx.ops.replace('/cells', c)}
           />
         }
       />

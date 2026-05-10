@@ -8,17 +8,24 @@ interface Props {
   display: (k: string) => string
   writeCell: (k: string, v: string) => void
   openHelp: () => void
+  cells: Record<string, string>
+  resetCells: (cells: Record<string, string>) => void
 }
 
-export function OverflowMenu({ display, writeCell, openHelp }: Props) {
+export function OverflowMenu({ display, writeCell, openHelp, cells, resetCells }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
+  const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
   const importCsvFile = (f: File) => f.text().then((t) => { parseCsv(t); importCsvInto(t, writeCell, { rowCount: ROW_COUNT }) })
+  const exportJson = () => downloadFile('sheet.json', JSON.stringify({ cells }, null, 2))
+  const importJson = (f: File) => f.text().then((t) => { try { const o = JSON.parse(t); if (o?.cells && typeof o.cells === 'object') resetCells(o.cells) } catch { /* ignore */ } })
 
   const items = [
     { id: 'help', label: '도움말 (F1)', action: openHelp },
-    { id: 'export', label: 'CSV 내보내기', action: exportCsvFile },
-    { id: 'import', label: 'CSV 가져오기', action: () => fileRef.current?.click() },
+    { id: 'csv-export', label: 'CSV 내보내기', action: exportCsvFile },
+    { id: 'csv-import', label: 'CSV 가져오기', action: () => fileRef.current?.click() },
+    { id: 'json-export', label: 'JSON 내보내기', action: exportJson },
+    { id: 'json-import', label: 'JSON 가져오기', action: () => jsonRef.current?.click() },
   ]
   const data = fromList(items.map(({ id, label }) => ({ id, label })))
 
@@ -43,13 +50,10 @@ export function OverflowMenu({ display, writeCell, openHelp }: Props) {
           ))}
         </div>
       )}
-      <input
-        ref={fileRef}
-        type="file"
-        accept=".csv,text/csv"
-        style={{ display: 'none' }}
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) importCsvFile(f); e.target.value = '' }}
-      />
+      <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }}
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) importCsvFile(f); e.target.value = '' }} />
+      <input ref={jsonRef} type="file" accept=".json,application/json" style={{ display: 'none' }}
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) importJson(f); e.target.value = '' }} />
     </span>
   )
 }

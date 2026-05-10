@@ -31,15 +31,14 @@ interface Props {
   openHelp: () => void
   addCondRule: (r: { col: string; op: '>' | '<' | '=' | '!=' | 'contains'; value: string; color: string }) => void
   clearCondRules: () => void
+  cells: Record<string, string>
+  resetCells: (c: Record<string, string>) => void
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp, addCondRule, clearCondRules }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp, addCondRule, clearCondRules, cells, resetCells }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
-  const targetKeys = (): string[] => {
-    const ids = selectedIds.length > 0 ? selectedIds : (focusKey ? [focusKey] : [])
-    return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
-  }
+  const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
   const applyF = (f: Format) => setFormat(targetKeys(), f)
   const toggle = (k: 'b' | 'i' | 'u') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
   const setAlign = (a: CellStyle['a']) => updateStyle(targetKeys(), { a })
@@ -94,7 +93,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => applyF('thousand')} title="1,000 천단위">1,K</button>
       <button onClick={() => applyF('scientific')} title="과학 표기">1E</button>
       <button onClick={() => applyF('plain')} title="일반">123</button>
-      <OverflowMenu display={display} writeCell={writeCell} openHelp={openHelp} />
+      <OverflowMenu display={display} writeCell={writeCell} openHelp={openHelp} cells={cells} resetCells={resetCells} />
     </>
   )
 }
