@@ -57,7 +57,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
 
   return (
     <>
-      <button onClick={undo} disabled={!canUndo} title="실행 취소 (Ctrl/⌘+Z)">↶</button><button onClick={redo} disabled={!canRedo} title="다시 실행 (Ctrl/⌘+Shift+Z)">↷</button>
+      <button onClick={undo} disabled={!canUndo} title="실행 취소 (Ctrl/⌘+Z)" aria-keyshortcuts="Control+Z Meta+Z" aria-label="실행 취소">↶</button><button onClick={redo} disabled={!canRedo} title="다시 실행 (Ctrl/⌘+Shift+Z)" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label="다시 실행">↷</button>
       <button onClick={() => insertRow(focusRow)} title="위에 행 삽입">+행</button><button onClick={() => deleteRow(focusRow)} title="현재 행 삭제">−행</button>
       <button onClick={() => focus && insertCol(focus[1])} title="왼쪽에 열 삽입">+열</button><button onClick={() => focus && deleteCol(focus[1])} title="현재 열 삭제">−열</button>
       <button onClick={() => focus && sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button><button onClick={() => focus && sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
