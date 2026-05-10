@@ -10,5 +10,8 @@ export function dispatchRegex(F: string, argsT: string[]): string | null {
   if (F === 'REGEXREPLACE') {
     try { return wrap(argsT[0].replace(new RegExp(argsT[1] ?? '', 'g'), argsT[2] ?? '')) } catch { return wrap('#VALUE!') }
   }
+  if (F === 'REGEXCOUNT') {
+    try { return String((argsT[0].match(new RegExp(argsT[1] ?? '', 'g')) ?? []).length) } catch { return wrap('#VALUE!') }
+  }
   return null
 }
