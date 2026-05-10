@@ -6,6 +6,7 @@ import { dispatchDate } from './dateFns'
 import { dispatchTime } from './timeFns'
 import { dispatchCalendar } from './calendar'
 import { dispatchText } from './textFns'
+import { dispatchRegex } from './regexFns'
 import { dispatchMath } from './mathFns'
 import { dispatchLogic } from './logicFns'
 import { evalArgs, splitArgs, type Ctx } from './args'
@@ -55,6 +56,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const time = dispatchTime(F, argsT); if (time !== null) return time
   const cal = dispatchCalendar(F, argsT); if (cal !== null) return cal
   const text = dispatchText(F, argsT); if (text !== null) return text
+  const rx = dispatchRegex(F, argsT); if (rx !== null) return rx
   const math = dispatchMath(F, argsT, argsN); if (math !== null) return math
   const logic = dispatchLogic(F, argsT, argsN); if (logic !== null) return logic
 

@@ -208,6 +208,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('NUMBERVALUE parses with custom separators', () => {
+    expect(evaluateCell({}, '=NUMBERVALUE("1.234,5", ",", ".")')).toBe('1234.5')
+    expect(evaluateCell({}, '=NUMBERVALUE("1,234.5")')).toBe('1234.5')
+    expect(evaluateCell({}, '=NUMBERVALUE("xx")')).toBe('#VALUE!')
+  })
   it('VALUE / N coerce to number', () => {
     expect(evaluateCell({}, '=VALUE("3.14")')).toBe('3.14')
     expect(evaluateCell({}, '=N("abc")')).toBe('0')

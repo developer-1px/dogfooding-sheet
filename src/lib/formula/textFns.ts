@@ -11,15 +11,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'MID') return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
   if (F === 'TRIM') return wrap(argsT[0].trim())
   if (F === 'CLEAN') return wrap(argsT[0].replace(/[\x00-\x1F\x7F]/g, ''))
-  if (F === 'REGEXMATCH') {
-    try { return new RegExp(argsT[1] ?? '').test(argsT[0]) ? '1' : '0' } catch { return wrap('#VALUE!') }
-  }
-  if (F === 'REGEXEXTRACT') {
-    try { const m = new RegExp(argsT[1] ?? '').exec(argsT[0]); return wrap(m ? (m[1] ?? m[0]) : '#N/A') } catch { return wrap('#VALUE!') }
-  }
-  if (F === 'REGEXREPLACE') {
-    try { return wrap(argsT[0].replace(new RegExp(argsT[1] ?? '', 'g'), argsT[2] ?? '')) } catch { return wrap('#VALUE!') }
-  }
   if (F === 'T') return /^-?\d/.test(argsT[0]) ? wrap('') : wrap(argsT[0])
   if (F === 'SUBSTITUTE') {
     const [text, find, repl, occStr] = argsT
@@ -80,6 +71,12 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   }
   if (F === 'CODE') {
     return argsT[0].length > 0 ? String(argsT[0].charCodeAt(0)) : wrap('#VALUE!')
+  }
+  if (F === 'NUMBERVALUE') {
+    const dec = argsT[1] ?? '.', grp = argsT[2] ?? ','
+    const cleaned = (argsT[0] ?? '').split(grp).join('').replace(dec, '.')
+    const n = Number(cleaned)
+    return Number.isFinite(n) ? String(n) : wrap('#VALUE!')
   }
   if (F === 'VALUE') {
     const n = Number(argsT[0])
