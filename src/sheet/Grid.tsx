@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { COL_LETTERS } from './schema'
+import { COL_LETTERS, ROW_COUNT } from './schema'
 import { GridHeader } from './GridHeader'
 import { GridRow } from './GridRow'
 import { useDragSelect } from './useDragSelect'
@@ -32,12 +32,11 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit })
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
-  const { gridTemplateFor, startResize } = useColWidths()
+  const { gridTemplateFor, startResize, autoFit } = useColWidths()
+  const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(`${c}${r + 1}`)))
   const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))
   const gridTemplate = gridTemplateFor(visibleCols)
-  // aria-kernel's `rows` only contains entities that have children (data rows).
-  // Column headers are top-level entities WITHOUT children and are filtered out
-  // by useGridPattern itself, so no slicing is needed here.
+  // useGridPattern.rows already filters out childless entities (column headers).
   const dataRows = rows
 
   return (
@@ -46,6 +45,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         gridTemplate={gridTemplate}
         columnHeaderProps={columnHeaderProps}
         startResize={startResize}
+        autoFitCol={autoFitCol}
         setSelectedIds={setSelectedIds}
         hiddenCols={hiddenCols}
         hideCol={hideCol}

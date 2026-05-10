@@ -7,12 +7,13 @@ interface Props {
   gridTemplate: string
   columnHeaderProps: (id: string) => ItemProps
   startResize: (col: string) => (e: React.MouseEvent) => void
+  autoFitCol: (col: string) => void
   setSelectedIds: (ids: string[]) => void
   hiddenCols: Set<string>
   hideCol: (col: string) => void
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, startResize, setSelectedIds, hiddenCols, hideCol }: Props) {
+export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoFitCol, setSelectedIds, hiddenCols, hideCol }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(ROW_COUNT))} />
@@ -28,7 +29,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, startResize, setSe
             title="우클릭으로 열 숨기기"
           >
             {c}
-            <span className="col-resizer" onMouseDown={startResize(c)} />
+            <span className="col-resizer" onMouseDown={startResize(c)} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(c) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
           </span>
         )
       })}

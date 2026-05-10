@@ -38,6 +38,19 @@ export function useColWidths() {
     }
   }, [])
 
+  const autoFit = (col: string, samples: string[]) => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.font = '13px system-ui, sans-serif'
+    let max = MIN_WIDTH
+    for (const s of samples) {
+      const w = Math.ceil(ctx.measureText(s).width) + 16
+      if (w > max) max = w
+    }
+    setWidths((prev) => ({ ...prev, [col]: Math.min(400, max) }))
+  }
+
   const startResize = (col: string) => (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -50,5 +63,5 @@ export function useColWidths() {
   const gridTemplateFor = (visibleCols: readonly string[] = COL_LETTERS) =>
     `48px ${visibleCols.map((c) => `${widthOf(c)}px`).join(' ')}`
 
-  return { widths, widthOf, gridTemplate: gridTemplateFor(), gridTemplateFor, startResize }
+  return { widths, widthOf, gridTemplate: gridTemplateFor(), gridTemplateFor, startResize, autoFit }
 }
