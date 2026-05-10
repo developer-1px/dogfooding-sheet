@@ -19,7 +19,7 @@ import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 import { rowColAtFocus } from './lib/rowColAtFocus'
-import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from './lib/mergeSelection'
+import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from './lib/mergeSelection'; import { writeCellsBatch } from './lib/writeCells'
 
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
@@ -44,7 +44,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     if (v === '' && sheet.cells[k] !== undefined) ops.remove(`/cells/${k}`)
     else if (v !== '' && sheet.cells[k] === undefined) ops.add(`/cells/${k}`, v)
     else if (v !== '' && sheet.cells[k] !== v) ops.replace(`/cells/${k}`, v)
-  }
+  }; const writeCells = (writes: Array<[string, string]>) => writeCellsBatch(ops, sheet.cells, writes)
 
   const edit = useEditState({ cells: sheet.cells, writeCell })
 
@@ -63,7 +63,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
   const toggleShowFormulas = () => setShowFormulas((v) => !v)
 
   useShortcuts({
-    editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
+    editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell, writeCells,
     startEdit: edit.startEdit, selectedIds,
     openFind: find.openFind, openReplace: find.openReplace,
     openHelp: () => setHelpOpen(true), openGoto: opts.openGoto ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
