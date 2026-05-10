@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
 import { migrateLegacyKey } from './lib/legacyMigrate'
+import { upsertKey } from './lib/dictOps'
 
 const LEGACY_KEY = 'spreadsheet:notes:v1'
 
@@ -16,12 +17,7 @@ export function useNotes(notes: Record<string, string>, ops: JsonOps<Sheet>) {
 
   const setNote = (k: string, text: string) => {
     const trimmed = text.trim()
-    if (!trimmed) {
-      if (notes[k] !== undefined) ops.remove(`/notes/${k}`)
-      return
-    }
-    if (notes[k] === undefined) ops.add(`/notes/${k}`, trimmed)
-    else if (notes[k] !== trimmed) ops.replace(`/notes/${k}`, trimmed)
+    upsertKey(ops, '/notes', notes, k, trimmed || undefined)
   }
 
   return { setNote, noteOf: (k: string) => notes[k] }
