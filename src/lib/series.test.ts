@@ -22,8 +22,12 @@ describe('extendSeries', () => {
     expect(extendSeries(['1', '3', '6'], 6)).toEqual(['1', '3', '6', '1', '3', '6'])
   })
 
-  it('text values cycle', () => {
-    expect(extendSeries(['Mon', 'Tue'], 5)).toEqual(['Mon', 'Tue', 'Mon', 'Tue', 'Mon'])
+  it('weekday/month names continue the cycle', () => {
+    expect(extendSeries(['Mon', 'Tue'], 5)).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
+    expect(extendSeries(['Jan', 'Feb', 'Mar'], 5)).toEqual(['Jan', 'Feb', 'Mar', 'Apr', 'May'])
+  })
+  it('arbitrary text values cycle', () => {
+    expect(extendSeries(['x', 'y'], 5)).toEqual(['x', 'y', 'x', 'y', 'x'])
   })
 
   it('extends ISO date series by day step', () => {

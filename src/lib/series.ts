@@ -51,6 +51,22 @@ export function extendSeries(source: string[], targetLen: number): string[] {
     }
   }
 
+  // Named cycles: weekday / month names — continue the cycle past source end
+  const cycles: string[][] = [
+    ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  ]
+  for (const cyc of cycles) {
+    const idx = cyc.indexOf(source[0])
+    if (idx >= 0 && source.every((s, i) => s === cyc[(idx + i) % cyc.length])) {
+      const out = [...source]
+      for (let i = source.length; i < targetLen; i++) out.push(cyc[(idx + i) % cyc.length])
+      return out
+    }
+  }
+
   // Cyclic repeat
   const out: string[] = []
   for (let i = 0; i < targetLen; i++) out.push(source[i % source.length])
