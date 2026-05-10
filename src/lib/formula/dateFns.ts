@@ -49,6 +49,15 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
     if (type === 3) return String((w + 6) % 7)
     return String(w + 1)
   }
+  if (F === 'DATEDIF') {
+    const a = parseDate(argsT[0]), b = parseDate(argsT[1])
+    if (!a || !b) return wrap('#VALUE!')
+    const unit = (argsT[2] ?? '').toUpperCase()
+    if (unit === 'D') return String(Math.floor((b.getTime() - a.getTime()) / 86400000))
+    if (unit === 'M') return String((b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth()) - (b.getUTCDate() < a.getUTCDate() ? 1 : 0))
+    if (unit === 'Y') return String(b.getUTCFullYear() - a.getUTCFullYear() - (b.getUTCMonth() < a.getUTCMonth() || (b.getUTCMonth() === a.getUTCMonth() && b.getUTCDate() < a.getUTCDate()) ? 1 : 0))
+    return wrap('#NUM!')
+  }
   if (F === 'NETWORKDAYS') {
     const a = parseDate(argsT[0]), b = parseDate(argsT[1])
     if (!a || !b) return wrap('#VALUE!')
