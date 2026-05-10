@@ -1,0 +1,43 @@
+import { useDialogPattern } from '@p/aria-kernel/patterns'
+
+interface Props {
+  open: boolean
+  onClose: () => void
+}
+
+const SHORTCUTS: Array<[string, string]> = [
+  ['Ctrl/⌘ + Z', '실행 취소'],
+  ['Ctrl/⌘ + Shift + Z', '다시 실행'],
+  ['Ctrl/⌘ + C / X / V', '복사 / 잘라내기 / 붙여넣기'],
+  ['Ctrl/⌘ + F', '찾기'],
+  ['Ctrl/⌘ + H', '찾기 및 바꾸기'],
+  ['Enter / Shift+Enter', '편집 후 아래/위 셀 이동'],
+  ['Tab / Shift+Tab', '편집 후 오른쪽/왼쪽 셀 이동'],
+  ['Delete / Backspace', '선택 셀 비우기'],
+  ['F2', '셀 편집 시작'],
+  ['F1 / ?', '이 도움말 열기'],
+  ['Esc', '편집 취소 / 대화상자 닫기'],
+]
+
+export function HelpDialog({ open, onClose }: Props) {
+  const { rootProps } = useDialogPattern({
+    open, modal: true, label: '키보드 단축키',
+  })
+  if (!open) return null
+  return (
+    <>
+      <div className="dialog-backdrop" onClick={onClose} />
+      <div {...rootProps} className="help-dialog" onKeyDown={(e) => { if (e.key === 'Escape') onClose() }}>
+        <h2 id="help-title">키보드 단축키</h2>
+        <table>
+          <tbody>
+            {SHORTCUTS.map(([k, d]) => (
+              <tr key={k}><td><kbd>{k}</kbd></td><td>{d}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        <button onClick={onClose}>닫기</button>
+      </div>
+    </>
+  )
+}

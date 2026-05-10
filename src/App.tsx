@@ -5,6 +5,7 @@ import { StatusBar } from './sheet/StatusBar'
 import { parseCellId } from './sheet/schema'
 import { rectFromIds, formatRect } from './lib/clipboard'
 import { Find } from './sheet/Find'
+import { HelpDialog } from './sheet/HelpDialog'
 import { Tabs } from './sheet/Tabs'
 import { Toolbar } from './sheet/Toolbar'
 import './App.css'
@@ -59,6 +60,7 @@ export default function App() {
         renameSheet={ctx.renameSheet}
       />
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
+      <HelpDialog open={ctx.helpOpen} onClose={() => ctx.setHelpOpen(false)} />
       <Find
         open={ctx.findOpen}
         mode={ctx.findMode}

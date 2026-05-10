@@ -28,6 +28,7 @@ export function useSheet() {
   const notes = useNotes()
   const validation = useValidation()
   const find = useFindState()
+  const [helpOpen, setHelpOpen] = useState(false)
   const tabs = useTabs(sheet.cells)
   const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c }))
 
@@ -56,6 +57,7 @@ export function useSheet() {
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
     startEdit: edit.startEdit, selectedIds,
     openFind: find.openFind, openReplace: find.openReplace,
+    openHelp: () => setHelpOpen(true),
   })
 
   return {
@@ -65,6 +67,7 @@ export function useSheet() {
     selectedIds, setSelectedIds,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
+    helpOpen, setHelpOpen,
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols,

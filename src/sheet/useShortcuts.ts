@@ -13,13 +13,19 @@ interface Args {
   selectedIds: string[]
   openFind: () => void
   openReplace: () => void
+  openHelp: () => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
+      if (!editing && (e.key === 'F1' || (e.key === '?' && !mod))) {
+        e.preventDefault()
+        openHelp()
+        return
+      }
       if (mod && ck === 'f') {
         e.preventDefault()
         openFind()
