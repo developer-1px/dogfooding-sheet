@@ -1,5 +1,5 @@
 import { largeSmall, rank } from './rangeOps'
-import { percentile, quartile, pairStat, trimmean, forecast, percentRank, zScore, skew } from './stats'
+import { percentile, quartile, pairStat, trimmean, forecast, percentRank, zScore, moment } from './stats'
 import { splitArgs } from './args'
 import { smartReturn } from './marker'
 
@@ -13,7 +13,7 @@ export function dispatchStat(F: string, argsT: string[], rawArgs: string, numFro
   if (F === 'LARGE' || F === 'SMALL') return smartReturn(largeSmall(F, splitArgs(rawArgs)[0], Number(argsT[1]), numFromCell))
   if (F === 'FORECAST') { const a = splitArgs(rawArgs); return smartReturn(forecast(Number(argsT[0]), a[1], a[2], numFromCell)) }
   if (F === 'TRIMMEAN') return smartReturn(trimmean(splitArgs(rawArgs)[0], Number(argsT[1]), numFromCell))
-  if (F === 'SKEW') return smartReturn(skew(splitArgs(rawArgs)[0], numFromCell))
+  if (F === 'SKEW' || F === 'KURT') return smartReturn(moment(F, splitArgs(rawArgs)[0], numFromCell))
   if (F === 'PERCENTILE') return smartReturn(percentile(splitArgs(rawArgs)[0], Number(argsT[1]), numFromCell))
   if (F === 'ZSCORE') return smartReturn(zScore(Number(argsT[0]), splitArgs(rawArgs)[1], numFromCell))
   if (F === 'PERCENTRANK') return smartReturn(percentRank(splitArgs(rawArgs)[0], Number(argsT[1]), numFromCell))

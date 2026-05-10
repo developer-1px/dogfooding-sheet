@@ -53,16 +53,17 @@ export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell
   return String(lo === hi ? nums[lo] : nums[lo] + (nums[hi] - nums[lo]) * (idx - lo))
 }
 
-/** SKEW(range) — population skewness (third standardized moment). */
-export function skew(rangeStr: string, numFromCell: NumFromCell): string {
+/** SKEW: population skewness; KURT: excess kurtosis (Fisher). */
+export function moment(F: 'SKEW' | 'KURT', rangeStr: string, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
   const n = nums.length
   if (n < 2) return '#NUM!'
   const m = nums.reduce((s, v) => s + v, 0) / n
-  let m2 = 0, m3 = 0
-  for (const v of nums) { const d = v - m; m2 += d * d; m3 += d * d * d }
-  m2 /= n; m3 /= n
-  return m2 === 0 ? '#DIV/0!' : String(m3 / Math.pow(m2, 1.5))
+  let m2 = 0, m3 = 0, m4 = 0
+  for (const v of nums) { const d = v - m, d2 = d * d; m2 += d2; m3 += d2 * d; m4 += d2 * d2 }
+  m2 /= n; m3 /= n; m4 /= n
+  if (m2 === 0) return '#DIV/0!'
+  return String(F === 'SKEW' ? m3 / Math.pow(m2, 1.5) : m4 / (m2 * m2) - 3)
 }
 
 /** ZSCORE(value, range) — (value - mean) / stdev_population. */

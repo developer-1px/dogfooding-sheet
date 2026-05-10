@@ -181,6 +181,13 @@ describe('SKEW', () => {
   })
 })
 
+describe('KURT', () => {
+  it('returns excess kurtosis', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }
+    expect(Number(evaluateCell(cells, '=KURT(A1:A5)'))).toBeCloseTo(-1.3, 1)
+  })
+})
+
 describe('ZSCORE', () => {
   it('returns standardized value', () => {
     const cells = { A1: '2', A2: '4', A3: '4', A4: '4', A5: '5', A6: '5', A7: '7', A8: '9' }
