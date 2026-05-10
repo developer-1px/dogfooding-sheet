@@ -8,6 +8,7 @@ import { ROW_COUNT, SheetSchema, type Sheet } from './schema'
 interface Props {
   display: (k: string) => string
   writeCell: (k: string, v: string) => void
+  writeCells: (writes: Array<[string, string]>) => void
   openHelp: () => void
   insertLink: () => void
   sheet: Sheet
@@ -21,13 +22,13 @@ interface Props {
   clearAllFormats: () => void
 }
 
-export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: Props) {
+export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
   const importCsvFile = async (f: File) => {
     const t = await f.text(); try { parseCsv(t) } catch { return }
-    if (await confirm({ message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)', confirmLabel: '가져오기' })) importCsvInto(t, writeCell, { rowCount: ROW_COUNT })
+    if (await confirm({ message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)', confirmLabel: '가져오기' })) importCsvInto(t, writeCell, { rowCount: ROW_COUNT, writeMany: writeCells })
   }
   const exportJson = () => downloadFile('sheet.json', JSON.stringify(sheet, null, 2))
   const importJson = async (f: File) => {

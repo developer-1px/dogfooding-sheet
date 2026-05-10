@@ -12,6 +12,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
     <Toolbar
       display={ctx.display}
       writeCell={ctx.writeCell}
+      writeCells={ctx.writeCells}
       focusKey={ctx.focusKey}
       selectedIds={ctx.selectedIds}
       setFormat={ctx.setFormat}

@@ -56,13 +56,16 @@ export function parseCsv(text: string): string[][] {
   return rows
 }
 
-export function importCsvInto(text: string, write: (k: string, v: string) => void, opts: { rowCount: number }) {
+export function importCsvInto(text: string, write: (k: string, v: string) => void, opts: { rowCount: number; writeMany?: (writes: Array<[string, string]>) => void }) {
   const rows = parseCsv(text)
+  const writes: Array<[string, string]> = []
   for (let r = 0; r < rows.length && r < opts.rowCount; r++) {
     for (let c = 0; c < rows[r].length && c < COL_LETTERS.length; c++) {
-      write(cellKey(COL_LETTERS[c], r), rows[r][c])
+      writes.push([cellKey(COL_LETTERS[c], r), rows[r][c]])
     }
   }
+  if (writes.length === 0) return
+  if (opts.writeMany) opts.writeMany(writes); else for (const [k, v] of writes) write(k, v)
 }
 
 export function downloadFile(name: string, content: string) {
