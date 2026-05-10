@@ -167,6 +167,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=HAMMING("karolin", "kathrin")')).toBe('3')
     expect(evaluateCell({}, '=HAMMING("abc", "abcd")')).toBe('#N/A')
   })
+  it('COMMONPREFIX/COMMONSUFFIX find shared edges', () => {
+    expect(evaluateCell({}, '=COMMONPREFIX("flower", "flow")')).toBe('flow')
+    expect(evaluateCell({}, '=COMMONPREFIX("dog", "cat")')).toBe('')
+    expect(evaluateCell({}, '=COMMONSUFFIX("walking", "running")')).toBe('ing')
+  })
   it('SQUEEZE collapses runs of whitespace and trims', () => {
     expect(evaluateCell({}, '=SQUEEZE("  hello   world  ")')).toBe('hello world')
     expect(evaluateCell({}, '=SQUEEZE("foo  bar    baz")')).toBe('foo bar baz')

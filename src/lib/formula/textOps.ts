@@ -8,6 +8,14 @@ export function dispatchTextOps(F: string, argsT: string[]): string | null {
     const m = (argsT[0] ?? '').trim().match(/\S+/g)
     return String(m ? m.length : 0)
   }
+  if (F === 'COMMONPREFIX' || F === 'COMMONSUFFIX') {
+    const a = argsT[0] ?? '', b = argsT[1] ?? ''
+    const n = Math.min(a.length, b.length)
+    let i = 0
+    if (F === 'COMMONPREFIX') { while (i < n && a[i] === b[i]) i++; return wrap(a.slice(0, i)) }
+    while (i < n && a[a.length - 1 - i] === b[b.length - 1 - i]) i++
+    return wrap(i === 0 ? '' : a.slice(a.length - i))
+  }
   if (F === 'SQUEEZE') return wrap((argsT[0] ?? '').replace(/\s+/g, ' ').trim())
   if (F === 'DEACCENT') return wrap((argsT[0] ?? '').normalize('NFD').replace(/\p{M}/gu, ''))
   if (F === 'TRUNCATE') {
