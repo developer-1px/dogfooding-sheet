@@ -27,6 +27,7 @@ interface Props {
   cancelEdit: () => void
   hideRow: (row: number) => void
   styleOf: (k: string) => CellStyle | undefined
+  noteOf: (k: string) => string | undefined
   hiSet: Set<string>
   previewIds: Set<string>
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
@@ -62,6 +63,7 @@ export function GridRow(p: Props) {
             isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
             styleClass={sp.className + extra}
             styleInline={sp.style}
+            note={p.noteOf(k)}
             editing={p.editing === cell.id}
             draft={p.draft}
             setDraft={p.setDraft}

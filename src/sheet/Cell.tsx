@@ -22,6 +22,7 @@ interface Props {
   onFillHandleMouseDown: (e: React.MouseEvent) => void
   styleClass: string
   styleInline: React.CSSProperties
+  note?: string
 }
 
 export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
@@ -34,6 +35,7 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}
       onContextMenu={p.onContextMenu}
+      title={p.note}
     >
       {p.editing ? (
         <input
@@ -58,6 +60,7 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
       ) : (
         <>
           {p.label}
+          {p.note && <span className="note-mark" aria-hidden />}
           {p.isFillCorner && !p.editing && (
             <span className="fill-handle" onMouseDown={p.onFillHandleMouseDown} />
           )}

@@ -14,9 +14,9 @@ import type { useSheet } from './useSheet'
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
-  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, sortByCol })
+  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, sortByCol, noteOf, setNote })
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
   const previewIds = rectToIdSet(fill.preview)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -71,6 +71,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             cancelEdit={cancelEdit}
             hideRow={hideRow}
             styleOf={styleOf}
+            noteOf={noteOf}
             hiSet={hiSet}
             previewIds={previewIds}
             onCellMouseDown={(id, e) => drag.onMouseDown(id, e)}
