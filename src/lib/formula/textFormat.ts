@@ -1,6 +1,14 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'FORMATBYTES') {
+    const n = Number(argsT[0])
+    if (!Number.isFinite(n)) return wrap('#VALUE!')
+    const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    let v = Math.abs(n), i = 0
+    while (v >= 1024 && i < units.length - 1) { v /= 1024; i++ }
+    return wrap((n < 0 ? '-' : '') + (i === 0 ? v.toString() : v.toFixed(2)) + ' ' + units[i])
+  }
   if (F === 'TEXT') {
     const n = Number(argsT[0]); const fmt = argsT[1] ?? ''
     if (!Number.isFinite(n)) return wrap(argsT[0])

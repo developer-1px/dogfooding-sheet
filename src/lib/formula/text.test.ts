@@ -352,6 +352,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('FORMATBYTES picks unit', () => {
+    expect(evaluateCell({}, '=FORMATBYTES(500)')).toBe('500 B')
+    expect(evaluateCell({}, '=FORMATBYTES(1536)')).toBe('1.50 KB')
+    expect(evaluateCell({}, '=FORMATBYTES(1048576)')).toBe('1.00 MB')
+  })
   it('NUMBERVALUE parses with custom separators', () => {
     expect(evaluateCell({}, '=NUMBERVALUE("1.234,5", ",", ".")')).toBe('1234.5')
     expect(evaluateCell({}, '=NUMBERVALUE("1,234.5")')).toBe('1234.5')
