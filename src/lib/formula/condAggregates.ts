@@ -49,26 +49,6 @@ export function countblank(rangeStr: string, cells: Cells, evalRaw: (s: string) 
   return n
 }
 
-export function minMaxIf(
-  pick: 'MIN' | 'MAX',
-  valueRangeStr: string,
-  critRangeStr: string,
-  criteria: string,
-  cells: Cells,
-  evalRaw: (s: string) => string,
-): number {
-  const values = collectRefs(valueRangeStr)
-  const crits = collectRefs(critRangeStr)
-  const picked: number[] = []
-  for (let i = 0; i < values.length; i++) {
-    if (!matchCriteria(evalRaw(cells[crits[i] ?? values[i]] ?? ''), criteria)) continue
-    const v = Number(evalRaw(cells[values[i]] ?? ''))
-    if (Number.isFinite(v)) picked.push(v)
-  }
-  if (picked.length === 0) return 0
-  return pick === 'MIN' ? Math.min(...picked) : Math.max(...picked)
-}
-
 export function countunique(rangeStr: string, cells: Cells, evalRaw: (s: string) => string): number {
   const seen = new Set<string>()
   for (const r of collectRefs(rangeStr)) {

@@ -28,6 +28,14 @@ describe('COUNTA', () => {
   })
 })
 
+describe('COUNTIFS / SUMIFS', () => {
+  it('multi-criteria count and sum', () => {
+    const cells = { A1: 'x', A2: 'x', A3: 'y', A4: 'x', B1: '5', B2: '15', B3: '15', B4: '20', C1: '1', C2: '2', C3: '3', C4: '4' }
+    expect(evaluateCell(cells, '=COUNTIFS(A1:A4, "x", B1:B4, ">10")')).toBe('2')
+    expect(evaluateCell(cells, '=SUMIFS(C1:C4, A1:A4, "x", B1:B4, ">10")')).toBe('6')
+  })
+})
+
 describe('MINIFS / MAXIFS', () => {
   it('picks min/max value where criteria matches', () => {
     const cells = { A1: '5', A2: '10', A3: '3', A4: '20', B1: 'x', B2: 'y', B3: 'x', B4: 'y' }
