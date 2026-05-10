@@ -22,6 +22,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
       <input
         className="formula"
         value={draft}
+        onMouseDown={(e) => e.currentTarget.focus()}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={() => onCommit(draft)}
         onKeyDown={(e) => {

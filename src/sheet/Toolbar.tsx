@@ -66,7 +66,8 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
       <button onClick={() => {
         if (!focus) return
-        const t = window.prompt(`${focus[1]}열에서 찾을 값`, filter?.text ?? '')
+        let t: string | null = null
+        try { t = window.prompt(`${focus[1]}열에서 찾을 값`, filter?.text ?? '') } catch { return }
         if (t === null) return
         if (t === '') clearFilter(); else applyFilter(focus[1], t)
       }} title="현재 열로 행 필터" style={filter ? { background: '#e8f0fe' } : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
