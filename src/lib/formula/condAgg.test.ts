@@ -181,6 +181,17 @@ describe('SKEW', () => {
   })
 })
 
+describe('GINI', () => {
+  it('returns 0 for perfect equality', () => {
+    const cells = { A1: '5', A2: '5', A3: '5', A4: '5' }
+    expect(Number(evaluateCell(cells, '=GINI(A1:A4)'))).toBeCloseTo(0)
+  })
+  it('returns positive for inequality', () => {
+    const cells = { A1: '0', A2: '0', A3: '0', A4: '100' }
+    expect(Number(evaluateCell(cells, '=GINI(A1:A4)'))).toBeCloseTo(0.75)
+  })
+})
+
 describe('KURT', () => {
   it('returns excess kurtosis', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }
