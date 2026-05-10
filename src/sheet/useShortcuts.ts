@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
@@ -25,9 +25,12 @@ interface Args {
   setFocusId: (id: string) => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds, setFocusId }: Args) {
+export function useShortcuts(args: Args) {
+  const ref = useRef(args)
+  ref.current = args
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds, setFocusId } = ref.current
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
       if (!editing && (e.key === 'F1' || (e.key === '?' && !mod) || (mod && e.key === '/'))) {
@@ -93,5 +96,5 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [editing, focusId, ops, sheet.cells, writeCell, startEdit, selectedIds])
+  }, [])
 }

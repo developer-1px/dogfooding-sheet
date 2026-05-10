@@ -27,6 +27,17 @@ const mouseClick = (target: Element) => {
 }
 
 const typeKey = (key: string) => {
+  const active = document.activeElement
+  if (active instanceof HTMLInputElement) {
+    active.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
+    if (key === 'Enter' || key === 'Escape' || key === 'Tab') return
+    if (key.length === 1) {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+      setter.call(active, active.value + key)
+      active.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+    return
+  }
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
 }
 
