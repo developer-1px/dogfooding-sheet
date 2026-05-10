@@ -22,6 +22,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
   const [caseSensitive, setCS] = useState(false)
+  const [regex, setRegex] = useState(false)
 
   const { rootProps } = useDialogPattern({
     open, modal: false,
@@ -29,21 +30,26 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
     onOpenChange: (next) => { if (!next) onClose() },
   })
 
-  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive })
+  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex })
 
   if (!open) return null
 
+  const sub = (s: string): string => {
+    if (regex) { try { return s.replace(new RegExp(q, caseSensitive ? 'g' : 'gi'), r) } catch { return s } }
+    if (caseSensitive) return s.split(q).join(r)
+    return s.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), r)
+  }
   const replaceOne = () => {
     if (!current || !q) return
     const k = cellIdToKey(current)
-    if (k) writeCell(k, (cells[k] ?? '').split(q).join(r))
+    if (k) writeCell(k, sub(cells[k] ?? ''))
     jump(1)
   }
   const replaceAll = () => {
     if (!q) return
     for (const id of matches) {
       const k = cellIdToKey(id)
-      if (k) writeCell(k, (cells[k] ?? '').split(q).join(r))
+      if (k) writeCell(k, sub(cells[k] ?? ''))
     }
   }
 
@@ -65,6 +71,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
         />
       )}
       <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} />Aa</label>
+      <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} />.*</label>
       <span className="count">{counter}</span>
       <button onClick={() => jump(-1)} disabled={matches.length === 0}>↑</button>
       <button onClick={() => jump(1)} disabled={matches.length === 0}>↓</button>

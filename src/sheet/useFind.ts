@@ -7,24 +7,26 @@ interface Args {
   display: (k: string) => string
   onJump: (cellId: string) => void
   caseSensitive?: boolean
+  regex?: boolean
 }
 
-export function useFind({ query, cells, display, onJump, caseSensitive = false }: Args) {
+export function useFind({ query, cells, display, onJump, caseSensitive = false, regex = false }: Args) {
   const [idx, setIdx] = useState(0)
 
   const matches = useMemo(() => {
     if (!query) return []
-    const fold = (s: string) => caseSensitive ? s : s.toLowerCase()
-    const needle = fold(query)
+    const test: (s: string) => boolean = regex
+      ? (() => { try { const re = new RegExp(query, caseSensitive ? '' : 'i'); return (s) => re.test(s) } catch { return () => false } })()
+      : (() => { const fold = (s: string) => caseSensitive ? s : s.toLowerCase(); const needle = fold(query); return (s) => fold(s).includes(needle) })()
     const out: string[] = []
     for (let row = 0; row < ROW_COUNT; row++) {
       for (const c of COL_LETTERS) {
         const k = cellKey(c, row)
-        if (fold(cells[k] ?? '').includes(needle) || fold(display(k)).includes(needle)) out.push(`r${row}-${c}`)
+        if (test(cells[k] ?? '') || test(display(k))) out.push(`r${row}-${c}`)
       }
     }
     return out
-  }, [query, cells, display, caseSensitive])
+  }, [query, cells, display, caseSensitive, regex])
 
   useEffect(() => {
     if (matches.length > 0) onJump(matches[idx % matches.length])
