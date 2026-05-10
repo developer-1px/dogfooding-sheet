@@ -60,7 +60,9 @@ export function useShortcuts(args: Args) {
       }
       if (!editing && focusId && (e.key === 'PageUp' || e.key === 'PageDown')) {
         const p = parseCellId(focusId); if (!p) return
-        setFocusId(`r${Math.max(0, Math.min(ROW_COUNT - 1, p.row + (e.key === 'PageUp' ? -10 : 10)))}-${p.col}`); e.preventDefault(); return
+        const next = `r${Math.max(0, Math.min(ROW_COUNT - 1, p.row + (e.key === 'PageUp' ? -10 : 10)))}-${p.col}`
+        e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : setFocusId(next)
+        e.preventDefault(); return
       }
       if (!editing && focusId && (e.key === 'Home' || e.key === 'End')) {
         const t = homeEndTarget(focusId, ROW_COUNT, e.key, mod); if (t) { setFocusId(t); e.preventDefault() }; return
