@@ -9,12 +9,14 @@ import { gotoCell } from './lib/gotoCell'
 import { Find } from './sheet/Find'
 import { HelpDialog } from './sheet/HelpDialog'
 import { usePrompt } from './sheet/usePrompt'
+import { useConfirm } from './sheet/useConfirm'
 import { Tabs } from './sheet/Tabs'
 import { SheetToolbar } from './sheet/SheetToolbar'
 import './App.css'
 
 export default function App() {
   const { ask, dialog: promptDialog } = usePrompt()
+  const { confirm, dialog: confirmDialog } = useConfirm()
   const ctxRef = useRef<ReturnType<typeof useSheet> | null>(null)
   const ctx = useSheet({
     openGoto: () => ask({ label: '이동할 셀 (예: B5)', placeholder: 'B5', submitLabel: '이동' })
@@ -41,7 +43,7 @@ export default function App() {
         onRedo={() => ctx.ops.redo()}
         canUndo={ctx.ops.canUndo()}
         canRedo={ctx.ops.canRedo()}
-        extra={<SheetToolbar ctx={ctx} ask={ask} />}
+        extra={<SheetToolbar ctx={ctx} ask={ask} confirm={confirm} />}
       />
       <Grid ctx={ctx} />
       <Tabs
@@ -51,6 +53,7 @@ export default function App() {
         deleteSheet={ctx.deleteSheet}
         renameSheet={ctx.renameSheet}
         duplicateSheet={ctx.duplicateSheet}
+        confirm={confirm}
       />
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
       <HelpDialog open={ctx.helpOpen} onClose={() => ctx.setHelpOpen(false)} />
@@ -64,6 +67,7 @@ export default function App() {
         writeCell={ctx.writeCell}
       />
       {promptDialog}
+      {confirmDialog}
     </div>
   )
 }

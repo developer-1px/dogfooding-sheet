@@ -1,11 +1,13 @@
 import { Toolbar } from './Toolbar'
 import type { PromptOptions } from './usePrompt'
+import type { ConfirmOptions } from './useConfirm'
 import type { useSheet } from './useSheet'
 
 type Ctx = ReturnType<typeof useSheet>
 type Ask = (opts: PromptOptions) => Promise<string | null>
+type Confirm = (opts: ConfirmOptions) => Promise<boolean>
 
-export function SheetToolbar({ ctx, ask }: { ctx: Ctx; ask: Ask }) {
+export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confirm: Confirm }) {
   return (
     <Toolbar
       display={ctx.display}
@@ -37,6 +39,7 @@ export function SheetToolbar({ ctx, ask }: { ctx: Ctx; ask: Ask }) {
       cells={ctx.sheet.cells}
       resetCells={(c) => ctx.ops.replace('/cells', c)}
       ask={ask}
+      confirm={confirm}
     />
   )
 }

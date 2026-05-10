@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useMenuButtonPattern } from '@p/aria-kernel/patterns'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
+import type { ConfirmOptions } from './useConfirm'
 import { ROW_COUNT } from './schema'
 
 interface Props {
@@ -10,9 +11,10 @@ interface Props {
   openHelp: () => void
   cells: Record<string, string>
   resetCells: (cells: Record<string, string>) => void
+  confirm: (opts: ConfirmOptions) => Promise<boolean>
 }
 
-export function OverflowMenu({ display, writeCell, openHelp, cells, resetCells }: Props) {
+export function OverflowMenu({ display, writeCell, openHelp, cells, resetCells, confirm }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
@@ -26,6 +28,7 @@ export function OverflowMenu({ display, writeCell, openHelp, cells, resetCells }
     { id: 'csv-import', label: 'CSV 가져오기', action: () => fileRef.current?.click() },
     { id: 'json-export', label: 'JSON 내보내기', action: exportJson },
     { id: 'json-import', label: 'JSON 가져오기', action: () => jsonRef.current?.click() },
+    { id: 'clear-all', label: '전체 셀 지우기', action: () => { confirm({ message: '모든 셀을 지우시겠습니까? (실행 취소 가능)', confirmLabel: '지우기' }).then((ok) => { if (ok) resetCells({}) }) } },
   ]
   const data = fromList(items.map(({ id, label }) => ({ id, label })))
 
