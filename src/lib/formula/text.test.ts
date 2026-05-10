@@ -243,6 +243,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=LCM(4,6)')).toBe('12')
     expect(evaluateCell({}, '=GCD(24,36,60)')).toBe('12')
   })
+  it('EXP10 / EXP2 / EXPM1 / LOG1P', () => {
+    expect(evaluateCell({}, '=EXP10(3)')).toBe('1000')
+    expect(evaluateCell({}, '=EXP2(8)')).toBe('256')
+    expect(Number(evaluateCell({}, '=EXPM1(1)'))).toBeCloseTo(Math.E - 1, 6)
+    expect(Number(evaluateCell({}, '=LOG1P(0)'))).toBe(0)
+  })
   it('CBRT cube root', () => {
     expect(evaluateCell({}, '=CBRT(27)')).toBe('3')
   })

@@ -15,6 +15,10 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'LOG10') return String(Math.log10(argsN[0]))
   if (F === 'LOG2') return String(Math.log2(argsN[0]))
   if (F === 'EXP') return String(Math.exp(argsN[0]))
+  if (F === 'EXP10') return String(10 ** argsN[0])
+  if (F === 'EXP2') return String(2 ** argsN[0])
+  if (F === 'EXPM1') return String(Math.expm1(argsN[0]))
+  if (F === 'LOG1P') return String(Math.log1p(argsN[0]))
   if (F === 'ROUNDUP') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.ceil(Math.abs(n) * m) / m * Math.sign(n || 1)) }
   if (F === 'ROUNDDOWN') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.trunc(n * m) / m) }
   if (F === 'IF') return String(argsN[0] ? argsT[1] : argsT[2])
