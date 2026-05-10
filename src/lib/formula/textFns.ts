@@ -45,22 +45,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
-  if (F === 'TEXT') {
-    const n = Number(argsT[0]); const fmt = argsT[1] ?? ''
-    if (!Number.isFinite(n)) return wrap(argsT[0])
-    const dec = (fmt.split('.')[1] ?? '').length
-    const grouped = fmt.includes(',')
-    const isPct = fmt.endsWith('%')
-    const v = isPct ? n * 100 : n
-    return wrap(v.toLocaleString('en-US', {
-      minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: grouped,
-    }) + (isPct ? '%' : ''))
-  }
-  if (F === 'DOLLAR') {
-    const n = Number(argsT[0]); const d = Number(argsT[1] ?? '2')
-    if (!Number.isFinite(n)) return wrap('#VALUE!')
-    return wrap('$' + n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }))
-  }
   if (F === 'UNICHAR') {
     const n = Number(argsT[0])
     return Number.isFinite(n) && n > 0 ? wrap(String.fromCodePoint(n)) : wrap('#VALUE!')
@@ -75,20 +59,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   }
   if (F === 'CODE') {
     return argsT[0].length > 0 ? String(argsT[0].charCodeAt(0)) : wrap('#VALUE!')
-  }
-  if (F === 'NUMBERVALUE') {
-    const dec = argsT[1] ?? '.', grp = argsT[2] ?? ','
-    const cleaned = (argsT[0] ?? '').split(grp).join('').replace(dec, '.')
-    const n = Number(cleaned)
-    return Number.isFinite(n) ? String(n) : wrap('#VALUE!')
-  }
-  if (F === 'VALUE') {
-    const n = Number(argsT[0])
-    return Number.isFinite(n) ? String(n) : wrap('#VALUE!')
-  }
-  if (F === 'N') {
-    const n = Number(argsT[0])
-    return Number.isFinite(n) ? String(n) : '0'
   }
   if (F === 'REPLACE') {
     const start = Number(argsT[1]) - 1

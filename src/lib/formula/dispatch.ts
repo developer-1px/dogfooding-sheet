@@ -8,6 +8,7 @@ import { dispatchTime } from './timeFns'
 import { dispatchCalendar } from './calendar'
 import { dispatchText } from './textFns'
 import { dispatchRegex } from './regexFns'
+import { dispatchTextFormat } from './textFormat'
 import { dispatchMath } from './mathFns'
 import { dispatchNumeric } from './numericFns'
 import { dispatchFinance } from './finance'
@@ -61,6 +62,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const cal = dispatchCalendar(F, argsT); if (cal !== null) return cal
   const text = dispatchText(F, argsT); if (text !== null) return text
   const rx = dispatchRegex(F, argsT); if (rx !== null) return rx
+  const tf = dispatchTextFormat(F, argsT); if (tf !== null) return tf
   const math = dispatchMath(F, argsT, argsN); if (math !== null) return math
   const num = dispatchNumeric(F, argsT, argsN); if (num !== null) return num
   const fin = dispatchFinance(F, argsT, argsN, rawArgs, c.numFromCell); if (fin !== null) return fin
