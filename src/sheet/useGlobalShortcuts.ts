@@ -83,10 +83,9 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
 
   const clearFocused = () => {
     const c = get()
-    for (const id of targetIds(c)) {
-      const pp = parseCellId(id)
-      if (pp) c.writeCell(cellKey(pp.col, pp.row), '')
-    }
+    const writes: Array<[string, string]> = []
+    for (const id of targetIds(c)) { const pp = parseCellId(id); if (pp) writes.push([cellKey(pp.col, pp.row), '']) }
+    if (writes.length) c.writeCells(writes)
   }
   useShortcut('Backspace', clearFocused)
   useShortcut('Delete', clearFocused)
