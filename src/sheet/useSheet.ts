@@ -18,6 +18,7 @@ import { sheetMutations } from './sheetMutations'
 import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
+import { rowColAtFocus } from './lib/rowColAtFocus'
 
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
@@ -58,22 +59,19 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
   }
   const toggle = (k: 'b' | 'i' | 'u' | 's') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
+  const toggleShowFormulas = () => setShowFormulas((v) => !v)
 
   useShortcuts({
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
     startEdit: edit.startEdit, selectedIds,
     openFind: find.openFind, openReplace: find.openReplace,
-    openHelp: () => setHelpOpen(true),
-    openGoto: opts.openGoto ?? (() => {}),
-    insertLink: opts.openLink ?? (() => {}),
-    toggleBold: () => toggle('b'),
-    toggleItalic: () => toggle('i'),
-    toggleUnderline: () => toggle('u'),
-    toggleStrike: () => toggle('s'),
+    openHelp: () => setHelpOpen(true), openGoto: opts.openGoto ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
+    toggleBold: () => toggle('b'), toggleItalic: () => toggle('i'), toggleUnderline: () => toggle('u'), toggleStrike: () => toggle('s'),
     clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
     setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
-    toggleShowFormulas: () => setShowFormulas((v) => !v),
+    toggleShowFormulas,
+    ...rowColAtFocus(edit.focusKey, { insertRow, deleteRow, insertCol, deleteCol }),
   })
 
   return {
@@ -84,7 +82,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     helpOpen, setHelpOpen,
-    showFormulas, toggleShowFormulas: () => setShowFormulas((v) => !v),
+    showFormulas, toggleShowFormulas,
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,

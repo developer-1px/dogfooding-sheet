@@ -28,6 +28,10 @@ export interface GlobalShortcutCtx {
   editNote?: () => void
   insertLink?: () => void
   toggleShowFormulas?: () => void
+  insertRowAtFocus?: () => void
+  deleteRowAtFocus?: () => void
+  insertColAtFocus?: () => void
+  deleteColAtFocus?: () => void
 }
 
 const targetIds = (c: GlobalShortcutCtx) =>
@@ -49,6 +53,10 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+g', () => get().openGoto())
   useShortcut('mod+k', () => get().insertLink?.())
   useShortcut('mod+`', () => get().toggleShowFormulas?.())
+  useShortcut('mod+alt+=', () => get().insertRowAtFocus?.())
+  useShortcut('mod+alt+-', () => get().deleteRowAtFocus?.())
+  useShortcut('mod+alt+shift+=', () => get().insertColAtFocus?.())
+  useShortcut('mod+alt+shift+-', () => get().deleteColAtFocus?.())
   useShortcut('mod+a', () => get().setSelectedIds(idsForAll(ROW_COUNT)))
   useShortcut('mod+pageup', () => get().switchTab?.(-1))
   useShortcut('mod+pagedown', () => get().switchTab?.(1))
