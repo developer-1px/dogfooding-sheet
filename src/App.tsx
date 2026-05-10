@@ -7,7 +7,19 @@ import { parseCellId } from './sheet/schema'
 import { rectFromIds, formatRect } from './sheet/clipboard'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from './sheet/csv'
 import { Find } from './sheet/Find'
+import type { Format } from './sheet/useFormats'
 import './App.css'
+
+function FormatButtons({ applyFormat }: { applyFormat: (f: Format) => void }) {
+  return (
+    <>
+      <button onClick={() => applyFormat('currency')} title="통화">$</button>
+      <button onClick={() => applyFormat('percent')} title="백분율">%</button>
+      <button onClick={() => applyFormat('integer')} title="정수">.0</button>
+      <button onClick={() => applyFormat('plain')} title="일반">123</button>
+    </>
+  )
+}
 
 export default function App() {
   const ctx = useSheet()
@@ -41,6 +53,21 @@ export default function App() {
         canRedo={ctx.ops.canRedo()}
         extra={
           <>
+            <FormatButtons
+              applyFormat={(f) => {
+                const ids = ctx.selectedIds.length > 0
+                  ? ctx.selectedIds
+                  : (ctx.focusKey ? [ctx.focusKey] : [])
+                const keys = ids.map((id) => {
+                  if (id.includes('-')) {
+                    const m = /^r(\d+)-([A-J])$/.exec(id)
+                    return m ? `${m[2]}${Number(m[1]) + 1}` : id
+                  }
+                  return id
+                })
+                ctx.setFormat(keys, f)
+              }}
+            />
             <button onClick={onExport} title="CSV로 내보내기">⬇ CSV</button>
             <button onClick={() => fileRef.current?.click()} title="CSV 가져오기">⬆ CSV</button>
             <input

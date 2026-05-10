@@ -4,6 +4,7 @@ import { SheetSchema, cellKey, parseCellId, COL_LETTERS } from './schema'
 import { evaluateCell, refsInFormula } from './formula'
 import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
+import { useFormats, applyFormat } from './useFormats'
 
 export function useSheet() {
   const [sheet, ops] = useJson(SheetSchema, loadInitial(), { history: 100 })
@@ -14,9 +15,11 @@ export function useSheet() {
   const [findOpen, setFindOpen] = useState(false)
   const [findMode, setFindMode] = useState<'find' | 'replace'>('find')
 
+  const fmt = useFormats()
+
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
-  const display = (k: string) => evaluateCell(sheet.cells, sheet.cells[k] ?? '')
+  const display = (k: string) => applyFormat(evaluateCell(sheet.cells, sheet.cells[k] ?? ''), fmt.formatOf(k))
   const data = buildData((k) => display(k))
   data.meta = { ...data.meta, focus: focusId }
   for (const id of selectedIds) {
@@ -80,5 +83,7 @@ export function useSheet() {
     selectedIds, setSelectedIds,
     highlightedIds,
     findOpen, setFindOpen, findMode,
+    setFormat: fmt.setFormat,
+    formatOf: fmt.formatOf,
   }
 }
