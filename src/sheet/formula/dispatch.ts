@@ -1,5 +1,6 @@
 import { collectRefs } from './parse'
 import { today, now, date, year, month, day, days } from './dateFns'
+import { vlookup, index as indexFn, match as matchFn } from './lookup'
 
 type Cells = Record<string, string>
 
@@ -33,6 +34,7 @@ export interface Ctx {
 const argString = (raw: string, c: Ctx): string => {
   const a = raw.trim()
   if (a.startsWith('"') && a.endsWith('"')) return a.slice(1, -1).replace(/""/g, '"')
+  if (/^[A-J]\d+:[A-J]\d+$/.test(a)) return a // preserve range as text
   if (/^[A-J]\d+$/.test(a)) return c.evalRaw(c.cells[a] ?? '')
   return stripText(c.evalRaw('=' + a))
 }
@@ -72,5 +74,21 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'POWER') return String(Math.pow(argsN[0], argsN[1]))
   if (F === 'MOD') return String(argsN[0] % argsN[1])
   if (F === 'IF') return String(argsN[0] ? argsT[1] : argsT[2])
+  // Logical
+  if (F === 'AND') return argsN.every((n) => !!n) ? '1' : '0'
+  if (F === 'OR') return argsN.some((n) => !!n) ? '1' : '0'
+  if (F === 'NOT') return argsN[0] ? '0' : '1'
+  if (F === 'ISBLANK') return argsT[0] === '' ? '1' : '0'
+  if (F === 'ISNUMBER') return argsT[0] !== '' && Number.isFinite(Number(argsT[0])) ? '1' : '0'
+  if (F === 'ISTEXT') return argsT[0] !== '' && !Number.isFinite(Number(argsT[0])) ? '1' : '0'
+  // Lookup
+  if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
+  if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalRaw))
+  if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalRaw))
   return '0'
+}
+
+function smartReturn(v: string): string {
+  if (v === '') return v
+  return Number.isFinite(Number(v)) && v.trim() !== '' && !v.startsWith('#') ? v : wrap(v)
 }
