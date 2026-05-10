@@ -16,6 +16,7 @@ interface Args {
   noteOf: (k: string) => string | undefined
   setNote: (k: string, text: string) => void
   editNote: () => void
+  insertLink: () => void
 }
 
 export function useCellMenu(a: Args) {
@@ -40,6 +41,7 @@ export function useCellMenu(a: Args) {
       'separator',
       { label: a.noteOf(k) ? '노트 편집' : '노트 추가', onClick: a.editNote },
       ...(a.noteOf(k) ? [{ label: '노트 삭제', onClick: () => a.setNote(k, '') }] : []),
+      { label: '하이퍼링크 삽입', onClick: a.insertLink },
       'separator',
       { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
       { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
