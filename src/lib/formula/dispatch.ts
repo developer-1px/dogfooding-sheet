@@ -17,6 +17,12 @@ export { TM, stripText } from './marker'
 export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const F = fn.toUpperCase()
 
+  if (F === 'ISFORMULA' || F === 'ISREF') {
+    const ref = (rawArgs ?? '').trim()
+    if (!/^[A-J]\d+$/.test(ref)) return F === 'ISREF' ? '0' : '#REF!'
+    if (F === 'ISREF') return '1'
+    return (c.cells[ref] ?? '').startsWith('=') ? '1' : '0'
+  }
   if (F === 'ROW' || F === 'COLUMN') {
     const m = /^([A-J])(\d+)$/.exec((rawArgs ?? '').trim())
     if (!m) return '#REF!'

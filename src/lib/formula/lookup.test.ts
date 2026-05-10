@@ -15,6 +15,15 @@ describe('HLOOKUP', () => {
   })
 })
 
+describe('ISFORMULA / ISREF', () => {
+  it('detects formula and ref', () => {
+    expect(evaluateCell({ A1: '=1+2', A2: '5' }, '=ISFORMULA(A1)')).toBe('1')
+    expect(evaluateCell({ A1: '=1+2', A2: '5' }, '=ISFORMULA(A2)')).toBe('0')
+    expect(evaluateCell({}, '=ISREF(B5)')).toBe('1')
+    expect(evaluateCell({}, '=ISREF("hi")')).toBe('0')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
