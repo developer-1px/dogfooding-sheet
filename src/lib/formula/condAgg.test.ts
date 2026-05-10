@@ -44,6 +44,20 @@ describe('MINIFS / MAXIFS', () => {
   })
 })
 
+describe('PERCENTILE / QUARTILE', () => {
+  it('PERCENTILE interpolates', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }
+    expect(evaluateCell(cells, '=PERCENTILE(A1:A5, 0)')).toBe('1')
+    expect(evaluateCell(cells, '=PERCENTILE(A1:A5, 0.5)')).toBe('3')
+    expect(evaluateCell(cells, '=PERCENTILE(A1:A5, 1)')).toBe('5')
+  })
+  it('QUARTILE matches percentile mapping', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }
+    expect(evaluateCell(cells, '=QUARTILE(A1:A5, 2)')).toBe('3')
+    expect(evaluateCell(cells, '=QUARTILE(A1:A5, 4)')).toBe('5')
+  })
+})
+
 describe('SUMPRODUCT', () => {
   it('sums element-wise products across ranges', () => {
     const cells = { A1: '2', A2: '3', A3: '4', B1: '10', B2: '20', B3: '30' }

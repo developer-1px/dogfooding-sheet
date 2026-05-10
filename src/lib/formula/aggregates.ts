@@ -8,6 +8,21 @@ export function largeSmall(F: 'LARGE' | 'SMALL', rangeStr: string, k: number, nu
   return String(F === 'LARGE' ? nums[nums.length - k] : nums[k - 1])
 }
 
+/** PERCENTILE(range, p) — linear interpolation, p in [0,1]. */
+export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell): string {
+  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
+  if (nums.length === 0 || p < 0 || p > 1) return '#NUM!'
+  const idx = p * (nums.length - 1)
+  const lo = Math.floor(idx), hi = Math.ceil(idx)
+  return String(lo === hi ? nums[lo] : nums[lo] + (nums[hi] - nums[lo]) * (idx - lo))
+}
+
+/** QUARTILE(range, q) — q in 0..4 mapped to PERCENTILE 0/.25/.5/.75/1. */
+export function quartile(rangeStr: string, q: number, numFromCell: NumFromCell): string {
+  if (q < 0 || q > 4 || !Number.isInteger(q)) return '#NUM!'
+  return percentile(rangeStr, q / 4, numFromCell)
+}
+
 /** SUMPRODUCT(rangeA, rangeB, ...) — element-wise product summed across same-shape ranges. */
 export function sumproduct(rangeStrs: string[], numFromCell: NumFromCell): string {
   if (rangeStrs.length === 0) return '0'
