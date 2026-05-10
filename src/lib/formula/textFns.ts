@@ -1,10 +1,12 @@
 import { wrap } from './marker'
 import { dispatchTextCodec } from './textCodec'
 import { dispatchTextCase } from './textCase'
+import { dispatchTextAlgo } from './textAlgo'
 
 export function dispatchText(F: string, argsT: string[]): string | null {
   const codec = dispatchTextCodec(F, argsT); if (codec !== null) return codec
   const cas = dispatchTextCase(F, argsT); if (cas !== null) return cas
+  const alg = dispatchTextAlgo(F, argsT); if (alg !== null) return alg
   if (F === 'CONCAT' || F === 'CONCATENATE') return wrap(argsT.join(''))
   if (F === 'HYPERLINK') return wrap(argsT[1] ? argsT[1] : argsT[0])
   if (F === 'LEN') return String(argsT[0].length)
@@ -66,26 +68,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
-  if (F === 'LCS') {
-    const a = argsT[0] ?? '', b = argsT[1] ?? ''
-    const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0))
-    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
-      dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1])
-    return String(dp[a.length][b.length])
-  }
-  if (F === 'LEVENSHTEIN') {
-    const a = argsT[0] ?? '', b = argsT[1] ?? ''
-    const dp = Array.from({ length: a.length + 1 }, (_, i) => i)
-    for (let j = 1; j <= b.length; j++) {
-      let prev = dp[0]; dp[0] = j
-      for (let i = 1; i <= a.length; i++) {
-        const tmp = dp[i]
-        dp[i] = a[i - 1] === b[j - 1] ? prev : Math.min(prev, dp[i - 1], dp[i]) + 1
-        prev = tmp
-      }
-    }
-    return String(dp[a.length])
-  }
   if (F === 'EQUALCI') return (argsT[0] ?? '').toLowerCase() === (argsT[1] ?? '').toLowerCase() ? '1' : '0'
   if (F === 'REPLACE') {
     const start = Number(argsT[1]) - 1
