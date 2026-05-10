@@ -124,6 +124,12 @@ describe('text functions', () => {
     // Spans a weekend
     expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-15")')).toBe('10')
   })
+  it('ISBETWEEN inclusive by default', () => {
+    expect(evaluateCell({}, '=ISBETWEEN(5, 1, 10)')).toBe('1')
+    expect(evaluateCell({}, '=ISBETWEEN(10, 1, 10)')).toBe('1')
+    expect(evaluateCell({}, '=ISBETWEEN(10, 1, 10, 1, 0)')).toBe('0')
+    expect(evaluateCell({}, '=ISBETWEEN(11, 1, 10)')).toBe('0')
+  })
   it('ISERROR / ISEVEN / ISODD predicates', () => {
     expect(evaluateCell({}, '=ISERROR(VLOOKUP("z","A1:B1",2))')).toBe('1')
     expect(evaluateCell({}, '=ISERROR(5)')).toBe('0')
