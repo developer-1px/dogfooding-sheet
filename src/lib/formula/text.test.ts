@@ -35,6 +35,10 @@ describe('text functions', () => {
   it('SUBSTITUTE replaces all occurrences', () => {
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/")')).toBe('a/b/c')
   })
+  it('SUBSTITUTE with occurrence_num replaces only Nth match', () => {
+    expect(evaluateCell({}, '=SUBSTITUTE("a-b-c-d", "-", "/", 2)')).toBe('a-b/c-d')
+    expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/", 5)')).toBe('a-b-c')
+  })
   it('FIND returns 1-based position (case-sensitive)', () => {
     expect(evaluateCell({}, '=FIND("b", "abc")')).toBe('2')
     expect(evaluateCell({}, '=FIND("X", "abc")')).toBe('#VALUE!')

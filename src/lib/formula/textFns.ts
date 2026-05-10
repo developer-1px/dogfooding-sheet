@@ -20,7 +20,16 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     try { return wrap(argsT[0].replace(new RegExp(argsT[1] ?? '', 'g'), argsT[2] ?? '')) } catch { return wrap('#VALUE!') }
   }
   if (F === 'T') return /^-?\d/.test(argsT[0]) ? wrap('') : wrap(argsT[0])
-  if (F === 'SUBSTITUTE') return wrap(argsT[0].split(argsT[1] ?? '').join(argsT[2] ?? ''))
+  if (F === 'SUBSTITUTE') {
+    const [text, find, repl, occStr] = argsT
+    const occ = occStr ? Number(occStr) : 0
+    if (occ <= 0) return wrap(text.split(find ?? '').join(repl ?? ''))
+    let i = -1, count = 0
+    while ((i = text.indexOf(find ?? '', i + 1)) !== -1) {
+      if (++count === occ) return wrap(text.slice(0, i) + (repl ?? '') + text.slice(i + (find ?? '').length))
+    }
+    return wrap(text)
+  }
   if (F === 'FIND') {
     const pos = argsT[1].indexOf(argsT[0])
     return pos < 0 ? wrap('#VALUE!') : String(pos + 1)
