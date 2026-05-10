@@ -34,6 +34,7 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'PROPER') {
     return wrap(argsT[0].toLowerCase().replace(/(^|\s)(\p{L})/gu, (_m, sp, ch) => sp + ch.toUpperCase()))
   }
+  if (F === 'JOIN') return wrap(argsT.slice(1).join(argsT[0] ?? ''))
   if (F === 'TEXTJOIN') {
     const sep = argsT[0] ?? ''
     const ignoreEmpty = (argsT[1] ?? '1') !== '0'

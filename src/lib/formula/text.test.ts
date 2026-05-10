@@ -66,6 +66,9 @@ describe('text functions', () => {
   it('nested CONCAT + UPPER', () => {
     expect(evaluateCell({ A1: 'foo' }, '=CONCAT(UPPER(A1), "!")')).toBe('FOO!')
   })
+  it('JOIN concatenates with separator (no empty filter)', () => {
+    expect(evaluateCell({}, '=JOIN("-","a","","b")')).toBe('a--b')
+  })
   it('TEXTJOIN ignores empty by default', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
