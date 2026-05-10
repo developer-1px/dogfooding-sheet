@@ -14,6 +14,15 @@ interface Props {
   onHeaderContextMenu: (e: React.MouseEvent, col: string) => void
 }
 
+const colRangeIds = (target: string, anchor: string | null): string[] => {
+  const a = (anchor && COL_LETTERS.indexOf(anchor as (typeof COL_LETTERS)[number])) ?? -1
+  const t = COL_LETTERS.indexOf(target as (typeof COL_LETTERS)[number])
+  if (a < 0) return idsForCol(target, ROW_COUNT)
+  const ids: string[] = []
+  for (let i = Math.min(a, t); i <= Math.max(a, t); i++) ids.push(...idsForCol(COL_LETTERS[i], ROW_COUNT))
+  return ids
+}
+
 export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoFitCol, setSelectedIds, hiddenCols, focusCol, onHeaderContextMenu }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
@@ -25,7 +34,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoF
             key={c}
             {...columnHeaderProps(`h-${c}`)}
             className={`header-cell${c === focusCol ? ' active' : ''}`}
-            onClick={() => setSelectedIds(idsForCol(c, ROW_COUNT))}
+            onClick={(e) => setSelectedIds(colRangeIds(c, e.shiftKey ? focusCol : null))}
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
             title="우클릭으로 열 메뉴"
           >
