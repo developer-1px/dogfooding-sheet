@@ -33,6 +33,11 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'CLAMP') { const [v, lo, hi] = argsN; return String(Math.min(hi, Math.max(lo, v))) }
   if (F === 'RAND') return String(Math.random())
   if (F === 'COINFLIP') return Math.random() < 0.5 ? '1' : '0'
+  if (F === 'RANDNORM') {
+    const [mu = 0, sd = 1] = argsN
+    const u = Math.max(1e-12, Math.random()), v = Math.random()
+    return String(mu + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v))
+  }
   if (F === 'RANDFLOAT') { const [lo, hi] = argsN; return String(lo + Math.random() * (hi - lo)) }
   if (F === 'RANDBETWEEN') { const [lo, hi] = argsN; return String(Math.floor(Math.random() * (hi - lo + 1)) + lo) }
   if (F === 'GCD') {
