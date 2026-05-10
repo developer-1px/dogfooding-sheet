@@ -16,6 +16,7 @@ interface Args {
   openHelp: () => void
   toggleBold: () => void
   toggleItalic: () => void
+  saveCsv: () => void
 }
 
 export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic }: Args) {
