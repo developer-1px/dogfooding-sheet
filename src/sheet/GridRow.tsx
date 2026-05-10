@@ -28,6 +28,7 @@ interface Props {
   hideRow: (row: number) => void
   styleOf: (k: string) => CellStyle | undefined
   noteOf: (k: string) => string | undefined
+  rawOf: (k: string) => string | undefined
   ruleOf: (k: string) => { type: 'list'; options: string[] } | undefined
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
@@ -69,6 +70,7 @@ export function GridRow(p: Props) {
             styleClass={sp.className + extra}
             styleInline={styleInline}
             note={p.noteOf(k)}
+            tooltip={p.rawOf(k)?.startsWith('=') ? p.rawOf(k) : undefined}
             validationOptions={p.ruleOf(k)?.options}
             editing={p.editing === cell.id}
             draft={p.draft}

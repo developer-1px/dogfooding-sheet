@@ -69,6 +69,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             hideRow={hideRow}
             styleOf={styleOf}
             noteOf={noteOf}
+            rawOf={(k) => sheet.cells[k]}
             ruleOf={ruleOf}
             condBgOf={condBgOf}
             hiSet={hiSet}

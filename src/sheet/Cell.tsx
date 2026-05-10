@@ -23,6 +23,7 @@ interface Props {
   styleClass: string
   styleInline: React.CSSProperties
   note?: string
+  tooltip?: string
   validationOptions?: string[]
   inputProps: InputProps
   selectProps: SelectProps
@@ -38,7 +39,7 @@ export function Cell(p: Props) {
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}
       onContextMenu={p.onContextMenu}
-      title={p.note}
+      title={p.note ?? p.tooltip}
     >
       {p.editing ? (
         p.validationOptions ? (
