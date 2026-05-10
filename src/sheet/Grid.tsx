@@ -24,6 +24,9 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
   const { gridTemplateFor, startResize, autoFit } = useColWidths()
   const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(`${c}${r + 1}`)))
+  const focusM = focusId ? /^r(\d+)-([A-J])$/.exec(focusId) : null
+  const focusCol = focusM ? focusM[2] : null
+  const focusRow = focusM ? Number(focusM[1]) : null
   const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))
   const gridTemplate = gridTemplateFor(visibleCols)
   // useGridPattern.rows already filters out childless entities (column headers).
@@ -39,6 +42,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         setSelectedIds={setSelectedIds}
         hiddenCols={hiddenCols}
         hideCol={hideCol}
+        focusCol={focusCol}
       />
       {dataRows.map((row, rIdx) => {
         if (hiddenRowSet.has(rIdx) || hiddenRowsManual.has(rIdx)) return null
@@ -50,7 +54,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             rowProps={rowProps(row.id)}
             cellPropsFor={cellProps}
             gridTemplate={gridTemplate}
-            rowCls={`grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}`}
+            rowCls={`grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}${focusRow === rIdx ? ' active-row' : ''}`}
             freezeFirstCol={!!freeze.cols}
             hiddenCols={hiddenCols}
             focusId={focusId}

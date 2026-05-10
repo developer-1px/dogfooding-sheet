@@ -11,9 +11,10 @@ interface Props {
   setSelectedIds: (ids: string[]) => void
   hiddenCols: Set<string>
   hideCol: (col: string) => void
+  focusCol: string | null
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoFitCol, setSelectedIds, hiddenCols, hideCol }: Props) {
+export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoFitCol, setSelectedIds, hiddenCols, hideCol, focusCol }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(ROW_COUNT))} />
@@ -23,7 +24,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoF
           <span
             key={c}
             {...columnHeaderProps(`h-${c}`)}
-            className="header-cell"
+            className={`header-cell${c === focusCol ? ' active' : ''}`}
             onClick={() => setSelectedIds(idsForCol(c, ROW_COUNT))}
             onContextMenu={(e) => { e.preventDefault(); hideCol(c) }}
             title="우클릭으로 열 숨기기"

@@ -57,3 +57,6 @@
   font: inherit; outline: none; background: #fff;
   border: 2px solid #1a73e8;
 }
+
+.header-cell.active { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
+.grid-row.active-row > .row-header { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
