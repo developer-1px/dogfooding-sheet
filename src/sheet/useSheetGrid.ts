@@ -28,5 +28,9 @@ export function useSheetGrid({ data, setFocusId, setSelectedIds }: Args) {
     colCount: COL_LETTERS.length,
     editable: true,
     selectionMode: 'rect',
+    // Workaround aria-kernel#140 — built-in Backspace/Delete chord lacks an editable-guard,
+    // so it would PD keystrokes inside the cell-input. We re-implement remove at the global
+    // useShortcut layer (which DOES editable-guard).
+    disableBuiltinChords: true,
   })
 }

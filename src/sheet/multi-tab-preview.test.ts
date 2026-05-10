@@ -26,7 +26,7 @@ const click = (el: Element) => {
   el.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
 }
 
-const press = (key: string, mod: { metaKey?: boolean } = {}) =>
+const press = (key: string, mod: { metaKey?: boolean; ctrlKey?: boolean } = {}) =>
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
 
 const cellByText = (text: string) =>
@@ -39,7 +39,7 @@ describe('multi-sheet partition (preview)', () => {
     const apple = cellByText('Apple')
     expect(apple, 'Sheet1 should show Apple in A2').toBeDefined()
     act(() => click(apple!))
-    act(() => press('b', { metaKey: true }))
+    act(() => press('b', { ctrlKey: true }))
     expect(apple!.className).toContain('bold')
 
     const addBtn = document.querySelector<HTMLButtonElement>('.tab-add')

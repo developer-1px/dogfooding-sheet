@@ -38,10 +38,10 @@ describe('SSOT: undo restores ancillary state', () => {
     expect(a2, 'A2 cell should render as "Apple"').toBeDefined()
 
     act(() => mouseClick(a2!))
-    act(() => press('b', { metaKey: true }))
+    act(() => press('b', { ctrlKey: true }))
     expect(a2!.className).toContain('bold')
 
-    act(() => press('z', { metaKey: true }))
+    act(() => press('z', { ctrlKey: true }))
     expect(a2!.className).not.toContain('bold')
   })
 
@@ -62,7 +62,7 @@ describe('SSOT: undo restores ancillary state', () => {
     const after = parseFloat(getComputedStyle(document.querySelector('.grid')!).gridTemplateColumns.split(' ')[2])
     if (after === before) return // jsdom may not render grid widths; soft-skip
 
-    act(() => press('z', { metaKey: true }))
+    act(() => press('z', { ctrlKey: true }))
     const restored = parseFloat(getComputedStyle(document.querySelector('.grid')!).gridTemplateColumns.split(' ')[2])
     expect(restored, 'one undo should restore the entire drag').toBe(before)
   })

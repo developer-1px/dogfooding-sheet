@@ -1,100 +1,47 @@
 import { useEffect, useRef } from 'react'
 import type { JsonOps } from 'zod-crud'
-import { useShortcut } from '@p/aria-kernel/key'
-import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
-import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
-import { fillDown, fillRight } from '../lib/fillDown'
-import { idsForAll } from '../lib/range'
+import type { Sheet } from './schema'
 import { handleNavigation } from './shortcutsNav'
+import { useGlobalShortcuts, type GlobalShortcutCtx } from './useGlobalShortcuts'
 
-interface Args {
+interface Args extends GlobalShortcutCtx {
   editing: string | null
-  focusId: string | null
-  sheet: Sheet
-  ops: JsonOps<Sheet>
-  writeCell: (k: string, v: string) => void
-  startEdit: (id: string, prefill?: string) => void
-  selectedIds: string[]
-  openFind: () => void
-  openReplace: () => void
-  openHelp: () => void
-  openGoto: () => void
-  toggleBold: () => void
-  toggleItalic: () => void
-  toggleUnderline: () => void
-  clearFormat: () => void
-  saveCsv: () => void
-  setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
-  switchTab?: (delta: 1 | -1) => void
-  display?: (k: string) => string
-  applyFormat?: (key: 'plain' | 'currency' | 'percent' | 'date') => void
-  editNote?: () => void
-  insertLink?: () => void
+  startEdit: (id: string, prefill?: string) => void
+}
+// Re-export for callers that already import the surface from this module.
+export type { Sheet }
+export type { JsonOps }
+
+const isEditableTarget = (t: EventTarget | null): boolean => {
+  const el = t as HTMLElement | null
+  if (!el) return false
+  if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') return true
+  return el.isContentEditable
 }
 
 export function useShortcuts(args: Args) {
   const ref = useRef(args)
   ref.current = args
+  useGlobalShortcuts(() => ref.current)
+
+  // Keys that aria-kernel useShortcut can't express cleanly (any-printable to start edit,
+  // focus-state-dependent navigation, edit triggers). Capture handler with explicit
+  // editable-guard for side inputs.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, openGoto, toggleBold, toggleItalic, toggleUnderline, clearFormat, saveCsv, setSelectedIds, setFocusId } = ref.current
-      const ck = e.key.toLowerCase()
-      const mod = e.metaKey || e.ctrlKey
-      if (!editing && (e.key === 'F1' || (e.key === '?' && !mod) || (mod && e.key === '/'))) {
-        e.preventDefault()
-        openHelp()
-        return
-      }
-      if (mod && !e.shiftKey && !e.altKey) {
-        const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, u: toggleUnderline, s: saveCsv, '\\': clearFormat } as Record<string, () => void>)[ck]
-        if (fn) { e.preventDefault(); fn(); return }
-      }
-      if (mod && ck === 'g' && !editing) { e.preventDefault(); openGoto(); return }
-      if (mod && ck === 'k' && !editing && ref.current.insertLink) { e.preventDefault(); ref.current.insertLink(); return }
-      if (mod && ck === 'a' && !editing) { e.preventDefault(); setSelectedIds(idsForAll(ROW_COUNT)); return }
-      if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) { e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return }
-      if (mod && e.shiftKey) {
-        if (ck === 'm' && ref.current.editNote) { e.preventDefault(); ref.current.editNote(); return }
-        const f = ({ '1': 'plain', '4': 'currency', '5': 'percent', '3': 'date' } as const)[e.key as '1']
-        if (f && ref.current.applyFormat) { e.preventDefault(); ref.current.applyFormat(f); return }
-      }
-      if (mod && e.key === ';' && !e.altKey) { e.preventDefault(); insertNowOrToday(focusId, e.shiftKey, writeCell); return }
-      if (!editing && focusId && handleNavigation(e, mod, { focusId, cells: sheet.cells, setSelectedIds, setFocusId })) return
+      const c = ref.current
+      const ae = document.activeElement
+      if (isEditableTarget(ae) && !(ae as HTMLElement).classList.contains('cell-input')) return
+      const { editing, focusId, setSelectedIds, setFocusId, sheet, selectedIds, startEdit } = c
+      if (!editing && focusId && handleNavigation(e, e.metaKey || e.ctrlKey, { focusId, cells: sheet.cells, setSelectedIds, setFocusId })) return
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) { setSelectedIds([]); e.preventDefault(); return }
       if (editing) return
-      if (mod && (ck === 'd' || ck === 'r') && selectedIds.length > 1) { e.preventDefault(); (ck === 'd' ? fillDown : fillRight)(selectedIds, sheet.cells, writeCell); return }
-      if (mod && ck === 'z') { e.preventDefault(); e.shiftKey ? ops.redo() : ops.undo(); return }
-      if (mod && ck === 'y') { e.preventDefault(); ops.redo(); return }
-      const p = focusId ? parseCellId(focusId) : null
-      if (!p || !focusId) return
-      const k = cellKey(p.col, p.row), ids = selectedIds.length > 0 ? selectedIds : [focusId]
-
-      const ae = document.activeElement as HTMLElement | null
-      if ((ae?.tagName === 'INPUT' || ae?.tagName === 'TEXTAREA') && !ae.classList.contains('cell-input')) return
-      if (mod && (ck === 'c' || ck === 'x')) { e.preventDefault(); copyOrCut(ids, ck === 'x', sheet.cells, writeCell); return }
-      if (mod && ck === 'v') { e.preventDefault(); pasteAt(k, p, ROW_COUNT, writeCell); return }
-      // Backspace/Delete handled below via useShortcut (aria-kernel) — its built-in editable-guard
-      // ensures FormulaBar / prompt inputs aren't hijacked.
-      if (e.key === 'F9' && ref.current.display) { e.preventDefault(); freezeFormulas(ids, sheet.cells, ref.current.display, writeCell); return }
+      if (!focusId) return
       if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); e.stopPropagation(); return }
-      if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
+      if (e.key.length === 1 && !(e.metaKey || e.ctrlKey) && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
   }, [])
-
-  // Cell-clear via aria-kernel useShortcut. Built-in editable-guard skips when focus is in any
-  // input/textarea/contenteditable (FormulaBar, prompt dialogs, cell input), preventing the
-  // hijack class where Backspace inside a side-input would clear the focused cell.
-  const clearFocused = () => {
-    const a = ref.current
-    const ids = a.selectedIds.length > 0 ? a.selectedIds : (a.focusId ? [a.focusId] : [])
-    for (const id of ids) {
-      const pp = parseCellId(id)
-      if (pp) a.writeCell(cellKey(pp.col, pp.row), '')
-    }
-  }
-  useShortcut('Backspace', clearFocused)
-  useShortcut('Delete', clearFocused)
 }
