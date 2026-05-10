@@ -2,11 +2,13 @@ import { wrap } from './marker'
 import { dispatchTextCodec } from './textCodec'
 import { dispatchTextCase } from './textCase'
 import { dispatchTextAlgo } from './textAlgo'
+import { dispatchTextOps } from './textOps'
 
 export function dispatchText(F: string, argsT: string[]): string | null {
   const codec = dispatchTextCodec(F, argsT); if (codec !== null) return codec
   const cas = dispatchTextCase(F, argsT); if (cas !== null) return cas
   const alg = dispatchTextAlgo(F, argsT); if (alg !== null) return alg
+  const ops = dispatchTextOps(F, argsT); if (ops !== null) return ops
   if (F === 'CONCAT' || F === 'CONCATENATE') return wrap(argsT.join(''))
   if (F === 'HYPERLINK') return wrap(argsT[1] ? argsT[1] : argsT[0])
   if (F === 'LEN') return String(argsT[0].length)
@@ -30,32 +32,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     }
     return wrap(text)
   }
-  if (F === 'LINECOUNT') return String((argsT[0] ?? '') === '' ? 0 : (argsT[0].split(/\r?\n/).length))
-  if (F === 'CHARCOUNT') return String([...(argsT[0] ?? '')].length)
-  if (F === 'WORDCOUNT') {
-    const m = (argsT[0] ?? '').trim().match(/\S+/g)
-    return String(m ? m.length : 0)
-  }
-  if (F === 'DEACCENT') return wrap((argsT[0] ?? '').normalize('NFD').replace(/\p{M}/gu, ''))
-  if (F === 'TRUNCATE') {
-    const s = argsT[0] ?? '', n = Math.max(0, Math.floor(Number(argsT[1] ?? '0')))
-    const tail = argsT[2] ?? '…'
-    return wrap(s.length <= n ? s : s.slice(0, Math.max(0, n - tail.length)) + tail)
-  }
-  if (F === 'INITIALS') {
-    const m = (argsT[0] ?? '').trim().match(/\S+/g)
-    return wrap(m ? m.map((w) => w[0].toUpperCase()).join('') : '')
-  }
-  if (F === 'OCCURS') {
-    const h = argsT[0] ?? '', n = argsT[1] ?? ''
-    if (n === '') return '0'
-    let i = 0, c = 0
-    while ((i = h.indexOf(n, i)) >= 0) { c++; i += n.length }
-    return String(c)
-  }
-  if (F === 'LPAD') return wrap(argsT[0].padStart(Number(argsT[1] ?? '0'), argsT[2] || ' '))
-  if (F === 'RPAD') return wrap(argsT[0].padEnd(Number(argsT[1] ?? '0'), argsT[2] || ' '))
-  if (F === 'REVERSE') return wrap([...argsT[0]].reverse().join(''))
   if (F === 'STARTSWITH') return argsT[0].startsWith(argsT[1] ?? '') ? '1' : '0'
   if (F === 'ENDSWITH') return argsT[0].endsWith(argsT[1] ?? '') ? '1' : '0'
   if (F === 'CONTAINS') return argsT[0].includes(argsT[1] ?? '') ? '1' : '0'
@@ -80,7 +56,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const pos = argsT[1].toLowerCase().indexOf(argsT[0].toLowerCase())
     return pos < 0 ? wrap('#VALUE!') : String(pos + 1)
   }
-  if (F === 'REPT') return wrap(argsT[0].repeat(Math.max(0, Number(argsT[1] ?? '0'))))
   if (F === 'JOIN') return wrap(argsT.slice(1).join(argsT[0] ?? ''))
   if (F === 'TEXTJOIN') {
     const sep = argsT[0] ?? ''

@@ -1,0 +1,33 @@
+import { wrap } from './marker'
+
+/** Small text utilities: word/line/char counts, padding, slicing, transforms. */
+export function dispatchTextOps(F: string, argsT: string[]): string | null {
+  if (F === 'LINECOUNT') return String((argsT[0] ?? '') === '' ? 0 : (argsT[0].split(/\r?\n/).length))
+  if (F === 'CHARCOUNT') return String([...(argsT[0] ?? '')].length)
+  if (F === 'WORDCOUNT') {
+    const m = (argsT[0] ?? '').trim().match(/\S+/g)
+    return String(m ? m.length : 0)
+  }
+  if (F === 'DEACCENT') return wrap((argsT[0] ?? '').normalize('NFD').replace(/\p{M}/gu, ''))
+  if (F === 'TRUNCATE') {
+    const s = argsT[0] ?? '', n = Math.max(0, Math.floor(Number(argsT[1] ?? '0')))
+    const tail = argsT[2] ?? '…'
+    return wrap(s.length <= n ? s : s.slice(0, Math.max(0, n - tail.length)) + tail)
+  }
+  if (F === 'INITIALS') {
+    const m = (argsT[0] ?? '').trim().match(/\S+/g)
+    return wrap(m ? m.map((w) => w[0].toUpperCase()).join('') : '')
+  }
+  if (F === 'OCCURS') {
+    const h = argsT[0] ?? '', n = argsT[1] ?? ''
+    if (n === '') return '0'
+    let i = 0, c = 0
+    while ((i = h.indexOf(n, i)) >= 0) { c++; i += n.length }
+    return String(c)
+  }
+  if (F === 'LPAD') return wrap(argsT[0].padStart(Number(argsT[1] ?? '0'), argsT[2] || ' '))
+  if (F === 'RPAD') return wrap(argsT[0].padEnd(Number(argsT[1] ?? '0'), argsT[2] || ' '))
+  if (F === 'REVERSE') return wrap([...argsT[0]].reverse().join(''))
+  if (F === 'REPT') return wrap(argsT[0].repeat(Math.max(0, Number(argsT[1] ?? '0'))))
+  return null
+}
