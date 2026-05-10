@@ -57,6 +57,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c-d", "-", "/", 2)')).toBe('a-b/c-d')
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/", 5)')).toBe('a-b-c')
   })
+  it('LPAD / RPAD / REVERSE', () => {
+    expect(evaluateCell({}, '=LPAD("42", 5, "0")')).toBe('00042')
+    expect(evaluateCell({}, '=RPAD("hi", 5, ".")')).toBe('hi...')
+    expect(evaluateCell({}, '=REVERSE("abcd")')).toBe('dcba')
+  })
   it('STARTSWITH / ENDSWITH / CONTAINS', () => {
     expect(evaluateCell({}, '=STARTSWITH("hello", "he")')).toBe('1')
     expect(evaluateCell({}, '=ENDSWITH("hello", "lo")')).toBe('1')

@@ -25,6 +25,9 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     }
     return wrap(text)
   }
+  if (F === 'LPAD') return wrap(argsT[0].padStart(Number(argsT[1] ?? '0'), argsT[2] || ' '))
+  if (F === 'RPAD') return wrap(argsT[0].padEnd(Number(argsT[1] ?? '0'), argsT[2] || ' '))
+  if (F === 'REVERSE') return wrap([...argsT[0]].reverse().join(''))
   if (F === 'STARTSWITH') return argsT[0].startsWith(argsT[1] ?? '') ? '1' : '0'
   if (F === 'ENDSWITH') return argsT[0].endsWith(argsT[1] ?? '') ? '1' : '0'
   if (F === 'CONTAINS') return argsT[0].includes(argsT[1] ?? '') ? '1' : '0'
