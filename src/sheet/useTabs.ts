@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { blankBundle, bundleOf, withBundle, type Sheet, type TabBundle } from './schema'
+import { migrateLegacyKey } from './lib/legacyMigrate'
 
 type Cells = Record<string, string>
 export interface TabsState {
@@ -11,23 +12,19 @@ export interface TabsState {
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
 
-function migrateLegacy(state: TabsState, ops: JsonOps<Sheet>) {
-  if (state.order.length > 1 || Object.keys(state.saved).length > 0) return
-  try {
-    const raw = localStorage.getItem(LEGACY_KEY)
-    if (!raw) return
-    const obj = JSON.parse(raw)
-    if (Array.isArray(obj?.order) && typeof obj.active === 'string' && obj.saved) {
-      const upgraded: TabsState = {
-        order: obj.order, active: obj.active,
-        saved: Object.fromEntries(Object.entries(obj.saved as Record<string, Cells>)
+const migrateLegacy = (state: TabsState, ops: JsonOps<Sheet>) =>
+  migrateLegacyKey(LEGACY_KEY, state.order.length <= 1 && Object.keys(state.saved).length === 0, ops,
+    (raw) => {
+      const o = raw as { order?: unknown; active?: unknown; saved?: unknown } | null
+      if (!Array.isArray(o?.order) || typeof o.active !== 'string' || !o.saved) return undefined
+      return {
+        order: o.order as string[], active: o.active,
+        saved: Object.fromEntries(Object.entries(o.saved as Record<string, Cells>)
           .map(([k, cells]) => [k, { ...blankBundle(), cells }])),
-      }
-      ops.replace('/tabs', upgraded)
-    }
-    localStorage.removeItem(LEGACY_KEY)
-  } catch { /* ignore */ }
-}
+      } as TabsState
+    },
+    (o, v) => o.replace('/tabs', v),
+  )
 
 export function useTabs(state: TabsState, ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(state, ops) }, [])

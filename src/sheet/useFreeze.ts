@@ -1,22 +1,21 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
+import { migrateLegacyKey } from './lib/legacyMigrate'
 
 export interface FreezeState { rows: 0 | 1; cols: 0 | 1 }
 
 const LEGACY_KEY = 'spreadsheet:freeze:v1'
 
-function migrateLegacy(freeze: FreezeState, ops: JsonOps<Sheet>) {
-  if (freeze.rows || freeze.cols) return
-  try {
-    const raw = localStorage.getItem(LEGACY_KEY)
-    if (!raw) return
-    const obj = JSON.parse(raw)
-    const next: FreezeState = { rows: obj?.rows === 1 ? 1 : 0, cols: obj?.cols === 1 ? 1 : 0 }
-    if (next.rows || next.cols) ops.replace('/freeze', next)
-    localStorage.removeItem(LEGACY_KEY)
-  } catch { /* ignore */ }
-}
+const migrateLegacy = (freeze: FreezeState, ops: JsonOps<Sheet>) =>
+  migrateLegacyKey(LEGACY_KEY, !freeze.rows && !freeze.cols, ops,
+    (raw) => {
+      const o = raw as { rows?: unknown; cols?: unknown } | null
+      const next: FreezeState = { rows: o?.rows === 1 ? 1 : 0, cols: o?.cols === 1 ? 1 : 0 }
+      return next.rows || next.cols ? next : undefined
+    },
+    (o, v) => o.replace('/freeze', v),
+  )
 
 export function useFreeze(freeze: FreezeState, ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(freeze, ops) }, [])

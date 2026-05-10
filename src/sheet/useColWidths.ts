@@ -3,21 +3,17 @@ import type { JsonOps } from 'zod-crud'
 import { COL_LETTERS } from './schema'
 import type { Sheet } from './schema'
 import { upsertKey } from './lib/dictOps'
+import { migrateLegacyKey } from './lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 const DEFAULT_WIDTH = 100
 const MIN_WIDTH = 40
 
-function migrateLegacy(widths: Record<string, number>, ops: JsonOps<Sheet>) {
-  if (Object.keys(widths).length > 0) return
-  try {
-    const raw = localStorage.getItem(LEGACY_KEY)
-    if (!raw) return
-    const obj = JSON.parse(raw)
-    if (obj && typeof obj === 'object' && Object.keys(obj).length > 0) ops.replace('/colWidths', obj as Record<string, number>)
-    localStorage.removeItem(LEGACY_KEY)
-  } catch { /* ignore */ }
-}
+const migrateLegacy = (widths: Record<string, number>, ops: JsonOps<Sheet>) =>
+  migrateLegacyKey(LEGACY_KEY, Object.keys(widths).length === 0, ops,
+    (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, number> : undefined,
+    (o, v) => o.replace('/colWidths', v),
+  )
 
 export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>) {
   const dragRef = useRef<{ col: string; startX: number; startW: number } | null>(null)

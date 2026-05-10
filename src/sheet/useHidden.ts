@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
+import { migrateLegacyKey } from './lib/legacyMigrate'
 
 export interface HiddenState {
   rows: number[]
@@ -9,20 +10,18 @@ export interface HiddenState {
 
 const LEGACY_KEY = 'spreadsheet:hidden:v1'
 
-function migrateLegacy(hidden: HiddenState, ops: JsonOps<Sheet>) {
-  if (hidden.rows.length || hidden.cols.length) return
-  try {
-    const raw = localStorage.getItem(LEGACY_KEY)
-    if (!raw) return
-    const obj = JSON.parse(raw)
-    const next: HiddenState = {
-      rows: Array.isArray(obj?.rows) ? obj.rows.filter((n: unknown) => typeof n === 'number') : [],
-      cols: Array.isArray(obj?.cols) ? obj.cols.filter((s: unknown) => typeof s === 'string') : [],
-    }
-    if (next.rows.length || next.cols.length) ops.replace('/hidden', next)
-    localStorage.removeItem(LEGACY_KEY)
-  } catch { /* ignore */ }
-}
+const migrateLegacy = (hidden: HiddenState, ops: JsonOps<Sheet>) =>
+  migrateLegacyKey(LEGACY_KEY, !hidden.rows.length && !hidden.cols.length, ops,
+    (raw) => {
+      const o = raw as { rows?: unknown; cols?: unknown } | null
+      const next: HiddenState = {
+        rows: Array.isArray(o?.rows) ? o!.rows.filter((n: unknown) => typeof n === 'number') as number[] : [],
+        cols: Array.isArray(o?.cols) ? o!.cols.filter((s: unknown) => typeof s === 'string') as string[] : [],
+      }
+      return next.rows.length || next.cols.length ? next : undefined
+    },
+    (o, v) => o.replace('/hidden', v),
+  )
 
 export function useHidden(hidden: HiddenState, ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(hidden, ops) }, [])

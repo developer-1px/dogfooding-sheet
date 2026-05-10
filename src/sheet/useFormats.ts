@@ -2,20 +2,16 @@ import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
 import { upsertKey } from './lib/dictOps'
+import { migrateLegacyKey } from './lib/legacyMigrate'
 
 export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date'
 const LEGACY_KEY = 'spreadsheet:formats:v1'
 
-function migrateLegacy(formats: Record<string, Format>, ops: JsonOps<Sheet>) {
-  if (Object.keys(formats).length > 0) return
-  try {
-    const raw = localStorage.getItem(LEGACY_KEY)
-    if (!raw) return
-    const obj = JSON.parse(raw)
-    if (obj && typeof obj === 'object' && Object.keys(obj).length > 0) ops.replace('/formats', obj as Record<string, Format>)
-    localStorage.removeItem(LEGACY_KEY)
-  } catch { /* ignore */ }
-}
+const migrateLegacy = (formats: Record<string, Format>, ops: JsonOps<Sheet>) =>
+  migrateLegacyKey(LEGACY_KEY, Object.keys(formats).length === 0, ops,
+    (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, Format> : undefined,
+    (o, v) => o.replace('/formats', v),
+  )
 
 export function useFormats(formats: Record<string, Format>, ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(formats, ops) }, [])

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
+import { migrateLegacyKey } from './lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:condfmt:v1'
 
@@ -16,16 +17,11 @@ export const matchRule = (rule: CondRule, displayed: string): boolean => {
   return rule.op === '>' ? a > b : a < b
 }
 
-function migrateLegacy(rules: CondRule[], ops: JsonOps<Sheet>) {
-  if (rules.length > 0) return
-  try {
-    const raw = localStorage.getItem(LEGACY_KEY)
-    if (!raw) return
-    const a = JSON.parse(raw)
-    if (Array.isArray(a) && a.length > 0) ops.replace('/condFormat', a as CondRule[])
-    localStorage.removeItem(LEGACY_KEY)
-  } catch { /* ignore */ }
-}
+const migrateLegacy = (rules: CondRule[], ops: JsonOps<Sheet>) =>
+  migrateLegacyKey(LEGACY_KEY, rules.length === 0, ops,
+    (raw) => Array.isArray(raw) && raw.length > 0 ? raw as CondRule[] : undefined,
+    (o, v) => o.replace('/condFormat', v),
+  )
 
 export function useCondFormat(rules: CondRule[], ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(rules, ops) }, [])

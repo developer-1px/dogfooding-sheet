@@ -1,22 +1,15 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
+import { migrateLegacyKey } from './lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:notes:v1'
 
-/** One-shot migration: pull legacy localStorage notes into the SSOT doc. */
-function migrateLegacy(notes: Record<string, string>, ops: JsonOps<Sheet>) {
-  if (Object.keys(notes).length > 0) return
-  try {
-    const raw = localStorage.getItem(LEGACY_KEY)
-    if (!raw) return
-    const obj = JSON.parse(raw)
-    if (obj && typeof obj === 'object' && Object.keys(obj).length > 0) {
-      ops.replace('/notes', obj as Record<string, string>)
-    }
-    localStorage.removeItem(LEGACY_KEY)
-  } catch { /* ignore */ }
-}
+const migrateLegacy = (notes: Record<string, string>, ops: JsonOps<Sheet>) =>
+  migrateLegacyKey(LEGACY_KEY, Object.keys(notes).length === 0, ops,
+    (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, string> : undefined,
+    (o, v) => o.replace('/notes', v),
+  )
 
 export function useNotes(notes: Record<string, string>, ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(notes, ops) }, [])
