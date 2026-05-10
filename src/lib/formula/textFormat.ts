@@ -1,6 +1,21 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'KORNUM') {
+    const n = Number(argsT[0])
+    if (!Number.isFinite(n)) return wrap('#VALUE!')
+    const sign = n < 0 ? '-' : ''
+    let v = Math.floor(Math.abs(n))
+    if (v < 10000) return wrap(sign + v.toLocaleString('ko-KR'))
+    const units = ['', '만', '억', '조', '경']
+    const parts: string[] = []
+    for (let i = 0; v > 0 && i < units.length; i++) {
+      const part = v % 10000
+      if (part) parts.unshift(part.toLocaleString('ko-KR') + units[i])
+      v = Math.floor(v / 10000)
+    }
+    return wrap(sign + parts.join(' '))
+  }
   if (F === 'RELATIVETIME') {
     const t = Number(argsT[0])
     if (!Number.isFinite(t)) return wrap('#VALUE!')

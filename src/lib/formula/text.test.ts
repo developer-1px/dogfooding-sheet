@@ -352,6 +352,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('KORNUM formats with 만/억/조', () => {
+    expect(evaluateCell({}, '=KORNUM(1234)')).toBe('1,234')
+    expect(evaluateCell({}, '=KORNUM(12345)')).toBe('1만 2,345')
+    expect(evaluateCell({}, '=KORNUM(100000000)')).toBe('1억')
+  })
   it('RELATIVETIME shows Korean relative phrase', () => {
     expect(evaluateCell({}, '=RELATIVETIME(EPOCH() - 30)')).toBe('방금')
     expect(evaluateCell({}, '=RELATIVETIME(EPOCH() - 600)')).toBe('10분 전')
