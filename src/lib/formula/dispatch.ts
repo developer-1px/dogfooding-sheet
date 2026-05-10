@@ -1,6 +1,6 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate } from './aggregates'
-import { sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJson, rangeSort, rangeUnique, entropy } from './rangeOps'
+import { sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJson, rangeSort, rangeUnique, entropy, jaccard } from './rangeOps'
 import { dispatchStat } from './statDispatch'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
@@ -57,6 +57,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'RANGESORT') return smartReturn(rangeSort(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'RANGEUNIQUE') return smartReturn(rangeUnique(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'ENTROPY') return smartReturn(entropy(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
+  if (F === 'JACCARD') { const a = splitArgs(rawArgs); return smartReturn(jaccard(a[0], a[1], c.cells, c.evalRaw)) }
   if (F === 'RANGECSV') return smartReturn(rangeCsv(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'COUNTNUMERIC') return countNumeric(splitArgs(rawArgs)[0], c.cells, c.evalRaw)
   if (F === 'RANGEHASH') return smartReturn(rangeHash(splitArgs(rawArgs)[0], c.cells, c.evalRaw))

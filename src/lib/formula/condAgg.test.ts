@@ -242,6 +242,13 @@ describe('PERCENTRANK', () => {
   })
 })
 
+describe('JACCARD', () => {
+  it('returns set similarity ratio', () => {
+    const cells = { A1: 'a', A2: 'b', A3: 'c', B1: 'b', B2: 'c', B3: 'd' }
+    expect(evaluateCell(cells, '=JACCARD(A1:A3, B1:B3)')).toBe('0.5')
+  })
+})
+
 describe('ENTROPY', () => {
   it('returns 0 for uniform single value', () => {
     const cells = { A1: 'a', A2: 'a', A3: 'a' }

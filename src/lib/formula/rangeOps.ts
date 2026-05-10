@@ -40,6 +40,17 @@ export function maxMinBy(F: 'MAX_BY' | 'MIN_BY', valStr: string, keyStr: string,
   return evalRaw(cells[vals[best]] ?? '')
 }
 
+/** JACCARD(rangeA, rangeB) — |A∩B|/|A∪B| over distinct non-empty values. */
+export function jaccard(aStr: string, bStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
+  const set = (s: string) => new Set(collectRefs(s).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== ''))
+  const A = set(aStr), B = set(bStr)
+  const uni = new Set([...A, ...B])
+  if (uni.size === 0) return '#N/A'
+  let inter = 0
+  for (const v of A) if (B.has(v)) inter++
+  return String(inter / uni.size)
+}
+
 export function rank(value: number, rangeStr: string, order: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
   if (!nums.includes(value)) return '#N/A'
