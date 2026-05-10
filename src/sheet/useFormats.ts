@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export type Format = 'plain' | 'currency' | 'percent' | 'integer'
+export type Format = 'plain' | 'currency' | 'percent' | 'integer' | 'thousand' | 'scientific'
 const STORAGE_KEY = 'spreadsheet:formats:v1'
 
 const load = (): Record<string, Format> => {
@@ -44,5 +44,7 @@ export function applyFormat(value: string, fmt: Format): string {
   if (fmt === 'currency') return CURRENCY.format(n)
   if (fmt === 'percent') return `${(n * 100).toFixed(1)}%`
   if (fmt === 'integer') return String(Math.round(n))
+  if (fmt === 'thousand') return n.toLocaleString('en-US')
+  if (fmt === 'scientific') return n.toExponential(2)
   return value
 }

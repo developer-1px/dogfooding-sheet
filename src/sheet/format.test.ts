@@ -14,6 +14,12 @@ describe('applyFormat', () => {
   it('integer rounds', () => {
     expect(applyFormat('3.7', 'integer')).toBe('4')
   })
+  it('thousand groups digits', () => {
+    expect(applyFormat('1234567', 'thousand')).toBe('1,234,567')
+  })
+  it('scientific uses exponential', () => {
+    expect(applyFormat('12345', 'scientific')).toBe('1.23e+4')
+  })
   it('non-numeric values pass through', () => {
     expect(applyFormat('hello', 'currency')).toBe('hello')
     expect(applyFormat('', 'percent')).toBe('')
