@@ -7,11 +7,13 @@ interface Props {
 export function StatusBar({ selectedIds, display, parseId }: Props) {
   if (selectedIds.length < 2) return <footer className="status-bar"><span>{selectedIds.length} 셀</span></footer>
 
+  const rows = new Set<number>(), cols = new Set<string>()
   const nums: number[] = []
   let nonEmpty = 0
   for (const id of selectedIds) {
     const p = parseId(id)
     if (!p) continue
+    rows.add(p.row); cols.add(p.col)
     const v = display(`${p.col}${p.row + 1}`)
     if (v.trim() !== '') nonEmpty++
     const n = Number(v)
@@ -28,7 +30,7 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
 
   return (
     <footer className="status-bar">
-      <span>{selectedIds.length} 셀</span>
+      <span>{selectedIds.length} 셀 ({rows.size}행 × {cols.size}열)</span>
       <span>COUNTA: <b>{nonEmpty}</b></span>
       {nums.length > 0 && (
         <>
