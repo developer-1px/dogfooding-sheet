@@ -1,4 +1,4 @@
-import { cellKey, parseCellId } from './a1'
+import { COL_LETTERS, cellKey, parseCellId } from './a1'
 
 type Cells = Record<string, string>
 type Writes = Array<[string, string]>
@@ -25,7 +25,7 @@ export function fillDown(selectedIds: string[], cells: Cells, write: (k: string,
 export function fillRight(selectedIds: string[], cells: Cells, write: (k: string, v: string) => void, writeMany?: WriteMany): void {
   const ps = selectedIds.map(parseCellId).flatMap((x) => x ? [x] : [])
   if (ps.length < 2) return
-  const COLS = 'ABCDEFGHIJ'
+  const COLS = COL_LETTERS as readonly string[]
   const minColIdx = Math.min(...ps.map((p) => COLS.indexOf(p.col)))
   const sources: Record<number, string> = {}
   for (const p of ps) if (COLS.indexOf(p.col) === minColIdx) sources[p.row] = cells[cellKey(p.col, p.row)] ?? ''

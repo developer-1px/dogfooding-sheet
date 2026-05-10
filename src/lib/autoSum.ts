@@ -1,6 +1,5 @@
 import { isNumeric } from './numeric'
-
-const COL_LETTERS = 'ABCDEFGHIJ'
+import { COL_LETTERS } from './a1'
 
 /**
  * SUM of contiguous numeric cells above the given row. Falls back to the
