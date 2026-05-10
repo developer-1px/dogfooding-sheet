@@ -52,6 +52,15 @@ describe('MINIFS / MAXIFS', () => {
   })
 })
 
+describe('SUMSQ / GEOMEAN / HARMEAN', () => {
+  it('aggregates squared / geometric / harmonic means', () => {
+    const cells = { A1: '2', A2: '4', A3: '8' }
+    expect(evaluateCell(cells, '=SUMSQ(A1:A3)')).toBe('84')
+    expect(evaluateCell(cells, '=GEOMEAN(A1:A3)')).toBe('4')
+    expect(Number(evaluateCell(cells, '=HARMEAN(A1:A3)'))).toBeCloseTo(3.4286, 3)
+  })
+})
+
 describe('SLOPE / INTERCEPT', () => {
   it('linear regression on perfect line y=2x+1', () => {
     const cells = { A1: '3', A2: '5', A3: '7', A4: '9', B1: '1', B2: '2', B3: '3', B4: '4' }
