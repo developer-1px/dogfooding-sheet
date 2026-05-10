@@ -93,7 +93,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
 
   useShortcut('mod+c', () => { const c = get(); copyOrCut(targetIds(c), false, c.sheet.cells, c.writeCell) })
   useShortcut('mod+x', () => { const c = get(); copyOrCut(targetIds(c), true, c.sheet.cells, c.writeCell) })
-  useShortcut('mod+v', () => { const c = get(); if (!c.focusId) return; const p = parseCellId(c.focusId); if (!p) return; pasteAt(cellKey(p.col, p.row), p, ROW_COUNT, c.writeCell) })
+  useShortcut('mod+v', () => { const c = get(); if (!c.focusId) return; const p = parseCellId(c.focusId); if (!p) return; pasteAt(cellKey(p.col, p.row), p, ROW_COUNT, c.writeCell, c.writeCells) })
   useShortcut('mod+d', () => { const c = get(); if (c.selectedIds.length > 1) fillDown(c.selectedIds, c.sheet.cells, c.writeCell, c.writeCells) })
   useShortcut('mod+r', () => { const c = get(); if (c.selectedIds.length > 1) fillRight(c.selectedIds, c.sheet.cells, c.writeCell, c.writeCells) })
 }

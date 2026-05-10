@@ -38,19 +38,21 @@ export function pasteTsv(
   tsv: string,
   anchor: { col: string; row: number },
   write: (k: string, v: string) => void,
-  bounds: { maxRow?: number; maxCol?: number } = {},
+  bounds: { maxRow?: number; maxCol?: number; writeMany?: (writes: Array<[string, string]>) => void } = {},
 ) {
   const maxRow = bounds.maxRow ?? Infinity
   const maxCol = bounds.maxCol ?? COL_LETTERS.length
   const rows = tsv.replace(/\r\n?/g, '\n').replace(/\n$/, '').split('\n')
   const c0 = colIndex(anchor.col)
+  const writes: Array<[string, string]> = []
   for (let r = 0; r < rows.length; r++) {
     const cols = rows[r].split('\t')
     for (let c = 0; c < cols.length; c++) {
-      const tr = anchor.row + r
-      const tc = c0 + c
+      const tr = anchor.row + r; const tc = c0 + c
       if (tr >= maxRow || tc >= maxCol) continue
-      write(cellKey(COL_LETTERS[tc], tr), cols[c])
+      writes.push([cellKey(COL_LETTERS[tc], tr), cols[c]])
     }
   }
+  if (writes.length === 0) return
+  if (bounds.writeMany) bounds.writeMany(writes); else for (const [k, v] of writes) write(k, v)
 }

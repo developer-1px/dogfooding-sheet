@@ -38,8 +38,9 @@ export function copyOrCut(
 export function pasteAt(
   focusKey: string, p: { col: string; row: number }, maxRow: number,
   writeCell: (k: string, v: string) => void,
+  writeCells?: (writes: Array<[string, string]>) => void,
 ): void {
   navigator.clipboard?.readText()
-    .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow }) : writeCell(focusKey, t))
+    .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow, writeMany: writeCells }) : writeCell(focusKey, t))
     .catch(() => {})
 }
