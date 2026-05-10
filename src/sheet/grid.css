@@ -78,3 +78,9 @@
 .cell-link { color: #1a73e8; text-decoration: underline; cursor: pointer; }
 
 .cell.wrap { white-space: normal; word-break: break-word; }
+
+@media print {
+  .sheet-toolbar, .tabs-bar, .status-bar, .col-resizer, .row-resizer, .fill-handle, .tab-color, .tab-dup, .tab-close, .tab-add, .overflow-menu { display: none !important; }
+  .grid-row, .cell { border-color: #999 !important; }
+  .cell.focused { outline: none !important; }
+}
