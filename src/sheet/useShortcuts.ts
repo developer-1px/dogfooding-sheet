@@ -5,7 +5,7 @@ import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/cli
 import { fillDown, fillRight } from '../lib/fillDown'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { gotoCell } from '../lib/gotoCell'
-import { idsForCol, idsForRow } from '../lib/range'
+import { idsForCol, idsForRow, idsForAll } from '../lib/range'
 
 interface Args {
   editing: string | null
@@ -49,6 +49,7 @@ export function useShortcuts(args: Args) {
         if (fn) { e.preventDefault(); fn(); return }
       }
       if (mod && ck === 'g' && !editing) { e.preventDefault(); gotoCell(setFocusId); return }
+      if (mod && ck === 'a' && !editing) { e.preventDefault(); setSelectedIds(idsForAll(ROW_COUNT)); return }
       if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) { e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return }
       if (mod && e.shiftKey) {
         if (ck === 'm' && ref.current.editNote) { e.preventDefault(); ref.current.editNote(); return }
