@@ -1,7 +1,7 @@
 import type { InputProps, SelectProps } from 'editable-lifecycle'
 import { COL_LETTERS } from './schema'
-import { idsForRow } from '../lib/range'
 import { Cell } from './Cell'
+import { RowHeader } from './RowHeader'
 import { isFillCorner } from './fillCorner'
 import { styleToProps, type CellStyle } from './useStyles'
 import type { GridCell } from '@p/aria-kernel/patterns'
@@ -26,6 +26,7 @@ interface Props {
   commitEdit: (move?: { dRow: number; dCol: number }) => void
   cancelEdit: () => void
   hideRow: (row: number) => void
+  startResizeRow: (row: number) => (e: React.MouseEvent) => void
   styleOf: (k: string) => CellStyle | undefined
   noteOf: (k: string) => string | undefined
   rawOf: (k: string) => string | undefined
@@ -42,21 +43,10 @@ interface Props {
   selectProps: SelectProps
 }
 
-const rowSelectIds = (rIdx: number, anchor: string | null): string[] => {
-  const m = anchor && /^r(\d+)/.exec(anchor); const from = m ? Number(m[1]) : rIdx
-  const ids: string[] = []
-  for (let r = Math.min(from, rIdx); r <= Math.max(from, rIdx); r++) ids.push(...idsForRow(r))
-  return ids
-}
 export function GridRow(p: Props) {
   return (
     <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight }}>
-      <span
-        className="row-header"
-        onClick={(e) => p.setSelectedIds(rowSelectIds(p.rIdx, e.shiftKey ? p.focusId : null))}
-        onContextMenu={(e) => { e.preventDefault(); p.hideRow(p.rIdx) }}
-        title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=행 숨기기"
-      >{p.rIdx + 1}</span>
+      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} hideRow={p.hideRow} startResizeRow={p.startResizeRow} />
       {p.rowItemProps.cells.map((cell, cIdx) => {
         if (p.hiddenCols.has(COL_LETTERS[cIdx])) return null
         const m = /^r(\d+)-([A-J])$/.exec(cell.id)

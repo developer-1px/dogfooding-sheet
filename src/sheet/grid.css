@@ -18,6 +18,11 @@
   cursor: col-resize; user-select: none; z-index: 3;
 }
 .col-resizer:hover { background: rgba(26, 115, 232, .3); }
+.row-resizer {
+  position: absolute; bottom: -3px; left: 0; width: 100%; height: 6px;
+  cursor: row-resize; user-select: none; z-index: 3;
+}
+.row-resizer:hover { background: rgba(26, 115, 232, .3); }
 
 .cell {
   position: relative; padding: 6px 8px; min-height: 28px; cursor: cell; outline: none;

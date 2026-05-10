@@ -94,7 +94,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,
-    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}),
+    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, startResizeRow: rowH.startResizeRow, promptRowHeight: opts.promptRowHeight ?? (() => {}),
     tabs: tabs.state, ...tabFns,
   }
 }
