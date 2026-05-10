@@ -13,3 +13,13 @@ describe('jumpToEdge', () => {
     expect(jumpToEdge('r0-A', { A1: 'x' }, 10, 'ArrowDown')).toBe('r0-A')
   })
 })
+
+import { idsBetween } from './jumpEdge'
+describe('idsBetween', () => {
+  it('lists rectangle inclusive', () => {
+    expect(idsBetween('r0-A', 'r1-B')).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
+  })
+  it('handles reversed corners', () => {
+    expect(idsBetween('r2-C', 'r0-A').length).toBe(9)
+  })
+})

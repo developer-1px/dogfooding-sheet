@@ -18,3 +18,15 @@ export function jumpToEdge(
   }
   return `r${r}-${COL_LETTERS[c]}`
 }
+
+/** Cell ids covering the rectangular area between two cells (inclusive). */
+export function idsBetween(a: string, b: string): string[] {
+  const A = parseCellId(a), B = parseCellId(b)
+  if (!A || !B) return []
+  const r1 = Math.min(A.row, B.row), r2 = Math.max(A.row, B.row)
+  const c1 = Math.min(COL_LETTERS.indexOf(A.col), COL_LETTERS.indexOf(B.col))
+  const c2 = Math.max(COL_LETTERS.indexOf(A.col), COL_LETTERS.indexOf(B.col))
+  const ids: string[] = []
+  for (let r = r1; r <= r2; r++) for (let c = c1; c <= c2; c++) ids.push(`r${r}-${COL_LETTERS[c]}`)
+  return ids
+}

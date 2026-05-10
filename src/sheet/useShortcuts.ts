@@ -3,7 +3,7 @@ import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
 import { fillDown, fillRight } from '../lib/fillDown'
-import { jumpToEdge } from '../lib/jumpEdge'
+import { jumpToEdge, idsBetween } from '../lib/jumpEdge'
 
 interface Args {
   editing: string | null
@@ -47,7 +47,10 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       }
       if (mod && !editing && /^Arrow(Up|Down|Left|Right)$/.test(e.key) && focusId) {
         const next = jumpToEdge(focusId, sheet.cells, ROW_COUNT, e.key as 'ArrowUp')
-        if (next) { setFocusId(next); e.preventDefault() }
+        if (!next) return
+        if (e.shiftKey) setSelectedIds(idsBetween(focusId, next))
+        else setFocusId(next)
+        e.preventDefault()
         return
       }
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) {
@@ -56,11 +59,7 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         return
       }
       if (editing) return
-      if (mod && (ck === 'd' || ck === 'r') && selectedIds.length > 1) {
-        e.preventDefault()
-        ;(ck === 'd' ? fillDown : fillRight)(selectedIds, sheet.cells, writeCell)
-        return
-      }
+      if (mod && (ck === 'd' || ck === 'r') && selectedIds.length > 1) { e.preventDefault(); (ck === 'd' ? fillDown : fillRight)(selectedIds, sheet.cells, writeCell); return }
       if (mod && ck === 'z') { e.preventDefault(); e.shiftKey ? ops.redo() : ops.undo(); return }
       if (mod && ck === 'y') { e.preventDefault(); ops.redo(); return }
       const p = focusId ? parseCellId(focusId) : null
