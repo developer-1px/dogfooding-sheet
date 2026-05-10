@@ -57,6 +57,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c-d", "-", "/", 2)')).toBe('a-b/c-d')
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/", 5)')).toBe('a-b-c')
   })
+  it('WORDCOUNT', () => {
+    expect(evaluateCell({}, '=WORDCOUNT("hello world")')).toBe('2')
+    expect(evaluateCell({}, '=WORDCOUNT("  one  ")')).toBe('1')
+    expect(evaluateCell({}, '=WORDCOUNT("")')).toBe('0')
+  })
   it('LPAD / RPAD / REVERSE', () => {
     expect(evaluateCell({}, '=LPAD("42", 5, "0")')).toBe('00042')
     expect(evaluateCell({}, '=RPAD("hi", 5, ".")')).toBe('hi...')

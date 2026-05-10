@@ -25,6 +25,10 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     }
     return wrap(text)
   }
+  if (F === 'WORDCOUNT') {
+    const m = (argsT[0] ?? '').trim().match(/\S+/g)
+    return String(m ? m.length : 0)
+  }
   if (F === 'LPAD') return wrap(argsT[0].padStart(Number(argsT[1] ?? '0'), argsT[2] || ' '))
   if (F === 'RPAD') return wrap(argsT[0].padEnd(Number(argsT[1] ?? '0'), argsT[2] || ' '))
   if (F === 'REVERSE') return wrap([...argsT[0]].reverse().join(''))
