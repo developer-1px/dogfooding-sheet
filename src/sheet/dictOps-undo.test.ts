@@ -53,6 +53,14 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     expect(apple.className, 'Apple bold should survive — surgical /styles/<key> patch').toContain('bold')
   })
 
+  it('formula evaluation result is shown in cell (sanity check)', async () => {
+    await act(async () => root.render(createElement(App)))
+    // initialSheet has D2 = '=B2*C2' where B2=3, C2=1.50 → 4.5 (formatted '4.5')
+    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
+    const d2 = cells.find((c) => c.textContent?.trim() === '4.5')
+    expect(d2, '=B2*C2 should compute to 4.5 (3 × 1.50)').toBeDefined()
+  })
+
   it('Cmd+X (cut) on multi-cell selection is a single undo entry', async () => {
     await act(async () => root.render(createElement(App)))
     const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
