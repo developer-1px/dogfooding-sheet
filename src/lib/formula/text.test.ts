@@ -143,6 +143,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
     expect(evaluateCell({}, '=ODD(4)')).toBe('5')
   })
+  it('trig: SIN/COS/TAN + DEGREES/RADIANS', () => {
+    expect(evaluateCell({}, '=ROUND(SIN(RADIANS(30)),4)')).toBe('0.5')
+    expect(evaluateCell({}, '=ROUND(COS(0),4)')).toBe('1')
+    expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
+    expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
+  })
   it('VALUE / N coerce to number', () => {
     expect(evaluateCell({}, '=VALUE("3.14")')).toBe('3.14')
     expect(evaluateCell({}, '=N("abc")')).toBe('0')

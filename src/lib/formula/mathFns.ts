@@ -24,6 +24,15 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => g(a, b)))
   }
+  if (F === 'SIN') return String(Math.sin(argsN[0]))
+  if (F === 'COS') return String(Math.cos(argsN[0]))
+  if (F === 'TAN') return String(Math.tan(argsN[0]))
+  if (F === 'ASIN') return String(Math.asin(argsN[0]))
+  if (F === 'ACOS') return String(Math.acos(argsN[0]))
+  if (F === 'ATAN') return String(Math.atan(argsN[0]))
+  if (F === 'ATAN2') return String(Math.atan2(argsN[0], argsN[1]))
+  if (F === 'DEGREES') return String(argsN[0] * 180 / Math.PI)
+  if (F === 'RADIANS') return String(argsN[0] * Math.PI / 180)
   if (F === 'LCM') {
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => (a * b) / g(a, b)))
