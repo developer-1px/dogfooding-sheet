@@ -30,7 +30,6 @@ export function useShortcuts(args: Args) {
   ref.current = args
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      ;(globalThis as any).__shortcutsFired?.push(e.key + ' editing=' + ref.current.editing + ' focusId=' + ref.current.focusId)
       const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds, setFocusId } = ref.current
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
@@ -75,9 +74,7 @@ export function useShortcuts(args: Args) {
       if (mod && ck === 'y') { e.preventDefault(); ops.redo(); return }
       const p = focusId ? parseCellId(focusId) : null
       if (!p || !focusId) return
-      const k = cellKey(p.col, p.row)
-      const ids = selectedIds.length > 0 ? selectedIds : [focusId]
-      const rect = rectFromIds(ids)
+      const k = cellKey(p.col, p.row), ids = selectedIds.length > 0 ? selectedIds : [focusId], rect = rectFromIds(ids)
 
       if (mod && (ck === 'c' || ck === 'x')) {
         e.preventDefault()
@@ -92,9 +89,8 @@ export function useShortcuts(args: Args) {
         return
       }
       if (e.key === 'Delete' || e.key === 'Backspace') { ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') }); e.preventDefault(); return }
-      const ae = document.activeElement
-      const inForm = (ae instanceof HTMLInputElement || ae instanceof HTMLTextAreaElement) && !ae.classList.contains('cell-input')
-      if (inForm) return
+      const ae = document.activeElement as HTMLElement | null
+      if ((ae?.tagName === 'INPUT' || ae?.tagName === 'TEXTAREA') && !ae.classList.contains('cell-input')) return
       if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); e.stopPropagation(); return }
       if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
     }

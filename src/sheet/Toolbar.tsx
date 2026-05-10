@@ -77,7 +77,8 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
         onClick={() => {
           const keys = targetKeys()
           if (keys.length === 0) return
-          const csv = window.prompt('허용 값 (쉼표 구분, 비우면 해제)', '')
+          let csv: string | null = null
+          try { csv = window.prompt('허용 값 (쉼표 구분, 비우면 해제)', '') } catch { return }
           if (csv === null) return
           const opts = csv.split(',').map((s) => s.trim()).filter(Boolean)
           if (opts.length === 0) clearRule(keys)
