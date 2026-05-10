@@ -55,6 +55,16 @@ export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, cells: Record<s
   return '#N/A'
 }
 
+/** MAX_BY / MIN_BY — return value at index where keys hit max / min. */
+export function maxMinBy(F: 'MAX_BY' | 'MIN_BY', valStr: string, keyStr: string, cells: Record<string, string>, evalRaw: (s: string) => string, numFromCell: NumFromCell): string {
+  const vals = collectRefs(valStr)
+  const keys = collectRefs(keyStr).map(numFromCell)
+  if (keys.length === 0) return '#N/A'
+  let best = 0
+  for (let i = 1; i < keys.length; i++) if (F === 'MAX_BY' ? keys[i] > keys[best] : keys[i] < keys[best]) best = i
+  return evalRaw(cells[vals[best]] ?? '')
+}
+
 export function rank(value: number, rangeStr: string, order: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
   if (!nums.includes(value)) return '#N/A'

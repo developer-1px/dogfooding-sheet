@@ -129,6 +129,14 @@ describe('WEIGHTAVG', () => {
   })
 })
 
+describe('MAX_BY / MIN_BY', () => {
+  it('return value at index of key max/min', () => {
+    const cells = { A1: 'red', A2: 'green', A3: 'blue', B1: '5', B2: '10', B3: '3' }
+    expect(evaluateCell(cells, '=MAX_BY(A1:A3, B1:B3)')).toBe('green')
+    expect(evaluateCell(cells, '=MIN_BY(A1:A3, B1:B3)')).toBe('blue')
+  })
+})
+
 describe('FIRST / LAST non-empty', () => {
   it('first/last non-empty values', () => {
     const cells = { A1: '', A2: 'a', A3: '', A4: 'b' }
