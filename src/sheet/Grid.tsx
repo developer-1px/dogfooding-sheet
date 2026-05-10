@@ -49,11 +49,12 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
           <span className="row-header" aria-hidden>{rIdx + 1}</span>
           {row.cells.map((cell) => {
             const isEditing = editing === cell.id
+            const isNum = cell.label !== '' && !Number.isNaN(Number(cell.label))
             return (
               <span
                 key={cell.id}
                 {...cellProps(cell.id)}
-                className={`cell${cell.selected ? ' selected' : ''}${focusId === cell.id ? ' focused' : ''}`}
+                className={`cell${cell.selected ? ' selected' : ''}${focusId === cell.id ? ' focused' : ''}${isNum ? ' numeric' : ''}`}
                 onDoubleClick={() => startEdit(cell.id)}
               >
                 {isEditing ? (
@@ -62,10 +63,18 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
                     className="cell-input"
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
-                    onBlur={commitEdit}
+                    onBlur={() => commitEdit()}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') { e.preventDefault(); commitEdit() }
-                      else if (e.key === 'Escape') { e.preventDefault(); cancelEdit() }
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        commitEdit({ dRow: e.shiftKey ? -1 : 1, dCol: 0 })
+                      } else if (e.key === 'Tab') {
+                        e.preventDefault()
+                        commitEdit({ dRow: 0, dCol: e.shiftKey ? -1 : 1 })
+                      } else if (e.key === 'Escape') {
+                        e.preventDefault()
+                        cancelEdit()
+                      }
                     }}
                   />
                 ) : (

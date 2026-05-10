@@ -1,34 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useJson } from 'zod-crud'
-import { fromTree, type NormalizedData } from '@p/aria-kernel'
-import { SheetSchema, COL_LETTERS, ROW_COUNT, cellKey, initialSheet, parseCellId } from './schema'
+import { SheetSchema, cellKey, parseCellId } from './schema'
 import { evaluateCell } from './formula'
-
-interface Node { id: string; label: string; children?: Node[] }
-
-function buildData(getCell: (k: string) => string): NormalizedData {
-  const tree: Node[] = [
-    ...COL_LETTERS.map((c): Node => ({ id: `h-${c}`, label: c })),
-    ...Array.from({ length: ROW_COUNT }, (_, r): Node => ({
-      id: `r${r}`,
-      label: String(r + 1),
-      children: COL_LETTERS.map((c) => ({
-        id: `r${r}-${c}`,
-        label: getCell(cellKey(c, r)),
-      })),
-    })),
-  ]
-  return fromTree(tree)
-}
+import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
+import { useShortcuts } from './useShortcuts'
 
 export function useSheet() {
-  const [sheet, ops] = useJson(SheetSchema, initialSheet, { history: 100 })
+  const [sheet, ops] = useJson(SheetSchema, loadInitial(), { history: 100 })
   const [focusId, setFocusId] = useState<string | null>('r0-A')
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
 
+  useEffect(() => { saveSheet(sheet) }, [sheet])
+
   const display = (k: string) => evaluateCell(sheet.cells, sheet.cells[k] ?? '')
-  const data = buildData(display)
+  const data = buildData((k) => display(k))
   data.meta = { ...data.meta, focus: focusId }
 
   const writeCell = (k: string, v: string) => {
@@ -48,40 +34,20 @@ export function useSheet() {
     setDraft(prefill !== undefined ? prefill : sheet.cells[cellKey(p.col, p.row)] ?? '')
   }
 
-  const commitEdit = () => {
+  const commitEdit = (move?: { dRow: number; dCol: number }) => {
     if (!editing) return
     const p = parseCellId(editing)
     if (p) writeCell(cellKey(p.col, p.row), draft)
+    if (move) {
+      const next = moveCellId(editing, move.dRow, move.dCol)
+      if (next) setFocusId(next)
+    }
     setEditing(null)
   }
 
   const cancelEdit = () => setEditing(null)
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (editing) return
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
-        e.preventDefault()
-        if (e.shiftKey) ops.redo()
-        else ops.undo()
-        return
-      }
-      if (focusId && parseCellId(focusId)) {
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-          const p = parseCellId(focusId)!
-          writeCell(cellKey(p.col, p.row), '')
-          e.preventDefault()
-          return
-        }
-        if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
-          startEdit(focusId, e.key)
-          e.preventDefault()
-        }
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [editing, focusId, ops, sheet.cells])
+  useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit })
 
   const focusCell = focusId ? parseCellId(focusId) : null
   const focusKey = focusCell ? cellKey(focusCell.col, focusCell.row) : null
