@@ -89,3 +89,8 @@
   cursor: pointer; font-size: 13px;
 }
 .overflow-item:hover, .overflow-item:focus { background: #f1f3f4; outline: none; }
+
+.tab-rename {
+  background: #fff; border: 1px solid #1a73e8; border-radius: 2px;
+  padding: 1px 4px; font-size: 13px; width: 90px; outline: none;
+}

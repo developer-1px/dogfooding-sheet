@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useTabsPattern } from '@p/aria-kernel/patterns'
 import type { TabsState } from './useTabs'
@@ -11,6 +12,12 @@ interface Props {
 }
 
 export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet }: Props) {
+  const [editing, setEditing] = useState<{ name: string; draft: string } | null>(null)
+  const commit = () => {
+    if (!editing) return
+    if (editing.draft && editing.draft !== editing.name) renameSheet(editing.name, editing.draft)
+    setEditing(null)
+  }
   const data = fromList(state.order.map((name) => ({ id: name, label: name })))
   data.meta = { ...data.meta, focus: state.active }
   for (const name of state.order) {
@@ -35,13 +42,22 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet }: P
           key={name}
           {...tabProps(name)}
           className={`tab${name === state.active ? ' active' : ''}`}
-          onDoubleClick={() => {
-            const next = window.prompt('시트 이름', name)
-            if (next != null) renameSheet(name, next)
-          }}
+          onDoubleClick={() => setEditing({ name, draft: name })}
           title="더블클릭으로 이름 변경"
         >
-          {name}
+          {editing?.name === name ? (
+            <input
+              autoFocus
+              className="tab-rename"
+              value={editing.draft}
+              onChange={(e) => setEditing({ name, draft: e.target.value })}
+              onBlur={commit}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { e.preventDefault(); commit() }
+                else if (e.key === 'Escape') { e.preventDefault(); setEditing(null) }
+              }}
+            />
+          ) : name}
           {state.order.length > 1 && (
             <button
               className="tab-close"
