@@ -1,6 +1,7 @@
 import type { InputProps, SelectProps } from 'editable-lifecycle'
 import { COL_LETTERS } from './schema'
 import { Cell } from './Cell'
+import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'
 import { isFillCorner } from './fillCorner'
 import { styleToProps, type CellStyle } from './useStyles'
@@ -72,7 +73,7 @@ export function GridRow(p: Props) {
             selected={cell.selected}
             focused={p.focusId === cell.id}
             highlighted={p.hiSet.has(cell.id)}
-            isNum={cell.label !== '' && (!Number.isNaN(Number(cell.label)) || !Number.isNaN(Number(p.rawOf(k) ?? '')))}
+            isNum={cell.label !== '' && (isNumeric(cell.label) || isNumeric(p.rawOf(k) ?? ''))}
             styleClass={sp.className + extra}
             styleInline={styleInline}
             note={p.noteOf(k)}
