@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
-import { fillDown } from '../lib/fillDown'
+import { fillDown, fillRight } from '../lib/fillDown'
 
 interface Args {
   editing: string | null
@@ -44,9 +44,9 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         return
       }
       if (editing) return
-      if (mod && ck === 'd' && selectedIds.length > 1) {
+      if (mod && (ck === 'd' || ck === 'r') && selectedIds.length > 1) {
         e.preventDefault()
-        fillDown(selectedIds, sheet.cells, writeCell)
+        ;(ck === 'd' ? fillDown : fillRight)(selectedIds, sheet.cells, writeCell)
         return
       }
       if (mod && ck === 'z') {
