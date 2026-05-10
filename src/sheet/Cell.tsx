@@ -51,7 +51,9 @@ export function Cell(p: Props) {
         )
       ) : (
         <>
-          {p.label}
+          {/^https?:\/\//.test(p.label)
+            ? <a className="cell-link" href={p.label} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()}>{p.label}</a>
+            : p.label}
           {p.note && <span className="note-mark" aria-hidden />}
           {p.validationOptions && !p.editing && <span className="dropdown-mark" aria-hidden>▾</span>}
           {p.isFillCorner && !p.editing && (

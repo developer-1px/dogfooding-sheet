@@ -64,3 +64,5 @@
 .cell.underline { text-decoration: underline; }
 
 .cell.errcell { color: #d93025; font-weight: 600; }
+
+.cell-link { color: #1a73e8; text-decoration: underline; cursor: pointer; }
