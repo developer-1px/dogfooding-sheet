@@ -28,6 +28,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=BASE64ENCODE("hi!")')).toBe('aGkh')
     expect(evaluateCell({}, '=BASE64DECODE("aGkh")')).toBe('hi!')
   })
+  it('URLHOST / URLPATH / URLQUERY parse URLs', () => {
+    expect(evaluateCell({}, '=URLHOST("https://example.com/foo?x=1")')).toBe('example.com')
+    expect(evaluateCell({}, '=URLPATH("https://example.com/foo/bar")')).toBe('/foo/bar')
+    expect(evaluateCell({}, '=URLQUERY("https://example.com/?name=alice", "name")')).toBe('alice')
+  })
   it('ENCODEURL escapes special characters', () => {
     expect(evaluateCell({}, '=ENCODEURL("hello world & co")')).toBe('hello%20world%20%26%20co')
     expect(evaluateCell({}, '=DECODEURL("hello%20world%20%26%20co")')).toBe('hello world & co')

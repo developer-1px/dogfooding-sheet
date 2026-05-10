@@ -1,6 +1,11 @@
 import { wrap } from './marker'
 
 export function dispatchTextCodec(F: string, argsT: string[]): string | null {
+  if (F === 'URLHOST') { try { return wrap(new URL(argsT[0]).hostname) } catch { return wrap('#VALUE!') } }
+  if (F === 'URLPATH') { try { return wrap(new URL(argsT[0]).pathname) } catch { return wrap('#VALUE!') } }
+  if (F === 'URLQUERY') {
+    try { const url = new URL(argsT[0]); return wrap(url.searchParams.get(argsT[1] ?? '') ?? '') } catch { return wrap('#VALUE!') }
+  }
   if (F === 'ENCODEURL') return wrap(encodeURIComponent(argsT[0] ?? ''))
   if (F === 'DECODEURL') { try { return wrap(decodeURIComponent(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
   if (F === 'JSONESCAPE') return wrap(JSON.stringify(argsT[0] ?? '').slice(1, -1))
