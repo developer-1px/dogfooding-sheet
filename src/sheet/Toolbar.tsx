@@ -43,9 +43,11 @@ interface Props {
   resetCells: (c: Record<string, string>) => void
   ask: (opts: PromptOptions) => Promise<string | null>
   confirm: (opts: ConfirmOptions) => Promise<boolean>
+  undo: () => void
+  redo: () => void
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, resetCells, ask, confirm }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, resetCells, ask, confirm, undo, redo }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
@@ -55,12 +57,10 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
 
   return (
     <>
-      <button onClick={() => insertRow(focusRow)} title="위에 행 삽입">+행</button>
-      <button onClick={() => deleteRow(focusRow)} title="현재 행 삭제">−행</button>
-      <button onClick={() => focus && insertCol(focus[1])} title="왼쪽에 열 삽입">+열</button>
-      <button onClick={() => focus && deleteCol(focus[1])} title="현재 열 삭제">−열</button>
-      <button onClick={() => focus && sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button>
-      <button onClick={() => focus && sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
+      <button onClick={undo} title="실행 취소 (Ctrl/⌘+Z)">↶</button><button onClick={redo} title="다시 실행 (Ctrl/⌘+Shift+Z)">↷</button>
+      <button onClick={() => insertRow(focusRow)} title="위에 행 삽입">+행</button><button onClick={() => deleteRow(focusRow)} title="현재 행 삭제">−행</button>
+      <button onClick={() => focus && insertCol(focus[1])} title="왼쪽에 열 삽입">+열</button><button onClick={() => focus && deleteCol(focus[1])} title="현재 열 삭제">−열</button>
+      <button onClick={() => focus && sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button><button onClick={() => focus && sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
       <button onClick={() => { const f = focus && autoSumFormula(focus[1], focusRow, display); if (f && focus) writeCell(`${focus[1]}${focusRow + 1}`, f) }} title="자동 합계 (위쪽 연속 숫자 합)">Σ</button>
       <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} />
       <button onClick={() => setAlign('left')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬">⇤</button>

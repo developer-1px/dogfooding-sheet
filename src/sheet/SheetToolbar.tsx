@@ -41,6 +41,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       sheet={ctx.sheet}
       resetSheet={(s) => ctx.ops.reset(s)}
       resetCells={(c) => ctx.ops.replace('/cells', c)}
+      undo={() => ctx.ops.undo()}
+      redo={() => ctx.ops.redo()}
       ask={ask}
       confirm={confirm}
     />
