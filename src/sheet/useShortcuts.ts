@@ -11,14 +11,20 @@ interface Args {
   writeCell: (k: string, v: string) => void
   startEdit: (id: string, prefill?: string) => void
   selectedIds: string[]
+  openFind: () => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (editing) return
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
+      if (mod && ck === 'f') {
+        e.preventDefault()
+        openFind()
+        return
+      }
+      if (editing) return
       if (mod && ck === 'z') {
         e.preventDefault()
         e.shiftKey ? ops.redo() : ops.undo()

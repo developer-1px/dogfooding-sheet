@@ -6,6 +6,7 @@ import { StatusBar } from './sheet/StatusBar'
 import { parseCellId } from './sheet/schema'
 import { rectFromIds, formatRect } from './sheet/clipboard'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from './sheet/csv'
+import { Find } from './sheet/Find'
 import './App.css'
 
 export default function App() {
@@ -58,6 +59,13 @@ export default function App() {
       />
       <Grid ctx={ctx} />
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
+      <Find
+        open={ctx.findOpen}
+        onClose={() => ctx.setFindOpen(false)}
+        cells={ctx.sheet.cells}
+        display={ctx.display}
+        onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
+      />
     </div>
   )
 }
