@@ -21,6 +21,9 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
   const avg = nums.length ? sum / nums.length : 0
   const min = nums.length ? Math.min(...nums) : 0
   const max = nums.length ? Math.max(...nums) : 0
+  const median = nums.length
+    ? (() => { const s = [...nums].sort((a, b) => a - b); const m = s.length; return m % 2 ? s[(m - 1) / 2] : (s[m / 2 - 1] + s[m / 2]) / 2 })()
+    : 0
   const fmt = (n: number) => Math.round(n * 1e6) / 1e6
 
   return (
@@ -34,6 +37,7 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
           <span>MIN: <b>{fmt(min)}</b></span>
           <span>MAX: <b>{fmt(max)}</b></span>
           <span>COUNT: <b>{nums.length}</b></span>
+          <span>MEDIAN: <b>{fmt(median)}</b></span>
         </>
       )}
     </footer>
