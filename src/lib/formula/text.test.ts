@@ -193,6 +193,10 @@ describe('text functions', () => {
     expect(Number(evaluateCell({}, '=FV(0.05, 10, -1000, 0)'))).toBeCloseTo(12577.89, 1)
     expect(Number(evaluateCell({}, '=PV(0.05, 10, -1000, 0)'))).toBeCloseTo(7721.73, 1)
   })
+  it('EFFECT / NOMINAL round-trip', () => {
+    expect(Number(evaluateCell({}, '=EFFECT(0.05, 12)'))).toBeCloseTo(0.05116, 4)
+    expect(Number(evaluateCell({}, '=NOMINAL(0.05116, 12)'))).toBeCloseTo(0.05, 3)
+  })
   it('IRR converges to expected rate', () => {
     const cells = { A1: '-1000', A2: '300', A3: '420', A4: '680' }
     expect(Number(evaluateCell(cells, '=IRR(A1:A4)'))).toBeCloseTo(0.1634, 3)

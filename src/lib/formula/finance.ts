@@ -9,6 +9,8 @@ const pmtVal = (rate: number, nper: number, pv: number, fv = 0): number => {
 }
 
 export function dispatchFinance(F: string, argsT: string[], argsN: number[], rawArgs: string, numFromCell: NumFromCell): string | null {
+  if (F === 'EFFECT') { const [r, n] = argsN; return n < 1 ? '#NUM!' : String(Math.pow(1 + r / n, n) - 1) }
+  if (F === 'NOMINAL') { const [r, n] = argsN; return n < 1 ? '#NUM!' : String(n * (Math.pow(1 + r, 1 / n) - 1)) }
   if (F === 'PMT') return String(pmtVal(argsN[0], argsN[1], argsN[2], argsN[3] ?? 0))
   if (F === 'FV') {
     const [rate, nper, pmt, pv = 0] = argsN
