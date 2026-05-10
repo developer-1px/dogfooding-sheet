@@ -133,6 +133,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
   })
+  it('LIKE wildcard match', () => {
+    expect(evaluateCell({}, '=LIKE("apple", "ap*")')).toBe('1')
+    expect(evaluateCell({}, '=LIKE("apple", "a?ple")')).toBe('1')
+    expect(evaluateCell({}, '=LIKE("apple", "ax*")')).toBe('0')
+  })
   it('SOUNDEX phonetic code', () => {
     expect(evaluateCell({}, '=SOUNDEX("Robert")')).toBe('R163')
     expect(evaluateCell({}, '=SOUNDEX("Rupert")')).toBe('R163')

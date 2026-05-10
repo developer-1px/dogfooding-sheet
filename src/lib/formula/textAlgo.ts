@@ -1,4 +1,9 @@
 export function dispatchTextAlgo(F: string, argsT: string[]): string | null {
+  if (F === 'LIKE') {
+    const text = argsT[0] ?? '', pattern = argsT[1] ?? ''
+    const re = '^' + pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.') + '$'
+    return new RegExp(re).test(text) ? '1' : '0'
+  }
   if (F === 'SOUNDEX') {
     const s = (argsT[0] ?? '').toUpperCase().replace(/[^A-Z]/g, '')
     if (!s) return '\x01\x01'
