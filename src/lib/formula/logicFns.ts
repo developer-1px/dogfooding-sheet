@@ -7,6 +7,11 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   if (F === 'ISBLANK') return argsT[0] === '' ? '1' : '0'
   if (F === 'ISNUMBER') return argsT[0] !== '' && Number.isFinite(Number(argsT[0])) ? '1' : '0'
   if (F === 'ISTEXT') return argsT[0] !== '' && !Number.isFinite(Number(argsT[0])) ? '1' : '0'
+  if (F === 'IFERROR') {
+    const v = argsT[0]
+    const isErr = typeof v === 'string' && /^#[A-Z/]+!?$/.test(v)
+    return smartReturn(isErr ? (argsT[1] ?? '') : v)
+  }
   if (F === 'IFS') {
     for (let i = 0; i + 1 < argsT.length; i += 2) {
       if (argsN[i]) return smartReturn(argsT[i + 1])

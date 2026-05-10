@@ -64,4 +64,17 @@ describe('text functions', () => {
   it('EDATE shifts months', () => {
     expect(evaluateCell({}, '=EDATE("2026-01-31",1)')).toBe('2026-03-03')
   })
+  it('IFERROR replaces error values', () => {
+    expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2),"none")')).toBe('none')
+    expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')
+  })
+  it('CHAR / CODE round-trip', () => {
+    expect(evaluateCell({}, '=CHAR(65)')).toBe('A')
+    expect(evaluateCell({}, '=CODE("A")')).toBe('65')
+  })
+  it('VALUE / N coerce to number', () => {
+    expect(evaluateCell({}, '=VALUE("3.14")')).toBe('3.14')
+    expect(evaluateCell({}, '=N("abc")')).toBe('0')
+    expect(evaluateCell({}, '=N("7")')).toBe('7')
+  })
 })

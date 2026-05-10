@@ -29,6 +29,21 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
+  if (F === 'CHAR') {
+    const n = Number(argsT[0])
+    return Number.isFinite(n) ? wrap(String.fromCharCode(n)) : wrap('#VALUE!')
+  }
+  if (F === 'CODE') {
+    return argsT[0].length > 0 ? String(argsT[0].charCodeAt(0)) : wrap('#VALUE!')
+  }
+  if (F === 'VALUE') {
+    const n = Number(argsT[0])
+    return Number.isFinite(n) ? String(n) : wrap('#VALUE!')
+  }
+  if (F === 'N') {
+    const n = Number(argsT[0])
+    return Number.isFinite(n) ? String(n) : '0'
+  }
   if (F === 'REPLACE') {
     const start = Number(argsT[1]) - 1
     const len = Number(argsT[2])
