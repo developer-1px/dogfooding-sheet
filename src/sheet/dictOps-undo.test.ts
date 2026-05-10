@@ -52,4 +52,28 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     expect(bread.className).not.toContain('bold')
     expect(apple.className, 'Apple bold should survive — surgical /styles/<key> patch').toContain('bold')
   })
+
+  it('Backspace on multi-cell selection clears N cells in a single undo entry', async () => {
+    await act(async () => root.render(createElement(App)))
+
+    // Select A2:A4 (Apple, Bread, Milk) by clicking A2, shift-clicking A4 — but drag select is
+    // simpler: just shift-click to extend.
+    const apple = cellByText('Apple')!
+    const milk = cellByText('Milk')!
+    act(() => click(apple))
+    // Shift-click via mousedown with shiftKey
+    act(() => {
+      milk.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0, shiftKey: true }))
+      milk.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, shiftKey: true }))
+    })
+
+    act(() => press('Backspace'))
+    expect(cellByText('Apple')).toBeUndefined()
+    expect(cellByText('Milk')).toBeUndefined()
+
+    // Single undo should restore ALL three cells (batch via writeCells / ops.patch).
+    act(() => press('z', { ctrlKey: true }))
+    expect(cellByText('Apple'), 'Apple should restore from single undo').toBeDefined()
+    expect(cellByText('Milk'), 'Milk should restore from single undo').toBeDefined()
+  })
 })
