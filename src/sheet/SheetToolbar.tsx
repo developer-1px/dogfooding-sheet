@@ -47,6 +47,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       canRedo={ctx.ops.canRedo()}
       showFormulas={ctx.showFormulas}
       toggleShowFormulas={ctx.toggleShowFormulas}
+      showGridlines={ctx.showGridlines}
+      toggleShowGridlines={ctx.toggleShowGridlines}
       clearAllFormats={() => { ctx.ops.replace('/styles', {}); ctx.ops.replace('/formats', {}); ctx.ops.replace('/condFormat', []) }}
       ask={ask}
       confirm={confirm}

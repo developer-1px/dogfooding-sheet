@@ -31,7 +31,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const gridTemplate = gridTemplateFor(visibleCols); const dataRows = rows
 
   return (
-    <div {...rootProps} className="grid">
+    <div {...rootProps} className={`grid${ctx.showGridlines ? '' : ' no-gridlines'}`}>
       <GridHeader
         gridTemplate={gridTemplate}
         columnHeaderProps={columnHeaderProps}

@@ -84,3 +84,6 @@
   .grid-row, .cell { border-color: #999 !important; }
   .cell.focused { outline: none !important; }
 }
+
+.grid.no-gridlines .cell { border-right: none; }
+.grid.no-gridlines .grid-row { border-bottom: none; }

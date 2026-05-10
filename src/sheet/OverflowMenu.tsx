@@ -16,10 +16,12 @@ interface Props {
   confirm: (opts: ConfirmOptions) => Promise<boolean>
   showFormulas: boolean
   toggleShowFormulas: () => void
+  showGridlines: boolean
+  toggleShowGridlines: () => void
   clearAllFormats: () => void
 }
 
-export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, clearAllFormats }: Props) {
+export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
@@ -38,6 +40,7 @@ export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, 
   const items = [
     { id: 'help', label: '도움말 (F1)', action: openHelp },
     { id: 'show-formulas', label: `${showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)`, action: toggleShowFormulas },
+    { id: 'show-gridlines', label: `${showGridlines ? '✓ ' : ''}격자선 표시`, action: toggleShowGridlines },
     { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', action: insertLink },
     { id: 'print', label: '인쇄 (Ctrl/⌘+P)', action: () => window.print() },
     { id: 'csv-export', label: 'CSV 내보내기', action: exportCsvFile },

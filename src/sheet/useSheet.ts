@@ -34,7 +34,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
   const cond = useCondFormat(sheet.condFormat, ops); const rowH = useRowHeights(sheet.rowHeights, ops)
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
-  const [showFormulas, setShowFormulas] = useState(false)
+  const [showFormulas, setShowFormulas] = useState(false); const [showGridlines, setShowGridlines] = useState(true)
   const tabs = useTabs(sheet.tabs, ops)
   const tabFns = tabActions(sheet, ops)
 
@@ -83,7 +83,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     helpOpen, setHelpOpen,
-    showFormulas, toggleShowFormulas,
+    showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines: () => setShowGridlines((v) => !v),
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, setFreezeRows: freeze.setFreezeRows, setFreezeCols: freeze.setFreezeCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
