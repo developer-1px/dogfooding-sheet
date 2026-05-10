@@ -27,14 +27,14 @@ const mouseClick = (target: Element) => {
 }
 
 const typeKey = (key: string) => {
-  const active = document.activeElement
-  if (active instanceof HTMLInputElement) {
-    active.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
+  const inp = document.querySelector<HTMLInputElement>('input.cell-input')
+  if (inp) {
+    inp.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
     if (key === 'Enter' || key === 'Escape' || key === 'Tab') return
     if (key.length === 1) {
       const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
-      setter.call(active, active.value + key)
-      active.dispatchEvent(new Event('input', { bubbles: true }))
+      setter.call(inp, inp.value + key)
+      inp.dispatchEvent(new Event('input', { bubbles: true }))
     }
     return
   }
