@@ -44,6 +44,17 @@ export function arrayToText(rangeStr: string, sep: string, cells: Record<string,
   return refs.map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '').join(sep)
 }
 
+/** FIRST(range) / LAST(range) — first / last non-empty value. */
+export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
+  const refs = collectRefs(rangeStr)
+  const seq = F === 'FIRST' ? refs : [...refs].reverse()
+  for (const r of seq) {
+    const v = evalRaw(cells[r] ?? '')
+    if (v !== '') return v
+  }
+  return '#N/A'
+}
+
 export function rank(value: number, rangeStr: string, order: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
   if (!nums.includes(value)) return '#N/A'

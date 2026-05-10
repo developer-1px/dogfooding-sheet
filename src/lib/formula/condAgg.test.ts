@@ -129,6 +129,14 @@ describe('WEIGHTAVG', () => {
   })
 })
 
+describe('FIRST / LAST non-empty', () => {
+  it('first/last non-empty values', () => {
+    const cells = { A1: '', A2: 'a', A3: '', A4: 'b' }
+    expect(evaluateCell(cells, '=FIRST(A1:A4)')).toBe('a')
+    expect(evaluateCell(cells, '=LAST(A1:A4)')).toBe('b')
+  })
+})
+
 describe('ARRAYTOTEXT', () => {
   it('joins non-empty values', () => {
     const cells = { A1: 'red', A2: '', A3: 'blue', A4: 'green' }

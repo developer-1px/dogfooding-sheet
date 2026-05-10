@@ -1,6 +1,6 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate } from './aggregates'
-import { largeSmall, rank, sumproduct, sample, weightAvg, arrayToText } from './rangeOps'
+import { largeSmall, rank, sumproduct, sample, weightAvg, arrayToText, firstLast } from './rangeOps'
 import { percentile, quartile, pairStat, trimmean, forecast } from './stats'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
@@ -51,6 +51,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'SUMIFS') return String(sumifs(argsT, c.cells, c.evalRaw))
   if (F === 'MINIFS' || F === 'MAXIFS') return String(minMaxIf(F === 'MINIFS' ? 'MIN' : 'MAX', argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
   if (F === 'WEIGHTAVG') { const a = splitArgs(rawArgs); return smartReturn(weightAvg(a[0], a[1], c.numFromCell)) }
+  if (F === 'FIRST' || F === 'LAST') return smartReturn(firstLast(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'ARRAYTOTEXT') { const a = splitArgs(rawArgs); return smartReturn(arrayToText(a[0], argsT[1] ?? ', ', c.cells, c.evalRaw)) }
   if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
