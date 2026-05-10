@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
+import { useEditable } from 'editable-lifecycle'
 
 interface Props {
   addr: string | null

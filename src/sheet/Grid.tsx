@@ -74,6 +74,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             onFillHandleMouseDown={fill.onHandleMouseDown}
             onCellContextMenu={(e, id) => cellMenu.open(e, id)}
             inputProps={inputProps}
+            selectProps={selectProps}
           />
         )
       })}
