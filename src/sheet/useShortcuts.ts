@@ -33,6 +33,18 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, s: saveCsv } as Record<string, () => void>)[ck]
         if (fn) { e.preventDefault(); fn(); return }
       }
+      if (mod && e.key === ';' && !e.altKey) {
+        e.preventDefault()
+        const id = focusId
+        const p = id ? parseCellId(id) : null
+        if (p) {
+          const d = new Date()
+          const pad = (n: number) => String(n).padStart(2, '0')
+          const v = e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+          writeCell(cellKey(p.col, p.row), v)
+        }
+        return
+      }
       if (editing) return
       if (mod && ck === 'z') {
         e.preventDefault()

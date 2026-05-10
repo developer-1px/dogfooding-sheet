@@ -11,6 +11,8 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + C / X / V', '복사 / 잘라내기 / 붙여넣기'],
   ['Ctrl/⌘ + B / I', '굵게 / 기울임'],
   ['Ctrl/⌘ + S', 'CSV 내보내기'],
+  ['Ctrl/⌘ + ;', '오늘 날짜 입력'],
+  ['Ctrl/⌘ + Shift + ;', '현재 시각 입력'],
   ['Ctrl/⌘ + F', '찾기'],
   ['Ctrl/⌘ + H', '찾기 및 바꾸기'],
   ['Enter / Shift+Enter', '편집 후 아래/위 셀 이동'],
