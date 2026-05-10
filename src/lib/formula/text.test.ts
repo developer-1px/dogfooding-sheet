@@ -243,6 +243,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=LCM(4,6)')).toBe('12')
     expect(evaluateCell({}, '=GCD(24,36,60)')).toBe('12')
   })
+  it('LERP / CLAMP', () => {
+    expect(evaluateCell({}, '=LERP(0, 10, 0.25)')).toBe('2.5')
+    expect(evaluateCell({}, '=CLAMP(15, 0, 10)')).toBe('10')
+    expect(evaluateCell({}, '=CLAMP(-5, 0, 10)')).toBe('0')
+    expect(evaluateCell({}, '=CLAMP(5, 0, 10)')).toBe('5')
+  })
   it('RAND / RANDBETWEEN range', () => {
     const r = Number(evaluateCell({}, '=RAND()'))
     expect(r).toBeGreaterThanOrEqual(0); expect(r).toBeLessThan(1)

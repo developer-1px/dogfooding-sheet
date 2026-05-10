@@ -22,6 +22,8 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'PI') return String(Math.PI)
   if (F === 'EVEN') { const n = argsN[0]; const a = Math.ceil(Math.abs(n) / 2) * 2; return String(n < 0 ? -a : a) }
   if (F === 'ODD') { const n = argsN[0]; const a = Math.abs(n); const r = a % 2 === 0 ? a + 1 : Math.ceil(a) | 1; return String(n < 0 ? -r : r) }
+  if (F === 'LERP') { const [a, b, t] = argsN; return String(a + (b - a) * t) }
+  if (F === 'CLAMP') { const [v, lo, hi] = argsN; return String(Math.min(hi, Math.max(lo, v))) }
   if (F === 'RAND') return String(Math.random())
   if (F === 'RANDFLOAT') { const [lo, hi] = argsN; return String(lo + Math.random() * (hi - lo)) }
   if (F === 'RANDBETWEEN') { const [lo, hi] = argsN; return String(Math.floor(Math.random() * (hi - lo + 1)) + lo) }
