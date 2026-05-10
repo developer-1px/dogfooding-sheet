@@ -21,6 +21,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Tab / Shift+Tab', '편집 후 오른쪽/왼쪽 셀 이동'],
   ['Ctrl/⌘ + 화살표', '데이터 영역 가장자리로 이동'],
   ['Ctrl/⌘ + Shift + 화살표', '가장자리까지 선택 확장'],
+  ['Ctrl + Space / Shift + Space', '열 / 행 전체 선택'],
   ['Delete / Backspace', '선택 셀 비우기'],
   ['F2', '셀 편집 시작'],
   ['F1 / ? / Ctrl+/', '이 도움말 열기'],

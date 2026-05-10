@@ -53,6 +53,16 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         e.preventDefault()
         return
       }
+      if (!editing && focusId && (e.key === ' ' || e.key === 'Spacebar')) {
+        if (e.ctrlKey && !e.shiftKey) {
+          const p = parseCellId(focusId); if (p) { setSelectedIds(Array.from({ length: ROW_COUNT }, (_, r) => `r${r}-${p.col}`)); e.preventDefault() }
+          return
+        }
+        if (e.shiftKey && !e.ctrlKey) {
+          const p = parseCellId(focusId); if (p) { setSelectedIds('ABCDEFGHIJ'.split('').map((c) => `r${p.row}-${c}`)); e.preventDefault() }
+          return
+        }
+      }
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) {
         setSelectedIds([])
         e.preventDefault()
