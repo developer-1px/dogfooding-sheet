@@ -3,6 +3,8 @@ import { wrap } from './marker'
 export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'CONCAT' || F === 'CONCATENATE') return wrap(argsT.join(''))
   if (F === 'ENCODEURL') return wrap(encodeURIComponent(argsT[0] ?? ''))
+  if (F === 'BASE64ENCODE') { try { return wrap(btoa(unescape(encodeURIComponent(argsT[0] ?? '')))) } catch { return wrap('#VALUE!') } }
+  if (F === 'BASE64DECODE') { try { return wrap(decodeURIComponent(escape(atob(argsT[0] ?? '')))) } catch { return wrap('#VALUE!') } }
   if (F === 'HYPERLINK') return wrap(argsT[1] ? argsT[1] : argsT[0])
   if (F === 'LEN') return String(argsT[0].length)
   if (F === 'UPPER') return wrap(argsT[0].toUpperCase())
