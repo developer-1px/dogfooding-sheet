@@ -307,6 +307,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=QUOTIENT(5, 0)')).toBe('#DIV/0!')
     expect(evaluateCell({}, '=ROUND(SQRTPI(1), 4)')).toBe('1.7725')
   })
+  it('LOG10 / LOG2', () => {
+    expect(evaluateCell({}, '=LOG10(1000)')).toBe('3')
+    expect(evaluateCell({}, '=LOG2(8)')).toBe('3')
+  })
   it('hyperbolic: SINH/COSH/TANH + ASINH', () => {
     expect(Number(evaluateCell({}, '=SINH(0)'))).toBe(0)
     expect(Number(evaluateCell({}, '=COSH(0)'))).toBe(1)
