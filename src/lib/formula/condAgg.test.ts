@@ -52,6 +52,14 @@ describe('MINIFS / MAXIFS', () => {
   })
 })
 
+describe('COVAR / CORREL', () => {
+  it('measure paired variance / linear correlation', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', B1: '2', B2: '4', B3: '6', B4: '8' }
+    expect(evaluateCell(cells, '=CORREL(A1:A4, B1:B4)')).toBe('1')
+    expect(Number(evaluateCell(cells, '=COVAR(A1:A4, B1:B4)'))).toBeCloseTo(2.5)
+  })
+})
+
 describe('PERCENTILE / QUARTILE', () => {
   it('PERCENTILE interpolates', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }

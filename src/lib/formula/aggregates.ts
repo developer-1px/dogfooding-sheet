@@ -8,6 +8,23 @@ export function largeSmall(F: 'LARGE' | 'SMALL', rangeStr: string, k: number, nu
   return String(F === 'LARGE' ? nums[nums.length - k] : nums[k - 1])
 }
 
+/** COVAR / CORREL — element-wise stats over two same-shape ranges. */
+export function pairStat(F: 'COVAR' | 'CORREL', aStr: string, bStr: string, numFromCell: NumFromCell): string {
+  const A = collectRefs(aStr).map(numFromCell)
+  const B = collectRefs(bStr).map(numFromCell)
+  const n = Math.min(A.length, B.length)
+  if (n === 0) return '#NUM!'
+  const ma = A.slice(0, n).reduce((s, x) => s + x, 0) / n
+  const mb = B.slice(0, n).reduce((s, x) => s + x, 0) / n
+  let cov = 0, va = 0, vb = 0
+  for (let i = 0; i < n; i++) {
+    const da = A[i] - ma, db = B[i] - mb
+    cov += da * db; va += da * da; vb += db * db
+  }
+  if (F === 'COVAR') return String(cov / n)
+  return va === 0 || vb === 0 ? '#DIV/0!' : String(cov / Math.sqrt(va * vb))
+}
+
 /** PERCENTILE(range, p) — linear interpolation, p in [0,1]. */
 export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
