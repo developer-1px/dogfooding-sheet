@@ -47,3 +47,15 @@ pnpm test         # vitest run
 - zod-crud#57 — `ops.replace` invalidates references for unrelated paths (structural-sharing proposal)
 - zod-crud#58 — expose `undoDepth` / `redoDepth` for indicator UIs
 - zod-crud#59 — coalesce rapid ops into a single undo entry (drag interactions)
+
+## ARIA-punt absorption (kernel ↔ spredsheet)
+
+Ad-hoc 코드를 kernel 책임선 아래로 옮긴 5건. 각 1대1 매핑이 ds repo `/lab` 라우트에 PoC + 25 black-box test 로 가시화돼 있다.
+
+| Was (ad-hoc) | Now (kernel API) | File |
+|---|---|---|
+| `<div className="dialog-backdrop" onClick={close}/>` | `useDialogPattern` `backdropProps` (self-target guard) | `src/sheet/HelpDialog.tsx` |
+| `data.entities[name].selected = name === active` mutation | `useTabsPattern({ active })` | `src/sheet/Tabs.tsx` |
+| `useEffect(()=>document.addEventListener('mousedown',...))` | `useMenuPattern({ onInteractOutside })` | `src/sheet/ContextMenu.tsx` |
+| `<input onKeyDown={...Enter/Shift+Enter}>` | `useDialogPattern({ on: { Enter, 'shift+Enter' } })` | `src/sheet/Find.tsx` |
+| F2/Enter handler in `useShortcuts` | `useGridPattern` emits `editStart` (GRID_EDIT_CHORDS = [F2, Enter]) | `src/sheet/useSheetGrid.ts` |
