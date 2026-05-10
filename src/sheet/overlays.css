@@ -119,3 +119,5 @@
 .tab-dup:hover { color: #1a73e8; }
 .tab-color { width: 14px; height: 14px; padding: 0; border: none; background: transparent; cursor: pointer; margin-left: 2px; opacity: 0; transition: opacity .15s; }
 .tab:hover .tab-color, .tab.active .tab-color { opacity: 1; }
+.tab .tab-dup, .tab .tab-close { opacity: 0; transition: opacity .15s; }
+.tab:hover .tab-dup, .tab:hover .tab-close, .tab.active .tab-dup, .tab.active .tab-close { opacity: 1; }
