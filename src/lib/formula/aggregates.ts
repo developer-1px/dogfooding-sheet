@@ -31,10 +31,15 @@ export function rank(value: number, rangeStr: string, order: number, numFromCell
 }
 
 export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
-  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN') return null
+  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV') return null
   const nums = collectRefs(rawArgs).map(numFromCell)
   if (F === 'PRODUCT') return String(nums.reduce((a, b) => a * b, 1))
   if (F === 'SUMSQ') return String(nums.reduce((a, b) => a + b * b, 0))
+  if (F === 'AVEDEV') {
+    if (nums.length === 0) return '#NUM!'
+    const m = nums.reduce((a, b) => a + b, 0) / nums.length
+    return String(nums.reduce((a, b) => a + Math.abs(b - m), 0) / nums.length)
+  }
   if (F === 'GEOMEAN') return nums.length ? String(Math.pow(nums.reduce((a, b) => a * b, 1), 1 / nums.length)) : '#NUM!'
   if (F === 'HARMEAN') return nums.length ? String(nums.length / nums.reduce((a, b) => a + 1 / b, 0)) : '#NUM!'
   if (F === 'MODE') {

@@ -52,6 +52,13 @@ describe('MINIFS / MAXIFS', () => {
   })
 })
 
+describe('AVEDEV', () => {
+  it('mean absolute deviation', () => {
+    const cells = { A1: '2', A2: '4', A3: '4', A4: '6' }
+    expect(evaluateCell(cells, '=AVEDEV(A1:A4)')).toBe('1')
+  })
+})
+
 describe('SUMSQ / GEOMEAN / HARMEAN', () => {
   it('aggregates squared / geometric / harmonic means', () => {
     const cells = { A1: '2', A2: '4', A3: '8' }
