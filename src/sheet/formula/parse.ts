@@ -1,6 +1,6 @@
 export const A1_RE = /([A-J])(\d+)/g
 export const RANGE_RE = /([A-J])(\d+):([A-J])(\d+)/g
-const FUNC_NAMES = 'SUM|AVERAGE|MIN|MAX|COUNT|ROUND|ABS|FLOOR|CEIL|SQRT|IF'
+const FUNC_NAMES = 'SUM|AVERAGE|MIN|MAX|COUNT|ROUND|ABS|FLOOR|CEIL|SQRT|IF|CONCAT|LEN|UPPER|LOWER|LEFT|RIGHT|MID|TRIM'
 export const FUNC_RE = new RegExp(`(${FUNC_NAMES})\\(([^()]*)\\)`, 'gi')
 
 export const expandRange = (a: string, ar: string, b: string, br: string): string[] => {
