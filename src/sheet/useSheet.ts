@@ -14,8 +14,7 @@ import { useValidation } from './useValidation'
 import { useCondFormat } from './useCondFormat'
 import { cellIdToKey } from '../lib/a1'
 import { exportCsv, downloadFile } from '../lib/csv'
-import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp } from '../lib/rowOps'
-import { sortByColumn } from '../lib/sortOps'
+import { sheetMutations } from './sheetMutations'
 import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
@@ -51,12 +50,7 @@ export function useSheet(opts: { openGoto?: () => void } = {}) {
   data.meta = { ...data.meta, focus: edit.focusId }
   for (const id of selectedIds) data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
 
-  const insertRow = (atRow: number) => ops.replace('/cells', insertRowOp(sheet.cells, atRow, ROW_COUNT))
-  const deleteRow = (atRow: number) => ops.replace('/cells', deleteRowOp(sheet.cells, atRow))
-  const insertCol = (col: string) => ops.replace('/cells', insertColOp(sheet.cells, 'ABCDEFGHIJ'.indexOf(col)))
-  const deleteCol = (col: string) => ops.replace('/cells', deleteColOp(sheet.cells, 'ABCDEFGHIJ'.indexOf(col)))
-  const sortByCol = (col: string, dir: 'asc' | 'desc') =>
-    ops.replace('/cells', sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT }))
+  const { insertRow, deleteRow, insertCol, deleteCol, sortByCol } = sheetMutations(sheet, ops)
 
   const targetKeys = (): string[] => {
     const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
