@@ -116,6 +116,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=DATEDIF("2026-01-15","2026-05-11","M")')).toBe('3')
     expect(evaluateCell({}, '=DATEDIF("2026-05-01","2026-05-11","D")')).toBe('10')
   })
+  it('DATEVALUE returns days since 1899-12-30 (Sheets epoch)', () => {
+    expect(evaluateCell({}, '=DATEVALUE("1900-01-01")')).toBe('2')
+    expect(evaluateCell({}, '=DATEVALUE("2026-01-01")')).toBe('46023')
+  })
   it('TIMEVALUE returns day fraction', () => {
     expect(evaluateCell({}, '=TIMEVALUE("12:00:00")')).toBe('0.5')
     expect(evaluateCell({}, '=TIMEVALUE("06:00:00")')).toBe('0.25')

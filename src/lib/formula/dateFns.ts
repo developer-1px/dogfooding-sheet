@@ -40,6 +40,11 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
   if (F === 'MONTH') return String(month(argsT[0]))
   if (F === 'DAY') return String(day(argsT[0]))
   if (F === 'DAYS') return String(days(argsT[0], argsT[1]))
+  if (F === 'DATEVALUE') {
+    const d = parseDate(argsT[0]); if (!d) return wrap('#VALUE!')
+    // Sheets epoch: 1899-12-30
+    return String(Math.round((d.getTime() - Date.UTC(1899, 11, 30)) / 86400000))
+  }
   if (F === 'WEEKDAY') {
     const d = parseDate(argsT[0])
     if (!d) return wrap('#VALUE!')
