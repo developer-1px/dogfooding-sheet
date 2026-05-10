@@ -14,7 +14,7 @@ const load = (): CondRule[] => {
   } catch { return [] }
 }
 
-const matches = (rule: CondRule, displayed: string): boolean => {
+export const matchRule = (rule: CondRule, displayed: string): boolean => {
   if (rule.op === 'contains') return displayed.toLowerCase().includes(rule.value.toLowerCase())
   if (rule.op === '=') return displayed === rule.value
   if (rule.op === '!=') return displayed !== rule.value
@@ -33,7 +33,7 @@ export function useCondFormat() {
 
   const bgFor = (col: string, displayed: string): string | undefined => {
     for (const r of rules) {
-      if (r.col === col && matches(r, displayed)) return r.color
+      if (r.col === col && matchRule(r, displayed)) return r.color
     }
     return undefined
   }
