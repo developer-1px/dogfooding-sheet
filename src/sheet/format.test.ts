@@ -24,6 +24,10 @@ describe('applyFormat', () => {
   it('scientific uses exponential', () => {
     expect(applyFormat('12345', 'scientific')).toBe('1.23e+4')
   })
+  it('date format converts epoch seconds and ms', () => {
+    expect(applyFormat('1746576000', 'date')).toBe('2025-05-07')
+    expect(applyFormat('1746576000000', 'date')).toBe('2025-05-07')
+  })
   it('non-numeric values pass through', () => {
     expect(applyFormat('hello', 'currency')).toBe('hello')
     expect(applyFormat('', 'percent')).toBe('')

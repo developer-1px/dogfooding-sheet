@@ -89,6 +89,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => applyF('integer')} title="정수">.0</button>
       <button onClick={() => applyF('thousand')} title="1,000 천단위">1,K</button>
       <button onClick={() => applyF('scientific')} title="과학 표기">1E</button>
+      <button onClick={() => applyF('date')} title="epoch → 날짜">📅</button>
       <button onClick={() => applyF('plain')} title="일반">123</button>
       <OverflowMenu display={display} writeCell={writeCell} openHelp={openHelp} cells={cells} resetCells={resetCells} />
     </>

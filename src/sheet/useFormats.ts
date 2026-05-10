@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific'
+export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date'
 const STORAGE_KEY = 'spreadsheet:formats:v1'
 
 const load = (): Record<string, Format> => {
@@ -50,5 +50,13 @@ export function applyFormat(value: string, fmt: Format): string {
   if (fmt === 'integer') return String(Math.round(n))
   if (fmt === 'thousand') return n.toLocaleString('en-US')
   if (fmt === 'scientific') return n.toExponential(2)
+  if (fmt === 'date') {
+    // Treat numbers > 10^10 as JS milliseconds, else assume epoch seconds.
+    const ms = n > 1e10 ? n : n * 1000
+    const d = new Date(ms)
+    if (isNaN(d.getTime())) return value
+    const pad = (x: number) => String(x).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  }
   return value
 }
