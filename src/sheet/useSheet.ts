@@ -19,7 +19,7 @@ import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 
-export function useSheet(opts: { openGoto?: () => void } = {}) {
+export function useSheet(opts: { openGoto?: () => void; openNote?: () => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const fmt = useFormats()
@@ -69,7 +69,7 @@ export function useSheet(opts: { openGoto?: () => void } = {}) {
     toggleUnderline: () => toggle('u'),
     clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
-    setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: () => { const k = edit.focusKey; if (!k) return; let v: string | null = null; try { v = window.prompt('셀 노트', notes.noteOf(k) ?? '') } catch { return } if (v !== null) notes.setNote(k, v) },
+    setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
   })
 
   return {
@@ -86,7 +86,7 @@ export function useSheet(opts: { openGoto?: () => void } = {}) {
     hiddenRowSet: hiddenRows(filter.filter, ROW_COUNT, display),
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
-    setNote: notes.setNote, noteOf: notes.noteOf,
+    setNote: notes.setNote, noteOf: notes.noteOf, editNote: opts.openNote ?? (() => {}),
     setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,

@@ -15,6 +15,7 @@ interface Args {
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
   noteOf: (k: string) => string | undefined
   setNote: (k: string, text: string) => void
+  editNote: () => void
 }
 
 export function useCellMenu(a: Args) {
@@ -37,13 +38,7 @@ export function useCellMenu(a: Args) {
       { label: '붙여넣기', onClick: () => { navigator.clipboard?.readText().then((t) => a.writeCell(k, t)) } },
       { label: '지우기', onClick: () => a.writeCell(k, '') },
       'separator',
-      {
-        label: a.noteOf(k) ? '노트 편집' : '노트 추가',
-        onClick: () => {
-          const next = window.prompt('셀 노트', a.noteOf(k) ?? '')
-          if (next !== null) a.setNote(k, next)
-        },
-      },
+      { label: a.noteOf(k) ? '노트 편집' : '노트 추가', onClick: a.editNote },
       ...(a.noteOf(k) ? [{ label: '노트 삭제', onClick: () => a.setNote(k, '') }] : []),
       'separator',
       { label: '위에 행 삽입', onClick: () => a.insertRow(row) },

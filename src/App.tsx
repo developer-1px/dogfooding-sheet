@@ -15,7 +15,11 @@ import './App.css'
 
 export default function App() {
   const [gotoOpen, setGotoOpen] = useState(false)
-  const ctx = useSheet({ openGoto: () => setGotoOpen(true) })
+  const [noteOpen, setNoteOpen] = useState(false)
+  const ctx = useSheet({
+    openGoto: () => setGotoOpen(true),
+    openNote: () => setNoteOpen(true),
+  })
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
   const rect = ctx.selectedIds.length > 1 ? rectFromIds(ctx.selectedIds) : null
   const addr = rect ? formatRect(rect) : ctx.focusKey
@@ -91,6 +95,14 @@ export default function App() {
         submitLabel="이동"
         onSubmit={(v) => { gotoCell(v, ctx.setFocusId); setGotoOpen(false) }}
         onCancel={() => setGotoOpen(false)}
+      />
+      <PromptDialog
+        open={noteOpen}
+        label="셀 노트"
+        initial={ctx.focusKey ? ctx.noteOf(ctx.focusKey) ?? '' : ''}
+        submitLabel="저장"
+        onSubmit={(v) => { if (ctx.focusKey) ctx.setNote(ctx.focusKey, v); setNoteOpen(false) }}
+        onCancel={() => setNoteOpen(false)}
       />
     </div>
   )
