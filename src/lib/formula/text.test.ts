@@ -57,6 +57,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c-d", "-", "/", 2)')).toBe('a-b/c-d')
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/", 5)')).toBe('a-b-c')
   })
+  it('STARTSWITH / ENDSWITH / CONTAINS', () => {
+    expect(evaluateCell({}, '=STARTSWITH("hello", "he")')).toBe('1')
+    expect(evaluateCell({}, '=ENDSWITH("hello", "lo")')).toBe('1')
+    expect(evaluateCell({}, '=CONTAINS("hello", "ell")')).toBe('1')
+    expect(evaluateCell({}, '=STARTSWITH("hello", "X")')).toBe('0')
+  })
   it('TEXTBEFORE / TEXTAFTER split by delimiter', () => {
     expect(evaluateCell({}, '=TEXTBEFORE("hello@example.com","@")')).toBe('hello')
     expect(evaluateCell({}, '=TEXTAFTER("hello@example.com","@")')).toBe('example.com')

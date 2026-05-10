@@ -25,6 +25,9 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     }
     return wrap(text)
   }
+  if (F === 'STARTSWITH') return argsT[0].startsWith(argsT[1] ?? '') ? '1' : '0'
+  if (F === 'ENDSWITH') return argsT[0].endsWith(argsT[1] ?? '') ? '1' : '0'
+  if (F === 'CONTAINS') return argsT[0].includes(argsT[1] ?? '') ? '1' : '0'
   if (F === 'TEXTBEFORE') {
     const i = argsT[0].indexOf(argsT[1] ?? '')
     return wrap(i < 0 ? argsT[0] : argsT[0].slice(0, i))
