@@ -19,7 +19,7 @@ import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 import { rowColAtFocus } from './lib/rowColAtFocus'
-import { useRowHeights } from './useRowHeights'
+import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'
 
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
@@ -94,7 +94,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,
-    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, startResizeRow: rowH.startResizeRow, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}),
+    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, startResizeRow: rowH.startResizeRow, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === 100 ? undefined : Math.max(40, Math.round(w))),
     tabs: tabs.state, ...tabFns,
   }
 }

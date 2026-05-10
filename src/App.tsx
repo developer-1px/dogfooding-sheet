@@ -40,7 +40,7 @@ export default function App() {
       const c = ctxRef.current; if (!c) return
       const cur = c.sheet.colWidths[col] ?? 100
       ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' })
-        .then((v) => { if (v === null) return; const n = Number(v); const w = (v === '' || !Number.isFinite(n)) ? 100 : Math.max(40, Math.round(n)); const path = `/colWidths/${col}` as never; if (c.sheet.colWidths[col] === undefined) c.ops.add(path, w as never); else c.ops.replace(path, w as never) })
+        .then((v) => { if (v === null) return; const n = Number(v); c.setColWidth(col, (v === '' || !Number.isFinite(n)) ? 100 : n) })
     },
   })
   ctxRef.current = ctx
