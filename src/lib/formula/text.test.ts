@@ -107,6 +107,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=MINUTE("13:05:30")')).toBe('5')
     expect(evaluateCell({}, '=SECOND("13:05:30")')).toBe('30')
   })
+  it('WORKDAY skips weekends', () => {
+    // 2026-05-08 is Fri → +1 workday = Mon 2026-05-11
+    expect(evaluateCell({}, '=WORKDAY("2026-05-08", 1)')).toBe('2026-05-11')
+    // back 5 from Fri = previous Fri
+    expect(evaluateCell({}, '=WORKDAY("2026-05-08", -5)')).toBe('2026-05-01')
+  })
   it('NETWORKDAYS counts weekdays inclusive', () => {
     // 2026-05-04 (Mon) to 2026-05-08 (Fri) = 5 weekdays
     expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-08")')).toBe('5')

@@ -3,6 +3,7 @@ import { aggregate, largeSmall, rank, sumproduct, percentile, quartile } from '.
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
 import { dispatchDate } from './dateFns'
+import { dispatchTime } from './timeFns'
 import { dispatchText } from './textFns'
 import { dispatchMath } from './mathFns'
 import { dispatchLogic } from './logicFns'
@@ -44,6 +45,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const argsN = argsT.map(Number)
 
   const date = dispatchDate(F, argsT); if (date !== null) return date
+  const time = dispatchTime(F, argsT); if (time !== null) return time
   const text = dispatchText(F, argsT); if (text !== null) return text
   const math = dispatchMath(F, argsT, argsN); if (math !== null) return math
   const logic = dispatchLogic(F, argsT, argsN); if (logic !== null) return logic
