@@ -268,6 +268,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=CEILING(13, 5)')).toBe('15')
     expect(evaluateCell({}, '=FLOOR(13)')).toBe('13')
   })
+  it('RANDPICK chooses one literal arg', () => {
+    const r = evaluateCell({}, '=RANDPICK("red","green","blue")')
+    expect(['red', 'green', 'blue']).toContain(r)
+  })
   it('UUID returns v4 format', () => {
     expect(evaluateCell({}, '=UUID()')).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
   })

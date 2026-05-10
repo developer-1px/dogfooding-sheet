@@ -1,6 +1,10 @@
 import { wrap } from './marker'
 
 export function dispatchNumeric(F: string, argsT: string[], argsN: number[]): string | null {
+  if (F === 'RANDPICK') {
+    if (argsT.length === 0) return wrap('#N/A')
+    return wrap(argsT[Math.floor(Math.random() * argsT.length)])
+  }
   if (F === 'UUID') {
     const u = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
       ? crypto.randomUUID()
