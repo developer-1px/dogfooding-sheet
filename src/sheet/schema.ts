@@ -19,6 +19,10 @@ export const SheetSchema = z.object({
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
   formats: z.record(z.string(), z.enum(['plain', 'currency', 'eur', 'krw', 'percent', 'integer', 'thousand', 'scientific', 'date'])).default({}),
+  validation: z.record(z.string(), z.discriminatedUnion('type', [
+    z.object({ type: z.literal('list'), options: z.array(z.string()) }),
+    z.object({ type: z.literal('checkbox') }),
+  ])).default({}),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -33,4 +37,5 @@ export const initialSheet: Sheet = {
   notes: {},
   styles: {},
   formats: {},
+  validation: {},
 }

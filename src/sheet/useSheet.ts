@@ -28,12 +28,12 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void } 
   const filter = useFilter()
   const hidden = useHidden()
   const notes = useNotes(sheet.notes, ops)
-  const validation = useValidation()
+  const validation = useValidation(sheet.validation, ops)
   const cond = useCondFormat()
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
   const tabs = useTabs(sheet.cells)
-  const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats }))
+  const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats, validation: sheet.validation }))
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
