@@ -198,6 +198,11 @@ describe('Vector ops', () => {
   it('COSINE similarity', () => {
     expect(Number(evaluateCell(cells, '=COSINE(A1:A3, B1:B3)'))).toBeCloseTo(0.9746, 3)
   })
+  it('SUMXMY2 / SUMX2MY2 / SUMX2PY2', () => {
+    expect(evaluateCell(cells, '=SUMXMY2(A1:A3, B1:B3)')).toBe('27')
+    expect(evaluateCell(cells, '=SUMX2MY2(A1:A3, B1:B3)')).toBe('-63')
+    expect(evaluateCell(cells, '=SUMX2PY2(A1:A3, B1:B3)')).toBe('91')
+  })
 })
 
 describe('RSQ', () => {

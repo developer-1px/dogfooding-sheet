@@ -36,6 +36,22 @@ export function vectorOp(F: VOp, aStr: string, bStr: string, numFromCell: NumFro
   return na === 0 || nb === 0 ? '#DIV/0!' : String(dot / Math.sqrt(na * nb))
 }
 
+type PairSum = 'SUMXMY2' | 'SUMX2MY2' | 'SUMX2PY2'
+/** Pairwise sums across two equal-length ranges. */
+export function pairSum(F: PairSum, aStr: string, bStr: string, numFromCell: NumFromCell): string {
+  const A = collectRefs(aStr).map(numFromCell)
+  const B = collectRefs(bStr).map(numFromCell)
+  const n = Math.min(A.length, B.length)
+  let s = 0
+  for (let i = 0; i < n; i++) {
+    const x = A[i], y = B[i]
+    if (F === 'SUMXMY2') { const d = x - y; s += d * d }
+    else if (F === 'SUMX2MY2') s += x * x - y * y
+    else s += x * x + y * y
+  }
+  return String(s)
+}
+
 /** Paired stats: COVAR, CORREL, RSQ, SLOPE (y on x), INTERCEPT (y on x). */
 export function pairStat(F: 'COVAR' | 'CORREL' | 'RSQ' | 'SLOPE' | 'INTERCEPT', aStr: string, bStr: string, numFromCell: NumFromCell): string {
   const A = collectRefs(aStr).map(numFromCell)
