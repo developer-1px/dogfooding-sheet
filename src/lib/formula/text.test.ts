@@ -2,6 +2,11 @@ import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
 
 describe('text functions', () => {
+  it('YESNO / BOOLTEXT', () => {
+    expect(evaluateCell({}, '=YESNO(1)')).toBe('예')
+    expect(evaluateCell({}, '=YESNO(0)')).toBe('아니오')
+    expect(evaluateCell({}, '=BOOLTEXT(1)')).toBe('TRUE')
+  })
   it('BOOLEAN coerces strings', () => {
     expect(evaluateCell({}, '=BOOLEAN("yes")')).toBe('1')
     expect(evaluateCell({}, '=BOOLEAN("no")')).toBe('0')

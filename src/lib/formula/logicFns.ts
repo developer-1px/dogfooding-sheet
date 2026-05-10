@@ -7,6 +7,8 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   if (F === 'XOR') return argsN.reduce((a, n) => a ^ (n ? 1 : 0), 0) ? '1' : '0'
   if (F === 'TRUE') return '1'
   if (F === 'FALSE') return '0'
+  if (F === 'YESNO') return smartReturn(argsN[0] ? '예' : '아니오')
+  if (F === 'BOOLTEXT') return smartReturn(argsN[0] ? 'TRUE' : 'FALSE')
   if (F === 'BOOLEAN') {
     const s = (argsT[0] ?? '').trim().toLowerCase()
     if (s === '' || s === '0' || s === 'false' || s === 'no' || s === 'n' || s === 'off') return '0'
