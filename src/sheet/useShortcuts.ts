@@ -19,7 +19,7 @@ interface Args {
   saveCsv: () => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, saveCsv }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
@@ -29,25 +29,9 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         openHelp()
         return
       }
-      if (mod && ck === 'f') {
-        e.preventDefault()
-        openFind()
-        return
-      }
-      if (mod && ck === 'h') {
-        e.preventDefault()
-        openReplace()
-        return
-      }
-      if (mod && ck === 'b' && !e.shiftKey && !e.altKey) {
-        e.preventDefault()
-        toggleBold()
-        return
-      }
-      if (mod && ck === 'i' && !e.shiftKey && !e.altKey) {
-        e.preventDefault()
-        toggleItalic()
-        return
+      if (mod && !e.shiftKey && !e.altKey) {
+        const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, s: saveCsv } as Record<string, () => void>)[ck]
+        if (fn) { e.preventDefault(); fn(); return }
       }
       if (editing) return
       if (mod && ck === 'z') {

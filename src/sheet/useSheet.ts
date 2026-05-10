@@ -13,6 +13,7 @@ import { useNotes } from './useNotes'
 import { useValidation } from './useValidation'
 import { useCondFormat } from './useCondFormat'
 import { cellIdToKey } from '../lib/a1'
+import { exportCsv, downloadFile } from '../lib/csv'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp } from '../lib/rowOps'
 import { sortByColumn } from '../lib/sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -38,10 +39,9 @@ export function useSheet() {
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
   const writeCell = (k: string, v: string) => {
-    if (v === '') {
-      if (sheet.cells[k] !== undefined) ops.remove(`/cells/${k}`)
-    } else if (sheet.cells[k] === undefined) ops.add(`/cells/${k}`, v)
-    else if (sheet.cells[k] !== v) ops.replace(`/cells/${k}`, v)
+    if (v === '' && sheet.cells[k] !== undefined) ops.remove(`/cells/${k}`)
+    else if (v !== '' && sheet.cells[k] === undefined) ops.add(`/cells/${k}`, v)
+    else if (v !== '' && sheet.cells[k] !== v) ops.replace(`/cells/${k}`, v)
   }
 
   const edit = useEditState({ cells: sheet.cells, writeCell })
@@ -62,10 +62,7 @@ export function useSheet() {
     const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
     return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
   }
-  const toggle = (k: 'b' | 'i') => {
-    const cur = edit.focusKey ? styles.styleOf(edit.focusKey)?.[k] : undefined
-    styles.updateStyle(targetKeys(), { [k]: !cur })
-  }
+  const toggle = (k: 'b' | 'i') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
 
   useShortcuts({
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
@@ -74,6 +71,7 @@ export function useSheet() {
     openHelp: () => setHelpOpen(true),
     toggleBold: () => toggle('b'),
     toggleItalic: () => toggle('i'),
+    saveCsv: () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT })),
   })
 
   return {
