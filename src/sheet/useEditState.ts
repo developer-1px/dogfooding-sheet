@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEditable, type NavDir } from 'editable-lifecycle'
 import { cellKey, parseCellId } from './schema'
 import { moveCellId } from './storage'
 
@@ -7,38 +7,49 @@ interface Args {
   writeCell: (k: string, v: string) => void
 }
 
+const dirDelta: Record<NavDir, { dRow: number; dCol: number }> = {
+  down: { dRow: 1, dCol: 0 },
+  up: { dRow: -1, dCol: 0 },
+  right: { dRow: 0, dCol: 1 },
+  left: { dRow: 0, dCol: -1 },
+}
+
 export function useEditState({ cells, writeCell }: Args) {
-  const [focusId, setFocusId] = useState<string | null>('r0-A')
-  const [editing, setEditing] = useState<string | null>(null)
-  const [draft, setDraft] = useState('')
+  const ed = useEditable<string>({
+    getValue: (id) => {
+      const p = parseCellId(id)
+      return p ? cells[cellKey(p.col, p.row)] ?? '' : ''
+    },
+    onCommit: (id, next) => {
+      const p = parseCellId(id)
+      if (p) writeCell(cellKey(p.col, p.row), next)
+    },
+    onNavigate: (id, dir) => {
+      const { dRow, dCol } = dirDelta[dir]
+      return moveCellId(id, dRow, dCol)
+    },
+    initialFocus: 'r0-A',
+  })
 
-  const startEdit = (id: string, prefill?: string) => {
-    const p = parseCellId(id)
-    if (!p) return
-    setEditing(id)
-    setDraft(prefill !== undefined ? prefill : cells[cellKey(p.col, p.row)] ?? '')
-  }
-
+  // Adapt commitEdit({ dRow, dCol }) → editable-lifecycle NavDir API to keep callers untouched.
   const commitEdit = (move?: { dRow: number; dCol: number }) => {
-    if (!editing) return
-    const p = parseCellId(editing)
-    if (p) writeCell(cellKey(p.col, p.row), draft)
-    if (move) {
-      const next = moveCellId(editing, move.dRow, move.dCol)
-      if (next) setFocusId(next)
-    }
-    setEditing(null)
+    if (!move) return ed.commitEdit()
+    const dir = move.dRow > 0 ? 'down' : move.dRow < 0 ? 'up' : move.dCol > 0 ? 'right' : 'left'
+    ed.commitEdit(dir)
   }
 
-  const cancelEdit = () => setEditing(null)
-
-  const focusCell = focusId ? parseCellId(focusId) : null
+  const focusCell = ed.focusId ? parseCellId(ed.focusId) : null
   const focusKey = focusCell ? cellKey(focusCell.col, focusCell.row) : null
 
   return {
-    focusId, setFocusId,
-    editing, draft, setDraft,
-    startEdit, commitEdit, cancelEdit,
+    focusId: ed.focusId,
+    setFocusId: ed.setFocusId,
+    editing: ed.editing,
+    draft: ed.draft,
+    setDraft: ed.setDraft,
+    startEdit: ed.startEdit,
+    commitEdit,
+    cancelEdit: ed.cancelEdit,
     focusKey,
   }
 }

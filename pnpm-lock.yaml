@@ -11,6 +11,9 @@ importers:
       '@p/aria-kernel':
         specifier: file:../ds/packages/aria-kernel
         version: file:../ds/packages/aria-kernel(react@19.2.6)
+      editable-lifecycle:
+        specifier: file:../editable-lifecycle/packages/editable-lifecycle
+        version: file:../editable-lifecycle/packages/editable-lifecycle(react@19.2.6)
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -624,6 +627,11 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  editable-lifecycle@file:../editable-lifecycle/packages/editable-lifecycle:
+    resolution: {directory: ../editable-lifecycle/packages/editable-lifecycle, type: directory}
+    peerDependencies:
+      react: '>=18'
 
   electron-to-chromium@1.5.353:
     resolution: {integrity: sha512-kOrWphBi8TOZyiJZqsgqIle0lw+tzmnQK83pV9dZUd01Nm2POECSyFQMAuarzZdYqQW7FH9RaYOuaRo3h+bQ3w==}
@@ -1830,6 +1838,10 @@ snapshots:
   deep-is@0.1.4: {}
 
   detect-libc@2.1.2: {}
+
+  editable-lifecycle@file:../editable-lifecycle/packages/editable-lifecycle(react@19.2.6):
+    dependencies:
+      react: 19.2.6
 
   electron-to-chromium@1.5.353: {}
 

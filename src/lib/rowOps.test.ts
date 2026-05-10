@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { insertRow, deleteRow } from './rowOps'
+import { insertRow, deleteRow, insertCol, deleteCol } from './rowOps'
 
 const RC = 20
 
@@ -34,5 +34,16 @@ describe('deleteRow', () => {
   it('refs below deleted row shift up by 1', () => {
     const out = deleteRow({ A2: 'x', A3: '=A2+5' }, 0)
     expect(out.A2).toBe('=A1+5')
+  })
+  it('insertCol shifts cells right of atCol', () => {
+    const out = insertCol({ A1: 'a', B1: 'b', C1: '=B1' }, 1)
+    expect(out.A1).toBe('a')
+    expect(out.C1).toBe('b')
+    expect(out.D1).toBe('=C1')
+  })
+  it('deleteCol drops target col and shifts left', () => {
+    const out = deleteCol({ A1: 'a', B1: 'b', C1: '=B1+1' }, 1)
+    expect(out.A1).toBe('a')
+    expect(out.B1).toBe('=#REF!+1')
   })
 })

@@ -13,7 +13,7 @@ import { useNotes } from './useNotes'
 import { useValidation } from './useValidation'
 import { useCondFormat } from './useCondFormat'
 import { cellIdToKey } from '../lib/a1'
-import { insertRow as insertRowOp, deleteRow as deleteRowOp } from '../lib/rowOps'
+import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp } from '../lib/rowOps'
 import { sortByColumn } from '../lib/sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
@@ -53,6 +53,8 @@ export function useSheet() {
 
   const insertRow = (atRow: number) => ops.replace('/cells', insertRowOp(sheet.cells, atRow, ROW_COUNT))
   const deleteRow = (atRow: number) => ops.replace('/cells', deleteRowOp(sheet.cells, atRow))
+  const insertCol = (col: string) => ops.replace('/cells', insertColOp(sheet.cells, 'ABCDEFGHIJ'.indexOf(col)))
+  const deleteCol = (col: string) => ops.replace('/cells', deleteColOp(sheet.cells, 'ABCDEFGHIJ'.indexOf(col)))
   const sortByCol = (col: string, dir: 'asc' | 'desc') =>
     ops.replace('/cells', sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT }))
 
@@ -92,7 +94,7 @@ export function useSheet() {
     setNote: notes.setNote, noteOf: notes.noteOf,
     setListRule: validation.setListRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
-    insertRow, deleteRow, sortByCol,
+    insertRow, deleteRow, insertCol, deleteCol, sortByCol,
     tabs: tabs.state, ...tabFns,
   }
 }

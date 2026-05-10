@@ -2,6 +2,8 @@ type Cells = Record<string, string>
 
 const REF_RE = /([A-J])(\d+)/g
 
+export { insertCol, deleteCol } from './colOps'
+
 const shiftFormulaRefs = (raw: string, fromRow: number, delta: number, rowCount: number): string => {
   if (!raw.startsWith('=')) return raw
   return '=' + raw.slice(1).replace(REF_RE, (m, c: string, r: string) => {
@@ -57,3 +59,4 @@ export function deleteRow(cells: Cells, atRow: number): Cells {
   }
   return next
 }
+

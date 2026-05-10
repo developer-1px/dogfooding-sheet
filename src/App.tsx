@@ -35,6 +35,8 @@ export default function App() {
             setFormat={ctx.setFormat}
             insertRow={ctx.insertRow}
             deleteRow={ctx.deleteRow}
+            insertCol={ctx.insertCol}
+            deleteCol={ctx.deleteCol}
             sortByCol={ctx.sortByCol}
             updateStyle={ctx.updateStyle}
             styleOf={ctx.styleOf}

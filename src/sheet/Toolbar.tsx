@@ -12,6 +12,8 @@ interface Props {
   setFormat: (keys: string[], f: Format) => void
   insertRow: (atRow: number) => void
   deleteRow: (atRow: number) => void
+  insertCol: (col: string) => void
+  deleteCol: (col: string) => void
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
   updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
   styleOf: (k: string) => CellStyle | undefined
@@ -30,7 +32,7 @@ interface Props {
   clearCondRules: () => void
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp, addCondRule, clearCondRules }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp, addCondRule, clearCondRules }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => {
@@ -49,6 +51,8 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
     <>
       <button onClick={() => insertRow(focusRow)} title="위에 행 삽입">+행</button>
       <button onClick={() => deleteRow(focusRow)} title="현재 행 삭제">−행</button>
+      <button onClick={() => focus && insertCol(focus[1])} title="왼쪽에 열 삽입">+열</button>
+      <button onClick={() => focus && deleteCol(focus[1])} title="현재 열 삭제">−열</button>
       <button onClick={() => focus && sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button>
       <button onClick={() => focus && sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
       <button onClick={() => toggle('b')} title="굵게"><b>B</b></button>
