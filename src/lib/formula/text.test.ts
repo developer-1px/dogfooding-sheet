@@ -163,6 +163,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=LEVENSHTEIN("abc", "abc")')).toBe('0')
     expect(evaluateCell({}, '=LEVENSHTEIN("", "abc")')).toBe('3')
   })
+  it('HAMMING distance counts position mismatches', () => {
+    expect(evaluateCell({}, '=HAMMING("karolin", "kathrin")')).toBe('3')
+    expect(evaluateCell({}, '=HAMMING("abc", "abcd")')).toBe('#N/A')
+  })
   it('EQUALCI case-insensitive equality', () => {
     expect(evaluateCell({}, '=EQUALCI("Hello", "hello")')).toBe('1')
     expect(evaluateCell({}, '=EQUALCI("a", "b")')).toBe('0')

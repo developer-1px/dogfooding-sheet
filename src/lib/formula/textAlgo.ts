@@ -1,3 +1,5 @@
+import { wrap } from './marker'
+
 export function dispatchTextAlgo(F: string, argsT: string[]): string | null {
   if (F === 'LIKE') {
     const text = argsT[0] ?? '', pattern = argsT[1] ?? ''
@@ -30,6 +32,13 @@ export function dispatchTextAlgo(F: string, argsT: string[]): string | null {
       }
     }
     return String(dp[a.length])
+  }
+  if (F === 'HAMMING') {
+    const a = argsT[0] ?? '', b = argsT[1] ?? ''
+    if (a.length !== b.length) return wrap('#N/A')
+    let d = 0
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++
+    return String(d)
   }
   if (F === 'LCS') {
     const a = argsT[0] ?? '', b = argsT[1] ?? ''
