@@ -170,6 +170,14 @@ describe('RANGESORT', () => {
   })
 })
 
+describe('ZSCORE', () => {
+  it('returns standardized value', () => {
+    const cells = { A1: '2', A2: '4', A3: '4', A4: '4', A5: '5', A6: '5', A7: '7', A8: '9' }
+    expect(evaluateCell(cells, '=ZSCORE(5, A1:A8)')).toBe('0')
+    expect(Number(evaluateCell(cells, '=ZSCORE(9, A1:A8)'))).toBeCloseTo(2)
+  })
+})
+
 describe('PERCENTRANK', () => {
   it('returns fraction of values less than given value', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }

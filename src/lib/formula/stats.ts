@@ -53,6 +53,15 @@ export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell
   return String(lo === hi ? nums[lo] : nums[lo] + (nums[hi] - nums[lo]) * (idx - lo))
 }
 
+/** ZSCORE(value, range) — (value - mean) / stdev_population. */
+export function zScore(value: number, rangeStr: string, numFromCell: NumFromCell): string {
+  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
+  if (nums.length === 0) return '#N/A'
+  const m = nums.reduce((s, v) => s + v, 0) / nums.length
+  const sd = Math.sqrt(nums.reduce((s, v) => s + (v - m) ** 2, 0) / nums.length)
+  return sd === 0 ? '#DIV/0!' : String((value - m) / sd)
+}
+
 /** PERCENTRANK(range, value) — fraction of values strictly less than value, in [0,1]. */
 export function percentRank(rangeStr: string, value: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
