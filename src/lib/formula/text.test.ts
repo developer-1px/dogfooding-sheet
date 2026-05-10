@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
 
 describe('text functions', () => {
+  it('XOR / TRUE / FALSE', () => {
+    expect(evaluateCell({}, '=XOR(1,0)')).toBe('1')
+    expect(evaluateCell({}, '=XOR(1,1)')).toBe('0')
+    expect(evaluateCell({}, '=XOR(1,1,1)')).toBe('1')
+    expect(evaluateCell({}, '=TRUE()')).toBe('1')
+    expect(evaluateCell({}, '=FALSE()')).toBe('0')
+  })
   it('HYPERLINK uses label when given, else URL', () => {
     expect(evaluateCell({}, '=HYPERLINK("https://example.com", "click")')).toBe('click')
     expect(evaluateCell({}, '=HYPERLINK("https://example.com")')).toBe('https://example.com')
