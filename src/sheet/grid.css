@@ -38,6 +38,9 @@
 .cell.freeze-col { position: sticky; z-index: 1; background: #fff; }
 .grid-row.freeze-row { position: sticky; z-index: 2; background: #fff; }
 .grid-row.freeze-row .cell.freeze-col { z-index: 3; }
+/* Visual divider — last frozen row/col gets a thicker border (Sheets parity). */
+.grid-row.freeze-row + .grid-row:not(.freeze-row) { border-top: 2px solid #1a73e8; }
+.cell.freeze-col + .cell:not(.freeze-col) { border-left: 2px solid #1a73e8; }
 .cell.focused { outline: 2px solid #1a73e8; outline-offset: -2px; z-index: 1; }
 .cell.selected { background: rgba(26, 115, 232, .1); }
 .cell.ref-hi { outline: 2px dashed #34a853; outline-offset: -2px; background: rgba(52, 168, 83, .08); }
