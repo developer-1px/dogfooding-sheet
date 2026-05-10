@@ -20,6 +20,22 @@ describe('text functions', () => {
   it('TRIM removes whitespace', () => {
     expect(evaluateCell({}, '=TRIM("  hi  ")')).toBe('hi')
   })
+  it('SUBSTITUTE replaces all occurrences', () => {
+    expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/")')).toBe('a/b/c')
+  })
+  it('FIND returns 1-based position (case-sensitive)', () => {
+    expect(evaluateCell({}, '=FIND("b", "abc")')).toBe('2')
+    expect(evaluateCell({}, '=FIND("X", "abc")')).toBe('#VALUE!')
+  })
+  it('SEARCH is case-insensitive', () => {
+    expect(evaluateCell({}, '=SEARCH("B", "abc")')).toBe('2')
+  })
+  it('REPT repeats text', () => {
+    expect(evaluateCell({}, '=REPT("ab", 3)')).toBe('ababab')
+  })
+  it('PROPER capitalises each word', () => {
+    expect(evaluateCell({}, '=PROPER("hello world")')).toBe('Hello World')
+  })
   it('nested CONCAT + UPPER', () => {
     expect(evaluateCell({ A1: 'foo' }, '=CONCAT(UPPER(A1), "!")')).toBe('FOO!')
   })

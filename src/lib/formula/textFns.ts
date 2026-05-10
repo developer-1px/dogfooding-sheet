@@ -9,5 +9,18 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'RIGHT') return wrap(argsT[0].slice(-Number(argsT[1] ?? '1')))
   if (F === 'MID') return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
   if (F === 'TRIM') return wrap(argsT[0].trim())
+  if (F === 'SUBSTITUTE') return wrap(argsT[0].split(argsT[1] ?? '').join(argsT[2] ?? ''))
+  if (F === 'FIND') {
+    const pos = argsT[1].indexOf(argsT[0])
+    return pos < 0 ? wrap('#VALUE!') : String(pos + 1)
+  }
+  if (F === 'SEARCH') {
+    const pos = argsT[1].toLowerCase().indexOf(argsT[0].toLowerCase())
+    return pos < 0 ? wrap('#VALUE!') : String(pos + 1)
+  }
+  if (F === 'REPT') return wrap(argsT[0].repeat(Math.max(0, Number(argsT[1] ?? '0'))))
+  if (F === 'PROPER') {
+    return wrap(argsT[0].toLowerCase().replace(/(^|\s)(\p{L})/gu, (_m, sp, ch) => sp + ch.toUpperCase()))
+  }
   return null
 }
