@@ -1,12 +1,9 @@
 import { wrap } from './marker'
+import { dispatchTextCodec } from './textCodec'
 
 export function dispatchText(F: string, argsT: string[]): string | null {
+  const codec = dispatchTextCodec(F, argsT); if (codec !== null) return codec
   if (F === 'CONCAT' || F === 'CONCATENATE') return wrap(argsT.join(''))
-  if (F === 'ENCODEURL') return wrap(encodeURIComponent(argsT[0] ?? ''))
-  if (F === 'DECODEURL') { try { return wrap(decodeURIComponent(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
-  if (F === 'JSONESCAPE') return wrap(JSON.stringify(argsT[0] ?? '').slice(1, -1))
-  if (F === 'BASE64ENCODE') { try { return wrap(btoa(unescape(encodeURIComponent(argsT[0] ?? '')))) } catch { return wrap('#VALUE!') } }
-  if (F === 'BASE64DECODE') { try { return wrap(decodeURIComponent(escape(atob(argsT[0] ?? '')))) } catch { return wrap('#VALUE!') } }
   if (F === 'HYPERLINK') return wrap(argsT[1] ? argsT[1] : argsT[0])
   if (F === 'LEN') return String(argsT[0].length)
   if (F === 'UPPER') return wrap(argsT[0].toUpperCase())
@@ -72,21 +69,6 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
-  if (F === 'UNICHAR') {
-    const n = Number(argsT[0])
-    return Number.isFinite(n) && n > 0 ? wrap(String.fromCodePoint(n)) : wrap('#VALUE!')
-  }
-  if (F === 'UNICODE') {
-    const cp = argsT[0].codePointAt(0)
-    return cp !== undefined ? String(cp) : wrap('#VALUE!')
-  }
-  if (F === 'CHAR') {
-    const n = Number(argsT[0])
-    return Number.isFinite(n) ? wrap(String.fromCharCode(n)) : wrap('#VALUE!')
-  }
-  if (F === 'CODE') {
-    return argsT[0].length > 0 ? String(argsT[0].charCodeAt(0)) : wrap('#VALUE!')
-  }
   if (F === 'REPLACE') {
     const start = Number(argsT[1]) - 1
     const len = Number(argsT[2])
