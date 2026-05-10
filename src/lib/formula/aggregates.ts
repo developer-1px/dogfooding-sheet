@@ -3,8 +3,16 @@ import { collectRefs } from './parse'
 type NumFromCell = (ref: string) => number
 
 export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
-  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'VAR') return null
+  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'VAR' && F !== 'MODE' && F !== 'PRODUCT') return null
   const nums = collectRefs(rawArgs).map(numFromCell)
+  if (F === 'PRODUCT') return String(nums.reduce((a, b) => a * b, 1))
+  if (F === 'MODE') {
+    const counts = new Map<number, number>()
+    for (const n of nums) counts.set(n, (counts.get(n) ?? 0) + 1)
+    let best = nums[0] ?? 0, bc = 0
+    for (const [n, c] of counts) if (c > bc) { best = n; bc = c }
+    return String(best)
+  }
   if (F === 'SUM') return String(nums.reduce((a, b) => a + b, 0))
   const mean = nums.reduce((a, b) => a + b, 0) / Math.max(1, nums.length)
   if (F === 'AVERAGE') return String(mean)

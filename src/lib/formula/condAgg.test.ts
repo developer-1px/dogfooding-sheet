@@ -57,6 +57,12 @@ describe('extra math', () => {
     expect(evaluateCell({}, '=LOG(100)')).toBe('2')
     expect(evaluateCell({}, '=LOG(8, 2)')).toBe('3')
   })
+  it('PRODUCT multiplies range', () => {
+    expect(evaluateCell({ A1: '2', A2: '3', A3: '4' }, '=PRODUCT(A1:A3)')).toBe('24')
+  })
+  it('MODE picks most common', () => {
+    expect(evaluateCell({ A1: '5', A2: '3', A3: '5', A4: '2' }, '=MODE(A1:A4)')).toBe('5')
+  })
   it('ROUNDUP / ROUNDDOWN', () => {
     expect(evaluateCell({}, '=ROUNDUP(3.14, 1)')).toBe('3.2')
     expect(evaluateCell({}, '=ROUNDDOWN(3.99, 0)')).toBe('3')
