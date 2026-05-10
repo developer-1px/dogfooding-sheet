@@ -133,6 +133,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
   })
+  it('LEVENSHTEIN edit distance', () => {
+    expect(evaluateCell({}, '=LEVENSHTEIN("kitten", "sitting")')).toBe('3')
+    expect(evaluateCell({}, '=LEVENSHTEIN("abc", "abc")')).toBe('0')
+    expect(evaluateCell({}, '=LEVENSHTEIN("", "abc")')).toBe('3')
+  })
   it('EQUALCI case-insensitive equality', () => {
     expect(evaluateCell({}, '=EQUALCI("Hello", "hello")')).toBe('1')
     expect(evaluateCell({}, '=EQUALCI("a", "b")')).toBe('0')

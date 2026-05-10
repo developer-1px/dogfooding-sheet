@@ -73,6 +73,19 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
+  if (F === 'LEVENSHTEIN') {
+    const a = argsT[0] ?? '', b = argsT[1] ?? ''
+    const dp = Array.from({ length: a.length + 1 }, (_, i) => i)
+    for (let j = 1; j <= b.length; j++) {
+      let prev = dp[0]; dp[0] = j
+      for (let i = 1; i <= a.length; i++) {
+        const tmp = dp[i]
+        dp[i] = a[i - 1] === b[j - 1] ? prev : Math.min(prev, dp[i - 1], dp[i]) + 1
+        prev = tmp
+      }
+    }
+    return String(dp[a.length])
+  }
   if (F === 'EQUALCI') return (argsT[0] ?? '').toLowerCase() === (argsT[1] ?? '').toLowerCase() ? '1' : '0'
   if (F === 'REPLACE') {
     const start = Number(argsT[1]) - 1
