@@ -237,6 +237,8 @@ describe('text functions', () => {
     expect(r).toBeGreaterThanOrEqual(0); expect(r).toBeLessThan(1)
     const n = Number(evaluateCell({}, '=RANDBETWEEN(5,10)'))
     expect(n).toBeGreaterThanOrEqual(5); expect(n).toBeLessThanOrEqual(10)
+    const f = Number(evaluateCell({}, '=RANDFLOAT(0,1)'))
+    expect(f).toBeGreaterThanOrEqual(0); expect(f).toBeLessThan(1)
   })
   it('TRUNC / SIGN / PI / EVEN / ODD', () => {
     expect(evaluateCell({}, '=TRUNC(3.789, 1)')).toBe('3.7')
