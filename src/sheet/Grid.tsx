@@ -15,7 +15,8 @@ type SheetCtx = ReturnType<typeof useSheet>
 export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
-  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote })
+  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow })
+  const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, `r0-${col}`) }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
   const previewIds = rectToIdSet(fill.preview)
 
@@ -41,8 +42,8 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         autoFitCol={autoFitCol}
         setSelectedIds={setSelectedIds}
         hiddenCols={hiddenCols}
-        hideCol={hideCol}
         focusCol={focusCol}
+        onHeaderContextMenu={onHeaderContextMenu}
       />
       {dataRows.map((row, rIdx) => {
         if (hiddenRowSet.has(rIdx) || hiddenRowsManual.has(rIdx)) return null

@@ -10,11 +10,11 @@ interface Props {
   autoFitCol: (col: string) => void
   setSelectedIds: (ids: string[]) => void
   hiddenCols: Set<string>
-  hideCol: (col: string) => void
   focusCol: string | null
+  onHeaderContextMenu: (e: React.MouseEvent, col: string) => void
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoFitCol, setSelectedIds, hiddenCols, hideCol, focusCol }: Props) {
+export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoFitCol, setSelectedIds, hiddenCols, focusCol, onHeaderContextMenu }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(ROW_COUNT))} />
@@ -26,8 +26,8 @@ export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoF
             {...columnHeaderProps(`h-${c}`)}
             className={`header-cell${c === focusCol ? ' active' : ''}`}
             onClick={() => setSelectedIds(idsForCol(c, ROW_COUNT))}
-            onContextMenu={(e) => { e.preventDefault(); hideCol(c) }}
-            title="우클릭으로 열 숨기기"
+            onContextMenu={(e) => onHeaderContextMenu(e, c)}
+            title="우클릭으로 열 메뉴"
           >
             {c}
             <span className="col-resizer" onMouseDown={startResize(c)} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(c) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
