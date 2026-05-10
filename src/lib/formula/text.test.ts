@@ -116,6 +116,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=DATEDIF("2026-01-15","2026-05-11","M")')).toBe('3')
     expect(evaluateCell({}, '=DATEDIF("2026-05-01","2026-05-11","D")')).toBe('10')
   })
+  it('TIMEVALUE returns day fraction', () => {
+    expect(evaluateCell({}, '=TIMEVALUE("12:00:00")')).toBe('0.5')
+    expect(evaluateCell({}, '=TIMEVALUE("06:00:00")')).toBe('0.25')
+  })
   it('TIME / HOUR / MINUTE / SECOND', () => {
     expect(evaluateCell({}, '=TIME(13,5,30)')).toBe('13:05:30')
     expect(evaluateCell({}, '=HOUR("13:05:30")')).toBe('13')

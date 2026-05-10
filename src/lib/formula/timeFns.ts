@@ -8,6 +8,10 @@ const parseTime = (s: string): { h: number; m: number; sec: number } | null => {
 }
 
 export function dispatchTime(F: string, argsT: string[]): string | null {
+  if (F === 'TIMEVALUE') {
+    const t = parseTime(argsT[0]); if (!t) return wrap('#VALUE!')
+    return String((t.h * 3600 + t.m * 60 + t.sec) / 86400)
+  }
   if (F === 'HOUR') { const t = parseTime(argsT[0]); return t ? String(t.h) : wrap('#VALUE!') }
   if (F === 'MINUTE') { const t = parseTime(argsT[0]); return t ? String(t.m) : wrap('#VALUE!') }
   if (F === 'SECOND') { const t = parseTime(argsT[0]); return t ? String(t.sec) : wrap('#VALUE!') }
