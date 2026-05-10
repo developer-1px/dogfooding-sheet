@@ -4,6 +4,7 @@ import { useGridPattern } from '@p/aria-kernel/patterns'
 import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
 import { idsForCol, idsForRow, idsForAll } from './range'
 import { Cell } from './Cell'
+import { useDragSelect } from './useDragSelect'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
@@ -41,6 +42,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
     },
   )
 
+  const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
   const dataRows = rows.slice(COL_LETTERS.length)
 
   return (
@@ -73,6 +75,8 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
               onCommit={commitEdit}
               onCancel={cancelEdit}
               onStartEdit={() => startEdit(cell.id)}
+              onMouseDown={(e) => drag.onMouseDown(cell.id, e)}
+              onMouseEnter={() => drag.onMouseEnter(cell.id)}
               ref={editing === cell.id ? inputRef : null}
             />
           ))}

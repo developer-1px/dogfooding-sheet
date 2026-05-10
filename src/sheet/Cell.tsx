@@ -13,6 +13,8 @@ interface Props {
   onCommit: (move?: { dRow: number; dCol: number }) => void
   onCancel: () => void
   onStartEdit: () => void
+  onMouseDown: (e: React.MouseEvent) => void
+  onMouseEnter: () => void
 }
 
 export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
@@ -21,6 +23,8 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
       {...p.cellProps}
       className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}`}
       onDoubleClick={p.onStartEdit}
+      onMouseDown={p.onMouseDown}
+      onMouseEnter={p.onMouseEnter}
     >
       {p.editing ? (
         <input
