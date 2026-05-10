@@ -1,3 +1,6 @@
+@import './sheet/grid.css';
+@import './sheet/overlays.css';
+
 * { box-sizing: border-box; }
 body, html, #root {
   margin: 0; padding: 0; height: 100%;
@@ -7,7 +10,7 @@ body, html, #root {
 .sheet-app { display: flex; flex-direction: column; height: 100vh; }
 
 .sheet-toolbar {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   padding: 10px 16px; background: #fff;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -17,7 +20,7 @@ body, html, #root {
   font: 13px 'SF Mono', Menlo, monospace;
 }
 .sheet-toolbar .formula {
-  flex: 1; padding: 6px 10px; font-size: 14px;
+  flex: 1; min-width: 200px; padding: 6px 10px; font-size: 14px;
   border: 1px solid #dadce0; border-radius: 4px; outline: none;
 }
 .sheet-toolbar .formula:focus { border-color: #1a73e8; }
@@ -27,88 +30,3 @@ body, html, #root {
 }
 .sheet-toolbar button:hover:not(:disabled) { background: #f1f3f4; }
 .sheet-toolbar button:disabled { opacity: .4; cursor: not-allowed; }
-
-.grid { flex: 1; overflow: auto; background: #fff; }
-.grid-row {
-  display: grid;
-  border-bottom: 1px solid #e0e0e0;
-}
-.header-row {
-  position: sticky; top: 0; z-index: 2;
-  background: #f8f9fa; font-weight: 500; color: #5f6368; font-size: 12px;
-}
-.corner-cell, .row-header, .header-cell {
-  padding: 6px 8px; text-align: center; user-select: none;
-  border-right: 1px solid #e0e0e0;
-}
-.corner-cell, .row-header { background: #f8f9fa; color: #5f6368; font-size: 12px; cursor: pointer; }
-.row-header { position: sticky; left: 0; z-index: 1; }
-.header-cell { position: relative; cursor: pointer; }
-.header-cell:hover { background: #e8f0fe; }
-.col-resizer {
-  position: absolute; top: 0; right: -3px; width: 6px; height: 100%;
-  cursor: col-resize; user-select: none; z-index: 3;
-}
-.col-resizer:hover { background: rgba(26, 115, 232, .3); }
-
-.cell {
-  position: relative; padding: 6px 8px; min-height: 28px; cursor: cell; outline: none;
-  border-right: 1px solid #e0e0e0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.cell.numeric { text-align: right; font-variant-numeric: tabular-nums; }
-.cell.focused { outline: 2px solid #1a73e8; outline-offset: -2px; z-index: 1; }
-.cell.selected { background: rgba(26, 115, 232, .1); }
-.cell.ref-hi { outline: 2px dashed #34a853; outline-offset: -2px; background: rgba(52, 168, 83, .08); }
-.cell.preview { outline: 2px dashed #1a73e8; outline-offset: -2px; background: rgba(26, 115, 232, .15); }
-.fill-handle {
-  position: absolute; right: -3px; bottom: -3px; width: 7px; height: 7px;
-  background: #1a73e8; border: 1px solid #fff; cursor: crosshair; z-index: 2;
-}
-.ctx-menu {
-  position: fixed; z-index: 20; min-width: 180px;
-  background: #fff; border: 1px solid #dadce0; border-radius: 4px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .15);
-  padding: 4px 0;
-}
-.ctx-item {
-  display: block; width: 100%; padding: 6px 16px; text-align: left;
-  border: none; background: none; font-size: 13px; cursor: pointer;
-}
-.ctx-item:hover:not(:disabled) { background: #f1f3f4; }
-.ctx-item:disabled { color: #9aa0a6; cursor: not-allowed; }
-.ctx-sep { height: 1px; background: #e0e0e0; margin: 4px 0; }
-
-.find-bar {
-  position: fixed; top: 60px; right: 16px; z-index: 10;
-  display: flex; gap: 4px; align-items: center;
-  padding: 8px; background: #fff; border: 1px solid #dadce0; border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
-}
-.find-bar input {
-  padding: 6px 10px; border: 1px solid #dadce0; border-radius: 4px; outline: none;
-  width: 200px; font-size: 13px;
-}
-.find-bar input:focus { border-color: #1a73e8; }
-.find-bar .count { font-size: 12px; color: #5f6368; min-width: 50px; text-align: center; }
-.find-bar button {
-  padding: 4px 8px; border: 1px solid #dadce0; border-radius: 4px; background: #fff;
-  cursor: pointer; font-size: 12px;
-}
-.find-bar button:hover:not(:disabled) { background: #f1f3f4; }
-.find-bar button:disabled { opacity: .4; cursor: not-allowed; }
-
-.status-bar {
-  display: flex; gap: 16px; align-items: center;
-  padding: 6px 16px; background: #f8f9fa; color: #5f6368;
-  border-top: 1px solid #e0e0e0; font-size: 12px;
-}
-.status-bar b { color: #202124; font-weight: 600; }
-.corner-cell { cursor: pointer; }
-.corner-cell:hover, .row-header:hover { background: #e8f0fe; }
-
-.cell-input {
-  position: absolute; inset: 0; width: 100%; padding: 4px 6px;
-  font: inherit; outline: none; background: #fff;
-  border: 2px solid #1a73e8;
-}

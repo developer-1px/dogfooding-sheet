@@ -1,45 +1,19 @@
-import { useRef } from 'react'
 import { useSheet } from './sheet/useSheet'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/Grid'
 import { StatusBar } from './sheet/StatusBar'
 import { parseCellId } from './sheet/schema'
 import { rectFromIds, formatRect } from './sheet/clipboard'
-import { exportCsv, importCsvInto, downloadFile, parseCsv } from './sheet/csv'
 import { Find } from './sheet/Find'
-import type { Format } from './sheet/useFormats'
+import { Tabs } from './sheet/Tabs'
+import { Toolbar } from './sheet/Toolbar'
 import './App.css'
-
-function FormatButtons({ applyFormat }: { applyFormat: (f: Format) => void }) {
-  return (
-    <>
-      <button onClick={() => applyFormat('currency')} title="통화">$</button>
-      <button onClick={() => applyFormat('percent')} title="백분율">%</button>
-      <button onClick={() => applyFormat('integer')} title="정수">.0</button>
-      <button onClick={() => applyFormat('plain')} title="일반">123</button>
-    </>
-  )
-}
 
 export default function App() {
   const ctx = useSheet()
-  const fileRef = useRef<HTMLInputElement | null>(null)
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
-
   const rect = ctx.selectedIds.length > 1 ? rectFromIds(ctx.selectedIds) : null
   const addr = rect ? formatRect(rect) : ctx.focusKey
-
-  const onExport = () => {
-    const csv = exportCsv((k) => ctx.display(k))
-    downloadFile('sheet.csv', csv)
-  }
-  const onImport = (file: File) => {
-    file.text().then((text) => {
-      // pre-validate to avoid partial failures on malformed input
-      parseCsv(text)
-      importCsvInto(text, ctx.writeCell)
-    })
-  }
 
   return (
     <div className="sheet-app">
@@ -52,51 +26,26 @@ export default function App() {
         canUndo={ctx.ops.canUndo()}
         canRedo={ctx.ops.canRedo()}
         extra={
-          <>
-            {(() => {
-              const focus = ctx.focusKey ? /^([A-J])(\d+)$/.exec(ctx.focusKey) : null
-              const focusRow = focus ? Number(focus[2]) - 1 : 0
-              return (
-                <>
-                  <button onClick={() => ctx.insertRow(focusRow)} title="위에 행 삽입">+행</button>
-                  <button onClick={() => ctx.deleteRow(focusRow)} title="현재 행 삭제">−행</button>
-                  <button onClick={() => focus && ctx.sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button>
-                  <button onClick={() => focus && ctx.sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
-                </>
-              )
-            })()}
-            <FormatButtons
-              applyFormat={(f) => {
-                const ids = ctx.selectedIds.length > 0
-                  ? ctx.selectedIds
-                  : (ctx.focusKey ? [ctx.focusKey] : [])
-                const keys = ids.map((id) => {
-                  if (id.includes('-')) {
-                    const m = /^r(\d+)-([A-J])$/.exec(id)
-                    return m ? `${m[2]}${Number(m[1]) + 1}` : id
-                  }
-                  return id
-                })
-                ctx.setFormat(keys, f)
-              }}
-            />
-            <button onClick={onExport} title="CSV로 내보내기">⬇ CSV</button>
-            <button onClick={() => fileRef.current?.click()} title="CSV 가져오기">⬆ CSV</button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".csv,text/csv"
-              style={{ display: 'none' }}
-              onChange={(e) => {
-                const f = e.target.files?.[0]
-                if (f) onImport(f)
-                e.target.value = ''
-              }}
-            />
-          </>
+          <Toolbar
+            display={ctx.display}
+            writeCell={ctx.writeCell}
+            focusKey={ctx.focusKey}
+            selectedIds={ctx.selectedIds}
+            setFormat={ctx.setFormat}
+            insertRow={ctx.insertRow}
+            deleteRow={ctx.deleteRow}
+            sortByCol={ctx.sortByCol}
+          />
         }
       />
       <Grid ctx={ctx} />
+      <Tabs
+        state={ctx.tabs}
+        switchTab={ctx.switchTab}
+        addSheet={ctx.addSheet}
+        deleteSheet={ctx.deleteSheet}
+        renameSheet={ctx.renameSheet}
+      />
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
       <Find
         open={ctx.findOpen}
