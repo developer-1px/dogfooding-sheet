@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId, cellKey } from './schema'
+import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
 import { rectFromIds, type Rect } from './clipboard'
-import { extendSeries } from './series'
+import { applyFill } from './applyFill'
 
 interface Args {
   selectedIds: string[]
@@ -75,27 +75,3 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, setSelecte
   return { onHandleMouseDown, onCellEnterDuringFill, preview, dragging: !!sourceRef.current }
 }
 
-function applyFill(src: Rect, tgt: Rect, cells: Record<string, string>, write: (k: string, v: string) => void) {
-  const fillingDown = tgt.rMax > src.rMax
-  if (fillingDown) {
-    for (let c = src.cMin; c <= src.cMax; c++) {
-      const source: string[] = []
-      for (let r = src.rMin; r <= src.rMax; r++) source.push(cells[cellKey(COL_LETTERS[c], r)] ?? '')
-      const len = tgt.rMax - src.rMin + 1
-      const ext = extendSeries(source, len)
-      for (let i = source.length; i < ext.length; i++) {
-        write(cellKey(COL_LETTERS[c], src.rMin + i), ext[i])
-      }
-    }
-  } else {
-    for (let r = src.rMin; r <= src.rMax; r++) {
-      const source: string[] = []
-      for (let c = src.cMin; c <= src.cMax; c++) source.push(cells[cellKey(COL_LETTERS[c], r)] ?? '')
-      const len = tgt.cMax - src.cMin + 1
-      const ext = extendSeries(source, len)
-      for (let i = source.length; i < ext.length; i++) {
-        write(cellKey(COL_LETTERS[src.cMin + i], r), ext[i])
-      }
-    }
-  }
-}

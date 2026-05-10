@@ -8,26 +8,10 @@ import { ContextMenu } from './ContextMenu'
 import { useCellMenu } from './useCellMenu'
 import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
+import { isFillCorner } from './fillCorner'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
-
-function isFillCorner(cellId: string, focusId: string | null, selectedIds: string[]): boolean {
-  if (selectedIds.length > 1) {
-    const m = /^r(\d+)-([A-J])$/.exec(cellId)
-    if (!m) return false
-    let maxR = -1, maxC = -1
-    for (const id of selectedIds) {
-      const mm = /^r(\d+)-([A-J])$/.exec(id)
-      if (!mm) continue
-      const r = Number(mm[1]); const c = COL_LETTERS.indexOf(mm[2] as (typeof COL_LETTERS)[number])
-      if (r > maxR) maxR = r
-      if (c > maxC) maxC = c
-    }
-    return Number(m[1]) === maxR && COL_LETTERS.indexOf(m[2] as (typeof COL_LETTERS)[number]) === maxC
-  }
-  return cellId === focusId
-}
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol } = ctx
