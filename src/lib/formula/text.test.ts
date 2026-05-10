@@ -9,6 +9,9 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TRUE()')).toBe('1')
     expect(evaluateCell({}, '=FALSE()')).toBe('0')
   })
+  it('JSONESCAPE escapes quotes/newlines', () => {
+    expect(evaluateCell({}, '=JSONESCAPE("hi \"a\"")')).toBe('hi \\"a\\"')
+  })
   it('BASE64 round-trip', () => {
     expect(evaluateCell({}, '=BASE64ENCODE("hi!")')).toBe('aGkh')
     expect(evaluateCell({}, '=BASE64DECODE("aGkh")')).toBe('hi!')
