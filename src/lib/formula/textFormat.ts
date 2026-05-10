@@ -1,6 +1,18 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'RELATIVETIME') {
+    const t = Number(argsT[0])
+    if (!Number.isFinite(t)) return wrap('#VALUE!')
+    const diff = Math.floor(Date.now() / 1000) - t
+    const a = Math.abs(diff), past = diff >= 0
+    const fmt = (n: number, unit: string) => `${n}${unit} ${past ? '전' : '후'}`
+    if (a < 60) return wrap('방금')
+    if (a < 3600) return wrap(fmt(Math.floor(a / 60), '분'))
+    if (a < 86400) return wrap(fmt(Math.floor(a / 3600), '시간'))
+    if (a < 2592000) return wrap(fmt(Math.floor(a / 86400), '일'))
+    return wrap(fmt(Math.floor(a / 2592000), '개월'))
+  }
   if (F === 'FORMATDURATION') {
     const s = Math.floor(Number(argsT[0]))
     if (!Number.isFinite(s)) return wrap('#VALUE!')

@@ -352,6 +352,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('RELATIVETIME shows Korean relative phrase', () => {
+    expect(evaluateCell({}, '=RELATIVETIME(EPOCH() - 30)')).toBe('방금')
+    expect(evaluateCell({}, '=RELATIVETIME(EPOCH() - 600)')).toBe('10분 전')
+    expect(evaluateCell({}, '=RELATIVETIME(EPOCH() + 3600)')).toBe('1시간 후')
+  })
   it('FORMATDURATION human readable', () => {
     expect(evaluateCell({}, '=FORMATDURATION(45)')).toBe('45s')
     expect(evaluateCell({}, '=FORMATDURATION(125)')).toBe('2m 5s')
