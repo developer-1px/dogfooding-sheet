@@ -1,6 +1,11 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'RGB') {
+    const clamp = (n: number) => Math.max(0, Math.min(255, Math.round(n)))
+    const hex = (n: number) => clamp(n).toString(16).padStart(2, '0')
+    return wrap('#' + hex(Number(argsT[0])) + hex(Number(argsT[1])) + hex(Number(argsT[2])))
+  }
   if (F === 'LANG') return wrap(typeof navigator !== 'undefined' ? navigator.language : 'en-US')
   if (F === 'TIMEZONE') { try { return wrap(Intl.DateTimeFormat().resolvedOptions().timeZone) } catch { return wrap('UTC') } }
   if (F === 'STRINGIFY') return wrap(JSON.stringify(argsT.length === 1 ? argsT[0] : argsT))
