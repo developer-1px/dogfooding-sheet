@@ -58,6 +58,9 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return pos < 0 ? wrap('#VALUE!') : String(pos + 1)
   }
   if (F === 'REPT') return wrap(argsT[0].repeat(Math.max(0, Number(argsT[1] ?? '0'))))
+  if (F === 'SLUG') return wrap((argsT[0] ?? '').toLowerCase().trim().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, ''))
+  if (F === 'CAMELCASE') return wrap((argsT[0] ?? '').replace(/[-_\s]+(.)?/g, (_m, c) => c ? c.toUpperCase() : '').replace(/^./, (c) => c.toLowerCase()))
+  if (F === 'SNAKECASE') return wrap((argsT[0] ?? '').replace(/[A-Z]/g, (c) => '_' + c.toLowerCase()).replace(/[\s-]+/g, '_').replace(/^_+|_+$/g, ''))
   if (F === 'PROPER') {
     return wrap(argsT[0].toLowerCase().replace(/(^|\s)(\p{L})/gu, (_m, sp, ch) => sp + ch.toUpperCase()))
   }

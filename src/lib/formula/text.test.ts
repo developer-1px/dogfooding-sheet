@@ -109,6 +109,11 @@ describe('text functions', () => {
   it('REPT repeats text', () => {
     expect(evaluateCell({}, '=REPT("ab", 3)')).toBe('ababab')
   })
+  it('SLUG / CAMELCASE / SNAKECASE', () => {
+    expect(evaluateCell({}, '=SLUG("Hello World!")')).toBe('hello-world')
+    expect(evaluateCell({}, '=CAMELCASE("hello world")')).toBe('helloWorld')
+    expect(evaluateCell({}, '=SNAKECASE("helloWorld")')).toBe('hello_world')
+  })
   it('PROPER capitalises each word', () => {
     expect(evaluateCell({}, '=PROPER("hello world")')).toBe('Hello World')
   })
