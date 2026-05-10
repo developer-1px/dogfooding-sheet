@@ -58,3 +58,30 @@ export function counta(rangeStr: string, cells: Cells, evalRaw: (s: string) => s
   return n
 }
 
+export function countblank(rangeStr: string, cells: Cells, evalRaw: (s: string) => string): number {
+  const refs = collectRefs(rangeStr)
+  let n = 0
+  for (const r of refs) {
+    if (evalRaw(cells[r] ?? '') === '') n++
+  }
+  return n
+}
+
+export function averageif(
+  rangeStr: string,
+  criteria: string,
+  avgRangeStr: string | undefined,
+  cells: Cells,
+  evalRaw: (s: string) => string,
+): number {
+  const refs = collectRefs(rangeStr)
+  const avgRefs = avgRangeStr ? collectRefs(avgRangeStr) : refs
+  let sum = 0, n = 0
+  for (let i = 0; i < refs.length; i++) {
+    if (!matchCriteria(evalRaw(cells[refs[i]] ?? ''), criteria)) continue
+    const v = Number(evalRaw(cells[avgRefs[i] ?? refs[i]] ?? ''))
+    if (Number.isFinite(v)) { sum += v; n++ }
+  }
+  return n > 0 ? sum / n : NaN
+}
+

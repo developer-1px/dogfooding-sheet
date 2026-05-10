@@ -28,6 +28,24 @@ describe('COUNTA', () => {
   })
 })
 
+describe('COUNTBLANK', () => {
+  it('counts empty cells', () => {
+    expect(evaluateCell(c, '=COUNTBLANK(A1:A6)')).toBe('1')
+  })
+})
+
+describe('AVERAGEIF', () => {
+  it('averages matching values', () => {
+    expect(evaluateCell(c, '=AVERAGEIF(A1:A5, ">5")')).toBeCloseTo(38 / 3, 5).toString
+    const v = Number(evaluateCell(c, '=AVERAGEIF(A1:A5, ">5")'))
+    expect(v).toBeCloseTo(38 / 3, 5)
+  })
+  it('uses separate avgRange', () => {
+    const cells = { A1: 'x', A2: 'y', A3: 'x', B1: '10', B2: '99', B3: '20' }
+    expect(evaluateCell(cells, '=AVERAGEIF(A1:A3, "x", B1:B3)')).toBe('15')
+  })
+})
+
 describe('extra math', () => {
   it('INT truncates', () => {
     expect(evaluateCell({}, '=INT(3.7)')).toBe('3')
