@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { COL_LETTERS } from './schema'
 import type { Sheet } from './schema'
@@ -19,17 +19,27 @@ function migrateLegacy(widths: Record<string, number>, ops: JsonOps<Sheet>) {
 }
 
 export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>) {
-  const dragRef = useRef<{ col: string; startX: number; startW: number; current: number } | null>(null)
+  const dragRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
+  // Live drag overlay — bypasses ops to avoid one undo entry per mousemove (zod-crud#59).
+  const [liveWidth, setLiveWidth] = useState<{ col: string; w: number } | null>(null)
   useEffect(() => { migrateLegacy(widths, ops) }, [])
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       const d = dragRef.current
       if (!d) return
-      d.current = Math.max(MIN_WIDTH, d.startW + (e.clientX - d.startX))
-      ops.replace('/colWidths', { ...widths, [d.col]: d.current })
+      const w = Math.max(MIN_WIDTH, d.startW + (e.clientX - d.startX))
+      setLiveWidth({ col: d.col, w })
     }
-    const onUp = () => { dragRef.current = null; document.body.style.cursor = '' }
+    const onUp = () => {
+      const d = dragRef.current
+      if (d && liveWidthRef.current && liveWidthRef.current.col === d.col) {
+        ops.replace('/colWidths', { ...widths, [d.col]: liveWidthRef.current.w })
+      }
+      dragRef.current = null
+      setLiveWidth(null)
+      document.body.style.cursor = ''
+    }
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mouseup', onUp)
     return () => {
@@ -37,6 +47,10 @@ export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>
       window.removeEventListener('mouseup', onUp)
     }
   }, [widths])
+
+  // Mirror liveWidth into a ref so onUp (captured once) sees the latest.
+  const liveWidthRef = useRef<{ col: string; w: number } | null>(null)
+  liveWidthRef.current = liveWidth
 
   const autoFit = (col: string, samples: string[]) => {
     const canvas = document.createElement('canvas')
@@ -54,11 +68,12 @@ export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>
   const startResize = (col: string) => (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    dragRef.current = { col, startX: e.clientX, startW: widths[col] ?? DEFAULT_WIDTH, current: widths[col] ?? DEFAULT_WIDTH }
+    dragRef.current = { col, startX: e.clientX, startW: widths[col] ?? DEFAULT_WIDTH }
     document.body.style.cursor = 'col-resize'
   }
 
-  const widthOf = (col: string) => widths[col] ?? DEFAULT_WIDTH
+  const widthOf = (col: string) =>
+    liveWidth && liveWidth.col === col ? liveWidth.w : (widths[col] ?? DEFAULT_WIDTH)
 
   const gridTemplateFor = (visibleCols: readonly string[] = COL_LETTERS) =>
     `48px ${visibleCols.map((c) => `${widthOf(c)}px`).join(' ')}`
