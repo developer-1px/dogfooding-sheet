@@ -28,6 +28,14 @@ describe('COUNTA', () => {
   })
 })
 
+describe('MINIFS / MAXIFS', () => {
+  it('picks min/max value where criteria matches', () => {
+    const cells = { A1: '5', A2: '10', A3: '3', A4: '20', B1: 'x', B2: 'y', B3: 'x', B4: 'y' }
+    expect(evaluateCell(cells, '=MINIFS(A1:A4, B1:B4, "x")')).toBe('3')
+    expect(evaluateCell(cells, '=MAXIFS(A1:A4, B1:B4, "y")')).toBe('20')
+  })
+})
+
 describe('SUMPRODUCT', () => {
   it('sums element-wise products across ranges', () => {
     const cells = { A1: '2', A2: '3', A3: '4', B1: '10', B2: '20', B3: '30' }

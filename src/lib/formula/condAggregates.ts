@@ -1,25 +1,7 @@
 import { collectRefs } from './parse'
+import { matchCriteria } from './criteriaMatch'
 
 type Cells = Record<string, string>
-
-const matchCriteria = (value: string, criteria: string): boolean => {
-  const c = criteria.trim()
-  for (const op of ['>=', '<=', '<>', '>=', '>', '<', '='] as const) {
-    if (c.startsWith(op)) {
-      const rest = c.slice(op.length).trim()
-      const a = Number(value), b = Number(rest)
-      const numeric = Number.isFinite(a) && Number.isFinite(b)
-      if (op === '<>') return value !== rest
-      if (op === '=') return value === rest
-      if (!numeric) return false
-      if (op === '>=') return a >= b
-      if (op === '<=') return a <= b
-      if (op === '>') return a > b
-      if (op === '<') return a < b
-    }
-  }
-  return value === c
-}
 
 export function countif(rangeStr: string, criteria: string, cells: Cells, evalRaw: (s: string) => string): number {
   const refs = collectRefs(rangeStr)
@@ -65,6 +47,26 @@ export function countblank(rangeStr: string, cells: Cells, evalRaw: (s: string) 
     if (evalRaw(cells[r] ?? '') === '') n++
   }
   return n
+}
+
+export function minMaxIf(
+  pick: 'MIN' | 'MAX',
+  valueRangeStr: string,
+  critRangeStr: string,
+  criteria: string,
+  cells: Cells,
+  evalRaw: (s: string) => string,
+): number {
+  const values = collectRefs(valueRangeStr)
+  const crits = collectRefs(critRangeStr)
+  const picked: number[] = []
+  for (let i = 0; i < values.length; i++) {
+    if (!matchCriteria(evalRaw(cells[crits[i] ?? values[i]] ?? ''), criteria)) continue
+    const v = Number(evalRaw(cells[values[i]] ?? ''))
+    if (Number.isFinite(v)) picked.push(v)
+  }
+  if (picked.length === 0) return 0
+  return pick === 'MIN' ? Math.min(...picked) : Math.max(...picked)
 }
 
 export function countunique(rangeStr: string, cells: Cells, evalRaw: (s: string) => string): number {
