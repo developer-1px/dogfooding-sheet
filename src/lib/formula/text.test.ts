@@ -172,6 +172,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=COMMONPREFIX("dog", "cat")')).toBe('')
     expect(evaluateCell({}, '=COMMONSUFFIX("walking", "running")')).toBe('ing')
   })
+  it('MASK redacts all but last N chars', () => {
+    expect(evaluateCell({}, '=MASK("4111222233334444")')).toBe('************4444')
+    expect(evaluateCell({}, '=MASK("1234", 2, "x")')).toBe('xx34')
+  })
   it('ROT13 transforms ASCII letters', () => {
     expect(evaluateCell({}, '=ROT13("Hello")')).toBe('Uryyb')
     expect(evaluateCell({}, '=ROT13(ROT13("test"))')).toBe('test')

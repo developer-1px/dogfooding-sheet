@@ -16,6 +16,12 @@ export function dispatchTextOps(F: string, argsT: string[]): string | null {
     while (i < n && a[a.length - 1 - i] === b[b.length - 1 - i]) i++
     return wrap(i === 0 ? '' : a.slice(a.length - i))
   }
+  if (F === 'MASK') {
+    const s = argsT[0] ?? '', show = Math.max(0, Math.floor(Number(argsT[1] ?? '4')))
+    const ch = argsT[2] || '*'
+    const hide = Math.max(0, s.length - show)
+    return wrap(ch.repeat(hide) + s.slice(hide))
+  }
   if (F === 'ROT13') return wrap((argsT[0] ?? '').replace(/[A-Za-z]/g, (c) => String.fromCharCode(c.charCodeAt(0) + (c.toLowerCase() < 'n' ? 13 : -13))))
   if (F === 'RANDSTRING') {
     const n = Math.max(0, Math.floor(Number(argsT[0] ?? '8')))
