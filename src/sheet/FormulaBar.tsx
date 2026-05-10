@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 interface Props {
   addr: string | null
@@ -8,9 +8,10 @@ interface Props {
   onRedo: () => void
   canUndo: boolean
   canRedo: boolean
+  extra?: ReactNode
 }
 
-export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, canRedo }: Props) {
+export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, canRedo, extra }: Props) {
   const [draft, setDraft] = useState(value)
   useEffect(() => { setDraft(value) }, [value, addr])
 
@@ -32,6 +33,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
       />
       <button onClick={onUndo} disabled={!canUndo}>Undo</button>
       <button onClick={onRedo} disabled={!canRedo}>Redo</button>
+      {extra}
     </header>
   )
 }

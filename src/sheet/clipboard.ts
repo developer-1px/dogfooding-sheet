@@ -4,6 +4,12 @@ interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
 
 const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 
+export const formatRect = (rect: Rect): string => {
+  const a = `${COL_LETTERS[rect.cMin]}${rect.rMin + 1}`
+  const b = `${COL_LETTERS[rect.cMax]}${rect.rMax + 1}`
+  return a === b ? a : `${a}:${b}`
+}
+
 export function rectFromIds(ids: string[]): Rect | null {
   const cells = ids.map(parseCellId).filter((x): x is { col: string; row: number } => !!x)
   if (cells.length === 0) return null
