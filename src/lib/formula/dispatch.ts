@@ -1,11 +1,11 @@
 import { vlookup, index as indexFn, match as matchFn } from './lookup'
-import { aggregate } from './aggregates'
+import { aggregate, largeSmall } from './aggregates'
 import { countif, sumif, counta, countblank, averageif } from './condAggregates'
 import { dispatchDate } from './dateFns'
 import { dispatchText } from './textFns'
 import { dispatchMath } from './mathFns'
 import { dispatchLogic } from './logicFns'
-import { evalArgs, type Ctx } from './args'
+import { evalArgs, splitArgs, type Ctx } from './args'
 import { smartReturn } from './marker'
 
 export type { Ctx } from './args'
@@ -24,6 +24,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'COUNTA') return String(counta(argsT[0], c.cells, c.evalRaw))
   if (F === 'COUNTBLANK') return String(countblank(argsT[0], c.cells, c.evalRaw))
   if (F === 'AVERAGEIF') return String(averageif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
+  if (F === 'LARGE' || F === 'SMALL') return smartReturn(largeSmall(F, splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
 
   const argsN = argsT.map(Number)
 

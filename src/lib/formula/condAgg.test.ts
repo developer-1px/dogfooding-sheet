@@ -62,6 +62,13 @@ describe('extra math', () => {
     expect(Number(evaluateCell(cells, '=VARP(A1:A8)'))).toBeCloseTo(4, 5)
     expect(Number(evaluateCell(cells, '=STDEVP(A1:A8)'))).toBeCloseTo(2, 5)
   })
+  it('LARGE / SMALL pick Nth largest / smallest', () => {
+    const cells = { A1: '5', A2: '1', A3: '8', A4: '3', A5: '9' }
+    expect(evaluateCell(cells, '=LARGE(A1:A5,1)')).toBe('9')
+    expect(evaluateCell(cells, '=LARGE(A1:A5,2)')).toBe('8')
+    expect(evaluateCell(cells, '=SMALL(A1:A5,1)')).toBe('1')
+    expect(evaluateCell(cells, '=SMALL(A1:A5,3)')).toBe('5')
+  })
   it('PRODUCT multiplies range', () => {
     expect(evaluateCell({ A1: '2', A2: '3', A3: '4' }, '=PRODUCT(A1:A3)')).toBe('24')
   })

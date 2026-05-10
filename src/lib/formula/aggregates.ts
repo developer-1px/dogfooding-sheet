@@ -2,6 +2,12 @@ import { collectRefs } from './parse'
 
 type NumFromCell = (ref: string) => number
 
+export function largeSmall(F: 'LARGE' | 'SMALL', rangeStr: string, k: number, numFromCell: NumFromCell): string {
+  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
+  if (k < 1 || k > nums.length) return '#NUM!'
+  return String(F === 'LARGE' ? nums[nums.length - k] : nums[k - 1])
+}
+
 export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT') return null
   const nums = collectRefs(rawArgs).map(numFromCell)
