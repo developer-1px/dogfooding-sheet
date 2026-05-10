@@ -152,6 +152,13 @@ describe('RANGECSV', () => {
   })
 })
 
+describe('RANGEJSON', () => {
+  it('serializes range as JSON array', () => {
+    const cells = { A1: 'a', A2: 'b', A3: 'c' }
+    expect(evaluateCell(cells, '=RANGEJSON(A1:A3)')).toBe('["a","b","c"]')
+  })
+})
+
 describe('COUNTNUMERIC', () => {
   it('counts cells holding finite numbers', () => {
     const cells = { A1: '5', A2: 'x', A3: '3.14', A4: '', A5: 'NaN' }

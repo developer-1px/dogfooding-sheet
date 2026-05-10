@@ -38,6 +38,11 @@ export function rangeHash(rangeStr: string, cells: Record<string, string>, evalR
 }
 
 /** RANGECSV(range) — values comma-separated, double-quote escaped if needed. */
+/** RANGEJSON(range) — JSON array of evaluated values. */
+export function rangeJson(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+  return JSON.stringify(collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')))
+}
+
 export function rangeCsv(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
   return collectRefs(rangeStr).map((r) => {
     const v = evalRaw(cells[r] ?? '')
