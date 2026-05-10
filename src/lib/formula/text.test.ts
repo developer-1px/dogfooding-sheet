@@ -263,6 +263,9 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=CEILING(13, 5)')).toBe('15')
     expect(evaluateCell({}, '=FLOOR(13)')).toBe('13')
   })
+  it('UUID returns v4 format', () => {
+    expect(evaluateCell({}, '=UUID()')).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+  })
   it('RANDID generates alphanumeric of given length', () => {
     expect(evaluateCell({}, '=RANDID(12)')).toMatch(/^[A-Za-z0-9]{12}$/)
     expect(evaluateCell({}, '=RANDID()')).toMatch(/^[A-Za-z0-9]{8}$/)

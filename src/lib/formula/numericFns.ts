@@ -1,6 +1,15 @@
 import { wrap } from './marker'
 
 export function dispatchNumeric(F: string, argsT: string[], argsN: number[]): string | null {
+  if (F === 'UUID') {
+    const u = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+      ? crypto.randomUUID()
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+          const r = Math.random() * 16 | 0
+          return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+        })
+    return wrap(u)
+  }
   if (F === 'RANDID') {
     const len = Math.max(1, Math.min(64, Number(argsT[0] ?? '8')))
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
