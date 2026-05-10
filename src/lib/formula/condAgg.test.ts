@@ -137,6 +137,13 @@ describe('MAX_BY / MIN_BY', () => {
   })
 })
 
+describe('COUNTNUMERIC', () => {
+  it('counts cells holding finite numbers', () => {
+    const cells = { A1: '5', A2: 'x', A3: '3.14', A4: '', A5: 'NaN' }
+    expect(evaluateCell(cells, '=COUNTNUMERIC(A1:A5)')).toBe('2')
+  })
+})
+
 describe('RANGEHASH', () => {
   it('stable hash of range contents', () => {
     const cells = { A1: 'a', A2: 'b', A3: 'c' }

@@ -37,6 +37,16 @@ export function rangeHash(rangeStr: string, cells: Record<string, string>, evalR
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
+/** COUNTNUMERIC(range) — number of cells whose evaluated value is finite. */
+export function countNumeric(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+  let n = 0
+  for (const r of collectRefs(rangeStr)) {
+    const v = evalRaw(cells[r] ?? '')
+    if (v !== '' && Number.isFinite(Number(v))) n++
+  }
+  return String(n)
+}
+
 export function sample(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
   const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
   if (vals.length === 0) return '#N/A'
