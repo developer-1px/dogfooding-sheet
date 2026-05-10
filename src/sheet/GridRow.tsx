@@ -1,4 +1,4 @@
-import type { InputProps } from 'editable-lifecycle'
+import type { InputProps, SelectProps } from 'editable-lifecycle'
 import { COL_LETTERS } from './schema'
 import { idsForRow } from '../lib/range'
 import { Cell } from './Cell'
@@ -37,6 +37,7 @@ interface Props {
   onFillHandleMouseDown: (e: React.MouseEvent) => void
   onCellContextMenu: (e: React.MouseEvent, id: string) => void
   inputProps: InputProps
+  selectProps: SelectProps
 }
 
 export function GridRow(p: Props) {
@@ -82,6 +83,7 @@ export function GridRow(p: Props) {
             previewing={p.previewIds.has(cell.id)}
             onContextMenu={(e) => p.onCellContextMenu(e, cell.id)}
             inputProps={p.inputProps}
+            selectProps={p.selectProps}
           />
         )
       })}

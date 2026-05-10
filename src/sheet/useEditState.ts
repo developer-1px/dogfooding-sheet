@@ -51,6 +51,7 @@ export function useEditState({ cells, writeCell }: Args) {
     commitEdit,
     cancelEdit: ed.cancelEdit,
     inputProps: ed.inputProps,
+    selectProps: ed.selectProps,
     focusKey,
   }
 }

@@ -1,5 +1,5 @@
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
-import type { InputProps } from 'editable-lifecycle'
+import type { InputProps, SelectProps } from 'editable-lifecycle'
 
 interface Props {
   cellProps: ItemProps
@@ -25,6 +25,7 @@ interface Props {
   note?: string
   validationOptions?: string[]
   inputProps: InputProps
+  selectProps: SelectProps
 }
 
 export function Cell(p: Props) {
@@ -41,14 +42,7 @@ export function Cell(p: Props) {
     >
       {p.editing ? (
         p.validationOptions ? (
-          <select
-            className="cell-input"
-            value={p.draft}
-            onChange={(e) => { p.setDraft(e.target.value); setTimeout(() => p.onCommit({ dRow: 1, dCol: 0 }), 0) }}
-            onBlur={() => p.onCommit()}
-            onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); p.onCancel() } }}
-            autoFocus
-          >
+          <select className="cell-input" {...p.selectProps}>
             <option value="">—</option>
             {p.validationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>

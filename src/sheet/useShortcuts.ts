@@ -65,10 +65,7 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         e.preventDefault()
         const tsv = rect ? rectToTsv(rect, (key) => sheet.cells[key] ?? '') : ''
         navigator.clipboard?.writeText(tsv).catch(() => {})
-        if (ck === 'x') ids.forEach((id) => {
-          const pp = parseCellId(id)
-          if (pp) writeCell(cellKey(pp.col, pp.row), '')
-        })
+        if (ck === 'x') ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') })
         return
       }
       if (mod && ck === 'v') {
@@ -80,10 +77,12 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         return
       }
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        ids.forEach((id) => {
-          const pp = parseCellId(id)
-          if (pp) writeCell(cellKey(pp.col, pp.row), '')
-        })
+        ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') })
+        e.preventDefault()
+        return
+      }
+      if (e.key === 'F2' || e.key === 'Enter') {
+        startEdit(focusId)
         e.preventDefault()
         return
       }
