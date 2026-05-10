@@ -143,6 +143,13 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
     expect(evaluateCell({}, '=ODD(4)')).toBe('5')
   })
+  it('MROUND / QUOTIENT / SQRTPI', () => {
+    expect(evaluateCell({}, '=MROUND(17, 5)')).toBe('15')
+    expect(evaluateCell({}, '=MROUND(18, 5)')).toBe('20')
+    expect(evaluateCell({}, '=QUOTIENT(17, 5)')).toBe('3')
+    expect(evaluateCell({}, '=QUOTIENT(5, 0)')).toBe('#DIV/0!')
+    expect(evaluateCell({}, '=ROUND(SQRTPI(1), 4)')).toBe('1.7725')
+  })
   it('trig: SIN/COS/TAN + DEGREES/RADIANS', () => {
     expect(evaluateCell({}, '=ROUND(SIN(RADIANS(30)),4)')).toBe('0.5')
     expect(evaluateCell({}, '=ROUND(COS(0),4)')).toBe('1')

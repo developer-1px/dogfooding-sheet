@@ -1,3 +1,5 @@
+import { wrap } from './marker'
+
 export function dispatchMath(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'ROUND') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.round(n * m) / m) }
   if (F === 'ABS') return String(Math.abs(argsN[0]))
@@ -24,6 +26,9 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => g(a, b)))
   }
+  if (F === 'MROUND') { const [n, m] = argsN; return m === 0 ? '0' : String(Math.round(n / m) * m) }
+  if (F === 'QUOTIENT') { const [n, d] = argsN; return d === 0 ? wrap('#DIV/0!') : String(Math.trunc(n / d)) }
+  if (F === 'SQRTPI') return String(Math.sqrt(argsN[0] * Math.PI))
   if (F === 'SIN') return String(Math.sin(argsN[0]))
   if (F === 'COS') return String(Math.cos(argsN[0]))
   if (F === 'TAN') return String(Math.tan(argsN[0]))
