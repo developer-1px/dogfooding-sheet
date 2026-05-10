@@ -19,7 +19,7 @@ import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 import { rowColAtFocus } from './lib/rowColAtFocus'
-import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'; import { useMerges } from './useMerges'
+import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from './lib/mergeSelection'
 
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
@@ -71,7 +71,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
     setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
-    toggleShowFormulas,
+    toggleShowFormulas, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
     ...rowColAtFocus(edit.focusKey, { insertRow, deleteRow, insertCol, deleteCol, hideRow: hidden.hideRow, hideCol: hidden.hideCol }), showAll: hidden.showAll,
   })
 
@@ -94,7 +94,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,
-    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, startResizeRow: rowH.startResizeRow, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === 100 ? undefined : Math.max(40, Math.round(w))), merges: sheet.merges, addMerge: merges.addMerge, unmergeAt: merges.unmergeAt,
+    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, startResizeRow: rowH.startResizeRow, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === 100 ? undefined : Math.max(40, Math.round(w))), merges: sheet.merges, addMerge: merges.addMerge, unmergeAt: merges.unmergeAt, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
     tabs: tabs.state, ...tabFns,
   }
 }

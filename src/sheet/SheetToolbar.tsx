@@ -50,13 +50,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       showGridlines={ctx.showGridlines}
       toggleShowGridlines={ctx.toggleShowGridlines}
       clearAllFormats={() => { ctx.ops.replace('/styles', {}); ctx.ops.replace('/formats', {}); ctx.ops.replace('/condFormat', []) }}
-      mergeSelection={() => {
-        const ids = ctx.selectedIds.length > 0 ? ctx.selectedIds : (ctx.focusId ? [ctx.focusId] : [])
-        if (ids.length === 0) return
-        let rMin = Infinity, rMax = -1, cMin = Infinity, cMax = -1
-        for (const id of ids) { const m = /^r(\d+)-([A-J])$/.exec(id); if (!m) continue; const r = +m[1]; const c = 'ABCDEFGHIJ'.indexOf(m[2]); if (r < rMin) rMin = r; if (r > rMax) rMax = r; if (c < cMin) cMin = c; if (c > cMax) cMax = c }
-        if (rMin === rMax && cMin === cMax) ctx.unmergeAt(rMin, cMin); else ctx.addMerge([rMin, rMax, cMin, cMax] as const)
-      }}
+      mergeSelection={ctx.mergeSelection}
       ask={ask}
       confirm={confirm}
     />

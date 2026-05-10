@@ -1,0 +1,20 @@
+import type { Merge } from '../useMerges'
+
+interface MergeOps {
+  addMerge: (m: Merge) => void
+  unmergeAt: (r: number, c: number) => void
+}
+
+export function mergeSelection(selectedIds: string[], focusId: string | null, ops: MergeOps): void {
+  const ids = selectedIds.length > 0 ? selectedIds : (focusId ? [focusId] : [])
+  if (ids.length === 0) return
+  let rMin = Infinity, rMax = -1, cMin = Infinity, cMax = -1
+  for (const id of ids) {
+    const m = /^r(\d+)-([A-J])$/.exec(id); if (!m) continue
+    const r = +m[1]; const c = 'ABCDEFGHIJ'.indexOf(m[2])
+    if (r < rMin) rMin = r; if (r > rMax) rMax = r
+    if (c < cMin) cMin = c; if (c > cMax) cMax = c
+  }
+  if (rMin === rMax && cMin === cMax) ops.unmergeAt(rMin, cMin)
+  else ops.addMerge([rMin, rMax, cMin, cMax] as const)
+}

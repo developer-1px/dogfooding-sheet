@@ -35,6 +35,7 @@ export interface GlobalShortcutCtx {
   hideRowAtFocus?: () => void
   hideColAtFocus?: () => void
   showAll?: () => void
+  mergeSelection?: () => void
 }
 
 const targetIds = (c: GlobalShortcutCtx) =>
@@ -63,6 +64,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+alt+9', () => get().hideRowAtFocus?.())
   useShortcut('mod+alt+0', () => get().hideColAtFocus?.())
   useShortcut('mod+shift+0', () => get().showAll?.())
+  useShortcut('alt+shift+m', () => get().mergeSelection?.())
   useShortcut('mod+a', () => get().setSelectedIds(idsForAll(ROW_COUNT)))
   useShortcut('mod+pageup', () => get().switchTab?.(-1))
   useShortcut('mod+pagedown', () => get().switchTab?.(1))
