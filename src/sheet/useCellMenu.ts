@@ -19,6 +19,7 @@ interface Args {
   editNote: () => void
   insertLink: () => void
   promptRowHeight: (row: number) => void
+  promptColWidth: (col: string) => void
   setFreezeRows: (n: number) => void
   setFreezeCols: (n: number) => void
   freeze: { rows: number; cols: number }
@@ -56,6 +57,7 @@ export function useCellMenu(a: Args) {
       { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
       { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
       { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
+      { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
       { label: a.freeze.rows === row + 1 ? '행 고정 해제' : `${row + 1}행까지 고정`, onClick: () => a.setFreezeRows(a.freeze.rows === row + 1 ? 0 : row + 1) },
       { label: a.freeze.cols === colIdx(col) + 1 ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colIdx(col) + 1 ? 0 : colIdx(col) + 1) },
       'separator',

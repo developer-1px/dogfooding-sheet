@@ -36,6 +36,12 @@ export default function App() {
       ask({ label: `${row + 1}행 높이 (px, 비우면 기본값)`, initial: String(c.rowHeightOf(row)), submitLabel: '적용' })
         .then((v) => { if (v === null) return; const n = Number(v); if (v === '' || !Number.isFinite(n)) c.setRowHeight(row, 28); else c.setRowHeight(row, n) })
     },
+    promptColWidth: (col: string) => {
+      const c = ctxRef.current; if (!c) return
+      const cur = c.sheet.colWidths[col] ?? 100
+      ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' })
+        .then((v) => { if (v === null) return; const n = Number(v); const w = (v === '' || !Number.isFinite(n)) ? 100 : Math.max(40, Math.round(n)); const path = `/colWidths/${col}` as never; if (c.sheet.colWidths[col] === undefined) c.ops.add(path, w as never); else c.ops.replace(path, w as never) })
+    },
   })
   ctxRef.current = ctx
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
