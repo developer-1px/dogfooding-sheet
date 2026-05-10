@@ -1,5 +1,5 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
-import { aggregate, largeSmall, rank, sumproduct, sample } from './aggregates'
+import { aggregate, largeSmall, rank, sumproduct, sample, weightAvg } from './aggregates'
 import { percentile, quartile, pairStat, trimmean, forecast } from './stats'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
@@ -49,6 +49,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'COUNTIFS') return String(countifs(argsT, c.cells, c.evalRaw))
   if (F === 'SUMIFS') return String(sumifs(argsT, c.cells, c.evalRaw))
   if (F === 'MINIFS' || F === 'MAXIFS') return String(minMaxIf(F === 'MINIFS' ? 'MIN' : 'MAX', argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
+  if (F === 'WEIGHTAVG') { const a = splitArgs(rawArgs); return smartReturn(weightAvg(a[0], a[1], c.numFromCell)) }
   if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
   if (F === 'COVAR' || F === 'CORREL' || F === 'SLOPE' || F === 'INTERCEPT') { const [a, b] = splitArgs(rawArgs); return smartReturn(pairStat(F, a, b, c.numFromCell)) }

@@ -22,6 +22,17 @@ export function sumproduct(rangeStrs: string[], numFromCell: NumFromCell): strin
   return String(sum)
 }
 
+/** WEIGHTAVG(values, weights) — sum(v*w)/sum(w). */
+export function weightAvg(vStr: string, wStr: string, numFromCell: NumFromCell): string {
+  const V = collectRefs(vStr).map(numFromCell)
+  const W = collectRefs(wStr).map(numFromCell)
+  const n = Math.min(V.length, W.length)
+  if (n === 0) return '#NUM!'
+  let s = 0, t = 0
+  for (let i = 0; i < n; i++) { s += V[i] * W[i]; t += W[i] }
+  return t === 0 ? '#DIV/0!' : String(s / t)
+}
+
 /** SAMPLE(range) — random non-empty cell value from range. */
 export function sample(rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
   const refs = collectRefs(rangeStr)

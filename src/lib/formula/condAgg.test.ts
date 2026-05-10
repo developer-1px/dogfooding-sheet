@@ -121,6 +121,14 @@ describe('PERCENTILE / QUARTILE', () => {
   })
 })
 
+describe('WEIGHTAVG', () => {
+  it('weighted average', () => {
+    const cells = { A1: '80', A2: '90', A3: '100', B1: '1', B2: '2', B3: '1' }
+    // (80 + 180 + 100) / 4 = 90
+    expect(evaluateCell(cells, '=WEIGHTAVG(A1:A3, B1:B3)')).toBe('90')
+  })
+})
+
 describe('SAMPLE', () => {
   it('picks one of the non-empty values', () => {
     const cells = { A1: 'a', A2: 'b', A3: '', A4: 'c' }
