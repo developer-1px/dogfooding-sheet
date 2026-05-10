@@ -243,6 +243,9 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=LCM(4,6)')).toBe('12')
     expect(evaluateCell({}, '=GCD(24,36,60)')).toBe('12')
   })
+  it('CBRT cube root', () => {
+    expect(evaluateCell({}, '=CBRT(27)')).toBe('3')
+  })
   it('HYPOT computes Euclidean magnitude', () => {
     expect(evaluateCell({}, '=HYPOT(3, 4)')).toBe('5')
     expect(evaluateCell({}, '=HYPOT(2, 3, 6)')).toBe('7')

@@ -6,6 +6,7 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'FLOOR') { const [n, s = 1] = argsN; return s === 0 ? '0' : String(Math.floor(n / s) * s) }
   if (F === 'CEIL' || F === 'CEILING') { const [n, s = 1] = argsN; return s === 0 ? '0' : String(Math.ceil(n / s) * s) }
   if (F === 'SQRT') return String(Math.sqrt(argsN[0]))
+  if (F === 'CBRT') return String(Math.cbrt(argsN[0]))
   if (F === 'POWER') return String(Math.pow(argsN[0], argsN[1]))
   if (F === 'MOD') return String(argsN[0] % argsN[1])
   if (F === 'INT') return String(Math.trunc(argsN[0]))
