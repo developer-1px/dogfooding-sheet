@@ -6,7 +6,7 @@ import { smartReturn } from './marker'
 type NumFromCell = (ref: string) => number
 
 export function dispatchStat(F: string, argsT: string[], rawArgs: string, numFromCell: NumFromCell): string | null {
-  if (F === 'COVAR' || F === 'CORREL' || F === 'SLOPE' || F === 'INTERCEPT') {
+  if (F === 'COVAR' || F === 'CORREL' || F === 'RSQ' || F === 'SLOPE' || F === 'INTERCEPT') {
     const [a, b] = splitArgs(rawArgs)
     return smartReturn(pairStat(F, a, b, numFromCell))
   }

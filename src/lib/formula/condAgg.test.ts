@@ -181,6 +181,13 @@ describe('SKEW', () => {
   })
 })
 
+describe('RSQ', () => {
+  it('returns squared correlation coefficient', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', B1: '2', B2: '4', B3: '6', B4: '8' }
+    expect(Number(evaluateCell(cells, '=RSQ(A1:A4, B1:B4)'))).toBeCloseTo(1)
+  })
+})
+
 describe('GINI', () => {
   it('returns 0 for perfect equality', () => {
     const cells = { A1: '5', A2: '5', A3: '5', A4: '5' }

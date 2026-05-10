@@ -16,8 +16,8 @@ export function forecast(x: number, yStr: string, xStr: string, numFromCell: Num
   return String(my + (cov / vx) * (x - mx))
 }
 
-/** Paired stats: COVAR, CORREL, SLOPE (y on x), INTERCEPT (y on x). */
-export function pairStat(F: 'COVAR' | 'CORREL' | 'SLOPE' | 'INTERCEPT', aStr: string, bStr: string, numFromCell: NumFromCell): string {
+/** Paired stats: COVAR, CORREL, RSQ, SLOPE (y on x), INTERCEPT (y on x). */
+export function pairStat(F: 'COVAR' | 'CORREL' | 'RSQ' | 'SLOPE' | 'INTERCEPT', aStr: string, bStr: string, numFromCell: NumFromCell): string {
   const A = collectRefs(aStr).map(numFromCell)
   const B = collectRefs(bStr).map(numFromCell)
   const n = Math.min(A.length, B.length)
@@ -32,5 +32,7 @@ export function pairStat(F: 'COVAR' | 'CORREL' | 'SLOPE' | 'INTERCEPT', aStr: st
   if (F === 'COVAR') return String(cov / n)
   if (F === 'SLOPE') return vb === 0 ? '#DIV/0!' : String(cov / vb)
   if (F === 'INTERCEPT') return vb === 0 ? '#DIV/0!' : String(ma - (cov / vb) * mb)
-  return va === 0 || vb === 0 ? '#DIV/0!' : String(cov / Math.sqrt(va * vb))
+  if (va === 0 || vb === 0) return '#DIV/0!'
+  const r = cov / Math.sqrt(va * vb)
+  return String(F === 'RSQ' ? r * r : r)
 }
