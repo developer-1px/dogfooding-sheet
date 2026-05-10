@@ -510,6 +510,8 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(SECH(0),4)')).toBe('1')
     expect(Number(evaluateCell({}, '=CSCH(1)'))).toBeCloseTo(0.8509, 3)
     expect(Number(evaluateCell({}, '=COTH(1)'))).toBeCloseTo(1.3130, 3)
+    expect(Number(evaluateCell({}, '=ACOT(1)'))).toBeCloseTo(Math.PI / 4, 4)
+    expect(Number(evaluateCell({}, '=ACOTH(2)'))).toBeCloseTo(0.5493, 3)
   })
   it('trig: SIN/COS/TAN + DEGREES/RADIANS', () => {
     expect(evaluateCell({}, '=ROUND(SIN(RADIANS(30)),4)')).toBe('0.5')
