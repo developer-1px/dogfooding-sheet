@@ -113,6 +113,7 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SLUG("Hello World!")')).toBe('hello-world')
     expect(evaluateCell({}, '=CAMELCASE("hello world")')).toBe('helloWorld')
     expect(evaluateCell({}, '=SNAKECASE("helloWorld")')).toBe('hello_world')
+    expect(evaluateCell({}, '=KEBABCASE("helloWorld")')).toBe('hello-world')
   })
   it('PROPER capitalises each word', () => {
     expect(evaluateCell({}, '=PROPER("hello world")')).toBe('Hello World')
