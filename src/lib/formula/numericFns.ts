@@ -26,6 +26,8 @@ export function dispatchNumeric(F: string, argsT: string[], argsN: number[]): st
   if (F === 'DECIMAL') { const n = parseInt(argsT[0] ?? '', argsN[1]); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
   if (F === 'HEX2DEC') { const n = parseInt(argsT[0] ?? '', 16); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
   if (F === 'DEC2HEX') return wrap(Math.floor(argsN[0]).toString(16).toUpperCase())
+  if (F === 'OCT2DEC') { const n = parseInt(argsT[0] ?? '', 8); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
+  if (F === 'DEC2OCT') return wrap(Math.floor(argsN[0]).toString(8))
   if (F === 'BIN2DEC') { const n = parseInt(argsT[0] ?? '', 2); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
   if (F === 'DEC2BIN') return wrap(Math.floor(argsN[0]).toString(2))
   if (F === 'ROMAN') {

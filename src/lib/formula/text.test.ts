@@ -225,6 +225,8 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=DEC2HEX(26)')).toBe('1A')
     expect(evaluateCell({}, '=BIN2DEC("1010")')).toBe('10')
     expect(evaluateCell({}, '=DEC2BIN(10)')).toBe('1010')
+    expect(evaluateCell({}, '=OCT2DEC("17")')).toBe('15')
+    expect(evaluateCell({}, '=DEC2OCT(15)')).toBe('17')
   })
   it('ROMAN / ARABIC round-trip', () => {
     expect(evaluateCell({}, '=ROMAN(1994)')).toBe('MCMXCIV')
