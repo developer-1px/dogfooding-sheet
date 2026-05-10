@@ -62,7 +62,7 @@ export function useSheet() {
     const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
     return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
   }
-  const toggle = (k: 'b' | 'i') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
+  const toggle = (k: 'b' | 'i' | 'u') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
 
   useShortcuts({
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
@@ -71,6 +71,7 @@ export function useSheet() {
     openHelp: () => setHelpOpen(true),
     toggleBold: () => toggle('b'),
     toggleItalic: () => toggle('i'),
+    toggleUnderline: () => toggle('u'),
     saveCsv: () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT })),
   })
 

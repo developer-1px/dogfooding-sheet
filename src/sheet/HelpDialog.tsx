@@ -9,7 +9,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + Z', '실행 취소'],
   ['Ctrl/⌘ + Shift + Z', '다시 실행'],
   ['Ctrl/⌘ + C / X / V', '복사 / 잘라내기 / 붙여넣기'],
-  ['Ctrl/⌘ + B / I', '굵게 / 기울임'],
+  ['Ctrl/⌘ + B / I / U', '굵게 / 기울임 / 밑줄'],
   ['Ctrl/⌘ + S', 'CSV 내보내기'],
   ['Ctrl/⌘ + D / R', '아래로 / 오른쪽으로 채우기'],
   ['Ctrl/⌘ + ;', '오늘 날짜 입력'],

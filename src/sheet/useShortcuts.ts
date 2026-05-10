@@ -17,10 +17,11 @@ interface Args {
   openHelp: () => void
   toggleBold: () => void
   toggleItalic: () => void
+  toggleUnderline: () => void
   saveCsv: () => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, saveCsv }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
@@ -31,7 +32,7 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         return
       }
       if (mod && !e.shiftKey && !e.altKey) {
-        const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, s: saveCsv } as Record<string, () => void>)[ck]
+        const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, u: toggleUnderline, s: saveCsv } as Record<string, () => void>)[ck]
         if (fn) { e.preventDefault(); fn(); return }
       }
       if (mod && e.key === ';' && !e.altKey) {
