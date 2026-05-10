@@ -1,5 +1,6 @@
 import { COL_LETTERS } from './schema'
-import { idsForCol, idsForAll } from './range'
+import { idsForCol, idsForAll } from '../lib/range'
+import { ROW_COUNT } from './schema'
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 export function GridHeader({ gridTemplate, columnHeaderProps, startResize, setSelectedIds, hiddenCols, hideCol }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
-      <span className="corner-cell" onClick={() => setSelectedIds(idsForAll())} />
+      <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(ROW_COUNT))} />
       {COL_LETTERS.map((c) => {
         if (hiddenCols.has(c)) return null
         return (
@@ -22,7 +23,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, startResize, setSe
             key={c}
             {...columnHeaderProps(`h-${c}`)}
             className="header-cell"
-            onClick={() => setSelectedIds(idsForCol(c))}
+            onClick={() => setSelectedIds(idsForCol(c, ROW_COUNT))}
             onContextMenu={(e) => { e.preventDefault(); hideCol(c) }}
             title="우클릭으로 열 숨기기"
           >

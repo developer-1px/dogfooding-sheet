@@ -1,6 +1,6 @@
 import { type RefObject } from 'react'
 import { COL_LETTERS } from './schema'
-import { idsForRow } from './range'
+import { idsForRow } from '../lib/range'
 import { Cell } from './Cell'
 import { isFillCorner } from './fillCorner'
 import { styleToProps, type CellStyle } from './useStyles'

@@ -1,10 +1,11 @@
-import { COL_LETTERS, ROW_COUNT, type Sheet } from './schema'
+import { COL_LETTERS } from './a1'
+
+type Cells = Record<string, string>
 
 const compareValues = (a: string, b: string, dir: 1 | -1): number => {
   const na = Number(a), nb = Number(b)
   const aNum = a !== '' && Number.isFinite(na)
   const bNum = b !== '' && Number.isFinite(nb)
-  // Empty strings sort to the end regardless of direction
   if (a === '' && b === '') return 0
   if (a === '') return 1
   if (b === '') return -1
@@ -12,9 +13,11 @@ const compareValues = (a: string, b: string, dir: 1 | -1): number => {
   return a.localeCompare(b) * dir
 }
 
-interface SortOpts {
+export interface SortOpts {
   col: string
   dir: 'asc' | 'desc'
+  /** Required upper bound (exclusive) so the lib stays decoupled from the sheet's row count. */
+  rowCount: number
   fromRow?: number
   toRow?: number
 }
@@ -23,10 +26,8 @@ interface SortOpts {
  * Sort rows by values in `col`. Header row (row 0) is preserved by default.
  * Range covers rows [fromRow, toRow] inclusive (0-indexed).
  */
-export function sortByColumn(
-  cells: Sheet['cells'],
-  { col, dir, fromRow = 1, toRow = ROW_COUNT - 1 }: SortOpts,
-): Sheet['cells'] {
+export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
+  const { col, dir, rowCount, fromRow = 1, toRow = rowCount - 1 } = opts
   const sign = dir === 'asc' ? 1 : -1
   const rows: Array<Record<string, string>> = []
   for (let r = fromRow; r <= toRow; r++) {
@@ -36,15 +37,13 @@ export function sortByColumn(
   }
   rows.sort((a, b) => compareValues(a[col] ?? '', b[col] ?? '', sign))
 
-  const next: Sheet['cells'] = {}
-  // Carry over cells outside the sort range untouched
+  const next: Cells = {}
   for (const [k, v] of Object.entries(cells)) {
     const m = /^[A-J](\d+)$/.exec(k)
     if (!m) continue
     const r = Number(m[1]) - 1
     if (r < fromRow || r > toRow) next[k] = v
   }
-  // Write sorted rows
   for (let i = 0; i < rows.length; i++) {
     const targetRow = fromRow + i
     for (const c of COL_LETTERS) {

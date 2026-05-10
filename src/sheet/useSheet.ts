@@ -11,8 +11,8 @@ import { useFilter, hiddenRows } from './useFilter'
 import { useHidden } from './useHidden'
 import { useNotes } from './useNotes'
 import { useValidation } from './useValidation'
-import { insertRow as insertRowOp, deleteRow as deleteRowOp } from './rowOps'
-import { sortByColumn } from './sortOps'
+import { insertRow as insertRowOp, deleteRow as deleteRowOp } from '../lib/rowOps'
+import { sortByColumn } from '../lib/sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
@@ -47,10 +47,10 @@ export function useSheet() {
   data.meta = { ...data.meta, focus: edit.focusId }
   for (const id of selectedIds) data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
 
-  const insertRow = (atRow: number) => ops.replace('/cells' as never, insertRowOp(sheet.cells, atRow) as never)
+  const insertRow = (atRow: number) => ops.replace('/cells' as never, insertRowOp(sheet.cells, atRow, ROW_COUNT) as never)
   const deleteRow = (atRow: number) => ops.replace('/cells' as never, deleteRowOp(sheet.cells, atRow) as never)
   const sortByCol = (col: string, dir: 'asc' | 'desc') =>
-    ops.replace('/cells' as never, sortByColumn(sheet.cells, { col, dir }) as never)
+    ops.replace('/cells' as never, sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT }) as never)
 
   useShortcuts({
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
