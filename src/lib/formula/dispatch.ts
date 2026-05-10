@@ -1,5 +1,6 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
-import { aggregate, largeSmall, rank, sumproduct, percentile, quartile, pairStat } from './aggregates'
+import { aggregate, largeSmall, rank, sumproduct } from './aggregates'
+import { percentile, quartile, pairStat } from './stats'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
 import { dispatchDate } from './dateFns'
