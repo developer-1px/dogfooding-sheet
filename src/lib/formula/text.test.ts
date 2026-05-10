@@ -55,6 +55,8 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=LEFT("abcdef", 3)')).toBe('abc')
     expect(evaluateCell({}, '=RIGHT("abcdef", 2)')).toBe('ef')
     expect(evaluateCell({}, '=MID("abcdef", 2, 3)')).toBe('bcd')
+    expect(evaluateCell({}, '=CHARAT("abc", 1)')).toBe('b')
+    expect(evaluateCell({}, '=CHARAT("hi😀", 2)')).toBe('😀')
   })
   it('TRIM removes whitespace', () => {
     expect(evaluateCell({}, '=TRIM("  hi  ")')).toBe('hi')
