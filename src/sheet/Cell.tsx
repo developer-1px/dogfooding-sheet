@@ -62,11 +62,13 @@ export function Cell(p: Props) {
         )
       ) : (
         <>
-          {/^https?:\/\//.test(p.label)
-            ? <a className="cell-link" href={p.label} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()}>{p.label}</a>
-            : /^[\w.+-]+@[\w.-]+\.\w{2,}$/.test(p.label)
-              ? <a className="cell-link" href={`mailto:${p.label}`} onClick={(e) => e.stopPropagation()}>{p.label}</a>
-              : p.label}
+          {/^https?:\/\/.+\.(png|jpe?g|gif|svg|webp)(\?.*)?$/i.test(p.label)
+            ? <img className="cell-img" src={p.label} alt="" onClick={(e) => e.stopPropagation()} />
+            : /^https?:\/\//.test(p.label)
+              ? <a className="cell-link" href={p.label} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()}>{p.label}</a>
+              : /^[\w.+-]+@[\w.-]+\.\w{2,}$/.test(p.label)
+                ? <a className="cell-link" href={`mailto:${p.label}`} onClick={(e) => e.stopPropagation()}>{p.label}</a>
+                : p.label}
           {p.note && <span className="note-mark" aria-hidden />}
           {p.validationOptions && !p.editing && <span className="dropdown-mark" aria-hidden>▾</span>}
           {p.isFillCorner && !p.editing && (
