@@ -12,6 +12,14 @@ describe('COUNTIF', () => {
   })
 })
 
+describe('COUNTIF wildcards', () => {
+  it('* matches any sequence, ? matches single char', () => {
+    const cells = { A1: 'apple', A2: 'apricot', A3: 'banana', A4: 'app' }
+    expect(evaluateCell(cells, '=COUNTIF(A1:A4, "ap*")')).toBe('3')
+    expect(evaluateCell(cells, '=COUNTIF(A1:A4, "app??")')).toBe('1')
+  })
+})
+
 describe('SUMIF', () => {
   it('sums values matching criteria', () => {
     expect(evaluateCell(c, '=SUMIF(A1:A5, ">5")')).toBe('38')
