@@ -5,7 +5,7 @@ interface Props {
 }
 
 export function StatusBar({ selectedIds, display, parseId }: Props) {
-  if (selectedIds.length < 2) return <footer className="status-bar"><span>{selectedIds.length} 셀</span></footer>
+  if (selectedIds.length < 2) return <footer className="status-bar" role="status" aria-live="polite"><span>{selectedIds.length} 셀</span></footer>
 
   const rows = new Set<number>(), cols = new Set<string>()
   const nums: number[] = []
@@ -29,7 +29,7 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
   const fmt = (n: number) => Math.round(n * 1e6) / 1e6
 
   return (
-    <footer className="status-bar">
+    <footer className="status-bar" role="status" aria-live="polite">
       <span>{selectedIds.length} 셀 ({rows.size}행 × {cols.size}열)</span>
       <span>COUNTA: <b>{nonEmpty}</b></span>
       {nums.length > 0 && (

@@ -31,7 +31,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
       apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
       apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
     })
-    act(() => window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
+    act(() => apple.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
     const input = document.querySelector<HTMLInputElement>('input.cell-input')!
     expect(input).not.toBeNull()
 
@@ -52,7 +52,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     act(() => apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 })))
 
     // Press F2 to start edit
-    act(() => window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
+    act(() => apple.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
 
     const input = document.querySelector<HTMLInputElement>('input.cell-input')
     expect(input, 'input should mount on edit').not.toBeNull()

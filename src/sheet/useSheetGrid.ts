@@ -8,14 +8,17 @@ interface Args {
   setFocusId: (id: string) => void
   setSelectedIds: (ids: string[] | ((prev: string[]) => string[])) => void
   startEdit?: (id: string, prefill?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
+  isEditing?: () => boolean
 }
 
-export function useSheetGrid({ data, setFocusId, setSelectedIds, startEdit }: Args) {
+export function useSheetGrid({ data, setFocusId, setSelectedIds, startEdit, isEditing }: Args) {
   const onEvent = (e: UiEvent) => {
     if (e.type === 'navigate' && e.id) { setFocusId(e.id); setSelectedIds([]); return }
     // click → activate (focus/select intent only). edit-mode 진입은 F2 → editStart 이벤트.
     if (e.type === 'activate' && e.id) return
-    if (e.type === 'editStart' && e.id) { startEdit?.(e.id, undefined, { caret: 'end' }); return }
+    // Enter inside cell-input bubbles to grid root and matches grid edit-chord — guard against
+    // re-entering edit mode while a commit is in flight (would reset draft to '').
+    if (e.type === 'editStart' && e.id) { if (isEditing?.()) return; startEdit?.(e.id, undefined, { caret: 'end' }); return }
     if (e.type === 'select') {
       if (e.to === undefined) setSelectedIds(e.ids)
       else if (e.to) setSelectedIds((p) => [...new Set([...p, ...e.ids])])

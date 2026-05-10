@@ -19,7 +19,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight, setFreezeRows: ctx.setFreezeRows, setFreezeCols: ctx.setFreezeCols, freeze })
   const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, `r0-${col}`) }; const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e, `r${rIdx}-A`) }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds }); const previewIds = rectToIdSet(fill.preview)
-  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit })
+  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit, isEditing: () => editing !== null })
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
   const { gridTemplateFor, startResize, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
