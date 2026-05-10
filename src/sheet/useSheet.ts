@@ -72,6 +72,7 @@ export function useSheet() {
     toggleBold: () => toggle('b'),
     toggleItalic: () => toggle('i'),
     toggleUnderline: () => toggle('u'),
+    clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
     setSelectedIds, setFocusId: edit.setFocusId,
   })
@@ -86,8 +87,7 @@ export function useSheet() {
     helpOpen, setHelpOpen,
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
-    freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols,
-    filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
+    freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
     hiddenRowSet: hiddenRows(filter.filter, ROW_COUNT, display),
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,

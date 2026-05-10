@@ -20,6 +20,7 @@ interface Args {
   toggleBold: () => void
   toggleItalic: () => void
   toggleUnderline: () => void
+  clearFormat: () => void
   saveCsv: () => void
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
@@ -30,7 +31,7 @@ export function useShortcuts(args: Args) {
   ref.current = args
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds, setFocusId } = ref.current
+      const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, clearFormat, saveCsv, setSelectedIds, setFocusId } = ref.current
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
       if (!editing && (e.key === 'F1' || (e.key === '?' && !mod) || (mod && e.key === '/'))) {
@@ -39,7 +40,7 @@ export function useShortcuts(args: Args) {
         return
       }
       if (mod && !e.shiftKey && !e.altKey) {
-        const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, u: toggleUnderline, s: saveCsv } as Record<string, () => void>)[ck]
+        const fn = ({ f: openFind, h: openReplace, b: toggleBold, i: toggleItalic, u: toggleUnderline, s: saveCsv, '\\': clearFormat } as Record<string, () => void>)[ck]
         if (fn) { e.preventDefault(); fn(); return }
       }
       if (mod && e.key === ';' && !e.altKey) {
