@@ -41,6 +41,7 @@ const TabBundleSchema = z.object({
   }).default({ rows: [], cols: [] }),
   colWidths: z.record(z.string(), z.number()).default({}),
   rowHeights: z.record(z.string(), z.number()).default({}),
+  merges: z.array(z.tuple([z.number(), z.number(), z.number(), z.number()])).default([]),
 })
 export type TabBundle = z.infer<typeof TabBundleSchema>
 
@@ -56,13 +57,13 @@ export type Sheet = z.infer<typeof SheetSchema>
 
 const emptyBundle: TabBundle = {
   cells: {}, notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
-  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {},
+  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {}, merges: [],
 }
 
 export const bundleOf = (sheet: Sheet): TabBundle => ({
   cells: sheet.cells, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats,
   validation: sheet.validation, condFormat: sheet.condFormat,
-  freeze: sheet.freeze, hidden: sheet.hidden, colWidths: sheet.colWidths, rowHeights: sheet.rowHeights,
+  freeze: sheet.freeze, hidden: sheet.hidden, colWidths: sheet.colWidths, rowHeights: sheet.rowHeights, merges: sheet.merges,
 })
 
 export const withBundle = (sheet: Sheet, b: TabBundle): Sheet => ({ ...sheet, ...b })
@@ -78,6 +79,6 @@ export const initialSheet: Sheet = {
     A6: 'Sum', D6: '=SUM(D2:D4)',
   },
   notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
-  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {},
+  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {}, merges: [],
   tabs: { order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} },
 }

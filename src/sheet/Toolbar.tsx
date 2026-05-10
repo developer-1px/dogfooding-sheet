@@ -47,9 +47,10 @@ interface Props {
   showFormulas: boolean; toggleShowFormulas: () => void
   showGridlines: boolean; toggleShowGridlines: () => void
   clearAllFormats: () => void
+  mergeSelection: () => void
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, resetCells, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, resetCells, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats, mergeSelection }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
@@ -70,9 +71,8 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => setAlign('right')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'right' : false} title="오른쪽 정렬">⇥</button>
       <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} /></label>
       <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} /></label>
-      <button onClick={() => updateStyle(targetKeys(), { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' })} title="서식 모두 해제">✕서식</button>
-      <button onClick={toggleFreezeRows} title={`첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`} style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button>
-      <button onClick={toggleFreezeCols} title={`첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`} style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
+      <button onClick={() => updateStyle(targetKeys(), { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' })} title="서식 모두 해제">✕서식</button><button onClick={mergeSelection} title="선택 셀 병합 / 병합 해제">⊞병합</button>
+      <button onClick={toggleFreezeRows} title={`첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`} style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button onClick={toggleFreezeCols} title={`첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`} style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button onClick={() => {
         if (!focus) return
         const col = focus[1]

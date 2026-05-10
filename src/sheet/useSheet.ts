@@ -19,7 +19,7 @@ import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 import { rowColAtFocus } from './lib/rowColAtFocus'
-import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'
+import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'; import { useMerges } from './useMerges'
 
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
@@ -31,7 +31,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
   const hidden = useHidden(sheet.hidden, ops)
   const notes = useNotes(sheet.notes, ops)
   const validation = useValidation(sheet.validation, ops)
-  const cond = useCondFormat(sheet.condFormat, ops); const rowH = useRowHeights(sheet.rowHeights, ops)
+  const cond = useCondFormat(sheet.condFormat, ops); const rowH = useRowHeights(sheet.rowHeights, ops); const merges = useMerges(sheet.merges, ops)
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
   const [showFormulas, setShowFormulas] = useState(false); const [showGridlines, setShowGridlines] = useState(true)
@@ -94,7 +94,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,
-    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, startResizeRow: rowH.startResizeRow, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === 100 ? undefined : Math.max(40, Math.round(w))),
+    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, startResizeRow: rowH.startResizeRow, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === 100 ? undefined : Math.max(40, Math.round(w))), merges: sheet.merges, addMerge: merges.addMerge, unmergeAt: merges.unmergeAt,
     tabs: tabs.state, ...tabFns,
   }
 }

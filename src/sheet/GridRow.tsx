@@ -15,6 +15,8 @@ interface Props {
   gridTemplate: string
   rowCls: string
   freezeCols: number; freezeLefts: number[]; rowHeight: number; freezeTop?: number
+  mergeAnchors: Map<string, { rows: number; cols: number }>
+  mergeHidden: Set<string>
   hiddenCols: Set<string>
   focusId: string | null
   selectedIds: string[]
@@ -51,13 +53,17 @@ export function GridRow(p: Props) {
       <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} startResizeRow={p.startResizeRow} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} />
       {p.rowItemProps.cells.map((cell, cIdx) => {
         if (p.hiddenCols.has(COL_LETTERS[cIdx])) return null
+        const mergeKey = `${p.rIdx},${cIdx}`
+        if (p.mergeHidden.has(mergeKey)) return null
+        const anchor = p.mergeAnchors.get(mergeKey)
         const m = /^r(\d+)-([A-J])$/.exec(cell.id)
         const k = m ? `${m[2]}${Number(m[1]) + 1}` : ''
         const extra = cIdx < p.freezeCols ? ' freeze-col' : ''
         const sp = styleToProps(p.styleOf(k))
         const condBg = m ? p.condBgOf(m[2], cell.label) : undefined
         const baseStyle = condBg ? { ...sp.style, background: condBg } : sp.style
-        const styleInline = cIdx < p.freezeCols ? { ...baseStyle, left: p.freezeLefts[cIdx] } : baseStyle
+        const mergeStyle = anchor ? { gridColumn: `span ${anchor.cols}`, zIndex: 4 } : {}
+        const styleInline = { ...(cIdx < p.freezeCols ? { ...baseStyle, left: p.freezeLefts[cIdx] } : baseStyle), ...mergeStyle }
         return (
           <Cell
             key={cell.id}
