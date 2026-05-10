@@ -28,6 +28,13 @@ describe('COUNTA', () => {
   })
 })
 
+describe('COUNTUNIQUE', () => {
+  it('counts distinct non-empty values', () => {
+    const cells = { A1: 'x', A2: 'y', A3: 'x', A4: 'z', A5: '', A6: 'y' }
+    expect(evaluateCell(cells, '=COUNTUNIQUE(A1:A6)')).toBe('3')
+  })
+})
+
 describe('COUNTBLANK', () => {
   it('counts empty cells', () => {
     expect(evaluateCell(c, '=COUNTBLANK(A1:A6)')).toBe('1')

@@ -67,6 +67,15 @@ export function countblank(rangeStr: string, cells: Cells, evalRaw: (s: string) 
   return n
 }
 
+export function countunique(rangeStr: string, cells: Cells, evalRaw: (s: string) => string): number {
+  const seen = new Set<string>()
+  for (const r of collectRefs(rangeStr)) {
+    const v = evalRaw(cells[r] ?? '')
+    if (v !== '') seen.add(v)
+  }
+  return seen.size
+}
+
 export function averageif(
   rangeStr: string,
   criteria: string,
