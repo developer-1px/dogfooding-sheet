@@ -15,6 +15,7 @@ describe('text functions', () => {
   })
   it('ENCODEURL escapes special characters', () => {
     expect(evaluateCell({}, '=ENCODEURL("hello world & co")')).toBe('hello%20world%20%26%20co')
+    expect(evaluateCell({}, '=DECODEURL("hello%20world%20%26%20co")')).toBe('hello world & co')
   })
   it('HYPERLINK uses label when given, else URL', () => {
     expect(evaluateCell({}, '=HYPERLINK("https://example.com", "click")')).toBe('click')
