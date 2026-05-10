@@ -52,6 +52,15 @@ describe('MINIFS / MAXIFS', () => {
   })
 })
 
+describe('MAXA / MINA / AVERAGEA', () => {
+  it('treat text as 0 in stats', () => {
+    const cells = { A1: '5', A2: 'text', A3: '10' }
+    expect(evaluateCell(cells, '=MAXA(A1:A3)')).toBe('10')
+    expect(evaluateCell(cells, '=MINA(A1:A3)')).toBe('0')
+    expect(evaluateCell(cells, '=AVERAGEA(A1:A3)')).toBe('5')
+  })
+})
+
 describe('AVEDEV', () => {
   it('mean absolute deviation', () => {
     const cells = { A1: '2', A2: '4', A3: '4', A4: '6' }

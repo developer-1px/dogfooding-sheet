@@ -31,7 +31,7 @@ export function rank(value: number, rangeStr: string, order: number, numFromCell
 }
 
 export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
-  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV') return null
+  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
   const nums = collectRefs(rawArgs).map(numFromCell)
   if (F === 'PRODUCT') return String(nums.reduce((a, b) => a * b, 1))
   if (F === 'SUMSQ') return String(nums.reduce((a, b) => a + b * b, 0))
@@ -55,6 +55,14 @@ export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell):
   if (F === 'MIN') return String(Math.min(...nums))
   if (F === 'MAX') return String(Math.max(...nums))
   if (F === 'COUNT') return String(nums.length)
+  if (F === 'MAXA' || F === 'MINA' || F === 'AVERAGEA') {
+    const refs = collectRefs(rawArgs)
+    const vs = refs.map((r) => numFromCell(r))
+    if (vs.length === 0) return '0'
+    if (F === 'MAXA') return String(Math.max(...vs))
+    if (F === 'MINA') return String(Math.min(...vs))
+    return String(vs.reduce((a, b) => a + b, 0) / vs.length)
+  }
   if (F === 'MEDIAN') {
     const s = [...nums].sort((a, b) => a - b)
     const m = s.length
