@@ -1,34 +1,41 @@
-import { useEffect, useState } from 'react'
-
-const STORAGE_KEY = 'spreadsheet:hidden:v1'
+import { useEffect } from 'react'
+import type { JsonOps } from 'zod-crud'
+import type { Sheet } from './schema'
 
 export interface HiddenState {
   rows: number[]
   cols: string[]
 }
 
-const load = (): HiddenState => {
+const LEGACY_KEY = 'spreadsheet:hidden:v1'
+
+function migrateLegacy(hidden: HiddenState, ops: JsonOps<Sheet>) {
+  if (hidden.rows.length || hidden.cols.length) return
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { rows: [], cols: [] }
+    const raw = localStorage.getItem(LEGACY_KEY)
+    if (!raw) return
     const obj = JSON.parse(raw)
-    return {
+    const next: HiddenState = {
       rows: Array.isArray(obj?.rows) ? obj.rows.filter((n: unknown) => typeof n === 'number') : [],
       cols: Array.isArray(obj?.cols) ? obj.cols.filter((s: unknown) => typeof s === 'string') : [],
     }
-  } catch { return { rows: [], cols: [] } }
+    if (next.rows.length || next.cols.length) ops.replace('/hidden', next)
+    localStorage.removeItem(LEGACY_KEY)
+  } catch { /* ignore */ }
 }
 
-export function useHidden() {
-  const [hidden, setHidden] = useState<HiddenState>(load)
+export function useHidden(hidden: HiddenState, ops: JsonOps<Sheet>) {
+  useEffect(() => { migrateLegacy(hidden, ops) }, [])
 
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(hidden)) } catch { /* quota */ }
-  }, [hidden])
-
-  const hideRow = (row: number) => setHidden((h) => h.rows.includes(row) ? h : { ...h, rows: [...h.rows, row] })
-  const hideCol = (col: string) => setHidden((h) => h.cols.includes(col) ? h : { ...h, cols: [...h.cols, col] })
-  const showAll = () => setHidden({ rows: [], cols: [] })
+  const hideRow = (row: number) => {
+    if (hidden.rows.includes(row)) return
+    ops.replace('/hidden', { ...hidden, rows: [...hidden.rows, row] })
+  }
+  const hideCol = (col: string) => {
+    if (hidden.cols.includes(col)) return
+    ops.replace('/hidden', { ...hidden, cols: [...hidden.cols, col] })
+  }
+  const showAll = () => ops.replace('/hidden', { rows: [], cols: [] })
 
   return {
     hidden,

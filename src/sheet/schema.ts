@@ -29,6 +29,14 @@ export const SheetSchema = z.object({
     value: z.string(),
     color: z.string(),
   })).default([]),
+  freeze: z.object({
+    rows: z.union([z.literal(0), z.literal(1)]),
+    cols: z.union([z.literal(0), z.literal(1)]),
+  }).default({ rows: 0, cols: 0 }),
+  hidden: z.object({
+    rows: z.array(z.number()),
+    cols: z.array(z.string()),
+  }).default({ rows: [], cols: [] }),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 
@@ -45,4 +53,6 @@ export const initialSheet: Sheet = {
   formats: {},
   validation: {},
   condFormat: [],
+  freeze: { rows: 0, cols: 0 },
+  hidden: { rows: [], cols: [] },
 }
