@@ -21,6 +21,10 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
     return '2'
   }
   if (F === 'NA') return smartReturn('#N/A')
+  if (F === 'CHOOSE') {
+    const i = Math.floor(Number(argsT[0]))
+    return smartReturn(i >= 1 && i < argsT.length ? argsT[i] : '#VALUE!')
+  }
   if (F === 'IFEMPTY') return smartReturn(argsT[0] === '' ? (argsT[1] ?? '') : argsT[0])
   if (F === 'COALESCE') {
     for (const v of argsT) if (v !== '') return smartReturn(v)

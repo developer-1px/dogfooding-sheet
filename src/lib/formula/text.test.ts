@@ -180,6 +180,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ISEMAIL("a@b.co")')).toBe('1')
     expect(evaluateCell({}, '=ISEMAIL("nope")')).toBe('0')
   })
+  it('CHOOSE picks by 1-based index', () => {
+    expect(evaluateCell({}, '=CHOOSE(2, "a", "b", "c")')).toBe('b')
+    expect(evaluateCell({}, '=CHOOSE(5, "a", "b", "c")')).toBe('#VALUE!')
+  })
   it('IFEMPTY / COALESCE pick first non-empty', () => {
     expect(evaluateCell({ A1: '' }, '=IFEMPTY(A1, "fallback")')).toBe('fallback')
     expect(evaluateCell({ A1: 'x' }, '=IFEMPTY(A1, "fallback")')).toBe('x')
