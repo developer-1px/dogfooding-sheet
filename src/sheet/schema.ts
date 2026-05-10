@@ -31,8 +31,8 @@ const TabBundleSchema = z.object({
     color: z.string(),
   })).default([]),
   freeze: z.object({
-    rows: z.union([z.literal(0), z.literal(1)]),
-    cols: z.union([z.literal(0), z.literal(1)]),
+    rows: z.number().int().min(0).max(ROW_COUNT),
+    cols: z.number().int().min(0).max(10),
   }).default({ rows: 0, cols: 0 }),
   hidden: z.object({
     rows: z.array(z.number()),

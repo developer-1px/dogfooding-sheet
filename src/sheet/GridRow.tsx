@@ -14,7 +14,7 @@ interface Props {
   cellPropsFor: (id: string) => ItemProps
   gridTemplate: string
   rowCls: string
-  freezeFirstCol: boolean; rowHeight: number
+  freezeCols: number; freezeLefts: number[]; rowHeight: number; freezeTop?: number
   hiddenCols: Set<string>
   focusId: string | null
   selectedIds: string[]
@@ -47,16 +47,17 @@ interface Props {
 
 export function GridRow(p: Props) {
   return (
-    <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight }}>
+    <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight, ...(p.freezeTop !== undefined ? { top: p.freezeTop } : {}) }}>
       <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} startResizeRow={p.startResizeRow} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} />
       {p.rowItemProps.cells.map((cell, cIdx) => {
         if (p.hiddenCols.has(COL_LETTERS[cIdx])) return null
         const m = /^r(\d+)-([A-J])$/.exec(cell.id)
         const k = m ? `${m[2]}${Number(m[1]) + 1}` : ''
-        const extra = p.freezeFirstCol && cIdx === 0 ? ' freeze-col' : ''
+        const extra = cIdx < p.freezeCols ? ' freeze-col' : ''
         const sp = styleToProps(p.styleOf(k))
         const condBg = m ? p.condBgOf(m[2], cell.label) : undefined
-        const styleInline = condBg ? { ...sp.style, background: condBg } : sp.style
+        const baseStyle = condBg ? { ...sp.style, background: condBg } : sp.style
+        const styleInline = cIdx < p.freezeCols ? { ...baseStyle, left: p.freezeLefts[cIdx] } : baseStyle
         return (
           <Cell
             key={cell.id}

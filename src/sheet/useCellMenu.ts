@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { cellKey } from './schema'
+import { COL_LETTERS, cellKey } from './schema'
+const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 import type { MenuItem } from './ContextMenu'
 
 interface Args {
@@ -18,6 +19,9 @@ interface Args {
   editNote: () => void
   insertLink: () => void
   promptRowHeight: (row: number) => void
+  setFreezeRows: (n: number) => void
+  setFreezeCols: (n: number) => void
+  freeze: { rows: number; cols: number }
 }
 
 export function useCellMenu(a: Args) {
@@ -52,6 +56,8 @@ export function useCellMenu(a: Args) {
       { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
       { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
       { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
+      { label: a.freeze.rows === row + 1 ? '행 고정 해제' : `${row + 1}행까지 고정`, onClick: () => a.setFreezeRows(a.freeze.rows === row + 1 ? 0 : row + 1) },
+      { label: a.freeze.cols === colIdx(col) + 1 ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colIdx(col) + 1 ? 0 : colIdx(col) + 1) },
       'separator',
       { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
       { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },

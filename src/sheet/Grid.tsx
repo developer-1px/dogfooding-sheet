@@ -8,6 +8,7 @@ import { useCellMenu } from './useCellMenu'
 import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
 import { rectToIdSet } from './fillCorner'
+import { freezeOffsets } from './lib/freezeOffsets'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
@@ -15,23 +16,19 @@ type SheetCtx = ReturnType<typeof useSheet>
 export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
-  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight })
+  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight, setFreezeRows: ctx.setFreezeRows, setFreezeCols: ctx.setFreezeCols, freeze })
   const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, `r0-${col}`) }; const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e, `r${rIdx}-A`) }
-  const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
-  const previewIds = rectToIdSet(fill.preview)
-
-  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds })
+  const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds }); const previewIds = rectToIdSet(fill.preview)
+  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit })
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
-  const { gridTemplateFor, startResize, autoFit } = useColWidths(ctx.sheet.colWidths, ctx.ops)
+  const { gridTemplateFor, startResize, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
   const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(`${c}${r + 1}`)))
   const focusM = focusId ? /^r(\d+)-([A-J])$/.exec(focusId) : null
-  const focusCol = focusM ? focusM[2] : null
-  const focusRow = focusM ? Number(focusM[1]) : null
+  const focusCol = focusM ? focusM[2] : null; const focusRow = focusM ? Number(focusM[1]) : null
   const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))
-  const gridTemplate = gridTemplateFor(visibleCols)
-  // useGridPattern.rows already filters out childless entities (column headers).
-  const dataRows = rows
+  const { tops: freezeTops, lefts: freezeLefts } = freezeOffsets(freeze.rows, freeze.cols, ctx.rowHeightOf, widthOf)
+  const gridTemplate = gridTemplateFor(visibleCols); const dataRows = rows
 
   return (
     <div {...rootProps} className="grid">
@@ -55,8 +52,10 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             rowProps={rowProps(row.id)}
             cellPropsFor={cellProps}
             gridTemplate={gridTemplate}
-            rowCls={`grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}${focusRow === rIdx ? ' active-row' : ''}`}
-            freezeFirstCol={!!freeze.cols}
+            rowCls={`grid-row${rIdx < freeze.rows ? ' freeze-row' : ''}${focusRow === rIdx ? ' active-row' : ''}`}
+            freezeTop={rIdx < freeze.rows ? freezeTops[rIdx] : undefined}
+            freezeCols={freeze.cols}
+            freezeLefts={freezeLefts}
             rowHeight={ctx.rowHeightOf(rIdx)}
             startResizeRow={ctx.startResizeRow} resetRowHeight={ctx.resetRowHeight} onRowHeaderContextMenu={onRowHCtx(rIdx)}
             hiddenCols={hiddenCols}

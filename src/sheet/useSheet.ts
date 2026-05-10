@@ -86,7 +86,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     showFormulas, toggleShowFormulas,
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
-    freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
+    freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, setFreezeRows: freeze.setFreezeRows, setFreezeCols: freeze.setFreezeCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
     hiddenRowSet: hiddenRows(filter.filter, ROW_COUNT, display),
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
