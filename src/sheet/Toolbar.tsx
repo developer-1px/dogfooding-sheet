@@ -69,8 +69,8 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} /></label>
       <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} /></label>
       <button onClick={() => updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' })} title="서식 모두 해제">✕서식</button>
-      <button onClick={toggleFreezeRows} title="첫 행 고정" style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행</button>
-      <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
+      <button onClick={toggleFreezeRows} title={`첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`} style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button>
+      <button onClick={toggleFreezeCols} title={`첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`} style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button onClick={() => {
         if (!focus) return
         const col = focus[1]
