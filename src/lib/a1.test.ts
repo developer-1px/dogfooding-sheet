@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cellKey, parseCellId, parseA1, colIndex, COL_LETTERS } from './a1'
+import { cellKey, parseCellId, parseA1, colIndex, COL_LETTERS, cellIdToKey } from './a1'
 
 describe('cellKey', () => {
   it('combines col letter with 1-based row', () => {
@@ -37,6 +37,16 @@ describe('colIndex', () => {
   })
   it('returns -1 for unknown letter', () => {
     expect(colIndex('Z')).toBe(-1)
+  })
+})
+
+describe('cellIdToKey', () => {
+  it('converts r{n}-{C} → A1 key', () => {
+    expect(cellIdToKey('r0-A')).toBe('A1')
+    expect(cellIdToKey('r12-J')).toBe('J13')
+  })
+  it('falls back to input on mismatch', () => {
+    expect(cellIdToKey('A1')).toBe('A1')
   })
 })
 

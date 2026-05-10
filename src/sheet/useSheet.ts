@@ -12,6 +12,7 @@ import { useHidden } from './useHidden'
 import { useNotes } from './useNotes'
 import { useValidation } from './useValidation'
 import { useCondFormat } from './useCondFormat'
+import { cellIdToKey } from '../lib/a1'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp } from '../lib/rowOps'
 import { sortByColumn } from '../lib/sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -57,7 +58,7 @@ export function useSheet() {
 
   const targetKeys = (): string[] => {
     const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
-    return ids.map((id) => { const m = /^r(\d+)-([A-J])$/.exec(id); return m ? `${m[2]}${Number(m[1]) + 1}` : id })
+    return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
   }
   const toggle = (k: 'b' | 'i') => {
     const cur = edit.focusKey ? styles.styleOf(edit.focusKey)?.[k] : undefined

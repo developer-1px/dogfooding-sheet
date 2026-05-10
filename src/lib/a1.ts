@@ -20,6 +20,12 @@ export const parseCellId = (id: string): { col: string; row: number } | null => 
   return m ? { row: Number(m[1]), col: m[2] } : null
 }
 
+/** Convert a DOM cell id "r{row}-{col}" to A1 key like "B3". Falls back to input on mismatch. */
+export const cellIdToKey = (id: string): string => {
+  const p = parseCellId(id)
+  return p ? cellKey(p.col, p.row) : id
+}
+
 /** Parse an A1 key like "B3" into `{ col: 'B', row: 2 }`. Returns `null` on mismatch. */
 export const parseA1 = (key: string): { col: string; row: number } | null => {
   const m = /^([A-J])(\d+)$/.exec(key)

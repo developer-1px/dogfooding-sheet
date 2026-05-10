@@ -2,6 +2,7 @@ import type { Format } from './useFormats'
 import type { CellStyle } from './useStyles'
 import { OverflowMenu } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
+import { cellIdToKey } from '../lib/a1'
 
 interface Props {
   display: (k: string) => string
@@ -27,11 +28,6 @@ interface Props {
   openHelp: () => void
   addCondRule: (r: { col: string; op: '>' | '<' | '=' | '!=' | 'contains'; value: string; color: string }) => void
   clearCondRules: () => void
-}
-
-const cellIdToKey = (id: string): string => {
-  const m = /^r(\d+)-([A-J])$/.exec(id)
-  return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
 export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp, addCondRule, clearCondRules }: Props) {
