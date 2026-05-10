@@ -31,6 +31,11 @@ export default function App() {
       ask({ label: '하이퍼링크 URL', placeholder: 'https://...', submitLabel: '삽입' })
         .then((url) => { if (url) c.writeCell(k, `=HYPERLINK("${url.replace(/"/g, '\\"')}", "${url.replace(/"/g, '\\"')}")`) })
     },
+    promptRowHeight: (row: number) => {
+      const c = ctxRef.current; if (!c) return
+      ask({ label: `${row + 1}행 높이 (px, 비우면 기본값)`, initial: String(c.rowHeightOf(row)), submitLabel: '적용' })
+        .then((v) => { if (v === null) return; const n = Number(v); if (v === '' || !Number.isFinite(n)) c.setRowHeight(row, 28); else c.setRowHeight(row, n) })
+    },
   })
   ctxRef.current = ctx
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''

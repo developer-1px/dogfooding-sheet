@@ -14,7 +14,7 @@ interface Props {
   cellPropsFor: (id: string) => ItemProps
   gridTemplate: string
   rowCls: string
-  freezeFirstCol: boolean
+  freezeFirstCol: boolean; rowHeight: number
   hiddenCols: Set<string>
   focusId: string | null
   selectedIds: string[]
@@ -50,7 +50,7 @@ const rowSelectIds = (rIdx: number, anchor: string | null): string[] => {
 }
 export function GridRow(p: Props) {
   return (
-    <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate }}>
+    <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight }}>
       <span
         className="row-header"
         onClick={(e) => p.setSelectedIds(rowSelectIds(p.rIdx, e.shiftKey ? p.focusId : null))}

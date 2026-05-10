@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useMenuPattern } from '@p/aria-kernel/patterns'
 
@@ -16,17 +15,6 @@ interface Props {
 }
 
 export function ContextMenu({ x, y, items, onClose }: Props) {
-  const ref = useRef<HTMLDivElement | null>(null)
-
-  // Outside click closes (escape is handled by useMenuPattern.onEscape).
-  useEffect(() => {
-    const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose()
-    }
-    document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
-  }, [onClose])
-
   const itemList = items.flatMap((it, i) =>
     it === 'separator' ? [] : [{ id: `m${i}`, label: it.label, disabled: it.disabled, action: it.onClick }],
   )
@@ -45,12 +33,12 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
     autoFocus: true,
     defaultOpen: true,
     onEscape: onClose,
+    onInteractOutside: onClose,
   })
 
   return (
     <div
       {...rootProps}
-      ref={(el) => { ref.current = el; const r = (rootProps as { ref?: (e: HTMLDivElement | null) => void }).ref; if (typeof r === 'function') r(el) }}
       className="ctx-menu"
       style={{ left: x, top: y }}
     >

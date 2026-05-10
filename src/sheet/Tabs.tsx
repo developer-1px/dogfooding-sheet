@@ -23,10 +23,6 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
   })
 
   const data = fromList(state.order.map((name) => ({ id: name, label: name })))
-  data.meta = { ...data.meta, focus: state.active }
-  for (const name of state.order) {
-    data.entities[name] = { ...(data.entities[name] ?? {}), selected: name === state.active }
-  }
 
   const onEvent = (e: UiEvent) => {
     if (e.type === 'navigate' && e.id) switchTab(e.id)
@@ -37,6 +33,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
   const { rootProps, tabProps } = useTabsPattern(data, onEvent, {
     label: '시트 탭',
     activationMode: 'automatic',
+    active: state.active,
   })
 
   return (

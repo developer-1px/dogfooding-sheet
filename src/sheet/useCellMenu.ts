@@ -17,6 +17,7 @@ interface Args {
   setNote: (k: string, text: string) => void
   editNote: () => void
   insertLink: () => void
+  promptRowHeight: (row: number) => void
 }
 
 export function useCellMenu(a: Args) {
@@ -50,6 +51,7 @@ export function useCellMenu(a: Args) {
       { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
       { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
       { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
+      { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
       'separator',
       { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
       { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },

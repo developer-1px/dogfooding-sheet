@@ -19,8 +19,9 @@ import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 import { rowColAtFocus } from './lib/rowColAtFocus'
+import { useRowHeights } from './useRowHeights'
 
-export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void } = {}) {
+export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const fmt = useFormats(sheet.formats, ops)
@@ -30,7 +31,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
   const hidden = useHidden(sheet.hidden, ops)
   const notes = useNotes(sheet.notes, ops)
   const validation = useValidation(sheet.validation, ops)
-  const cond = useCondFormat(sheet.condFormat, ops)
+  const cond = useCondFormat(sheet.condFormat, ops); const rowH = useRowHeights(sheet.rowHeights, ops)
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
   const [showFormulas, setShowFormulas] = useState(false)
@@ -93,6 +94,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, sortByCol,
+    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}),
     tabs: tabs.state, ...tabFns,
   }
 }
