@@ -62,6 +62,17 @@ export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, cells: Record<s
   return '#N/A'
 }
 
+/** RANGEHASH(range) — fast 32-bit hash of cell values, hex. */
+export function rangeHash(rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
+  const refs = collectRefs(rangeStr)
+  let h = 2166136261 // FNV-1a
+  for (const r of refs) {
+    const v = evalRaw(cells[r] ?? '') + '|'
+    for (let i = 0; i < v.length; i++) { h ^= v.charCodeAt(i); h = Math.imul(h, 16777619) }
+  }
+  return (h >>> 0).toString(16).padStart(8, '0')
+}
+
 /** MAX_BY / MIN_BY — return value at index where keys hit max / min. */
 export function maxMinBy(F: 'MAX_BY' | 'MIN_BY', valStr: string, keyStr: string, cells: Record<string, string>, evalRaw: (s: string) => string, numFromCell: NumFromCell): string {
   const vals = collectRefs(valStr)

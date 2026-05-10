@@ -137,6 +137,16 @@ describe('MAX_BY / MIN_BY', () => {
   })
 })
 
+describe('RANGEHASH', () => {
+  it('stable hash of range contents', () => {
+    const cells = { A1: 'a', A2: 'b', A3: 'c' }
+    const h1 = evaluateCell(cells, '=RANGEHASH(A1:A3)')
+    const h2 = evaluateCell(cells, '=RANGEHASH(A1:A3)')
+    expect(h1).toEqual(h2)
+    expect(h1).toMatch(/^[0-9a-f]{8}$/)
+  })
+})
+
 describe('MAXLEN / MINLEN', () => {
   it('max/min string length over range', () => {
     const cells = { A1: 'red', A2: 'green', A3: 'aquamarine' }
