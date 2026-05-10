@@ -68,7 +68,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     openFind: find.openFind, openReplace: find.openReplace,
     openHelp: () => setHelpOpen(true), openGoto: opts.openGoto ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
     toggleBold: () => toggle('b'), toggleItalic: () => toggle('i'), toggleUnderline: () => toggle('u'), toggleStrike: () => toggle('s'),
-    clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' }),
+    clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
     setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
     toggleShowFormulas,

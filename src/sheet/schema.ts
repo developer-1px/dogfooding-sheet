@@ -10,6 +10,7 @@ const CellStyleSchema = z.object({
   u: z.boolean().optional(),
   s: z.boolean().optional(),
   w: z.boolean().optional(),
+  bd: z.boolean().optional(),
   a: z.enum(['left', 'center', 'right']).optional(),
   bg: z.string().optional(),
   fg: z.string().optional(),

@@ -87,3 +87,4 @@
 
 .grid.no-gridlines .cell { border-right: none; }
 .grid.no-gridlines .grid-row { border-bottom: none; }
+.cell.bordered { border: 1px solid #5f6368; }

@@ -54,7 +54,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
   const applyF = (f: Format) => setFormat(targetKeys(), f)
-  const toggle = (k: 'b' | 'i' | 'u' | 's' | 'w') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
+  const toggle = (k: 'b' | 'i' | 'u' | 's' | 'w' | 'bd') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
   const setAlign = (a: CellStyle['a']) => updateStyle(targetKeys(), { a })
 
   return (
@@ -70,7 +70,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => setAlign('right')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'right' : false} title="오른쪽 정렬">⇥</button>
       <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} /></label>
       <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} /></label>
-      <button onClick={() => updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' })} title="서식 모두 해제">✕서식</button>
+      <button onClick={() => updateStyle(targetKeys(), { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' })} title="서식 모두 해제">✕서식</button>
       <button onClick={toggleFreezeRows} title={`첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`} style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button>
       <button onClick={toggleFreezeCols} title={`첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`} style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button onClick={() => {
