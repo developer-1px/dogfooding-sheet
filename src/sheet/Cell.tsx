@@ -21,6 +21,7 @@ interface Props {
   previewing: boolean
   onFillHandleMouseDown: (e: React.MouseEvent) => void
   styleClass: string
+  styleInline: React.CSSProperties
 }
 
 export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
@@ -28,6 +29,7 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
     <span
       {...p.cellProps}
       className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
+      style={p.styleInline}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}

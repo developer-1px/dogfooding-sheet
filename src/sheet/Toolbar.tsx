@@ -52,6 +52,13 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} title="가운데 정렬">⇔</button>
       <button onClick={() => setAlign('right')} title="오른쪽 정렬">⇥</button>
+      <label className="color-pick" title="배경색">
+        🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} />
+      </label>
+      <label className="color-pick" title="글자색">
+        A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} />
+      </label>
+      <button onClick={() => updateStyle(targetKeys(), { bg: '', fg: '' })} title="색상 초기화">✕색</button>
       <button onClick={() => applyF('currency')} title="통화">$</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>

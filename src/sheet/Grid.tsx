@@ -68,6 +68,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
               highlighted={hiSet.has(cell.id)}
               isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
               styleClass={styleToProps(styleOf(k)).className}
+              styleInline={styleToProps(styleOf(k)).style}
               editing={editing === cell.id}
               draft={draft}
               setDraft={setDraft}

@@ -30,3 +30,11 @@ body, html, #root {
 }
 .sheet-toolbar button:hover:not(:disabled) { background: #f1f3f4; }
 .sheet-toolbar button:disabled { opacity: .4; cursor: not-allowed; }
+.color-pick {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border: 1px solid #dadce0; border-radius: 4px;
+  background: #fff; font-size: 13px; cursor: pointer;
+}
+.color-pick input[type="color"] {
+  width: 18px; height: 18px; padding: 0; border: none; cursor: pointer; background: transparent;
+}
