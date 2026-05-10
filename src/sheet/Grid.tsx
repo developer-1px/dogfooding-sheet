@@ -5,6 +5,7 @@ import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
 import { idsForCol, idsForRow, idsForAll } from './range'
 import { Cell } from './Cell'
 import { useDragSelect } from './useDragSelect'
+import { useColWidths } from './useColWidths'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
@@ -44,11 +45,12 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   )
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
+  const { gridTemplate, startResize } = useColWidths()
   const dataRows = rows.slice(COL_LETTERS.length)
 
   return (
     <div {...rootProps} className="grid">
-      <div role="row" className="grid-row header-row">
+      <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
         <span className="corner-cell" onClick={() => setSelectedIds(idsForAll())} />
         {COL_LETTERS.map((c) => (
           <span
@@ -56,11 +58,14 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             {...columnHeaderProps(`h-${c}`)}
             className="header-cell"
             onClick={() => setSelectedIds(idsForCol(c))}
-          >{c}</span>
+          >
+            {c}
+            <span className="col-resizer" onMouseDown={startResize(c)} />
+          </span>
         ))}
       </div>
       {dataRows.map((row, rIdx) => (
-        <div key={row.id} {...rowProps(row.id)} className="grid-row">
+        <div key={row.id} {...rowProps(row.id)} className="grid-row" style={{ gridTemplateColumns: gridTemplate }}>
           <span className="row-header" onClick={() => setSelectedIds(idsForRow(rIdx))}>{rIdx + 1}</span>
           {row.cells.map((cell) => (
             <Cell

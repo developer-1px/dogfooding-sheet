@@ -31,7 +31,6 @@ body, html, #root {
 .grid { flex: 1; overflow: auto; background: #fff; }
 .grid-row {
   display: grid;
-  grid-template-columns: 48px repeat(10, minmax(100px, 1fr));
   border-bottom: 1px solid #e0e0e0;
 }
 .header-row {
@@ -44,8 +43,13 @@ body, html, #root {
 }
 .corner-cell, .row-header { background: #f8f9fa; color: #5f6368; font-size: 12px; cursor: pointer; }
 .row-header { position: sticky; left: 0; z-index: 1; }
-.header-cell { cursor: pointer; }
+.header-cell { position: relative; cursor: pointer; }
 .header-cell:hover { background: #e8f0fe; }
+.col-resizer {
+  position: absolute; top: 0; right: -3px; width: 6px; height: 100%;
+  cursor: col-resize; user-select: none; z-index: 3;
+}
+.col-resizer:hover { background: rgba(26, 115, 232, .3); }
 
 .cell {
   position: relative; padding: 6px 8px; min-height: 28px; cursor: cell; outline: none;
