@@ -319,6 +319,10 @@ describe('text functions', () => {
   it('UUID returns v4 format', () => {
     expect(evaluateCell({}, '=UUID()')).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
   })
+  it('DIGITSUM', () => {
+    expect(evaluateCell({}, '=DIGITSUM(123)')).toBe('6')
+    expect(evaluateCell({}, '=DIGITSUM(9999)')).toBe('36')
+  })
   it('ISPRIME predicate', () => {
     expect(evaluateCell({}, '=ISPRIME(7)')).toBe('1')
     expect(evaluateCell({}, '=ISPRIME(9)')).toBe('0')

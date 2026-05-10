@@ -14,6 +14,12 @@ export function dispatchNumeric(F: string, argsT: string[], argsN: number[]): st
         })
     return wrap(u)
   }
+  if (F === 'DIGITSUM') {
+    const s = String(Math.abs(Math.floor(argsN[0])))
+    let total = 0
+    for (const ch of s) total += ch.charCodeAt(0) - 48
+    return String(total)
+  }
   if (F === 'ISPRIME') {
     const n = Math.floor(argsN[0])
     if (n < 2) return '0'
