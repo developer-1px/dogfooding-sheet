@@ -159,6 +159,17 @@ describe('RANGEJSON', () => {
   })
 })
 
+describe('RANGESORT', () => {
+  it('sorts numeric values ascending', () => {
+    const cells = { A1: '3', A2: '1', A3: '2' }
+    expect(evaluateCell(cells, '=RANGESORT(A1:A3)')).toBe('["1","2","3"]')
+  })
+  it('sorts text values lexically', () => {
+    const cells = { A1: 'c', A2: 'a', A3: 'b' }
+    expect(evaluateCell(cells, '=RANGESORT(A1:A3)')).toBe('["a","b","c"]')
+  })
+})
+
 describe('COUNTNUMERIC', () => {
   it('counts cells holding finite numbers', () => {
     const cells = { A1: '5', A2: 'x', A3: '3.14', A4: '', A5: 'NaN' }

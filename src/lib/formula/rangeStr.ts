@@ -74,6 +74,15 @@ export function countNumeric(rangeStr: string, cells: Record<string, string>, ev
   return String(n)
 }
 
+/** RANGESORT(range) — JSON array of values sorted ascending (numeric if all finite, else lexical). */
+export function rangeSort(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+  const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
+  const nums = vals.map(Number)
+  const allNum = nums.every(Number.isFinite)
+  const sorted = allNum ? [...nums].sort((a, b) => a - b).map(String) : [...vals].sort()
+  return JSON.stringify(sorted)
+}
+
 export function sample(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
   const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
   if (vals.length === 0) return '#N/A'
