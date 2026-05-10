@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
 import { rectFromIds, type Rect } from '../lib/clipboard'
-import { applyFill } from './applyFill'
+import { applyFill } from '../lib/applyFill'
 
 interface Args {
   selectedIds: string[]

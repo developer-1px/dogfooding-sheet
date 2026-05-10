@@ -1,13 +1,16 @@
-import { COL_LETTERS, ROW_COUNT, cellKey } from './schema'
+import { COL_LETTERS, cellKey } from './a1'
 
 const CSV_NEEDS_QUOTE = /[",\n\r]/
 
 const quote = (s: string) => CSV_NEEDS_QUOTE.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 
-export function exportCsv(get: (k: string) => string): string {
+interface ExportOpts { rowCount: number }
+
+export function exportCsv(get: (k: string) => string, opts: ExportOpts): string {
+  const { rowCount } = opts
   let lastRow = -1
   let lastCol = -1
-  for (let r = 0; r < ROW_COUNT; r++) {
+  for (let r = 0; r < rowCount; r++) {
     for (let c = 0; c < COL_LETTERS.length; c++) {
       if (get(cellKey(COL_LETTERS[c], r))) {
         if (r > lastRow) lastRow = r
@@ -53,9 +56,9 @@ export function parseCsv(text: string): string[][] {
   return rows
 }
 
-export function importCsvInto(text: string, write: (k: string, v: string) => void) {
+export function importCsvInto(text: string, write: (k: string, v: string) => void, opts: { rowCount: number }) {
   const rows = parseCsv(text)
-  for (let r = 0; r < rows.length && r < ROW_COUNT; r++) {
+  for (let r = 0; r < rows.length && r < opts.rowCount; r++) {
     for (let c = 0; c < rows[r].length && c < COL_LETTERS.length; c++) {
       write(cellKey(COL_LETTERS[c], r), rows[r][c])
     }

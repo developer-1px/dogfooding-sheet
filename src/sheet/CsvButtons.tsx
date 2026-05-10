@@ -1,5 +1,6 @@
 import { useRef } from 'react'
-import { exportCsv, importCsvInto, downloadFile, parseCsv } from './csv'
+import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
+import { ROW_COUNT } from './schema'
 
 interface Props {
   display: (k: string) => string
@@ -8,8 +9,8 @@ interface Props {
 
 export function CsvButtons({ display, writeCell }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
-  const onExport = () => downloadFile('sheet.csv', exportCsv((k) => display(k)))
-  const onImport = (file: File) => file.text().then((t) => { parseCsv(t); importCsvInto(t, writeCell) })
+  const onExport = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
+  const onImport = (file: File) => file.text().then((t) => { parseCsv(t); importCsvInto(t, writeCell, { rowCount: ROW_COUNT }) })
 
   return (
     <>

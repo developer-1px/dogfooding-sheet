@@ -1,6 +1,6 @@
-import { COL_LETTERS, cellKey } from './schema'
-import type { Rect } from '../lib/clipboard'
-import { extendSeries } from '../lib/series'
+import { COL_LETTERS, cellKey } from './a1'
+import type { Rect } from './clipboard'
+import { extendSeries } from './series'
 
 export function applyFill(
   src: Rect,
