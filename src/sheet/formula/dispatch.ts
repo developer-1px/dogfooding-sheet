@@ -1,4 +1,5 @@
 import { collectRefs } from './parse'
+import { today, now, date, year, month, day, days } from './dateFns'
 
 type Cells = Record<string, string>
 
@@ -47,6 +48,13 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
     return String(nums.length)
   }
   const argsT = splitArgs(rawArgs).map((s) => argString(s, c))
+  if (F === 'TODAY') return wrap(today())
+  if (F === 'NOW') return wrap(now())
+  if (F === 'DATE') return wrap(date(Number(argsT[0]), Number(argsT[1]), Number(argsT[2])))
+  if (F === 'YEAR') return String(year(argsT[0]))
+  if (F === 'MONTH') return String(month(argsT[0]))
+  if (F === 'DAY') return String(day(argsT[0]))
+  if (F === 'DAYS') return String(days(argsT[0], argsT[1]))
   if (F === 'CONCAT') return wrap(argsT.join(''))
   if (F === 'LEN') return String(argsT[0].length)
   if (F === 'UPPER') return wrap(argsT[0].toUpperCase())
@@ -61,6 +69,8 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'FLOOR') return String(Math.floor(argsN[0]))
   if (F === 'CEIL') return String(Math.ceil(argsN[0]))
   if (F === 'SQRT') return String(Math.sqrt(argsN[0]))
+  if (F === 'POWER') return String(Math.pow(argsN[0], argsN[1]))
+  if (F === 'MOD') return String(argsN[0] % argsN[1])
   if (F === 'IF') return String(argsN[0] ? argsT[1] : argsT[2])
   return '0'
 }
