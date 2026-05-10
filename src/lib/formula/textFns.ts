@@ -29,6 +29,11 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
+  if (F === 'DOLLAR') {
+    const n = Number(argsT[0]); const d = Number(argsT[1] ?? '2')
+    if (!Number.isFinite(n)) return wrap('#VALUE!')
+    return wrap('$' + n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }))
+  }
   if (F === 'CHAR') {
     const n = Number(argsT[0])
     return Number.isFinite(n) ? wrap(String.fromCharCode(n)) : wrap('#VALUE!')

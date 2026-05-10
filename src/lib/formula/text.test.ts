@@ -70,6 +70,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ISEVEN(4)')).toBe('1')
     expect(evaluateCell({}, '=ISODD(3)')).toBe('1')
   })
+  it('DOLLAR formats with thousands and decimals', () => {
+    expect(evaluateCell({}, '=DOLLAR(1234.5)')).toBe('$1,234.50')
+    expect(evaluateCell({}, '=DOLLAR(1234.5, 0)')).toBe('$1,235')
+  })
   it('IFERROR replaces error values', () => {
     expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2),"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')
