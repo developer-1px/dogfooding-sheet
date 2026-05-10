@@ -73,6 +73,7 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
+  if (F === 'EQUALCI') return (argsT[0] ?? '').toLowerCase() === (argsT[1] ?? '').toLowerCase() ? '1' : '0'
   if (F === 'REPLACE') {
     const start = Number(argsT[1]) - 1
     const len = Number(argsT[2])

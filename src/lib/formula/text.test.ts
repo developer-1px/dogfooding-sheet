@@ -133,6 +133,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
   })
+  it('EQUALCI case-insensitive equality', () => {
+    expect(evaluateCell({}, '=EQUALCI("Hello", "hello")')).toBe('1')
+    expect(evaluateCell({}, '=EQUALCI("a", "b")')).toBe('0')
+  })
   it('EXACT case-sensitive', () => {
     expect(evaluateCell({}, '=EXACT("ab","AB")')).toBe('0')
     expect(evaluateCell({}, '=EXACT("ab","ab")')).toBe('1')
