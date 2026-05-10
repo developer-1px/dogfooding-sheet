@@ -38,7 +38,7 @@ export function useShortcuts(args: Args) {
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) { setSelectedIds([]); e.preventDefault(); return }
       if (editing) return
       if (!focusId) return
-      if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId, undefined, { caret: 'end' }); e.preventDefault(); e.stopPropagation(); return }
+      // F2/Enter — grid pattern emits editStart from cell.onKeyDown (see useSheetGrid).
       if (e.key.length === 1 && !(e.metaKey || e.ctrlKey) && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
     }
     window.addEventListener('keydown', onKey, true)
