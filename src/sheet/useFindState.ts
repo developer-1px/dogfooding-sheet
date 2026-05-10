@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { COL_LETTERS } from './schema'
-import { refsInFormula } from './formula'
+import { refsInFormula } from '../lib/formula'
 
 export function useFindState() {
   const [findOpen, setFindOpen] = useState(false)
