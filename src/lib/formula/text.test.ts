@@ -411,6 +411,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('LANG / TIMEZONE return runtime info', () => {
+    expect(evaluateCell({}, '=LANG()')).toMatch(/[a-z]{2}/i)
+    expect(evaluateCell({}, '=TIMEZONE()').length).toBeGreaterThan(0)
+  })
   it('STRINGIFY wraps as JSON', () => {
     expect(evaluateCell({}, '=STRINGIFY("hi")')).toBe('"hi"')
     expect(evaluateCell({}, '=STRINGIFY("a","b")')).toBe('["a","b"]')

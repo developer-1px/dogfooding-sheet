@@ -1,6 +1,8 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'LANG') return wrap(typeof navigator !== 'undefined' ? navigator.language : 'en-US')
+  if (F === 'TIMEZONE') { try { return wrap(Intl.DateTimeFormat().resolvedOptions().timeZone) } catch { return wrap('UTC') } }
   if (F === 'STRINGIFY') return wrap(JSON.stringify(argsT.length === 1 ? argsT[0] : argsT))
   if (F === 'KORNUM') {
     const n = Number(argsT[0])
