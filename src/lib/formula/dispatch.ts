@@ -1,6 +1,6 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate } from './aggregates'
-import { largeSmall, rank, sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat } from './rangeOps'
+import { largeSmall, rank, sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv } from './rangeOps'
 import { percentile, quartile, pairStat, trimmean, forecast } from './stats'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
@@ -53,6 +53,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'WEIGHTAVG') { const a = splitArgs(rawArgs); return smartReturn(weightAvg(a[0], a[1], c.numFromCell)) }
   if (F === 'MAX_BY' || F === 'MIN_BY') { const a = splitArgs(rawArgs); return smartReturn(maxMinBy(F, a[0], a[1], c.cells, c.evalRaw, c.numFromCell)) }
   if (F === 'MOSTCOMMON' || F === 'LEASTCOMMON') return smartReturn(freqStat(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
+  if (F === 'RANGECSV') return smartReturn(rangeCsv(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'COUNTNUMERIC') return countNumeric(splitArgs(rawArgs)[0], c.cells, c.evalRaw)
   if (F === 'RANGEHASH') return smartReturn(rangeHash(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'MAXSTR' || F === 'MINSTR') return smartReturn(strStat(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))

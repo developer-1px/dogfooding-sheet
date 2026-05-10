@@ -37,6 +37,14 @@ export function rangeHash(rangeStr: string, cells: Record<string, string>, evalR
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
+/** RANGECSV(range) — values comma-separated, double-quote escaped if needed. */
+export function rangeCsv(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+  return collectRefs(rangeStr).map((r) => {
+    const v = evalRaw(cells[r] ?? '')
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v
+  }).join(',')
+}
+
 export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
   const counts = new Map<string, number>()
   for (const r of collectRefs(rangeStr)) {

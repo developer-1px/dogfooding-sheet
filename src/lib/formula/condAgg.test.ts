@@ -145,6 +145,13 @@ describe('MOSTCOMMON', () => {
   })
 })
 
+describe('RANGECSV', () => {
+  it('joins range with CSV escaping', () => {
+    const cells = { A1: 'a', A2: 'b,c', A3: 'd"e' }
+    expect(evaluateCell(cells, '=RANGECSV(A1:A3)')).toBe('a,"b,c","d""e"')
+  })
+})
+
 describe('COUNTNUMERIC', () => {
   it('counts cells holding finite numbers', () => {
     const cells = { A1: '5', A2: 'x', A3: '3.14', A4: '', A5: 'NaN' }
