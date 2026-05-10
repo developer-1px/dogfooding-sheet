@@ -49,50 +49,5 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
     if (type === 3) return String((w + 6) % 7)
     return String(w + 1)
   }
-  if (F === 'DATEDIF') {
-    const a = parseDate(argsT[0]), b = parseDate(argsT[1])
-    if (!a || !b) return wrap('#VALUE!')
-    const unit = (argsT[2] ?? '').toUpperCase()
-    if (unit === 'D') return String(Math.floor((b.getTime() - a.getTime()) / 86400000))
-    if (unit === 'M') return String((b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth()) - (b.getUTCDate() < a.getUTCDate() ? 1 : 0))
-    if (unit === 'Y') return String(b.getUTCFullYear() - a.getUTCFullYear() - (b.getUTCMonth() < a.getUTCMonth() || (b.getUTCMonth() === a.getUTCMonth() && b.getUTCDate() < a.getUTCDate()) ? 1 : 0))
-    return wrap('#NUM!')
-  }
-  if (F === 'NETWORKDAYS') {
-    const a = parseDate(argsT[0]), b = parseDate(argsT[1])
-    if (!a || !b) return wrap('#VALUE!')
-    const [start, end] = a <= b ? [a, b] : [b, a]
-    let n = 0
-    for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
-      const w = d.getUTCDay()
-      if (w !== 0 && w !== 6) n++
-    }
-    return String(n)
-  }
-  if (F === 'WORKDAY') {
-    const d = parseDate(argsT[0]); if (!d) return wrap('#VALUE!')
-    let n = Number(argsT[1]); const step = n >= 0 ? 1 : -1
-    const cur = new Date(d.getTime())
-    while (n !== 0) {
-      cur.setUTCDate(cur.getUTCDate() + step)
-      const w = cur.getUTCDay()
-      if (w !== 0 && w !== 6) n -= step
-    }
-    return wrap(`${cur.getUTCFullYear()}-${pad(cur.getUTCMonth() + 1)}-${pad(cur.getUTCDate())}`)
-  }
-  if (F === 'EDATE') {
-    const d = parseDate(argsT[0])
-    if (!d) return wrap('#VALUE!')
-    const m = Number(argsT[1])
-    const r = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m, d.getUTCDate()))
-    return wrap(`${r.getUTCFullYear()}-${pad(r.getUTCMonth() + 1)}-${pad(r.getUTCDate())}`)
-  }
-  if (F === 'EOMONTH') {
-    const d = parseDate(argsT[0])
-    if (!d) return wrap('#VALUE!')
-    const m = Number(argsT[1])
-    const r = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m + 1, 0))
-    return wrap(`${r.getUTCFullYear()}-${pad(r.getUTCMonth() + 1)}-${pad(r.getUTCDate())}`)
-  }
   return null
 }

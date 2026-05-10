@@ -84,6 +84,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SWITCH("b","a",1,"b",2,"c",3,99)')).toBe('2')
     expect(evaluateCell({}, '=SWITCH("z","a",1,"b",2,99)')).toBe('99')
   })
+  it('WEEKNUM / ISOWEEKNUM', () => {
+    expect(evaluateCell({}, '=WEEKNUM("2026-01-01")')).toBe('1')
+    expect(evaluateCell({}, '=ISOWEEKNUM("2026-01-01")')).toBe('1')
+    expect(evaluateCell({}, '=ISOWEEKNUM("2026-01-04")')).toBe('1')
+  })
   it('WEEKDAY returns day index', () => {
     expect(evaluateCell({}, '=WEEKDAY("2026-05-10")')).toBe('1')
     expect(evaluateCell({}, '=WEEKDAY("2026-05-10",2)')).toBe('7')
