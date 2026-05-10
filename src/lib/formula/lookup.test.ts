@@ -75,6 +75,13 @@ describe('XLOOKUP', () => {
   })
 })
 
+describe('INRANGE', () => {
+  it('predicate based on MATCH', () => {
+    expect(evaluateCell(data, '=INRANGE("Bread", A1:A3)')).toBe('1')
+    expect(evaluateCell(data, '=INRANGE("Cheese", A1:A3)')).toBe('0')
+  })
+})
+
 describe('VLOOKUP', () => {
   it('finds and returns column value', () => {
     expect(evaluateCell(data, '=VLOOKUP("Bread", A1:B3, 2)')).toBe('2.25')

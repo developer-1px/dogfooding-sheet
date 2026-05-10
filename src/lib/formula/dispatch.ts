@@ -83,5 +83,6 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'XLOOKUP') return smartReturn(xlookup(argsT[0], argsT[1], argsT[2], argsT[3], c.cells, c.evalRaw))
   if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalRaw))
   if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalRaw))
+  if (F === 'INRANGE') return matchFn(argsT[0], argsT[1], c.cells, c.evalRaw) === '#N/A' ? '0' : '1'
   return '0'
 }
