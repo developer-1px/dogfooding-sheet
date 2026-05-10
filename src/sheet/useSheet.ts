@@ -56,7 +56,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
     return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
   }
-  const toggle = (k: 'b' | 'i' | 'u') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
+  const toggle = (k: 'b' | 'i' | 'u' | 's') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
 
   useShortcuts({
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
@@ -68,6 +68,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     toggleBold: () => toggle('b'),
     toggleItalic: () => toggle('i'),
     toggleUnderline: () => toggle('u'),
+    toggleStrike: () => toggle('s'),
     clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
     setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),

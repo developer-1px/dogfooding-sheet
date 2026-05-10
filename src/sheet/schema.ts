@@ -8,6 +8,7 @@ const CellStyleSchema = z.object({
   b: z.boolean().optional(),
   i: z.boolean().optional(),
   u: z.boolean().optional(),
+  s: z.boolean().optional(),
   w: z.boolean().optional(),
   a: z.enum(['left', 'center', 'right']).optional(),
   bg: z.string().optional(),

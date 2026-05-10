@@ -49,7 +49,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
   const applyF = (f: Format) => setFormat(targetKeys(), f)
-  const toggle = (k: 'b' | 'i' | 'u' | 'w') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
+  const toggle = (k: 'b' | 'i' | 'u' | 's' | 'w') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
   const setAlign = (a: CellStyle['a']) => updateStyle(targetKeys(), { a })
 
   return (
@@ -64,6 +64,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => toggle('b')} aria-pressed={!!(focusKey && styleOf(focusKey)?.b)} title="굵게"><b>B</b></button>
       <button onClick={() => toggle('i')} aria-pressed={!!(focusKey && styleOf(focusKey)?.i)} title="기울임"><i>I</i></button>
       <button onClick={() => toggle('u')} aria-pressed={!!(focusKey && styleOf(focusKey)?.u)} title="밑줄"><u>U</u></button>
+      <button onClick={() => toggle('s')} aria-pressed={!!(focusKey && styleOf(focusKey)?.s)} title="취소선"><s>S</s></button>
       <button onClick={() => toggle('w')} aria-pressed={!!(focusKey && styleOf(focusKey)?.w)} title="텍스트 줄바꿈">↵줄</button>
       <button onClick={() => setAlign('left')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'center' : false} title="가운데 정렬">⇔</button>

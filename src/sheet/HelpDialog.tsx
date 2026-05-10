@@ -10,6 +10,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + Shift + Z / Y', '다시 실행'],
   ['Ctrl/⌘ + C / X / V', '복사 / 잘라내기 / 붙여넣기'],
   ['Ctrl/⌘ + B / I / U', '굵게 / 기울임 / 밑줄'],
+  ['Alt + Shift + 5', '취소선'],
   ['Ctrl/⌘ + \\\\', '서식 모두 해제'],
   ['Ctrl/⌘ + S', 'CSV 내보내기'],
   ['Ctrl/⌘ + D / R', '아래로 / 오른쪽으로 채우기'],

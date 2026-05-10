@@ -19,6 +19,7 @@ export interface GlobalShortcutCtx {
   toggleBold: () => void
   toggleItalic: () => void
   toggleUnderline: () => void
+  toggleStrike: () => void
   clearFormat: () => void
   saveCsv: () => void
   switchTab?: (delta: 1 | -1) => void
@@ -43,6 +44,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+b', () => get().toggleBold())
   useShortcut('mod+i', () => get().toggleItalic())
   useShortcut('mod+u', () => get().toggleUnderline())
+  useShortcut('alt+shift+5', () => get().toggleStrike())
   useShortcut('mod+g', () => get().openGoto())
   useShortcut('mod+k', () => get().insertLink?.())
   useShortcut('mod+a', () => get().setSelectedIds(idsForAll(ROW_COUNT)))

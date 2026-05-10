@@ -8,6 +8,7 @@ export interface CellStyle {
   b?: boolean
   i?: boolean
   u?: boolean
+  s?: boolean
   w?: boolean
   a?: 'left' | 'center' | 'right'
   bg?: string
@@ -21,6 +22,7 @@ const merge = (a: CellStyle | undefined, b: Partial<CellStyle>): CellStyle | und
   if (next.b === false) delete next.b
   if (next.i === false) delete next.i
   if (next.u === false) delete next.u
+  if (next.s === false) delete next.s
   if (next.w === false) delete next.w
   if (next.a === undefined) delete next.a
   if (!next.bg) delete next.bg
@@ -50,6 +52,7 @@ export const styleToProps = (s: CellStyle | undefined): { className: string; sty
   if (s.b) cn.push('bold')
   if (s.i) cn.push('italic')
   if (s.u) cn.push('underline')
+  if (s.s) cn.push('strike')
   if (s.w) cn.push('wrap')
   if (s.a) cn.push(`align-${s.a}`)
   const style: React.CSSProperties = {}
