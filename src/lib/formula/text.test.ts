@@ -411,6 +411,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('LUMA returns relative luminance', () => {
+    expect(Number(evaluateCell({}, '=LUMA("#000000")'))).toBe(0)
+    expect(Number(evaluateCell({}, '=LUMA("#ffffff")'))).toBeCloseTo(1, 4)
+  })
   it('INVERTCOLOR flips RGB', () => {
     expect(evaluateCell({}, '=INVERTCOLOR("#000000")')).toBe('#ffffff')
     expect(evaluateCell({}, '=INVERTCOLOR("#ff8800")')).toBe('#0077ff')

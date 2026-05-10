@@ -1,6 +1,14 @@
 import { wrap } from './marker'
 
 export function dispatchColor(F: string, argsT: string[]): string | null {
+  if (F === 'LUMA') {
+    const m = /^#?([0-9a-f]{6})$/i.exec((argsT[0] ?? '').trim())
+    if (!m) return wrap('#VALUE!')
+    const v = parseInt(m[1], 16)
+    const r = ((v >> 16) & 0xff) / 255, g = ((v >> 8) & 0xff) / 255, b = (v & 0xff) / 255
+    const lin = (c: number) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+    return String(0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b))
+  }
   if (F === 'INVERTCOLOR') {
     const m = /^#?([0-9a-f]{6})$/i.exec((argsT[0] ?? '').trim())
     if (!m) return wrap('#VALUE!')
