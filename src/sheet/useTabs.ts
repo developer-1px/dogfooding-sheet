@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import type { JsonOps } from 'zod-crud'
+import type { Sheet } from './schema'
 
 type Cells = Record<string, string>
 export interface TabsState {
@@ -7,34 +9,29 @@ export interface TabsState {
   saved: Record<string, Cells>
 }
 
-const TABS_KEY = 'spreadsheet:tabs:v1'
+const LEGACY_KEY = 'spreadsheet:tabs:v1'
 
-const loadTabs = (): TabsState => {
+function migrateLegacy(state: TabsState, ops: JsonOps<Sheet>) {
+  if (state.order.length > 1 || Object.keys(state.saved).length > 0) return
   try {
-    const raw = localStorage.getItem(TABS_KEY)
-    if (raw) {
-      const obj = JSON.parse(raw)
-      if (Array.isArray(obj?.order) && typeof obj.active === 'string' && obj.saved) return obj
+    const raw = localStorage.getItem(LEGACY_KEY)
+    if (!raw) return
+    const obj = JSON.parse(raw)
+    if (Array.isArray(obj?.order) && typeof obj.active === 'string' && obj.saved) {
+      ops.replace('/tabs', obj as TabsState)
     }
-  } catch { /* fall through */ }
-  return { order: ['Sheet1'], active: 'Sheet1', saved: {} }
+    localStorage.removeItem(LEGACY_KEY)
+  } catch { /* ignore */ }
 }
 
-const persist = (s: TabsState) => {
-  try { localStorage.setItem(TABS_KEY, JSON.stringify(s)) } catch { /* quota */ }
-}
-
-export function useTabs(currentCells: Cells) {
-  const [state, setState] = useState<TabsState>(loadTabs)
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(TABS_KEY)
-      const t: TabsState = raw ? JSON.parse(raw) : state
-      t.saved[t.active] = currentCells; persist(t)
-    } catch { /* skip */ }
-  }, [currentCells, state.active])
-
+/**
+ * Active tab's cells live in `sheet.cells` (live source). Inactive tabs' cells live in
+ * `sheet.tabs.saved`. tabActions.snapshot copies cells → saved on switch/add/delete/dup,
+ * so no continuous mirror effect is needed (would loop with zod-crud's non-structural sharing).
+ */
+export function useTabs(state: TabsState, _currentCells: Cells, ops: JsonOps<Sheet>) {
+  useEffect(() => { migrateLegacy(state, ops) }, [])
+  const setState = (s: TabsState) => ops.replace('/tabs', s)
   return { state, setState }
 }
 
