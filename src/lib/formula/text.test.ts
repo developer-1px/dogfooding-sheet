@@ -179,6 +179,13 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
     expect(evaluateCell({}, '=ODD(4)')).toBe('5')
   })
+  it('FACT / COMBIN / PERMUT', () => {
+    expect(evaluateCell({}, '=FACT(5)')).toBe('120')
+    expect(evaluateCell({}, '=FACT(0)')).toBe('1')
+    expect(evaluateCell({}, '=COMBIN(5,2)')).toBe('10')
+    expect(evaluateCell({}, '=PERMUT(5,2)')).toBe('20')
+    expect(evaluateCell({}, '=COMBIN(2,5)')).toBe('#NUM!')
+  })
   it('BASE / DECIMAL / HEX2DEC / DEC2HEX / BIN2DEC / DEC2BIN', () => {
     expect(evaluateCell({}, '=BASE(255, 16)')).toBe('FF')
     expect(evaluateCell({}, '=BASE(7, 2, 4)')).toBe('0111')

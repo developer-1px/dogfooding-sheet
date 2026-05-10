@@ -26,6 +26,23 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => g(a, b)))
   }
+  if (F === 'FACT') {
+    const n = Math.floor(argsN[0])
+    if (n < 0 || !Number.isFinite(n)) return wrap('#NUM!')
+    let r = 1
+    for (let i = 2; i <= n; i++) r *= i
+    return String(r)
+  }
+  if (F === 'COMBIN' || F === 'PERMUT') {
+    const n = Math.floor(argsN[0]), k = Math.floor(argsN[1])
+    if (n < 0 || k < 0 || k > n) return wrap('#NUM!')
+    let p = 1
+    for (let i = 0; i < k; i++) p *= n - i
+    if (F === 'PERMUT') return String(p)
+    let kf = 1
+    for (let i = 2; i <= k; i++) kf *= i
+    return String(p / kf)
+  }
   if (F === 'BASE') {
     const [n, base, minLen = 0] = argsN
     if (base < 2 || base > 36) return wrap('#NUM!')
