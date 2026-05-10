@@ -8,6 +8,8 @@ interface Args {
   writeCell: (k: string, v: string) => void
   insertRow: (atRow: number) => void
   deleteRow: (atRow: number) => void
+  insertCol: (col: string) => void
+  deleteCol: (col: string) => void
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
   noteOf: (k: string) => string | undefined
   setNote: (k: string, text: string) => void
@@ -45,6 +47,8 @@ export function useCellMenu(a: Args) {
       { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
       { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
       { label: '행 삭제', onClick: () => a.deleteRow(row) },
+      { label: `${col}열 왼쪽에 삽입`, onClick: () => a.insertCol(col) },
+      { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
       'separator',
       { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
       { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },
