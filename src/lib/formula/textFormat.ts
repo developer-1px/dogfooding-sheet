@@ -1,6 +1,17 @@
 import { wrap } from './marker'
 
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
+  if (F === 'FORMATDURATION') {
+    const s = Math.floor(Number(argsT[0]))
+    if (!Number.isFinite(s)) return wrap('#VALUE!')
+    const sign = s < 0 ? '-' : '', n = Math.abs(s)
+    const h = Math.floor(n / 3600), m = Math.floor((n % 3600) / 60), sec = n % 60
+    const parts = []
+    if (h) parts.push(`${h}h`)
+    if (h || m) parts.push(`${m}m`)
+    parts.push(`${sec}s`)
+    return wrap(sign + parts.join(' '))
+  }
   if (F === 'FORMATBYTES') {
     const n = Number(argsT[0])
     if (!Number.isFinite(n)) return wrap('#VALUE!')

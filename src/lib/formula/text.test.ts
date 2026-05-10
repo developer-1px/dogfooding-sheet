@@ -352,6 +352,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ROUND(DEGREES(PI()),4)')).toBe('180')
     expect(evaluateCell({}, '=ROUND(ATAN2(1,1)*4/PI(),4)')).toBe('1')
   })
+  it('FORMATDURATION human readable', () => {
+    expect(evaluateCell({}, '=FORMATDURATION(45)')).toBe('45s')
+    expect(evaluateCell({}, '=FORMATDURATION(125)')).toBe('2m 5s')
+    expect(evaluateCell({}, '=FORMATDURATION(3725)')).toBe('1h 2m 5s')
+  })
   it('FORMATBYTES picks unit', () => {
     expect(evaluateCell({}, '=FORMATBYTES(500)')).toBe('500 B')
     expect(evaluateCell({}, '=FORMATBYTES(1536)')).toBe('1.50 KB')
