@@ -24,12 +24,12 @@ export function OverflowMenu({ display, writeCell, openHelp, insertLink, sheet, 
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
   const importCsvFile = (f: File) => f.text().then((t) => { parseCsv(t); importCsvInto(t, writeCell, { rowCount: ROW_COUNT }) })
   const exportJson = () => downloadFile('sheet.json', JSON.stringify(sheet, null, 2))
-  const importJson = (f: File) => f.text().then((t) => {
-    try {
-      const parsed = SheetSchema.safeParse(JSON.parse(t))
-      if (parsed.success) resetSheet(parsed.data)
-    } catch { /* ignore */ }
-  })
+  const importJson = async (f: File) => {
+    const t = await f.text()
+    let parsed; try { parsed = SheetSchema.safeParse(JSON.parse(t)) } catch { return }
+    if (!parsed.success) return
+    if (await confirm({ message: '현재 시트를 가져온 JSON으로 교체하시겠습니까? (실행 취소 가능)', confirmLabel: '교체' })) resetSheet(parsed.data)
+  }
 
   const items = [
     { id: 'help', label: '도움말 (F1)', action: openHelp },

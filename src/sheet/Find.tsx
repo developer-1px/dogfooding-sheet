@@ -24,13 +24,14 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
   const [caseSensitive, setCS] = useState(false)
   const [regex, setRegex] = useState(false)
 
+  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex })
+
   const { rootProps } = useDialogPattern({
     open, modal: false,
     label: mode === 'replace' ? '찾기 및 바꾸기' : '찾기',
     onOpenChange: (next) => { if (!next) onClose() },
+    on: { Enter: () => jump(1), 'shift+Enter': () => jump(-1) },
   })
-
-  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex })
 
   if (!open) return null
 
@@ -58,9 +59,6 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell }:
       <input
         value={q}
         onChange={(e) => { setQ(e.target.value); resetIdx() }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') { e.preventDefault(); jump(e.shiftKey ? -1 : 1) }
-        }}
         placeholder="찾기"
       />
       {mode === 'replace' && (
