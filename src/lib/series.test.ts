@@ -22,6 +22,9 @@ describe('extendSeries', () => {
     expect(extendSeries(['1', '3', '6'], 6)).toEqual(['1', '3', '6', '1', '3', '6'])
   })
 
+  it('Korean weekdays continue the cycle', () => {
+    expect(extendSeries(['월', '화'], 7)).toEqual(['월', '화', '수', '목', '금', '토', '일'])
+  })
   it('weekday/month names continue the cycle', () => {
     expect(extendSeries(['Mon', 'Tue'], 5)).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
     expect(extendSeries(['Jan', 'Feb', 'Mar'], 5)).toEqual(['Jan', 'Feb', 'Mar', 'Apr', 'May'])
