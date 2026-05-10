@@ -26,6 +26,11 @@ export default function App() {
       ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' })
         .then((v) => { if (v !== null) c.setNote(k, v) })
     },
+    openLink: () => {
+      const c = ctxRef.current; const k = c?.focusKey; if (!c || !k) return
+      ask({ label: '하이퍼링크 URL', placeholder: 'https://...', submitLabel: '삽입' })
+        .then((url) => { if (url) c.writeCell(k, `=HYPERLINK("${url.replace(/"/g, '\\"')}", "${url.replace(/"/g, '\\"')}")`) })
+    },
   })
   ctxRef.current = ctx
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''

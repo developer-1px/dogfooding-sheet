@@ -19,6 +19,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + G', '셀로 이동 (예: B5)'],
   ['Ctrl/⌘ + A', '시트 전체 선택'],
   ['Ctrl/⌘ + H', '찾기 및 바꾸기'],
+  ['Ctrl/⌘ + K', '하이퍼링크 삽입'],
   ['Enter / Shift+Enter', '편집 후 아래/위 셀 이동'],
   ['Ctrl/⌘ + Enter', '커밋 후 같은 셀 유지'],
   ['Tab / Shift+Tab', '편집 후 오른쪽/왼쪽 셀 이동'],
