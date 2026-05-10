@@ -70,6 +70,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ISEVEN(4)')).toBe('1')
     expect(evaluateCell({}, '=ISODD(3)')).toBe('1')
   })
+  it('TEXT formats with thousands separators / decimals / percent', () => {
+    expect(evaluateCell({}, '=TEXT(1234.5, "0,000.00")')).toBe('1,234.50')
+    expect(evaluateCell({}, '=TEXT(0.25, "0%")')).toBe('25%')
+    expect(evaluateCell({}, '=TEXT(7, "0.000")')).toBe('7.000')
+  })
   it('DOLLAR formats with thousands and decimals', () => {
     expect(evaluateCell({}, '=DOLLAR(1234.5)')).toBe('$1,234.50')
     expect(evaluateCell({}, '=DOLLAR(1234.5, 0)')).toBe('$1,235')
