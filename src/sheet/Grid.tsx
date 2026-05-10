@@ -10,7 +10,8 @@ import type { useSheet } from './useSheet'
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, setSelectedIds } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, setSelectedIds, highlightedIds } = ctx
+  const hiSet = new Set(highlightedIds)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -68,6 +69,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
               label={cell.label}
               selected={cell.selected}
               focused={focusId === cell.id}
+              highlighted={hiSet.has(cell.id)}
               isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
               editing={editing === cell.id}
               draft={draft}

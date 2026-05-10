@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useJson } from 'zod-crud'
-import { SheetSchema, cellKey, parseCellId } from './schema'
-import { evaluateCell } from './formula'
+import { SheetSchema, cellKey, parseCellId, COL_LETTERS } from './schema'
+import { evaluateCell, refsInFormula } from './formula'
 import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 
@@ -56,6 +56,14 @@ export function useSheet() {
   const focusCell = focusId ? parseCellId(focusId) : null
   const focusKey = focusCell ? cellKey(focusCell.col, focusCell.row) : null
 
+  const highlightedIds = (editing && draft.startsWith('='))
+    ? refsInFormula(draft).map((ref) => {
+        const m = /^([A-J])(\d+)$/.exec(ref)
+        if (!m || !COL_LETTERS.includes(m[1] as (typeof COL_LETTERS)[number])) return ''
+        return `r${Number(m[2]) - 1}-${m[1]}`
+      }).filter(Boolean)
+    : []
+
   return {
     sheet, ops, data,
     focusId, setFocusId,
@@ -64,5 +72,6 @@ export function useSheet() {
     writeCell, display,
     focusKey,
     selectedIds, setSelectedIds,
+    highlightedIds,
   }
 }

@@ -6,6 +6,7 @@ interface Props {
   label: string
   selected: boolean
   focused: boolean
+  highlighted: boolean
   isNum: boolean
   editing: boolean
   draft: string
@@ -21,7 +22,7 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
   return (
     <span
       {...p.cellProps}
-      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}`}
+      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.highlighted ? ' ref-hi' : ''}`}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}

@@ -94,3 +94,20 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
 }
 
 export const evaluateCell = (cells: Cells, raw: string) => evaluate(cells, raw)
+
+export function refsInFormula(raw: string): string[] {
+  if (!raw.startsWith('=')) return []
+  const expr = raw.slice(1)
+  const refs: string[] = []
+  expr.replace(RANGE_RE, (_x, a, ar, b, br) => {
+    refs.push(...expandRange(a, ar, b, br))
+    return ''
+  })
+  const stripped = expr.replace(RANGE_RE, '')
+  stripped.replace(A1_RE, (_x, c, r) => {
+    const ref = `${c}${r}`
+    if (!refs.includes(ref)) refs.push(ref)
+    return ''
+  })
+  return refs
+}
