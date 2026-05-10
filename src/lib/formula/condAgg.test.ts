@@ -170,6 +170,13 @@ describe('RANGESORT', () => {
   })
 })
 
+describe('RANGEUNIQUE', () => {
+  it('returns unique values in first-occurrence order', () => {
+    const cells = { A1: 'b', A2: 'a', A3: 'b', A4: 'c', A5: 'a' }
+    expect(evaluateCell(cells, '=RANGEUNIQUE(A1:A5)')).toBe('["b","a","c"]')
+  })
+})
+
 describe('COUNTNUMERIC', () => {
   it('counts cells holding finite numbers', () => {
     const cells = { A1: '5', A2: 'x', A3: '3.14', A4: '', A5: 'NaN' }

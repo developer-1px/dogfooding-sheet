@@ -37,18 +37,7 @@ export function rangeHash(rangeStr: string, cells: Record<string, string>, evalR
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
-/** RANGECSV(range) — values comma-separated, double-quote escaped if needed. */
-/** RANGEJSON(range) — JSON array of evaluated values. */
-export function rangeJson(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
-  return JSON.stringify(collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')))
-}
-
-export function rangeCsv(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
-  return collectRefs(rangeStr).map((r) => {
-    const v = evalRaw(cells[r] ?? '')
-    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v
-  }).join(',')
-}
+export { rangeJson, rangeCsv, rangeUnique, rangeSort } from './rangeSerial'
 
 export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
   const counts = new Map<string, number>()
@@ -72,15 +61,6 @@ export function countNumeric(rangeStr: string, cells: Record<string, string>, ev
     if (v !== '' && Number.isFinite(Number(v))) n++
   }
   return String(n)
-}
-
-/** RANGESORT(range) — JSON array of values sorted ascending (numeric if all finite, else lexical). */
-export function rangeSort(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
-  const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
-  const nums = vals.map(Number)
-  const allNum = nums.every(Number.isFinite)
-  const sorted = allNum ? [...nums].sort((a, b) => a - b).map(String) : [...vals].sort()
-  return JSON.stringify(sorted)
 }
 
 export function sample(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
