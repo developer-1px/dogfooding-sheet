@@ -175,6 +175,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=ISEMAIL("a@b.co")')).toBe('1')
     expect(evaluateCell({}, '=ISEMAIL("nope")')).toBe('0')
   })
+  it('IFEMPTY / COALESCE pick first non-empty', () => {
+    expect(evaluateCell({ A1: '' }, '=IFEMPTY(A1, "fallback")')).toBe('fallback')
+    expect(evaluateCell({ A1: 'x' }, '=IFEMPTY(A1, "fallback")')).toBe('x')
+    expect(evaluateCell({ A1: '', A2: '', A3: 'ok' }, '=COALESCE(A1, A2, A3)')).toBe('ok')
+  })
   it('TYPE classifies values', () => {
     expect(evaluateCell({}, '=TYPE(42)')).toBe('1')
     expect(evaluateCell({}, '=TYPE("hi")')).toBe('2')

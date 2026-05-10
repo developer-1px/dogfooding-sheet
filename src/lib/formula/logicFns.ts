@@ -21,6 +21,11 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
     return '2'
   }
   if (F === 'NA') return smartReturn('#N/A')
+  if (F === 'IFEMPTY') return smartReturn(argsT[0] === '' ? (argsT[1] ?? '') : argsT[0])
+  if (F === 'COALESCE') {
+    for (const v of argsT) if (v !== '') return smartReturn(v)
+    return smartReturn('')
+  }
   if (F === 'ISEVEN') return Number.isFinite(argsN[0]) && Math.floor(argsN[0]) % 2 === 0 ? '1' : '0'
   if (F === 'ISODD') return Number.isFinite(argsN[0]) && Math.abs(Math.floor(argsN[0])) % 2 === 1 ? '1' : '0'
   if (F === 'ISBETWEEN') {
