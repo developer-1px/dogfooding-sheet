@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useJson } from 'zod-crud'
+import { useJsonDocument } from 'zod-crud'
 import { SheetSchema, ROW_COUNT } from './schema'
 import { evaluateCell } from '../lib/formula'
 import { loadInitial, saveSheet, buildData } from './storage'
@@ -18,7 +18,7 @@ import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
 
 export function useSheet() {
-  const [sheet, ops] = useJson(SheetSchema, loadInitial(), { history: 100 })
+  const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const fmt = useFormats()
   const styles = useStyles()
