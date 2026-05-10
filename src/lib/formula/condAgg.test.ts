@@ -205,6 +205,17 @@ describe('PERCENTRANK', () => {
   })
 })
 
+describe('ENTROPY', () => {
+  it('returns 0 for uniform single value', () => {
+    const cells = { A1: 'a', A2: 'a', A3: 'a' }
+    expect(evaluateCell(cells, '=ENTROPY(A1:A3)')).toBe('0')
+  })
+  it('returns 1 for two equally likely values', () => {
+    const cells = { A1: 'x', A2: 'y', A3: 'x', A4: 'y' }
+    expect(Number(evaluateCell(cells, '=ENTROPY(A1:A4)'))).toBeCloseTo(1)
+  })
+})
+
 describe('RANGEUNIQUE', () => {
   it('returns unique values in first-occurrence order', () => {
     const cells = { A1: 'b', A2: 'a', A3: 'b', A4: 'c', A5: 'a' }

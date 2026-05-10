@@ -51,6 +51,20 @@ export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cell
   return best
 }
 
+/** ENTROPY(range) — Shannon entropy (base 2) over value frequencies. */
+export function entropy(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+  const counts = new Map<string, number>()
+  let n = 0
+  for (const r of collectRefs(rangeStr)) {
+    const v = evalRaw(cells[r] ?? '')
+    if (v !== '') { counts.set(v, (counts.get(v) ?? 0) + 1); n++ }
+  }
+  if (n === 0) return '#N/A'
+  let h = 0
+  for (const c of counts.values()) { const p = c / n; h -= p * Math.log2(p) }
+  return String(h)
+}
+
 export const mostCommon = (r: string, c: Record<string, string>, e: Eval) => freqStat('MOSTCOMMON', r, c, e)
 
 /** COUNTNUMERIC(range) — number of cells whose evaluated value is finite. */
