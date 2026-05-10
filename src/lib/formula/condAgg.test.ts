@@ -170,6 +170,17 @@ describe('RANGESORT', () => {
   })
 })
 
+describe('SKEW', () => {
+  it('returns 0 for symmetric data', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }
+    expect(Number(evaluateCell(cells, '=SKEW(A1:A5)'))).toBeCloseTo(0)
+  })
+  it('returns positive for right-skewed data', () => {
+    const cells = { A1: '1', A2: '1', A3: '1', A4: '2', A5: '10' }
+    expect(Number(evaluateCell(cells, '=SKEW(A1:A5)'))).toBeGreaterThan(0)
+  })
+})
+
 describe('ZSCORE', () => {
   it('returns standardized value', () => {
     const cells = { A1: '2', A2: '4', A3: '4', A4: '4', A5: '5', A6: '5', A7: '7', A8: '9' }
