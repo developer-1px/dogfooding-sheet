@@ -1,6 +1,6 @@
 import type { Format } from './useFormats'
 import type { CellStyle } from './useStyles'
-import { CsvButtons } from './CsvButtons'
+import { OverflowMenu } from './OverflowMenu'
 
 interface Props {
   display: (k: string) => string
@@ -23,6 +23,7 @@ interface Props {
   showAll: () => void
   setListRule: (keys: string[], options: string[]) => void
   clearRule: (keys: string[]) => void
+  openHelp: () => void
 }
 
 const cellIdToKey = (id: string): string => {
@@ -30,7 +31,7 @@ const cellIdToKey = (id: string): string => {
   return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule, openHelp }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => {
@@ -56,12 +57,8 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} title="가운데 정렬">⇔</button>
       <button onClick={() => setAlign('right')} title="오른쪽 정렬">⇥</button>
-      <label className="color-pick" title="배경색">
-        🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} />
-      </label>
-      <label className="color-pick" title="글자색">
-        A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} />
-      </label>
+      <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} /></label>
+      <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} /></label>
       <button onClick={() => updateStyle(targetKeys(), { bg: '', fg: '' })} title="색상 초기화">✕색</button>
       <button onClick={toggleFreezeRows} title="첫 행 고정" style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행</button>
       <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
@@ -94,7 +91,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>
       <button onClick={() => applyF('plain')} title="일반">123</button>
-      <CsvButtons display={display} writeCell={writeCell} />
+      <OverflowMenu display={display} writeCell={writeCell} openHelp={openHelp} />
     </>
   )
 }

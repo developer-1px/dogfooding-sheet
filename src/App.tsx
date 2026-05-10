@@ -48,6 +48,7 @@ export default function App() {
             showAll={ctx.showAll}
             setListRule={ctx.setListRule}
             clearRule={ctx.clearRule}
+            openHelp={() => ctx.setHelpOpen(true)}
           />
         }
       />
