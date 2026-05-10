@@ -30,6 +30,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + PageUp / PageDown', '이전 / 다음 시트 탭으로 이동'],
   ['Delete / Backspace', '선택 셀 비우기'],
   ['F2', '셀 편집 시작'],
+  ['F9', '선택한 셀의 수식을 평가된 값으로 고정'],
   ['F1 / ? / Ctrl+/', '이 도움말 열기'],
   ['Esc', '편집 취소 / 대화상자 닫기'],
 ]

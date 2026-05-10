@@ -3,6 +3,17 @@ import { cellKey, parseCellId } from '../sheet/schema'
 
 type Cells = Record<string, string>
 
+export function freezeFormulas(
+  ids: string[], cells: Cells, display: (k: string) => string,
+  writeCell: (k: string, v: string) => void,
+): void {
+  for (const id of ids) {
+    const p = parseCellId(id); if (!p) continue
+    const k = cellKey(p.col, p.row)
+    if ((cells[k] ?? '').startsWith('=')) writeCell(k, display(k))
+  }
+}
+
 export function copyOrCut(
   ids: string[], cut: boolean, cells: Cells,
   writeCell: (k: string, v: string) => void,

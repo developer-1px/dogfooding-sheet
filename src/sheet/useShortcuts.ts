@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
-import { copyOrCut, pasteAt } from '../lib/clipboardOps'
+import { copyOrCut, pasteAt, freezeFormulas } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { gotoCell } from '../lib/gotoCell'
@@ -26,6 +26,7 @@ interface Args {
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
   switchTab?: (delta: 1 | -1) => void
+  display?: (k: string) => string
 }
 
 export function useShortcuts(args: Args) {
@@ -89,6 +90,7 @@ export function useShortcuts(args: Args) {
       if (e.key === 'Delete' || e.key === 'Backspace') { ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') }); e.preventDefault(); return }
       const ae = document.activeElement as HTMLElement | null
       if ((ae?.tagName === 'INPUT' || ae?.tagName === 'TEXTAREA') && !ae.classList.contains('cell-input')) return
+      if (e.key === 'F9' && ref.current.display) { e.preventDefault(); freezeFormulas(ids, sheet.cells, ref.current.display, writeCell); return }
       if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); e.stopPropagation(); return }
       if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
     }
