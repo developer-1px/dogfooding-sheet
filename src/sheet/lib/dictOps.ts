@@ -21,3 +21,20 @@ export function upsertKey<T, V>(
     ops.replace(path, value as never)
   }
 }
+
+/** Batch multiple key writes into a single ops.patch — atomic undo. */
+export function upsertKeys<T, V>(
+  ops: JsonOps<T>,
+  base: string,
+  current: Record<string, V>,
+  entries: Array<[string, V | undefined]>,
+): void {
+  const patch: Array<{ op: 'add' | 'replace' | 'remove'; path: string; value?: unknown }> = []
+  for (const [key, value] of entries) {
+    const path = `${base}/${key}`
+    if (value === undefined) { if (current[key] !== undefined) patch.push({ op: 'remove', path }) }
+    else if (current[key] === undefined) patch.push({ op: 'add', path, value })
+    else if (current[key] !== value) patch.push({ op: 'replace', path, value })
+  }
+  if (patch.length > 0) ops.patch(patch as never)
+}

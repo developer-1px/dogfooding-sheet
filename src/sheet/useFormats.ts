@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-import { upsertKey } from './lib/dictOps'
+import { upsertKeys } from './lib/dictOps'
 import { migrateLegacyKey } from './lib/legacyMigrate'
 
 export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date'
@@ -17,7 +17,7 @@ export function useFormats(formats: Record<string, Format>, ops: JsonOps<Sheet>)
   useEffect(() => { migrateLegacy(formats, ops) }, [])
 
   const setFormat = (keys: string[], fmt: Format) => {
-    for (const k of keys) upsertKey(ops, '/formats', formats, k, fmt === 'plain' ? undefined : fmt)
+    upsertKeys(ops, '/formats', formats, keys.map((k) => [k, fmt === 'plain' ? undefined : fmt]))
   }
 
   return { setFormat, formatOf: (k: string): Format => formats[k] ?? 'plain' }

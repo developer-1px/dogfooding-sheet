@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-import { upsertKey } from './lib/dictOps'
+import { upsertKeys } from './lib/dictOps'
 import { migrateLegacyKey } from './lib/legacyMigrate'
 
 export interface ListRule { type: 'list'; options: string[] }
@@ -30,16 +30,10 @@ export function useValidation(rules: Record<string, Rule>, ops: JsonOps<Sheet>) 
 
   const setListRule = (keys: string[], options: string[]) => {
     const value: Rule | undefined = options.length === 0 ? undefined : { type: 'list', options }
-    for (const k of keys) upsertKey(ops, '/validation', rules, k, value)
+    upsertKeys(ops, '/validation', rules, keys.map((k) => [k, value]))
   }
-
-  const clearRule = (keys: string[]) => {
-    for (const k of keys) upsertKey(ops, '/validation', rules, k, undefined)
-  }
-
-  const setCheckboxRule = (keys: string[]) => {
-    for (const k of keys) upsertKey(ops, '/validation', rules, k, { type: 'checkbox' })
-  }
+  const clearRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, keys.map((k) => [k, undefined]))
+  const setCheckboxRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, keys.map((k) => [k, { type: 'checkbox' as const }]))
 
   return { setListRule, setCheckboxRule, clearRule, ruleOf: (k: string): Rule | undefined => rules[k] }
 }
