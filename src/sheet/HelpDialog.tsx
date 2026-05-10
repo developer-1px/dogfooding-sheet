@@ -27,6 +27,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Home / End', '현재 행의 처음 / 끝 셀로'],
   ['Ctrl/⌘ + Home / End', '시트의 처음 (A1) / 끝 셀로'],
   ['PageUp / PageDown', '10행 위 / 아래로 (Shift = 선택 확장)'],
+  ['Ctrl/⌘ + PageUp / PageDown', '이전 / 다음 시트 탭으로 이동'],
   ['Delete / Backspace', '선택 셀 비우기'],
   ['F2', '셀 편집 시작'],
   ['F1 / ? / Ctrl+/', '이 도움말 열기'],
