@@ -72,6 +72,13 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=CHAR(65)')).toBe('A')
     expect(evaluateCell({}, '=CODE("A")')).toBe('65')
   })
+  it('TRUNC / SIGN / PI / EVEN / ODD', () => {
+    expect(evaluateCell({}, '=TRUNC(3.789, 1)')).toBe('3.7')
+    expect(evaluateCell({}, '=SIGN(-5)')).toBe('-1')
+    expect(evaluateCell({}, '=ROUND(PI(), 4)')).toBe('3.1416')
+    expect(evaluateCell({}, '=EVEN(3)')).toBe('4')
+    expect(evaluateCell({}, '=ODD(4)')).toBe('5')
+  })
   it('VALUE / N coerce to number', () => {
     expect(evaluateCell({}, '=VALUE("3.14")')).toBe('3.14')
     expect(evaluateCell({}, '=N("abc")')).toBe('0')

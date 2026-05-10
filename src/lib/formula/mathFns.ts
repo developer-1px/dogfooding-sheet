@@ -13,5 +13,10 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'ROUNDUP') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.ceil(Math.abs(n) * m) / m * Math.sign(n || 1)) }
   if (F === 'ROUNDDOWN') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.trunc(n * m) / m) }
   if (F === 'IF') return String(argsN[0] ? argsT[1] : argsT[2])
+  if (F === 'TRUNC') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.trunc(n * m) / m) }
+  if (F === 'SIGN') return String(Math.sign(argsN[0]))
+  if (F === 'PI') return String(Math.PI)
+  if (F === 'EVEN') { const n = argsN[0]; const a = Math.ceil(Math.abs(n) / 2) * 2; return String(n < 0 ? -a : a) }
+  if (F === 'ODD') { const n = argsN[0]; const a = Math.abs(n); const r = a % 2 === 0 ? a + 1 : Math.ceil(a) | 1; return String(n < 0 ? -r : r) }
   return null
 }
