@@ -55,11 +55,22 @@ export function useSheet() {
   const sortByCol = (col: string, dir: 'asc' | 'desc') =>
     ops.replace('/cells', sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT }))
 
+  const targetKeys = (): string[] => {
+    const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
+    return ids.map((id) => { const m = /^r(\d+)-([A-J])$/.exec(id); return m ? `${m[2]}${Number(m[1]) + 1}` : id })
+  }
+  const toggle = (k: 'b' | 'i') => {
+    const cur = edit.focusKey ? styles.styleOf(edit.focusKey)?.[k] : undefined
+    styles.updateStyle(targetKeys(), { [k]: !cur })
+  }
+
   useShortcuts({
     editing: edit.editing, focusId: edit.focusId, sheet, ops, writeCell,
     startEdit: edit.startEdit, selectedIds,
     openFind: find.openFind, openReplace: find.openReplace,
     openHelp: () => setHelpOpen(true),
+    toggleBold: () => toggle('b'),
+    toggleItalic: () => toggle('i'),
   })
 
   return {

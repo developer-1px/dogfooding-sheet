@@ -14,9 +14,11 @@ interface Args {
   openFind: () => void
   openReplace: () => void
   openHelp: () => void
+  toggleBold: () => void
+  toggleItalic: () => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
@@ -34,6 +36,16 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       if (mod && ck === 'h') {
         e.preventDefault()
         openReplace()
+        return
+      }
+      if (mod && ck === 'b' && !e.shiftKey && !e.altKey) {
+        e.preventDefault()
+        toggleBold()
+        return
+      }
+      if (mod && ck === 'i' && !e.shiftKey && !e.altKey) {
+        e.preventDefault()
+        toggleItalic()
         return
       }
       if (editing) return
