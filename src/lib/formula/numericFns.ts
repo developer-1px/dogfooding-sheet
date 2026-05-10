@@ -14,6 +14,14 @@ export function dispatchNumeric(F: string, argsT: string[], argsN: number[]): st
         })
     return wrap(u)
   }
+  if (F === 'ISPRIME') {
+    const n = Math.floor(argsN[0])
+    if (n < 2) return '0'
+    if (n < 4) return '1'
+    if (n % 2 === 0) return '0'
+    for (let i = 3; i * i <= n; i += 2) if (n % i === 0) return '0'
+    return '1'
+  }
   if (F === 'RANDID') {
     const len = Math.max(1, Math.min(64, Number(argsT[0] ?? '8')))
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'

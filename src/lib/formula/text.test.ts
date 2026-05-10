@@ -319,6 +319,12 @@ describe('text functions', () => {
   it('UUID returns v4 format', () => {
     expect(evaluateCell({}, '=UUID()')).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
   })
+  it('ISPRIME predicate', () => {
+    expect(evaluateCell({}, '=ISPRIME(7)')).toBe('1')
+    expect(evaluateCell({}, '=ISPRIME(9)')).toBe('0')
+    expect(evaluateCell({}, '=ISPRIME(2)')).toBe('1')
+    expect(evaluateCell({}, '=ISPRIME(1)')).toBe('0')
+  })
   it('RANDID generates alphanumeric of given length', () => {
     expect(evaluateCell({}, '=RANDID(12)')).toMatch(/^[A-Za-z0-9]{12}$/)
     expect(evaluateCell({}, '=RANDID()')).toMatch(/^[A-Za-z0-9]{8}$/)
