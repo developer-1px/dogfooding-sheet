@@ -143,6 +143,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=DATEDIF("2026-01-15","2026-05-11","M")')).toBe('3')
     expect(evaluateCell({}, '=DATEDIF("2026-05-01","2026-05-11","D")')).toBe('10')
   })
+  it('EPOCH returns Unix seconds within reasonable range', () => {
+    const n = Number(evaluateCell({}, '=EPOCH()'))
+    expect(n).toBeGreaterThan(1_700_000_000)
+    expect(n).toBeLessThan(2_500_000_000)
+  })
   it('DATEVALUE returns days since 1899-12-30 (Sheets epoch)', () => {
     expect(evaluateCell({}, '=DATEVALUE("1900-01-01")')).toBe('2')
     expect(evaluateCell({}, '=DATEVALUE("2026-01-01")')).toBe('46023')

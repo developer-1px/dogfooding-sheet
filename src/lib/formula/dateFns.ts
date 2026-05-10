@@ -33,6 +33,7 @@ export const days = (end: string, start: string): number => {
 }
 
 export function dispatchDate(F: string, argsT: string[]): string | null {
+  if (F === 'EPOCH') return String(Math.floor(Date.now() / 1000))
   if (F === 'TODAY') return wrap(today())
   if (F === 'NOW') return wrap(now())
   if (F === 'DATE') return wrap(date(Number(argsT[0]), Number(argsT[1]), Number(argsT[2])))
