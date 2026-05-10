@@ -1,5 +1,5 @@
 import type { JsonOps } from 'zod-crud'
-import { ROW_COUNT, type Sheet } from './schema'
+import { COL_LETTERS, ROW_COUNT, type Sheet } from './schema'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp } from '../lib/rowOps'
 import { sortByColumn } from '../lib/sortOps'
 
@@ -15,8 +15,8 @@ export function sheetMutations(sheet: Sheet, ops: JsonOps<Sheet>) {
   return {
     insertRow: (atRow: number) => apply(sheet, ops, insertRowOp(sheet.cells, atRow, ROW_COUNT)),
     deleteRow: (atRow: number) => apply(sheet, ops, deleteRowOp(sheet.cells, atRow)),
-    insertCol: (col: string) => apply(sheet, ops, insertColOp(sheet.cells, 'ABCDEFGHIJ'.indexOf(col))),
-    deleteCol: (col: string) => apply(sheet, ops, deleteColOp(sheet.cells, 'ABCDEFGHIJ'.indexOf(col))),
+    insertCol: (col: string) => apply(sheet, ops, insertColOp(sheet.cells, COL_LETTERS.indexOf(col as (typeof COL_LETTERS)[number]))),
+    deleteCol: (col: string) => apply(sheet, ops, deleteColOp(sheet.cells, COL_LETTERS.indexOf(col as (typeof COL_LETTERS)[number]))),
     sortByCol: (col: string, dir: 'asc' | 'desc') => apply(sheet, ops, sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT })),
   }
 }

@@ -1,4 +1,5 @@
 import type { Merge } from '../useMerges'
+import { COL_LETTERS } from '../schema'
 
 interface MergeOps {
   addMerge: (m: Merge) => void
@@ -11,7 +12,7 @@ export function mergeSelection(selectedIds: string[], focusId: string | null, op
   let rMin = Infinity, rMax = -1, cMin = Infinity, cMax = -1
   for (const id of ids) {
     const m = /^r(\d+)-([A-J])$/.exec(id); if (!m) continue
-    const r = +m[1]; const c = 'ABCDEFGHIJ'.indexOf(m[2])
+    const r = +m[1]; const c = COL_LETTERS.indexOf(m[2] as (typeof COL_LETTERS)[number])
     if (r < rMin) rMin = r; if (r > rMax) rMax = r
     if (c < cMin) cMin = c; if (c > cMax) cMax = c
   }
