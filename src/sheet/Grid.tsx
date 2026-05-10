@@ -7,7 +7,7 @@ import type { useSheet } from './useSheet'
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, setSelectedIds } = ctx
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -19,8 +19,13 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   }, [editing])
 
   const onEvent = (e: UiEvent) => {
-    if (e.type === 'navigate' && e.id) { setFocusId(e.id); return }
-    if (e.type === 'activate' && e.id && parseCellId(e.id)) startEdit(e.id)
+    if (e.type === 'navigate' && e.id) { setFocusId(e.id); setSelectedIds([]); return }
+    if (e.type === 'activate' && e.id && parseCellId(e.id)) { startEdit(e.id); return }
+    if (e.type === 'select') {
+      if (e.to === undefined) setSelectedIds(e.ids)
+      else if (e.to) setSelectedIds((p) => [...new Set([...p, ...e.ids])])
+      else setSelectedIds((p) => p.filter((id) => !e.ids.includes(id)))
+    }
   }
 
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useGridPattern(

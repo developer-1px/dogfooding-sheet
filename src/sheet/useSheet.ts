@@ -10,12 +10,16 @@ export function useSheet() {
   const [focusId, setFocusId] = useState<string | null>('r0-A')
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
   const display = (k: string) => evaluateCell(sheet.cells, sheet.cells[k] ?? '')
   const data = buildData((k) => display(k))
   data.meta = { ...data.meta, focus: focusId }
+  for (const id of selectedIds) {
+    data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
+  }
 
   const writeCell = (k: string, v: string) => {
     if (v === '') {
@@ -47,7 +51,7 @@ export function useSheet() {
 
   const cancelEdit = () => setEditing(null)
 
-  useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit })
+  useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds })
 
   const focusCell = focusId ? parseCellId(focusId) : null
   const focusKey = focusCell ? cellKey(focusCell.col, focusCell.row) : null
@@ -59,5 +63,6 @@ export function useSheet() {
     startEdit, commitEdit, cancelEdit,
     writeCell, display,
     focusKey,
+    selectedIds, setSelectedIds,
   }
 }
