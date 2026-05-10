@@ -6,12 +6,16 @@ type Cells = Record<string, string>
 export function freezeFormulas(
   ids: string[], cells: Cells, display: (k: string) => string,
   writeCell: (k: string, v: string) => void,
+  writeCells?: (writes: Array<[string, string]>) => void,
 ): void {
+  const writes: Array<[string, string]> = []
   for (const id of ids) {
     const p = parseCellId(id); if (!p) continue
     const k = cellKey(p.col, p.row)
-    if ((cells[k] ?? '').startsWith('=')) writeCell(k, display(k))
+    if ((cells[k] ?? '').startsWith('=')) writes.push([k, display(k)])
   }
+  if (writes.length === 0) return
+  if (writeCells) writeCells(writes); else for (const [k, v] of writes) writeCell(k, v)
 }
 
 export function insertNowOrToday(

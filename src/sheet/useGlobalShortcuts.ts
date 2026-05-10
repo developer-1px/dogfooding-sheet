@@ -79,7 +79,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+z', () => get().ops.undo())
   useShortcut('mod+shift+z', () => get().ops.redo())
   useShortcut('mod+y', () => get().ops.redo())
-  useShortcut('F9', () => { const c = get(); if (c.display) freezeFormulas(targetIds(c), c.sheet.cells, c.display, c.writeCell) })
+  useShortcut('F9', () => { const c = get(); if (c.display) freezeFormulas(targetIds(c), c.sheet.cells, c.display, c.writeCell, c.writeCells) })
 
   const clearFocused = () => {
     const c = get()
