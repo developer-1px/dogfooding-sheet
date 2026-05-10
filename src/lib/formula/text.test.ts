@@ -2,6 +2,10 @@ import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
 
 describe('text functions', () => {
+  it('HYPERLINK uses label when given, else URL', () => {
+    expect(evaluateCell({}, '=HYPERLINK("https://example.com", "click")')).toBe('click')
+    expect(evaluateCell({}, '=HYPERLINK("https://example.com")')).toBe('https://example.com')
+  })
   it('CONCAT joins strings and refs', () => {
     expect(evaluateCell({ A1: 'hello' }, '=CONCAT(A1, " ", "world")')).toBe('hello world')
   })

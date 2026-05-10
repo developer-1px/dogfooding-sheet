@@ -2,6 +2,7 @@ import { wrap } from './marker'
 
 export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'CONCAT' || F === 'CONCATENATE') return wrap(argsT.join(''))
+  if (F === 'HYPERLINK') return wrap(argsT[1] ? argsT[1] : argsT[0])
   if (F === 'LEN') return String(argsT[0].length)
   if (F === 'UPPER') return wrap(argsT[0].toUpperCase())
   if (F === 'LOWER') return wrap(argsT[0].toLowerCase())
