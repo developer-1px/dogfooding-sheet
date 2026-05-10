@@ -53,9 +53,9 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => focus && sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button>
       <button onClick={() => focus && sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
       <button onClick={() => { const f = focus && autoSumFormula(focus[1], focusRow, display); if (f && focus) writeCell(`${focus[1]}${focusRow + 1}`, f) }} title="자동 합계 (위쪽 연속 숫자 합)">Σ</button>
-      <button onClick={() => toggle('b')} title="굵게"><b>B</b></button>
-      <button onClick={() => toggle('i')} title="기울임"><i>I</i></button>
-      <button onClick={() => toggle('u')} title="밑줄"><u>U</u></button>
+      <button onClick={() => toggle('b')} aria-pressed={!!(focusKey && styleOf(focusKey)?.b)} title="굵게"><b>B</b></button>
+      <button onClick={() => toggle('i')} aria-pressed={!!(focusKey && styleOf(focusKey)?.i)} title="기울임"><i>I</i></button>
+      <button onClick={() => toggle('u')} aria-pressed={!!(focusKey && styleOf(focusKey)?.u)} title="밑줄"><u>U</u></button>
       <button onClick={() => toggle('w')} title="텍스트 줄바꿈">↵줄</button>
       <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} title="가운데 정렬">⇔</button>
