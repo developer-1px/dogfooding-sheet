@@ -37,7 +37,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       openHelp={() => ctx.setHelpOpen(true)}
       addCondRule={ctx.addCondRule}
       clearCondRules={ctx.clearCondRules}
-      cells={ctx.sheet.cells}
+      sheet={ctx.sheet}
+      resetSheet={(s) => ctx.ops.reset(s)}
       resetCells={(c) => ctx.ops.replace('/cells', c)}
       ask={ask}
       confirm={confirm}

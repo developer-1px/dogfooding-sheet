@@ -3,24 +3,30 @@ import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useMenuButtonPattern } from '@p/aria-kernel/patterns'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
 import type { ConfirmOptions } from './useConfirm'
-import { ROW_COUNT } from './schema'
+import { ROW_COUNT, SheetSchema, type Sheet } from './schema'
 
 interface Props {
   display: (k: string) => string
   writeCell: (k: string, v: string) => void
   openHelp: () => void
-  cells: Record<string, string>
+  sheet: Sheet
+  resetSheet: (s: Sheet) => void
   resetCells: (cells: Record<string, string>) => void
   confirm: (opts: ConfirmOptions) => Promise<boolean>
 }
 
-export function OverflowMenu({ display, writeCell, openHelp, cells, resetCells, confirm }: Props) {
+export function OverflowMenu({ display, writeCell, openHelp, sheet, resetSheet, resetCells, confirm }: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
   const importCsvFile = (f: File) => f.text().then((t) => { parseCsv(t); importCsvInto(t, writeCell, { rowCount: ROW_COUNT }) })
-  const exportJson = () => downloadFile('sheet.json', JSON.stringify({ cells }, null, 2))
-  const importJson = (f: File) => f.text().then((t) => { try { const o = JSON.parse(t); if (o?.cells && typeof o.cells === 'object') resetCells(o.cells) } catch { /* ignore */ } })
+  const exportJson = () => downloadFile('sheet.json', JSON.stringify(sheet, null, 2))
+  const importJson = (f: File) => f.text().then((t) => {
+    try {
+      const parsed = SheetSchema.safeParse(JSON.parse(t))
+      if (parsed.success) resetSheet(parsed.data)
+    } catch { /* ignore */ }
+  })
 
   const items = [
     { id: 'help', label: '도움말 (F1)', action: openHelp },
