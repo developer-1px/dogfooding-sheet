@@ -74,7 +74,7 @@ export function useSheet() {
     toggleUnderline: () => toggle('u'),
     clearFormat: () => styles.updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' }),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
-    setSelectedIds, setFocusId: edit.setFocusId,
+    setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab,
   })
 
   return {

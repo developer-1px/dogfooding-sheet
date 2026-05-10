@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
-import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
+import { copyOrCut, pasteAt } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { gotoCell } from '../lib/gotoCell'
@@ -25,6 +25,7 @@ interface Args {
   saveCsv: () => void
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
+  switchTab?: (delta: 1 | -1) => void
 }
 
 export function useShortcuts(args: Args) {
@@ -45,6 +46,9 @@ export function useShortcuts(args: Args) {
         if (fn) { e.preventDefault(); fn(); return }
       }
       if (mod && ck === 'g' && !editing) { e.preventDefault(); gotoCell(setFocusId); return }
+      if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) {
+        e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return
+      }
       if (mod && e.key === ';' && !e.altKey) {
         e.preventDefault()
         const p2 = focusId ? parseCellId(focusId) : null; if (!p2) return
@@ -78,16 +82,10 @@ export function useShortcuts(args: Args) {
       if (mod && ck === 'y') { e.preventDefault(); ops.redo(); return }
       const p = focusId ? parseCellId(focusId) : null
       if (!p || !focusId) return
-      const k = cellKey(p.col, p.row), ids = selectedIds.length > 0 ? selectedIds : [focusId], rect = rectFromIds(ids)
+      const k = cellKey(p.col, p.row), ids = selectedIds.length > 0 ? selectedIds : [focusId]
 
-      if (mod && (ck === 'c' || ck === 'x')) {
-        e.preventDefault()
-        const tsv = rect ? rectToTsv(rect, (key) => sheet.cells[key] ?? '') : ''
-        navigator.clipboard?.writeText(tsv).catch(() => {})
-        if (ck === 'x') ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') })
-        return
-      }
-      if (mod && ck === 'v') { e.preventDefault(); navigator.clipboard?.readText().then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow: ROW_COUNT }) : writeCell(k, t)).catch(() => {}); return }
+      if (mod && (ck === 'c' || ck === 'x')) { e.preventDefault(); copyOrCut(ids, ck === 'x', sheet.cells, writeCell); return }
+      if (mod && ck === 'v') { e.preventDefault(); pasteAt(k, p, ROW_COUNT, writeCell); return }
       if (e.key === 'Delete' || e.key === 'Backspace') { ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') }); e.preventDefault(); return }
       const ae = document.activeElement as HTMLElement | null
       if ((ae?.tagName === 'INPUT' || ae?.tagName === 'TEXTAREA') && !ae.classList.contains('cell-input')) return

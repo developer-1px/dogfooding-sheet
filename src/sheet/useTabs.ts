@@ -27,13 +27,11 @@ const persist = (s: TabsState) => {
 export function useTabs(currentCells: Cells) {
   const [state, setState] = useState<TabsState>(loadTabs)
 
-  // Continuously sync the current active sheet's cells to localStorage (no re-render)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(TABS_KEY)
       const t: TabsState = raw ? JSON.parse(raw) : state
-      t.saved[t.active] = currentCells
-      persist(t)
+      t.saved[t.active] = currentCells; persist(t)
     } catch { /* skip */ }
   }, [currentCells, state.active])
 
@@ -93,5 +91,10 @@ export function tabActions(state: TabsState, setState: (s: TabsState) => void, c
     replaceCells(cells)
   }
 
-  return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet }
+  const cycleTab = (delta: 1 | -1) => {
+    const i = state.order.indexOf(state.active), n = state.order.length
+    switchTab(state.order[(i + delta + n) % n])
+  }
+
+  return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, cycleTab }
 }
