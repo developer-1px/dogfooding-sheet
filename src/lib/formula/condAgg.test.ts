@@ -28,6 +28,13 @@ describe('COUNTA', () => {
   })
 })
 
+describe('SUMPRODUCT', () => {
+  it('sums element-wise products across ranges', () => {
+    const cells = { A1: '2', A2: '3', A3: '4', B1: '10', B2: '20', B3: '30' }
+    expect(evaluateCell(cells, '=SUMPRODUCT(A1:A3, B1:B3)')).toBe('200')
+  })
+})
+
 describe('COUNTUNIQUE', () => {
   it('counts distinct non-empty values', () => {
     const cells = { A1: 'x', A2: 'y', A3: 'x', A4: 'z', A5: '', A6: 'y' }
