@@ -31,58 +31,6 @@ export function weightAvg(vStr: string, wStr: string, numFromCell: NumFromCell):
   return t === 0 ? '#DIV/0!' : String(s / t)
 }
 
-export function sample(rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
-  const refs = collectRefs(rangeStr)
-  const vals = refs.map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
-  if (vals.length === 0) return '#N/A'
-  return vals[Math.floor(Math.random() * vals.length)]
-}
-
-/** ARRAYTOTEXT(range, [sep=", "]) — flatten non-empty values to a separated string. */
-export function arrayToText(rangeStr: string, sep: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
-  const refs = collectRefs(rangeStr)
-  return refs.map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '').join(sep)
-}
-
-/** MAXSTR / MINSTR — lexicographic max/min over range (non-empty values). */
-export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
-  const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
-  if (vals.length === 0) return '#N/A'
-  let best = vals[0]
-  for (let i = 1; i < vals.length; i++) if (F === 'MAXSTR' ? vals[i] > best : vals[i] < best) best = vals[i]
-  return best
-}
-
-/** MAXLEN / MINLEN — max / min string length over range. */
-export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
-  const lens = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '').length).filter((n) => n > 0)
-  if (lens.length === 0) return '0'
-  return String(F === 'MAXLEN' ? Math.max(...lens) : Math.min(...lens))
-}
-
-/** FIRST(range) / LAST(range) — first / last non-empty value. */
-export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
-  const refs = collectRefs(rangeStr)
-  const seq = F === 'FIRST' ? refs : [...refs].reverse()
-  for (const r of seq) {
-    const v = evalRaw(cells[r] ?? '')
-    if (v !== '') return v
-  }
-  return '#N/A'
-}
-
-/** RANGEHASH(range) — fast 32-bit hash of cell values, hex. */
-export function rangeHash(rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
-  const refs = collectRefs(rangeStr)
-  let h = 2166136261 // FNV-1a
-  for (const r of refs) {
-    const v = evalRaw(cells[r] ?? '') + '|'
-    for (let i = 0; i < v.length; i++) { h ^= v.charCodeAt(i); h = Math.imul(h, 16777619) }
-  }
-  return (h >>> 0).toString(16).padStart(8, '0')
-}
-
-/** MAX_BY / MIN_BY — return value at index where keys hit max / min. */
 export function maxMinBy(F: 'MAX_BY' | 'MIN_BY', valStr: string, keyStr: string, cells: Record<string, string>, evalRaw: (s: string) => string, numFromCell: NumFromCell): string {
   const vals = collectRefs(valStr)
   const keys = collectRefs(keyStr).map(numFromCell)
@@ -98,3 +46,5 @@ export function rank(value: number, rangeStr: string, order: number, numFromCell
   const desc = order === 0
   return String(nums.filter((n) => desc ? n > value : n < value).length + 1)
 }
+
+export { sample, arrayToText, firstLast, strStat, lenStat, rangeHash } from './rangeStr'
