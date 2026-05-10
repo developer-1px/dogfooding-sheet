@@ -19,9 +19,10 @@ interface Args {
   toggleItalic: () => void
   toggleUnderline: () => void
   saveCsv: () => void
+  setSelectedIds: (ids: string[]) => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
@@ -37,11 +38,14 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       }
       if (mod && e.key === ';' && !e.altKey) {
         e.preventDefault()
-        const p = focusId ? parseCellId(focusId) : null
-        if (p) {
-          const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
-          writeCell(cellKey(p.col, p.row), e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
-        }
+        const p2 = focusId ? parseCellId(focusId) : null
+        const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
+        if (p2) writeCell(cellKey(p2.col, p2.row), e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
+        return
+      }
+      if (e.key === 'Escape' && !editing && selectedIds.length > 0) {
+        setSelectedIds([])
+        e.preventDefault()
         return
       }
       if (editing) return
@@ -55,10 +59,9 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         e.shiftKey ? ops.redo() : ops.undo()
         return
       }
-      if (!focusId || !parseCellId(focusId)) return
-      const p = parseCellId(focusId)!
+      const p = focusId ? parseCellId(focusId) : null
+      if (!p || !focusId) return
       const k = cellKey(p.col, p.row)
-
       const ids = selectedIds.length > 0 ? selectedIds : [focusId]
       const rect = rectFromIds(ids)
 
@@ -82,15 +85,8 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         e.preventDefault()
         return
       }
-      if (e.key === 'F2' || e.key === 'Enter') {
-        startEdit(focusId)
-        e.preventDefault()
-        return
-      }
-      if (e.key.length === 1 && !mod && !e.altKey) {
-        startEdit(focusId, e.key)
-        e.preventDefault()
-      }
+      if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); return }
+      if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault() }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)

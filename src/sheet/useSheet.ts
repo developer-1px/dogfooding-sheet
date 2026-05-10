@@ -73,6 +73,7 @@ export function useSheet() {
     toggleItalic: () => toggle('i'),
     toggleUnderline: () => toggle('u'),
     saveCsv: () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT })),
+    setSelectedIds,
   })
 
   return {
