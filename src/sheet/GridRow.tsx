@@ -26,6 +26,7 @@ interface Props {
   commitEdit: (move?: { dRow: number; dCol: number }) => void
   cancelEdit: () => void
   hideRow: (row: number) => void
+  onRowHeaderContextMenu: (e: React.MouseEvent) => void
   startResizeRow: (row: number) => (e: React.MouseEvent) => void
   resetRowHeight: (row: number) => void
   styleOf: (k: string) => CellStyle | undefined
@@ -47,7 +48,7 @@ interface Props {
 export function GridRow(p: Props) {
   return (
     <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight }}>
-      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} hideRow={p.hideRow} startResizeRow={p.startResizeRow} resetRowHeight={p.resetRowHeight} />
+      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} startResizeRow={p.startResizeRow} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} />
       {p.rowItemProps.cells.map((cell, cIdx) => {
         if (p.hiddenCols.has(COL_LETTERS[cIdx])) return null
         const m = /^r(\d+)-([A-J])$/.exec(cell.id)

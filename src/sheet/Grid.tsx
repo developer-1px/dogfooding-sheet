@@ -16,7 +16,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight })
-  const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, `r0-${col}`) }
+  const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, `r0-${col}`) }; const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e, `r${rIdx}-A`) }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
   const previewIds = rectToIdSet(fill.preview)
 
@@ -58,7 +58,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             rowCls={`grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}${focusRow === rIdx ? ' active-row' : ''}`}
             freezeFirstCol={!!freeze.cols}
             rowHeight={ctx.rowHeightOf(rIdx)}
-            startResizeRow={ctx.startResizeRow} resetRowHeight={ctx.resetRowHeight}
+            startResizeRow={ctx.startResizeRow} resetRowHeight={ctx.resetRowHeight} onRowHeaderContextMenu={onRowHCtx(rIdx)}
             hiddenCols={hiddenCols}
             focusId={focusId}
             selectedIds={selectedIds}
