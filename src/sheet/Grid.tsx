@@ -35,7 +35,10 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { gridTemplateFor, startResize } = useColWidths()
   const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))
   const gridTemplate = gridTemplateFor(visibleCols)
-  const dataRows = rows.slice(COL_LETTERS.length)
+  // aria-kernel's `rows` only contains entities that have children (data rows).
+  // Column headers are top-level entities WITHOUT children and are filtered out
+  // by useGridPattern itself, so no slicing is needed here.
+  const dataRows = rows
 
   return (
     <div {...rootProps} className="grid">
