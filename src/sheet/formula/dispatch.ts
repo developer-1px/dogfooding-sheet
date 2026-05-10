@@ -1,5 +1,6 @@
 import { vlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate } from './aggregates'
+import { countif, sumif, counta } from './condAggregates'
 import { dispatchDate } from './dateFns'
 import { dispatchText } from './textFns'
 import { dispatchMath } from './mathFns'
@@ -17,6 +18,11 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (agg !== null) return agg
 
   const argsT = evalArgs(rawArgs, c)
+
+  if (F === 'COUNTIF') return String(countif(argsT[0], argsT[1], c.cells, c.evalRaw))
+  if (F === 'SUMIF') return String(sumif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
+  if (F === 'COUNTA') return String(counta(argsT[0], c.cells, c.evalRaw))
+
   const argsN = argsT.map(Number)
 
   const date = dispatchDate(F, argsT); if (date !== null) return date

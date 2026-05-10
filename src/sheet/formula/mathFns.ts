@@ -6,6 +6,12 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'SQRT') return String(Math.sqrt(argsN[0]))
   if (F === 'POWER') return String(Math.pow(argsN[0], argsN[1]))
   if (F === 'MOD') return String(argsN[0] % argsN[1])
+  if (F === 'INT') return String(Math.trunc(argsN[0]))
+  if (F === 'LN') return String(Math.log(argsN[0]))
+  if (F === 'LOG') return String(argsN.length > 1 ? Math.log(argsN[0]) / Math.log(argsN[1]) : Math.log10(argsN[0]))
+  if (F === 'EXP') return String(Math.exp(argsN[0]))
+  if (F === 'ROUNDUP') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.ceil(Math.abs(n) * m) / m * Math.sign(n || 1)) }
+  if (F === 'ROUNDDOWN') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.trunc(n * m) / m) }
   if (F === 'IF') return String(argsN[0] ? argsT[1] : argsT[2])
   return null
 }
