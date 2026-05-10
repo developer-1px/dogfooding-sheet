@@ -28,6 +28,7 @@ interface Args {
   switchTab?: (delta: 1 | -1) => void
   display?: (k: string) => string
   applyFormat?: (key: 'plain' | 'currency' | 'percent' | 'date') => void
+  editNote?: () => void
 }
 
 export function useShortcuts(args: Args) {
@@ -48,12 +49,11 @@ export function useShortcuts(args: Args) {
         if (fn) { e.preventDefault(); fn(); return }
       }
       if (mod && ck === 'g' && !editing) { e.preventDefault(); gotoCell(setFocusId); return }
-      if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) {
-        e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return
-      }
-      if (mod && e.shiftKey && ref.current.applyFormat) {
+      if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) { e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return }
+      if (mod && e.shiftKey) {
+        if (ck === 'm' && ref.current.editNote) { e.preventDefault(); ref.current.editNote(); return }
         const f = ({ '1': 'plain', '4': 'currency', '5': 'percent', '3': 'date' } as const)[e.key as '1']
-        if (f) { e.preventDefault(); ref.current.applyFormat(f); return }
+        if (f && ref.current.applyFormat) { e.preventDefault(); ref.current.applyFormat(f); return }
       }
       if (mod && e.key === ';' && !e.altKey) { e.preventDefault(); insertNowOrToday(focusId, e.shiftKey, writeCell); return }
       if (mod && !editing && /^Arrow(Up|Down|Left|Right)$/.test(e.key) && focusId) {
