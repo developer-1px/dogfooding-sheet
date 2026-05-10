@@ -181,6 +181,22 @@ describe('SKEW', () => {
   })
 })
 
+describe('Vector ops', () => {
+  const cells = { A1: '1', A2: '2', A3: '3', B1: '4', B2: '5', B3: '6' }
+  it('EUCLIDEAN distance', () => {
+    expect(Number(evaluateCell(cells, '=EUCLIDEAN(A1:A3, B1:B3)'))).toBeCloseTo(Math.sqrt(27))
+  })
+  it('MANHATTAN distance', () => {
+    expect(evaluateCell(cells, '=MANHATTAN(A1:A3, B1:B3)')).toBe('9')
+  })
+  it('DOTPROD', () => {
+    expect(evaluateCell(cells, '=DOTPROD(A1:A3, B1:B3)')).toBe('32')
+  })
+  it('COSINE similarity', () => {
+    expect(Number(evaluateCell(cells, '=COSINE(A1:A3, B1:B3)'))).toBeCloseTo(0.9746, 3)
+  })
+})
+
 describe('RSQ', () => {
   it('returns squared correlation coefficient', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', B1: '2', B2: '4', B3: '6', B4: '8' }

@@ -16,6 +16,23 @@ export function forecast(x: number, yStr: string, xStr: string, numFromCell: Num
   return String(my + (cov / vx) * (x - mx))
 }
 
+/** EUCLIDEAN/MANHATTAN/COSINE/DOTPROD between two equal-length numeric ranges. */
+export function vectorOp(F: 'EUCLIDEAN' | 'MANHATTAN' | 'COSINE' | 'DOTPROD', aStr: string, bStr: string, numFromCell: NumFromCell): string {
+  const A = collectRefs(aStr).map(numFromCell)
+  const B = collectRefs(bStr).map(numFromCell)
+  const n = Math.min(A.length, B.length)
+  if (n === 0) return '#N/A'
+  let sq = 0, ab = 0, na = 0, nb = 0, dot = 0
+  for (let i = 0; i < n; i++) {
+    const d = A[i] - B[i]; sq += d * d; ab += Math.abs(d)
+    na += A[i] * A[i]; nb += B[i] * B[i]; dot += A[i] * B[i]
+  }
+  if (F === 'EUCLIDEAN') return String(Math.sqrt(sq))
+  if (F === 'MANHATTAN') return String(ab)
+  if (F === 'DOTPROD') return String(dot)
+  return na === 0 || nb === 0 ? '#DIV/0!' : String(dot / Math.sqrt(na * nb))
+}
+
 /** Paired stats: COVAR, CORREL, RSQ, SLOPE (y on x), INTERCEPT (y on x). */
 export function pairStat(F: 'COVAR' | 'CORREL' | 'RSQ' | 'SLOPE' | 'INTERCEPT', aStr: string, bStr: string, numFromCell: NumFromCell): string {
   const A = collectRefs(aStr).map(numFromCell)

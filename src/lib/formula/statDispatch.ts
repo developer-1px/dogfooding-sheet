@@ -1,5 +1,6 @@
 import { largeSmall, rank } from './rangeOps'
 import { percentile, quartile, pairStat, trimmean, forecast, percentRank, zScore, moment, gini } from './stats'
+import { vectorOp } from './pairStats'
 import { splitArgs } from './args'
 import { smartReturn } from './marker'
 
@@ -9,6 +10,10 @@ export function dispatchStat(F: string, argsT: string[], rawArgs: string, numFro
   if (F === 'COVAR' || F === 'CORREL' || F === 'RSQ' || F === 'SLOPE' || F === 'INTERCEPT') {
     const [a, b] = splitArgs(rawArgs)
     return smartReturn(pairStat(F, a, b, numFromCell))
+  }
+  if (F === 'EUCLIDEAN' || F === 'MANHATTAN' || F === 'COSINE' || F === 'DOTPROD') {
+    const [a, b] = splitArgs(rawArgs)
+    return smartReturn(vectorOp(F, a, b, numFromCell))
   }
   if (F === 'LARGE' || F === 'SMALL') return smartReturn(largeSmall(F, splitArgs(rawArgs)[0], Number(argsT[1]), numFromCell))
   if (F === 'FORECAST') { const a = splitArgs(rawArgs); return smartReturn(forecast(Number(argsT[0]), a[1], a[2], numFromCell)) }
