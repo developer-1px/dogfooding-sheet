@@ -133,6 +133,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
   })
+  it('LCS longest common subsequence length', () => {
+    expect(evaluateCell({}, '=LCS("abcde", "ace")')).toBe('3')
+    expect(evaluateCell({}, '=LCS("abc", "xyz")')).toBe('0')
+  })
   it('LEVENSHTEIN edit distance', () => {
     expect(evaluateCell({}, '=LEVENSHTEIN("kitten", "sitting")')).toBe('3')
     expect(evaluateCell({}, '=LEVENSHTEIN("abc", "abc")')).toBe('0')

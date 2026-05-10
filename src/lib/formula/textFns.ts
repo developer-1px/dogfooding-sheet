@@ -66,6 +66,13 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap((ignoreEmpty ? parts.filter((p) => p !== '') : parts).join(sep))
   }
   if (F === 'EXACT') return argsT[0] === argsT[1] ? '1' : '0'
+  if (F === 'LCS') {
+    const a = argsT[0] ?? '', b = argsT[1] ?? ''
+    const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0))
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+      dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1])
+    return String(dp[a.length][b.length])
+  }
   if (F === 'LEVENSHTEIN') {
     const a = argsT[0] ?? '', b = argsT[1] ?? ''
     const dp = Array.from({ length: a.length + 1 }, (_, i) => i)
