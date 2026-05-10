@@ -263,6 +263,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=CEILING(13, 5)')).toBe('15')
     expect(evaluateCell({}, '=FLOOR(13)')).toBe('13')
   })
+  it('RANDID generates alphanumeric of given length', () => {
+    expect(evaluateCell({}, '=RANDID(12)')).toMatch(/^[A-Za-z0-9]{12}$/)
+    expect(evaluateCell({}, '=RANDID()')).toMatch(/^[A-Za-z0-9]{8}$/)
+  })
   it('FACT / COMBIN / PERMUT', () => {
     expect(evaluateCell({}, '=FACT(5)')).toBe('120')
     expect(evaluateCell({}, '=FACT(0)')).toBe('1')

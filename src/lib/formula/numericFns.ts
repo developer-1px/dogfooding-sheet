@@ -1,6 +1,13 @@
 import { wrap } from './marker'
 
 export function dispatchNumeric(F: string, argsT: string[], argsN: number[]): string | null {
+  if (F === 'RANDID') {
+    const len = Math.max(1, Math.min(64, Number(argsT[0] ?? '8')))
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let s = ''
+    for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)]
+    return wrap(s)
+  }
   if (F === 'FACT') {
     const n = Math.floor(argsN[0])
     if (n < 0 || !Number.isFinite(n)) return wrap('#NUM!')
