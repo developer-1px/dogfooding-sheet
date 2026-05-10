@@ -53,6 +53,22 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     expect(apple.className, 'Apple bold should survive — surgical /styles/<key> patch').toContain('bold')
   })
 
+  it('Cmd+D fillDown across N cells is a single undo entry', async () => {
+    await act(async () => root.render(createElement(App)))
+    const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
+    act(() => click(apple))
+    act(() => {
+      milk.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0, shiftKey: true }))
+      milk.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, shiftKey: true }))
+    })
+    act(() => press('d', { ctrlKey: true }))
+    expect([...document.querySelectorAll<HTMLElement>('[role="gridcell"]')].filter((c) => c.textContent === 'Apple').length).toBe(3)
+    act(() => press('z', { ctrlKey: true }))
+    // Bread/Milk should be restored, Apple count back to 1
+    expect(cellByText('Bread'), 'Bread should restore').toBeDefined()
+    expect(cellByText('Milk'), 'Milk should restore').toBeDefined()
+  })
+
   it('Backspace on multi-cell selection clears N cells in a single undo entry', async () => {
     await act(async () => root.render(createElement(App)))
 
