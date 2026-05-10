@@ -15,6 +15,12 @@ export { TM, stripText } from './marker'
 export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const F = fn.toUpperCase()
 
+  if (F === 'ROW' || F === 'COLUMN') {
+    const m = /^([A-J])(\d+)$/.exec((rawArgs ?? '').trim())
+    if (!m) return '#REF!'
+    return F === 'ROW' ? m[2] : String(m[1].charCodeAt(0) - 64)
+  }
+
   const agg = aggregate(F, rawArgs, c.numFromCell)
   if (agg !== null) return agg
 

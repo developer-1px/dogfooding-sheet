@@ -15,6 +15,13 @@ describe('HLOOKUP', () => {
   })
 })
 
+describe('ROW / COLUMN', () => {
+  it('return ref position', () => {
+    expect(evaluateCell({}, '=ROW(B5)')).toBe('5')
+    expect(evaluateCell({}, '=COLUMN(C1)')).toBe('3')
+  })
+})
+
 describe('XLOOKUP', () => {
   it('vertical key with separate result column', () => {
     expect(evaluateCell(data, '=XLOOKUP("Bread", A1:A3, B1:B3)')).toBe('2.25')
