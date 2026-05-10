@@ -72,6 +72,17 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=CHAR(65)')).toBe('A')
     expect(evaluateCell({}, '=CODE("A")')).toBe('65')
   })
+  it('GCD / LCM', () => {
+    expect(evaluateCell({}, '=GCD(12,18)')).toBe('6')
+    expect(evaluateCell({}, '=LCM(4,6)')).toBe('12')
+    expect(evaluateCell({}, '=GCD(24,36,60)')).toBe('12')
+  })
+  it('RAND / RANDBETWEEN range', () => {
+    const r = Number(evaluateCell({}, '=RAND()'))
+    expect(r).toBeGreaterThanOrEqual(0); expect(r).toBeLessThan(1)
+    const n = Number(evaluateCell({}, '=RANDBETWEEN(5,10)'))
+    expect(n).toBeGreaterThanOrEqual(5); expect(n).toBeLessThanOrEqual(10)
+  })
   it('TRUNC / SIGN / PI / EVEN / ODD', () => {
     expect(evaluateCell({}, '=TRUNC(3.789, 1)')).toBe('3.7')
     expect(evaluateCell({}, '=SIGN(-5)')).toBe('-1')
