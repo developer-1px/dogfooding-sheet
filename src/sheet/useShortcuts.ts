@@ -7,7 +7,7 @@ import { useGlobalShortcuts, type GlobalShortcutCtx } from './useGlobalShortcuts
 interface Args extends GlobalShortcutCtx {
   editing: string | null
   setFocusId: (id: string) => void
-  startEdit: (id: string, prefill?: string) => void
+  startEdit: (id: string, prefill?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
 }
 // Re-export for callers that already import the surface from this module.
 export type { Sheet }
@@ -38,7 +38,7 @@ export function useShortcuts(args: Args) {
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) { setSelectedIds([]); e.preventDefault(); return }
       if (editing) return
       if (!focusId) return
-      if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); e.stopPropagation(); return }
+      if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId, undefined, { caret: 'end' }); e.preventDefault(); e.stopPropagation(); return }
       if (e.key.length === 1 && !(e.metaKey || e.ctrlKey) && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
     }
     window.addEventListener('keydown', onKey, true)
