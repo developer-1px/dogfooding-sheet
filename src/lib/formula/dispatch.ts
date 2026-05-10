@@ -10,6 +10,7 @@ import { dispatchText } from './textFns'
 import { dispatchRegex } from './regexFns'
 import { dispatchMath } from './mathFns'
 import { dispatchNumeric } from './numericFns'
+import { dispatchFinance } from './finance'
 import { dispatchLogic } from './logicFns'
 import { evalArgs, splitArgs, type Ctx } from './args'
 import { smartReturn } from './marker'
@@ -62,6 +63,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const rx = dispatchRegex(F, argsT); if (rx !== null) return rx
   const math = dispatchMath(F, argsT, argsN); if (math !== null) return math
   const num = dispatchNumeric(F, argsT, argsN); if (num !== null) return num
+  const fin = dispatchFinance(F, argsT, argsN, rawArgs, c.numFromCell); if (fin !== null) return fin
   const logic = dispatchLogic(F, argsT, argsN); if (logic !== null) return logic
 
   if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
