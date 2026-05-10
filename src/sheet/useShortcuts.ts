@@ -3,6 +3,7 @@ import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
 import { fillDown, fillRight } from '../lib/fillDown'
+import { jumpToEdge } from '../lib/jumpEdge'
 
 interface Args {
   editing: string | null
@@ -20,9 +21,10 @@ interface Args {
   toggleUnderline: () => void
   saveCsv: () => void
   setSelectedIds: (ids: string[]) => void
+  setFocusId: (id: string) => void
 }
 
-export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds }: Args) {
+export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds, setFocusId }: Args) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
@@ -41,6 +43,11 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         const p2 = focusId ? parseCellId(focusId) : null
         const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
         if (p2) writeCell(cellKey(p2.col, p2.row), e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
+        return
+      }
+      if (mod && !editing && /^Arrow(Up|Down|Left|Right)$/.test(e.key) && focusId) {
+        const next = jumpToEdge(focusId, sheet.cells, ROW_COUNT, e.key as 'ArrowUp')
+        if (next) { setFocusId(next); e.preventDefault() }
         return
       }
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) {

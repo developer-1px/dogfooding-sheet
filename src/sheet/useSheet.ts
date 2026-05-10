@@ -72,8 +72,8 @@ export function useSheet() {
     toggleBold: () => toggle('b'),
     toggleItalic: () => toggle('i'),
     toggleUnderline: () => toggle('u'),
-    saveCsv: () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT })),
-    setSelectedIds,
+    saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount: ROW_COUNT })),
+    setSelectedIds, setFocusId: edit.setFocusId,
   })
 
   return {
