@@ -40,7 +40,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
   const applyF = (f: Format) => setFormat(targetKeys(), f)
-  const toggle = (k: 'b' | 'i' | 'u') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
+  const toggle = (k: 'b' | 'i' | 'u' | 'w') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
   const setAlign = (a: CellStyle['a']) => updateStyle(targetKeys(), { a })
 
   return (
@@ -55,12 +55,12 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => toggle('b')} title="굵게"><b>B</b></button>
       <button onClick={() => toggle('i')} title="기울임"><i>I</i></button>
       <button onClick={() => toggle('u')} title="밑줄"><u>U</u></button>
+      <button onClick={() => toggle('w')} title="텍스트 줄바꿈">↵줄</button>
       <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} title="가운데 정렬">⇔</button>
       <button onClick={() => setAlign('right')} title="오른쪽 정렬">⇥</button>
       <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} /></label>
       <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} /></label>
-      <button onClick={() => updateStyle(targetKeys(), { bg: '', fg: '' })} title="색상 초기화">✕색</button>
       <button onClick={() => updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' })} title="서식 모두 해제">✕서식</button>
       <button onClick={toggleFreezeRows} title="첫 행 고정" style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행</button>
       <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
@@ -73,19 +73,14 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       }} title="현재 열로 행 필터" style={filter ? { background: '#e8f0fe' } : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button onClick={clearFilter} title="필터 해제">✕</button>}
       {hasHidden && <button onClick={showAll} title="숨김 행/열 모두 표시">👁모두표시</button>}
-      <button
-        onClick={() => {
-          const keys = targetKeys()
-          if (keys.length === 0) return
-          let csv: string | null = null
-          try { csv = window.prompt('허용 값 (쉼표 구분, 비우면 해제)', '') } catch { return }
-          if (csv === null) return
-          const opts = csv.split(',').map((s) => s.trim()).filter(Boolean)
-          if (opts.length === 0) clearRule(keys)
-          else setListRule(keys, opts)
-        }}
-        title="유효성 검사 (드롭다운 목록)"
-      >▾목록</button>
+      <button onClick={() => {
+        const keys = targetKeys(); if (keys.length === 0) return
+        let csv: string | null = null
+        try { csv = window.prompt('허용 값 (쉼표 구분, 비우면 해제)', '') } catch { return }
+        if (csv === null) return
+        const opts = csv.split(',').map((s) => s.trim()).filter(Boolean)
+        if (opts.length === 0) clearRule(keys); else setListRule(keys, opts)
+      }} title="유효성 검사 (드롭다운 목록)">▾목록</button>
       <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} />
       <button onClick={() => applyF('currency')} title="USD">$</button>
       <button onClick={() => applyF('eur')} title="EUR">€</button>

@@ -66,3 +66,5 @@
 .cell.errcell { color: #d93025; font-weight: 600; }
 
 .cell-link { color: #1a73e8; text-decoration: underline; cursor: pointer; }
+
+.cell.wrap { white-space: normal; word-break: break-word; }
