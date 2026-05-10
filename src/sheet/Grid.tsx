@@ -1,22 +1,20 @@
 import { useEffect, useRef } from 'react'
 import { COL_LETTERS } from './schema'
-import { idsForRow } from './range'
-import { Cell } from './Cell'
 import { GridHeader } from './GridHeader'
+import { GridRow } from './GridRow'
 import { useDragSelect } from './useDragSelect'
 import { useColWidths } from './useColWidths'
 import { ContextMenu } from './ContextMenu'
 import { useCellMenu } from './useCellMenu'
 import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
-import { isFillCorner, rectToIdSet } from './fillCorner'
-import { styleToProps } from './useStyles'
+import { rectToIdSet } from './fillCorner'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, freeze, hiddenRowSet } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, sortByCol })
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, setSelectedIds })
@@ -34,7 +32,9 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit })
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
-  const { gridTemplate, startResize } = useColWidths()
+  const { gridTemplateFor, startResize } = useColWidths()
+  const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))
+  const gridTemplate = gridTemplateFor(visibleCols)
   const dataRows = rows.slice(COL_LETTERS.length)
 
   return (
@@ -44,44 +44,41 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         columnHeaderProps={columnHeaderProps}
         startResize={startResize}
         setSelectedIds={setSelectedIds}
+        hiddenCols={hiddenCols}
+        hideCol={hideCol}
       />
       {dataRows.map((row, rIdx) => {
-        if (hiddenRowSet.has(rIdx)) return null
-        const rowCls = `grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}`
+        if (hiddenRowSet.has(rIdx) || hiddenRowsManual.has(rIdx)) return null
         return (
-        <div key={row.id} {...rowProps(row.id)} className={rowCls} style={{ gridTemplateColumns: gridTemplate }}>
-          <span className="row-header" onClick={() => setSelectedIds(idsForRow(rIdx))}>{rIdx + 1}</span>
-          {row.cells.map((cell, cIdx) => {
-            const m = /^r(\d+)-([A-J])$/.exec(cell.id)
-            const k = m ? `${m[2]}${Number(m[1]) + 1}` : ''
-            const extra = freeze.cols && cIdx === 0 ? ' freeze-col' : ''
-            return (
-            <Cell
-              key={cell.id}
-              cellProps={cellProps(cell.id)}
-              label={cell.label}
-              selected={cell.selected}
-              focused={focusId === cell.id}
-              highlighted={hiSet.has(cell.id)}
-              isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
-              styleClass={styleToProps(styleOf(k)).className + extra}
-              styleInline={styleToProps(styleOf(k)).style}
-              editing={editing === cell.id}
-              draft={draft}
-              setDraft={setDraft}
-              onCommit={commitEdit}
-              onCancel={cancelEdit}
-              onStartEdit={() => startEdit(cell.id)}
-              onMouseDown={(e) => drag.onMouseDown(cell.id, e)}
-              onMouseEnter={() => { fill.dragging ? fill.onCellEnterDuringFill(cell.id) : drag.onMouseEnter(cell.id) }}
-              isFillCorner={isFillCorner(cell.id, focusId, selectedIds)}
-              onFillHandleMouseDown={fill.onHandleMouseDown}
-              previewing={previewIds.has(cell.id)}
-              onContextMenu={(e) => cellMenu.open(e, cell.id)}
-              ref={editing === cell.id ? inputRef : null}
-            />
-          )})}
-        </div>
+          <GridRow
+            key={row.id}
+            rIdx={rIdx}
+            rowItemProps={row}
+            rowProps={rowProps(row.id)}
+            cellPropsFor={cellProps}
+            gridTemplate={gridTemplate}
+            rowCls={`grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}`}
+            freezeFirstCol={!!freeze.cols}
+            hiddenCols={hiddenCols}
+            focusId={focusId}
+            selectedIds={selectedIds}
+            editing={editing}
+            draft={draft}
+            setDraft={setDraft}
+            setSelectedIds={setSelectedIds}
+            startEdit={startEdit}
+            commitEdit={commitEdit}
+            cancelEdit={cancelEdit}
+            hideRow={hideRow}
+            styleOf={styleOf}
+            hiSet={hiSet}
+            previewIds={previewIds}
+            onCellMouseDown={(id, e) => drag.onMouseDown(id, e)}
+            onCellMouseEnter={(id) => fill.dragging ? fill.onCellEnterDuringFill(id) : drag.onMouseEnter(id)}
+            onFillHandleMouseDown={fill.onHandleMouseDown}
+            onCellContextMenu={(e, id) => cellMenu.open(e, id)}
+            inputRef={inputRef}
+          />
         )
       })}
       {cellMenu.menu && (

@@ -8,6 +8,7 @@ import { useFormats, applyFormat } from './useFormats'
 import { useStyles } from './useStyles'
 import { useFreeze } from './useFreeze'
 import { useFilter, hiddenRows } from './useFilter'
+import { useHidden } from './useHidden'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp } from './rowOps'
 import { sortByColumn } from './sortOps'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -23,6 +24,7 @@ export function useSheet() {
   const styles = useStyles()
   const freeze = useFreeze()
   const filter = useFilter()
+  const hidden = useHidden()
   const find = useFindState()
   const tabs = useTabs(sheet.cells)
   const tabFns = tabActions(tabs.state, tabs.setState, sheet.cells, (c) => ops.reset({ cells: c }))
@@ -86,6 +88,8 @@ export function useSheet() {
     freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols,
     filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
     hiddenRowSet: hiddenRows(filter.filter, ROW_COUNT, display),
+    hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
+    hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
     insertRow, deleteRow, sortByCol,
     tabs: tabs.state, ...tabFns,
   }

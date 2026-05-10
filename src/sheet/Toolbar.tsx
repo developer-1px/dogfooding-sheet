@@ -19,6 +19,8 @@ interface Props {
   filter: { col: string; text: string } | null
   applyFilter: (col: string, text: string) => void
   clearFilter: () => void
+  hasHidden: boolean
+  showAll: () => void
 }
 
 const cellIdToKey = (id: string): string => {
@@ -26,7 +28,7 @@ const cellIdToKey = (id: string): string => {
   return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => {
@@ -73,6 +75,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
         style={filter ? { background: '#e8f0fe' } : undefined}
       >🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button onClick={clearFilter} title="필터 해제">✕</button>}
+      {hasHidden && <button onClick={showAll} title="숨김 행/열 모두 표시">👁모두표시</button>}
       <button onClick={() => applyF('currency')} title="통화">$</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>

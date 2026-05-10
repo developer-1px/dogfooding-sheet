@@ -43,6 +43,8 @@ export default function App() {
             filter={ctx.filter}
             applyFilter={ctx.applyFilter}
             clearFilter={ctx.clearFilter}
+            hasHidden={ctx.hasHidden}
+            showAll={ctx.showAll}
           />
         }
       />

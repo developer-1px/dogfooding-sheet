@@ -47,7 +47,8 @@ export function useColWidths() {
 
   const widthOf = (col: string) => widths[col] ?? DEFAULT_WIDTH
 
-  const gridTemplate = `48px ${COL_LETTERS.map((c) => `${widthOf(c)}px`).join(' ')}`
+  const gridTemplateFor = (visibleCols: readonly string[] = COL_LETTERS) =>
+    `48px ${visibleCols.map((c) => `${widthOf(c)}px`).join(' ')}`
 
-  return { widths, widthOf, gridTemplate, startResize }
+  return { widths, widthOf, gridTemplate: gridTemplateFor(), gridTemplateFor, startResize }
 }
