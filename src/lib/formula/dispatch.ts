@@ -1,4 +1,4 @@
-import { vlookup, hlookup, index as indexFn, match as matchFn } from './lookup'
+import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate, largeSmall, rank, sumproduct } from './aggregates'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
@@ -42,6 +42,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
   if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
+  if (F === 'XLOOKUP') return smartReturn(xlookup(argsT[0], argsT[1], argsT[2], argsT[3], c.cells, c.evalRaw))
   if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalRaw))
   if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalRaw))
   return '0'

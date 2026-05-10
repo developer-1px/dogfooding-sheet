@@ -1,31 +1,8 @@
+import { parseRange, evalCell } from './rangeRect'
+
 type Cells = Record<string, string>
 
-interface RangeRect { rMin: number; rMax: number; cMin: number; cMax: number }
-
-export const parseRange = (s: string): RangeRect | null => {
-  const m = /^([A-J])(\d+):([A-J])(\d+)$/.exec(s.trim())
-  if (!m) {
-    const single = /^([A-J])(\d+)$/.exec(s.trim())
-    if (!single) return null
-    const c = single[1].charCodeAt(0) - 65
-    const r = Number(single[2]) - 1
-    return { rMin: r, rMax: r, cMin: c, cMax: c }
-  }
-  const c1 = m[1].charCodeAt(0) - 65
-  const c2 = m[3].charCodeAt(0) - 65
-  return {
-    rMin: Math.min(Number(m[2]), Number(m[4])) - 1,
-    rMax: Math.max(Number(m[2]), Number(m[4])) - 1,
-    cMin: Math.min(c1, c2),
-    cMax: Math.max(c1, c2),
-  }
-}
-
-const cellAt = (cells: Cells, c: number, r: number): string =>
-  cells[`${String.fromCharCode(65 + c)}${r + 1}`] ?? ''
-
-const evalCell = (cells: Cells, c: number, r: number, evalRaw: (s: string) => string): string =>
-  evalRaw(cellAt(cells, c, r))
+export { parseRange }
 
 export function vlookup(
   key: string,
@@ -65,6 +42,30 @@ export function hlookup(
   return '#N/A'
 }
 
+export function xlookup(
+  key: string,
+  lookupRangeStr: string,
+  resultRangeStr: string,
+  ifNotFound: string | undefined,
+  cells: Cells,
+  evalRaw: (s: string) => string,
+): string {
+  const L = parseRange(lookupRangeStr), R = parseRange(resultRangeStr)
+  if (!L || !R) return '#REF!'
+  const len = Math.max(L.rMax - L.rMin, L.cMax - L.cMin) + 1
+  const rowMode = L.rMax > L.rMin
+  for (let i = 0; i < len; i++) {
+    const lc = rowMode ? L.cMin : L.cMin + i
+    const lr = rowMode ? L.rMin + i : L.rMin
+    if (evalCell(cells, lc, lr, evalRaw) === key) {
+      const rc = rowMode ? R.cMin : R.cMin + i
+      const rr = rowMode ? R.rMin + i : R.rMin
+      return evalCell(cells, rc, rr, evalRaw)
+    }
+  }
+  return ifNotFound ?? '#N/A'
+}
+
 export function index(rangeStr: string, row: number, col: number, cells: Cells, evalRaw: (s: string) => string): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
@@ -77,7 +78,6 @@ export function index(rangeStr: string, row: number, col: number, cells: Cells, 
 export function match(key: string, rangeStr: string, cells: Cells, evalRaw: (s: string) => string): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
-  // Search row-major within the range
   let pos = 0
   for (let row = r.rMin; row <= r.rMax; row++) {
     for (let col = r.cMin; col <= r.cMax; col++) {

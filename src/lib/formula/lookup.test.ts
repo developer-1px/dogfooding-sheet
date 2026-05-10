@@ -15,6 +15,19 @@ describe('HLOOKUP', () => {
   })
 })
 
+describe('XLOOKUP', () => {
+  it('vertical key with separate result column', () => {
+    expect(evaluateCell(data, '=XLOOKUP("Bread", A1:A3, B1:B3)')).toBe('2.25')
+  })
+  it('returns ifNotFound when missing', () => {
+    expect(evaluateCell(data, '=XLOOKUP("Cheese", A1:A3, B1:B3, "n/a")')).toBe('n/a')
+  })
+  it('horizontal lookup', () => {
+    const h = { A1: 'Q1', B1: 'Q2', C1: 'Q3', A2: '10', B2: '20', C2: '30' }
+    expect(evaluateCell(h, '=XLOOKUP("Q3", A1:C1, A2:C2)')).toBe('30')
+  })
+})
+
 describe('VLOOKUP', () => {
   it('finds and returns column value', () => {
     expect(evaluateCell(data, '=VLOOKUP("Bread", A1:B3, 2)')).toBe('2.25')
