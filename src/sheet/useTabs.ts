@@ -95,5 +95,6 @@ export function tabActions(sheet: Sheet, ops: JsonOps<Sheet>) {
     switchTab(state.order[(i + delta + n) % n])
   }
   const setTabColor = (name: string, color: string) => { const colors = { ...state.colors }; if (color) colors[name] = color; else delete colors[name]; ops.replace('/tabs', { ...state, colors }) }
-  return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, cycleTab, setTabColor }
+  const reorderTab = (from: string, to: string) => { const fi = state.order.indexOf(from), ti = state.order.indexOf(to); if (fi < 0 || ti < 0 || fi === ti) return; const next = state.order.filter((n) => n !== from); next.splice(ti, 0, from); ops.replace('/tabs', { ...state, order: next }) }
+  return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, cycleTab, setTabColor, reorderTab }
 }

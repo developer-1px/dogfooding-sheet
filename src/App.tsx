@@ -64,6 +64,7 @@ export default function App() {
         renameSheet={ctx.renameSheet}
         duplicateSheet={ctx.duplicateSheet}
         setTabColor={ctx.setTabColor}
+        reorderTab={ctx.reorderTab}
         confirm={confirm}
       />
       <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />

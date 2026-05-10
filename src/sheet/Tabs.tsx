@@ -12,10 +12,11 @@ interface Props {
   renameSheet: (oldName: string, newName: string) => void
   duplicateSheet: (name: string) => void
   setTabColor: (name: string, color: string) => void
+  reorderTab: (from: string, to: string) => void
   confirm: (opts: ConfirmOptions) => Promise<boolean>
 }
 
-export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, setTabColor, confirm }: Props) {
+export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, setTabColor, reorderTab, confirm }: Props) {
   const ed = useEditable<string>({
     getValue: (id) => id,
     onCommit: (oldName, draft) => {
@@ -44,9 +45,13 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           key={name}
           {...tabProps(name)}
           className={`tab${name === state.active ? ' active' : ''}`}
+          draggable
+          onDragStart={(e) => e.dataTransfer.setData('text/x-tab', name)}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => { e.preventDefault(); const from = e.dataTransfer.getData('text/x-tab'); if (from && from !== name) reorderTab(from, name) }}
           onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
           style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
-          title="더블클릭=이름 변경 / 우클릭=색상"
+          title="더블클릭=이름 변경 / 드래그=순서 변경"
         >
           {ed.editing === name ? (
             <input className="tab-rename" {...ed.inputProps} />
