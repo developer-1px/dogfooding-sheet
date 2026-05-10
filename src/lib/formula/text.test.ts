@@ -316,6 +316,7 @@ describe('text functions', () => {
   it('LERP / CLAMP', () => {
     expect(evaluateCell({}, '=LERP(0, 10, 0.25)')).toBe('2.5')
     expect(evaluateCell({}, '=INVLERP(2.5, 0, 10)')).toBe('0.25')
+    expect(evaluateCell({}, '=MEDIAN3(7, 3, 5)')).toBe('5')
     expect(evaluateCell({}, '=CLAMP(15, 0, 10)')).toBe('10')
     expect(evaluateCell({}, '=CLAMP(-5, 0, 10)')).toBe('0')
     expect(evaluateCell({}, '=CLAMP(5, 0, 10)')).toBe('5')
