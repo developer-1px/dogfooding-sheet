@@ -73,7 +73,7 @@ export function GridRow(p: Props) {
             selected={cell.selected}
             focused={p.focusId === cell.id}
             highlighted={p.hiSet.has(cell.id)}
-            isNum={cell.label !== '' && !Number.isNaN(Number(cell.label))}
+            isNum={cell.label !== '' && (!Number.isNaN(Number(cell.label)) || !Number.isNaN(Number(p.rawOf(k) ?? '')))}
             styleClass={sp.className + extra}
             styleInline={styleInline}
             note={p.noteOf(k)}
