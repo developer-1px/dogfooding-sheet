@@ -8,7 +8,7 @@ const numFromCell = (cells: Cells, ref: string, seen: Set<string>): number => {
   return Number.isFinite(n) ? n : 0
 }
 
-const evalArith = (expr: string): number => {
+const evalArith = (expr: string): unknown => {
   if (!/^[\d+\-*/().\s,<>=!]+$/.test(expr)) throw new Error('bad')
   // eslint-disable-next-line no-new-func
   return Function(`"use strict"; return (${expr})`)()
@@ -55,6 +55,7 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
 
   try {
     const result = evalArith(expr)
+    if (typeof result === 'boolean') return result ? '1' : '0'
     if (typeof result === 'number') {
       return Number.isFinite(result) ? String(Math.round(result * 1e10) / 1e10) : '#ERR'
     }
