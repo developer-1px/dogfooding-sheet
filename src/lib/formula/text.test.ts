@@ -64,6 +64,12 @@ describe('text functions', () => {
   it('EDATE shifts months', () => {
     expect(evaluateCell({}, '=EDATE("2026-01-31",1)')).toBe('2026-03-03')
   })
+  it('ISERROR / ISEVEN / ISODD predicates', () => {
+    expect(evaluateCell({}, '=ISERROR(VLOOKUP("z","A1:B1",2))')).toBe('1')
+    expect(evaluateCell({}, '=ISERROR(5)')).toBe('0')
+    expect(evaluateCell({}, '=ISEVEN(4)')).toBe('1')
+    expect(evaluateCell({}, '=ISODD(3)')).toBe('1')
+  })
   it('IFERROR replaces error values', () => {
     expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2),"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')
