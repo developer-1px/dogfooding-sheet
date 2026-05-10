@@ -167,6 +167,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=HAMMING("karolin", "kathrin")')).toBe('3')
     expect(evaluateCell({}, '=HAMMING("abc", "abcd")')).toBe('#N/A')
   })
+  it('SQUEEZE collapses runs of whitespace and trims', () => {
+    expect(evaluateCell({}, '=SQUEEZE("  hello   world  ")')).toBe('hello world')
+    expect(evaluateCell({}, '=SQUEEZE("foo  bar    baz")')).toBe('foo bar baz')
+  })
   it('TRUNCATE shortens with ellipsis tail', () => {
     expect(evaluateCell({}, '=TRUNCATE("hello world", 8)')).toBe('hello w…')
     expect(evaluateCell({}, '=TRUNCATE("hi", 8)')).toBe('hi')

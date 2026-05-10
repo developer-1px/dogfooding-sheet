@@ -8,6 +8,7 @@ export function dispatchTextOps(F: string, argsT: string[]): string | null {
     const m = (argsT[0] ?? '').trim().match(/\S+/g)
     return String(m ? m.length : 0)
   }
+  if (F === 'SQUEEZE') return wrap((argsT[0] ?? '').replace(/\s+/g, ' ').trim())
   if (F === 'DEACCENT') return wrap((argsT[0] ?? '').normalize('NFD').replace(/\p{M}/gu, ''))
   if (F === 'TRUNCATE') {
     const s = argsT[0] ?? '', n = Math.max(0, Math.floor(Number(argsT[1] ?? '0')))
