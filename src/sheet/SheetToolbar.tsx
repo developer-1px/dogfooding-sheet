@@ -1,9 +1,11 @@
 import { Toolbar } from './Toolbar'
+import type { PromptOptions } from './usePrompt'
 import type { useSheet } from './useSheet'
 
 type Ctx = ReturnType<typeof useSheet>
+type Ask = (opts: PromptOptions) => Promise<string | null>
 
-export function SheetToolbar({ ctx }: { ctx: Ctx }) {
+export function SheetToolbar({ ctx, ask }: { ctx: Ctx; ask: Ask }) {
   return (
     <Toolbar
       display={ctx.display}
@@ -34,6 +36,7 @@ export function SheetToolbar({ ctx }: { ctx: Ctx }) {
       clearCondRules={ctx.clearCondRules}
       cells={ctx.sheet.cells}
       resetCells={(c) => ctx.ops.replace('/cells', c)}
+      ask={ask}
     />
   )
 }

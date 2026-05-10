@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef } from 'react'
 import { useSheet } from './sheet/useSheet'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/Grid'
@@ -8,18 +8,24 @@ import { rectFromIds, formatRect } from './lib/clipboard'
 import { gotoCell } from './lib/gotoCell'
 import { Find } from './sheet/Find'
 import { HelpDialog } from './sheet/HelpDialog'
-import { PromptDialog } from './sheet/PromptDialog'
+import { usePrompt } from './sheet/usePrompt'
 import { Tabs } from './sheet/Tabs'
 import { SheetToolbar } from './sheet/SheetToolbar'
 import './App.css'
 
 export default function App() {
-  const [gotoOpen, setGotoOpen] = useState(false)
-  const [noteOpen, setNoteOpen] = useState(false)
+  const { ask, dialog: promptDialog } = usePrompt()
+  const ctxRef = useRef<ReturnType<typeof useSheet> | null>(null)
   const ctx = useSheet({
-    openGoto: () => setGotoOpen(true),
-    openNote: () => setNoteOpen(true),
+    openGoto: () => ask({ label: '이동할 셀 (예: B5)', placeholder: 'B5', submitLabel: '이동' })
+      .then((v) => { if (v && ctxRef.current) gotoCell(v, ctxRef.current.setFocusId) }),
+    openNote: () => {
+      const c = ctxRef.current; const k = c?.focusKey; if (!c || !k) return
+      ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' })
+        .then((v) => { if (v !== null) c.setNote(k, v) })
+    },
   })
+  ctxRef.current = ctx
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
   const rect = ctx.selectedIds.length > 1 ? rectFromIds(ctx.selectedIds) : null
   const addr = rect ? formatRect(rect) : ctx.focusKey
@@ -28,14 +34,14 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
-        onAddrClick={() => setGotoOpen(true)}
+        onAddrClick={() => ask({ label: '이동할 셀 (예: B5)', placeholder: 'B5', submitLabel: '이동' }).then((v) => { if (v) gotoCell(v, ctx.setFocusId) })}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}
         onRedo={() => ctx.ops.redo()}
         canUndo={ctx.ops.canUndo()}
         canRedo={ctx.ops.canRedo()}
-        extra={<SheetToolbar ctx={ctx} />}
+        extra={<SheetToolbar ctx={ctx} ask={ask} />}
       />
       <Grid ctx={ctx} />
       <Tabs
@@ -57,22 +63,7 @@ export default function App() {
         onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
         writeCell={ctx.writeCell}
       />
-      <PromptDialog
-        open={gotoOpen}
-        label="이동할 셀 (예: B5)"
-        placeholder="B5"
-        submitLabel="이동"
-        onSubmit={(v) => { gotoCell(v, ctx.setFocusId); setGotoOpen(false) }}
-        onCancel={() => setGotoOpen(false)}
-      />
-      <PromptDialog
-        open={noteOpen}
-        label="셀 노트"
-        initial={ctx.focusKey ? ctx.noteOf(ctx.focusKey) ?? '' : ''}
-        submitLabel="저장"
-        onSubmit={(v) => { if (ctx.focusKey) ctx.setNote(ctx.focusKey, v); setNoteOpen(false) }}
-        onCancel={() => setNoteOpen(false)}
-      />
+      {promptDialog}
     </div>
   )
 }

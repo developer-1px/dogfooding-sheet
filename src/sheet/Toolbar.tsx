@@ -1,7 +1,9 @@
 import type { Format } from './useFormats'
 import type { CellStyle } from './useStyles'
+import type { PromptOptions } from './usePrompt'
 import { OverflowMenu } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
+import { FormatButtons } from './FormatButtons'
 import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey } from '../lib/a1'
 
@@ -34,9 +36,10 @@ interface Props {
   clearCondRules: () => void
   cells: Record<string, string>
   resetCells: (c: Record<string, string>) => void
+  ask: (opts: PromptOptions) => Promise<string | null>
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, addCondRule, clearCondRules, cells, resetCells }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, insertCol, deleteCol, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, addCondRule, clearCondRules, cells, resetCells, ask }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map((id) => id.includes('-') ? cellIdToKey(id) : id)
@@ -67,32 +70,25 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={toggleFreezeCols} title="첫 열 고정" style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열</button>
       <button onClick={() => {
         if (!focus) return
-        let t: string | null = null
-        try { t = window.prompt(`${focus[1]}열에서 찾을 값`, filter?.text ?? '') } catch { return }
-        if (t === null) return
-        if (t === '') clearFilter(); else applyFilter(focus[1], t)
+        const col = focus[1]
+        ask({ label: `${col}열에서 찾을 값`, initial: filter?.text ?? '', submitLabel: '필터' }).then((t) => {
+          if (t === null) return
+          if (t === '') clearFilter(); else applyFilter(col, t)
+        })
       }} title="현재 열로 행 필터" style={filter ? { background: '#e8f0fe' } : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button onClick={clearFilter} title="필터 해제">✕</button>}
       {hasHidden && <button onClick={showAll} title="숨김 행/열 모두 표시">👁모두표시</button>}
       <button onClick={() => {
         const keys = targetKeys(); if (keys.length === 0) return
-        let csv: string | null = null
-        try { csv = window.prompt('허용 값 (쉼표 구분, 비우면 해제)', '') } catch { return }
-        if (csv === null) return
-        const opts = csv.split(',').map((s) => s.trim()).filter(Boolean)
-        if (opts.length === 0) clearRule(keys); else setListRule(keys, opts)
+        ask({ label: '허용 값 (쉼표 구분, 비우면 해제)', submitLabel: '적용' }).then((csv) => {
+          if (csv === null) return
+          const opts = csv.split(',').map((s) => s.trim()).filter(Boolean)
+          if (opts.length === 0) clearRule(keys); else setListRule(keys, opts)
+        })
       }} title="유효성 검사 (드롭다운 목록)">▾목록</button>
       <button onClick={() => { const keys = targetKeys(); if (keys.length) setCheckboxRule(keys) }} title="체크박스로 변환">☑체크</button>
-      <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} />
-      <button onClick={() => applyF('currency')} title="USD">$</button>
-      <button onClick={() => applyF('eur')} title="EUR">€</button>
-      <button onClick={() => applyF('krw')} title="KRW">₩</button>
-      <button onClick={() => applyF('percent')} title="백분율">%</button>
-      <button onClick={() => applyF('integer')} title="정수">.0</button>
-      <button onClick={() => applyF('thousand')} title="1,000 천단위">1,K</button>
-      <button onClick={() => applyF('scientific')} title="과학 표기">1E</button>
-      <button onClick={() => applyF('date')} title="epoch → 날짜">📅</button>
-      <button onClick={() => applyF('plain')} title="일반">123</button>
+      <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
+      <FormatButtons apply={applyF} />
       <OverflowMenu display={display} writeCell={writeCell} openHelp={openHelp} cells={cells} resetCells={resetCells} />
     </>
   )
