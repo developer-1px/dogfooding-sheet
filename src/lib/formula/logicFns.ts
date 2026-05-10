@@ -7,6 +7,11 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   if (F === 'XOR') return argsN.reduce((a, n) => a ^ (n ? 1 : 0), 0) ? '1' : '0'
   if (F === 'TRUE') return '1'
   if (F === 'FALSE') return '0'
+  if (F === 'BOOLEAN') {
+    const s = (argsT[0] ?? '').trim().toLowerCase()
+    if (s === '' || s === '0' || s === 'false' || s === 'no' || s === 'n' || s === 'off') return '0'
+    return '1'
+  }
   if (F === 'ISURL') return /^https?:\/\/[^\s]+$/.test(argsT[0] ?? '') ? '1' : '0'
   if (F === 'ISEMAIL') return /^[\w.+-]+@[\w.-]+\.\w{2,}$/.test(argsT[0] ?? '') ? '1' : '0'
   if (F === 'ISBLANK') return argsT[0] === '' ? '1' : '0'

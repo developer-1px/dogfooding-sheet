@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
 
 describe('text functions', () => {
+  it('BOOLEAN coerces strings', () => {
+    expect(evaluateCell({}, '=BOOLEAN("yes")')).toBe('1')
+    expect(evaluateCell({}, '=BOOLEAN("no")')).toBe('0')
+    expect(evaluateCell({}, '=BOOLEAN("false")')).toBe('0')
+    expect(evaluateCell({}, '=BOOLEAN("")')).toBe('0')
+    expect(evaluateCell({}, '=BOOLEAN("anything")')).toBe('1')
+  })
   it('XOR / TRUE / FALSE', () => {
     expect(evaluateCell({}, '=XOR(1,0)')).toBe('1')
     expect(evaluateCell({}, '=XOR(1,1)')).toBe('0')
