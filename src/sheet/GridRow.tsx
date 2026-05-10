@@ -42,14 +42,20 @@ interface Props {
   selectProps: SelectProps
 }
 
+const rowSelectIds = (rIdx: number, anchor: string | null): string[] => {
+  const m = anchor && /^r(\d+)/.exec(anchor); const from = m ? Number(m[1]) : rIdx
+  const ids: string[] = []
+  for (let r = Math.min(from, rIdx); r <= Math.max(from, rIdx); r++) ids.push(...idsForRow(r))
+  return ids
+}
 export function GridRow(p: Props) {
   return (
     <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate }}>
       <span
         className="row-header"
-        onClick={() => p.setSelectedIds(idsForRow(p.rIdx))}
+        onClick={(e) => p.setSelectedIds(rowSelectIds(p.rIdx, e.shiftKey ? p.focusId : null))}
         onContextMenu={(e) => { e.preventDefault(); p.hideRow(p.rIdx) }}
-        title="우클릭으로 행 숨기기"
+        title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=행 숨기기"
       >{p.rIdx + 1}</span>
       {p.rowItemProps.cells.map((cell, cIdx) => {
         if (p.hiddenCols.has(COL_LETTERS[cIdx])) return null
@@ -73,16 +79,13 @@ export function GridRow(p: Props) {
             note={p.noteOf(k)}
             tooltip={p.rawOf(k)?.startsWith('=') ? p.rawOf(k) : undefined}
             validationOptions={p.ruleOf(k)?.type === 'list' ? (p.ruleOf(k) as { options: string[] }).options : undefined}
-            isCheckbox={p.ruleOf(k)?.type === 'checkbox'}
-            onCheckboxToggle={() => p.writeCell(k, p.rawOf(k) === 'TRUE' ? 'FALSE' : 'TRUE')}
+            isCheckbox={p.ruleOf(k)?.type === 'checkbox'} onCheckboxToggle={() => p.writeCell(k, p.rawOf(k) === 'TRUE' ? 'FALSE' : 'TRUE')}
             editing={p.editing === cell.id}
             draft={p.draft}
             setDraft={p.setDraft}
-            onCommit={p.commitEdit}
-            onCancel={p.cancelEdit}
+            onCommit={p.commitEdit} onCancel={p.cancelEdit}
             onStartEdit={() => p.startEdit(cell.id)}
-            onMouseDown={(e) => p.onCellMouseDown(cell.id, e)}
-            onMouseEnter={() => p.onCellMouseEnter(cell.id)}
+            onMouseDown={(e) => p.onCellMouseDown(cell.id, e)} onMouseEnter={() => p.onCellMouseEnter(cell.id)}
             isFillCorner={isFillCorner(cell.id, p.focusId, p.selectedIds)}
             onFillHandleMouseDown={p.onFillHandleMouseDown}
             previewing={p.previewIds.has(cell.id)}
