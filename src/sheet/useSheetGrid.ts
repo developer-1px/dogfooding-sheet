@@ -16,8 +16,8 @@ export function useSheetGrid({ data, setFocusId, setSelectedIds, startEdit, isEd
     if (e.type === 'navigate' && e.id) { setFocusId(e.id); setSelectedIds([]); return }
     // click → activate (focus/select intent only). edit-mode 진입은 F2 → editStart 이벤트.
     if (e.type === 'activate' && e.id) return
-    // Enter inside cell-input bubbles to grid root and matches grid edit-chord — guard against
-    // re-entering edit mode while a commit is in flight (would reset draft to '').
+    // aria-kernel#141 — Enter inside cell-input bubbles to grid root and matches the editable-mode
+    // chord, re-firing editStart and resetting draft. Guard until the kernel adds editable-guard.
     if (e.type === 'editStart' && e.id) { if (isEditing?.()) return; startEdit?.(e.id, undefined, { caret: 'end' }); return }
     if (e.type === 'select') {
       if (e.to === undefined) setSelectedIds(e.ids)
