@@ -4,6 +4,7 @@ import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
 import { rectFromIds, rectToTsv, pasteTsv } from '../lib/clipboard'
 import { fillDown, fillRight } from '../lib/fillDown'
 import { jumpToEdge, idsBetween } from '../lib/jumpEdge'
+import { idsForCol, idsForRow } from '../lib/range'
 
 interface Args {
   editing: string | null
@@ -40,9 +41,9 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       }
       if (mod && e.key === ';' && !e.altKey) {
         e.preventDefault()
-        const p2 = focusId ? parseCellId(focusId) : null
+        const p2 = focusId ? parseCellId(focusId) : null; if (!p2) return
         const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
-        if (p2) writeCell(cellKey(p2.col, p2.row), e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
+        writeCell(cellKey(p2.col, p2.row), e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
         return
       }
       if (mod && !editing && /^Arrow(Up|Down|Left|Right)$/.test(e.key) && focusId) {
@@ -53,15 +54,11 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
         e.preventDefault()
         return
       }
-      if (!editing && focusId && (e.key === ' ' || e.key === 'Spacebar')) {
-        if (e.ctrlKey && !e.shiftKey) {
-          const p = parseCellId(focusId); if (p) { setSelectedIds(Array.from({ length: ROW_COUNT }, (_, r) => `r${r}-${p.col}`)); e.preventDefault() }
-          return
-        }
-        if (e.shiftKey && !e.ctrlKey) {
-          const p = parseCellId(focusId); if (p) { setSelectedIds('ABCDEFGHIJ'.split('').map((c) => `r${p.row}-${c}`)); e.preventDefault() }
-          return
-        }
+      if (!editing && focusId && e.key === ' ' && (e.ctrlKey !== e.shiftKey)) {
+        const p = parseCellId(focusId); if (!p) return
+        setSelectedIds(e.ctrlKey ? idsForCol(p.col, ROW_COUNT) : idsForRow(p.row))
+        e.preventDefault()
+        return
       }
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) {
         setSelectedIds([])
@@ -87,17 +84,10 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
       }
       if (mod && ck === 'v') {
         e.preventDefault()
-        navigator.clipboard?.readText().then((t) => {
-          if (t.includes('\t') || t.includes('\n')) pasteTsv(t, p, writeCell, { maxRow: ROW_COUNT })
-          else writeCell(k, t)
-        }).catch(() => {})
+        navigator.clipboard?.readText().then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow: ROW_COUNT }) : writeCell(k, t)).catch(() => {})
         return
       }
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') })
-        e.preventDefault()
-        return
-      }
+      if (e.key === 'Delete' || e.key === 'Backspace') { ids.forEach((id) => { const pp = parseCellId(id); if (pp) writeCell(cellKey(pp.col, pp.row), '') }); e.preventDefault(); return }
       if (e.key === 'F2' || e.key === 'Enter') { startEdit(focusId); e.preventDefault(); return }
       if (e.key.length === 1 && !mod && !e.altKey) { startEdit(focusId, e.key); e.preventDefault() }
     }
