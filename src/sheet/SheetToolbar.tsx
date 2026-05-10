@@ -49,7 +49,11 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       toggleShowFormulas={ctx.toggleShowFormulas}
       showGridlines={ctx.showGridlines}
       toggleShowGridlines={ctx.toggleShowGridlines}
-      clearAllFormats={() => { ctx.ops.replace('/styles', {}); ctx.ops.replace('/formats', {}); ctx.ops.replace('/condFormat', []) }}
+      clearAllFormats={() => ctx.ops.patch([
+        { op: 'replace', path: '/styles', value: {} },
+        { op: 'replace', path: '/formats', value: {} },
+        { op: 'replace', path: '/condFormat', value: [] },
+      ])}
       mergeSelection={ctx.mergeSelection}
       ask={ask}
       confirm={confirm}
