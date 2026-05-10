@@ -13,6 +13,7 @@ import { dispatchMath } from './mathFns'
 import { dispatchNumeric } from './numericFns'
 import { dispatchFinance } from './finance'
 import { dispatchLogic } from './logicFns'
+import { dispatchRef } from './refFns'
 import { evalArgs, splitArgs, type Ctx } from './args'
 import { smartReturn } from './marker'
 
@@ -71,26 +72,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
   if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
-  if (F === 'OFFSET') {
-    const base = (splitArgs(rawArgs)[0] ?? '').trim()
-    const m = /^([A-J])(\d+)$/.exec(base)
-    if (!m) return smartReturn('#REF!')
-    const dr = Number(argsT[1]), dc = Number(argsT[2])
-    const col = m[1].charCodeAt(0) - 65 + dc, row = Number(m[2]) - 1 + dr
-    if (col < 0 || col > 9 || row < 0) return smartReturn('#REF!')
-    const ref = String.fromCharCode(65 + col) + (row + 1)
-    return smartReturn(c.evalRaw(c.cells[ref] ?? ''))
-  }
-  if (F === 'INDIRECT') {
-    const ref = (argsT[0] ?? '').trim()
-    if (!/^[A-J]\d+$/.test(ref)) return smartReturn('#REF!')
-    return smartReturn(c.evalRaw(c.cells[ref] ?? ''))
-  }
-  if (F === 'ADDRESS') {
-    const r = Number(argsT[0]), col = Number(argsT[1])
-    if (!Number.isFinite(r) || !Number.isFinite(col) || col < 1 || col > 26) return smartReturn('#VALUE!')
-    return smartReturn(String.fromCharCode(64 + col) + r)
-  }
+  const ref = dispatchRef(F, argsT, rawArgs, c); if (ref !== null) return ref
   if (F === 'XLOOKUP') return smartReturn(xlookup(argsT[0], argsT[1], argsT[2], argsT[3], c.cells, c.evalRaw))
   if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalRaw))
   if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalRaw))
