@@ -460,6 +460,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=STRINGIFY("hi")')).toBe('"hi"')
     expect(evaluateCell({}, '=STRINGIFY("a","b")')).toBe('["a","b"]')
   })
+  it('STARS / PROGRESSBAR', () => {
+    expect(evaluateCell({}, '=STARS(3)')).toBe('★★★☆☆')
+    expect(evaluateCell({}, '=STARS(0)')).toBe('☆☆☆☆☆')
+    expect(evaluateCell({}, '=PROGRESSBAR(50, 4)')).toBe('██░░')
+  })
   it('KORNUM formats with 만/억/조', () => {
     expect(evaluateCell({}, '=KORNUM(1234)')).toBe('1,234')
     expect(evaluateCell({}, '=KORNUM(12345)')).toBe('1만 2,345')

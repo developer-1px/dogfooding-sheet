@@ -6,6 +6,16 @@ export function dispatchTextFormat(F: string, argsT: string[]): string | null {
   if (F === 'LANG') return wrap(typeof navigator !== 'undefined' ? navigator.language : 'en-US')
   if (F === 'TIMEZONE') { try { return wrap(Intl.DateTimeFormat().resolvedOptions().timeZone) } catch { return wrap('UTC') } }
   if (F === 'STRINGIFY') return wrap(JSON.stringify(argsT.length === 1 ? argsT[0] : argsT))
+  if (F === 'STARS') {
+    const n = Math.max(0, Math.min(5, Math.round(Number(argsT[0]))))
+    return wrap('★'.repeat(n) + '☆'.repeat(5 - n))
+  }
+  if (F === 'PROGRESSBAR') {
+    const pct = Math.max(0, Math.min(100, Number(argsT[0])))
+    const len = Math.floor(Number(argsT[1] ?? '20'))
+    const filled = Math.round(pct / 100 * len)
+    return wrap('█'.repeat(filled) + '░'.repeat(len - filled))
+  }
   if (F === 'KORNUM') {
     const n = Number(argsT[0])
     if (!Number.isFinite(n)) return wrap('#VALUE!')
