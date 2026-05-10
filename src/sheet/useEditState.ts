@@ -47,7 +47,7 @@ export function useEditState({ cells, writeCell }: Args) {
     editing: ed.editing,
     draft: ed.draft,
     setDraft: ed.setDraft,
-    startEdit: ed.startEdit,
+    startEdit: ((id: string, prefill?: string, opts?: any) => { (globalThis as any).__startEditCalls?.push([id, prefill]); ed.startEdit(id, prefill, opts) }) as typeof ed.startEdit,
     commitEdit,
     cancelEdit: ed.cancelEdit,
     inputProps: ed.inputProps,

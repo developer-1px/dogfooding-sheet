@@ -30,6 +30,7 @@ export function useShortcuts(args: Args) {
   ref.current = args
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      ;(globalThis as any).__shortcutsFired?.push(e.key + ' editing=' + ref.current.editing + ' focusId=' + ref.current.focusId)
       const { editing, focusId, sheet, ops, writeCell, startEdit, selectedIds, openFind, openReplace, openHelp, toggleBold, toggleItalic, toggleUnderline, saveCsv, setSelectedIds, setFocusId } = ref.current
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
