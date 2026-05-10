@@ -62,7 +62,7 @@ export function GridRow(p: Props) {
         const sp = styleToProps(p.styleOf(k))
         const condBg = m ? p.condBgOf(m[2], cell.label) : undefined
         const baseStyle = condBg ? { ...sp.style, background: condBg } : sp.style
-        const mergeStyle = anchor ? { gridColumn: `span ${anchor.cols}`, zIndex: 4 } : {}
+        const mergeStyle = anchor ? { gridColumn: `${cIdx + 2} / span ${anchor.cols}`, zIndex: 4 } : {}
         const styleInline = { ...(cIdx < p.freezeCols ? { ...baseStyle, left: p.freezeLefts[cIdx] } : baseStyle), ...mergeStyle }
         return (
           <Cell
