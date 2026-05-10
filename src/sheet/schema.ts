@@ -1,19 +1,13 @@
 import * as z from 'zod'
 
-export const COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] as const
+export { COL_LETTERS, cellKey, parseCellId } from '../lib/a1'
+
 export const ROW_COUNT = 20
 
 export const SheetSchema = z.object({
   cells: z.record(z.string(), z.string()),
 })
 export type Sheet = z.infer<typeof SheetSchema>
-
-export const cellKey = (col: string, row: number) => `${col}${row + 1}`
-
-export const parseCellId = (id: string): { col: string; row: number } | null => {
-  const m = /^r(\d+)-([A-J])$/.exec(id)
-  return m ? { row: Number(m[1]), col: m[2] } : null
-}
 
 export const initialSheet: Sheet = {
   cells: {

@@ -1,0 +1,31 @@
+/**
+ * A1 notation utilities.
+ *
+ * Conventions:
+ * - Column letters: 'A'..'J' (10 columns; widen the regex to extend).
+ * - Row index: 0-based internally, 1-based in A1 display ("A1" ⇄ row=0,col='A').
+ * - Cell DOM ids: `r{row}-{col}` (e.g. "r0-A").
+ */
+
+export const COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] as const
+
+export type ColLetter = (typeof COL_LETTERS)[number]
+
+/** A1 cell key: `${col}${row+1}` — `cellKey('A', 0) === 'A1'`. */
+export const cellKey = (col: string, row: number): string => `${col}${row + 1}`
+
+/** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
+export const parseCellId = (id: string): { col: string; row: number } | null => {
+  const m = /^r(\d+)-([A-J])$/.exec(id)
+  return m ? { row: Number(m[1]), col: m[2] } : null
+}
+
+/** Parse an A1 key like "B3" into `{ col: 'B', row: 2 }`. Returns `null` on mismatch. */
+export const parseA1 = (key: string): { col: string; row: number } | null => {
+  const m = /^([A-J])(\d+)$/.exec(key)
+  return m ? { col: m[1], row: Number(m[2]) - 1 } : null
+}
+
+/** 0-based column index for a letter — `colIndex('C') === 2`. Returns `-1` if unknown. */
+export const colIndex = (col: string): number =>
+  (COL_LETTERS as readonly string[]).indexOf(col)
