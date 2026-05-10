@@ -25,6 +25,14 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     }
     return wrap(text)
   }
+  if (F === 'TEXTBEFORE') {
+    const i = argsT[0].indexOf(argsT[1] ?? '')
+    return wrap(i < 0 ? argsT[0] : argsT[0].slice(0, i))
+  }
+  if (F === 'TEXTAFTER') {
+    const i = argsT[0].indexOf(argsT[1] ?? '')
+    return wrap(i < 0 ? '' : argsT[0].slice(i + (argsT[1] ?? '').length))
+  }
   if (F === 'FIND') {
     const pos = argsT[1].indexOf(argsT[0])
     return pos < 0 ? wrap('#VALUE!') : String(pos + 1)

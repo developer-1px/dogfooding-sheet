@@ -57,6 +57,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c-d", "-", "/", 2)')).toBe('a-b/c-d')
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/", 5)')).toBe('a-b-c')
   })
+  it('TEXTBEFORE / TEXTAFTER split by delimiter', () => {
+    expect(evaluateCell({}, '=TEXTBEFORE("hello@example.com","@")')).toBe('hello')
+    expect(evaluateCell({}, '=TEXTAFTER("hello@example.com","@")')).toBe('example.com')
+    expect(evaluateCell({}, '=TEXTBEFORE("nodelim","@")')).toBe('nodelim')
+    expect(evaluateCell({}, '=TEXTAFTER("nodelim","@")')).toBe('')
+  })
   it('FIND returns 1-based position (case-sensitive)', () => {
     expect(evaluateCell({}, '=FIND("b", "abc")')).toBe('2')
     expect(evaluateCell({}, '=FIND("X", "abc")')).toBe('#VALUE!')
