@@ -4,6 +4,7 @@ import { Grid } from './sheet/Grid'
 import { StatusBar } from './sheet/StatusBar'
 import { parseCellId } from './sheet/schema'
 import { rectFromIds, formatRect } from './lib/clipboard'
+import { gotoCell } from './lib/gotoCell'
 import { Find } from './sheet/Find'
 import { HelpDialog } from './sheet/HelpDialog'
 import { Tabs } from './sheet/Tabs'
@@ -20,6 +21,7 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
+        onAddrClick={() => gotoCell(ctx.setFocusId)}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}

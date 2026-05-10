@@ -9,16 +9,23 @@ interface Props {
   canUndo: boolean
   canRedo: boolean
   extra?: ReactNode
+  onAddrClick?: () => void
 }
 
-export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, canRedo, extra }: Props) {
+export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, canRedo, extra, onAddrClick }: Props) {
   const [draft, setDraft] = useState(value)
   useEffect(() => { setDraft(value) }, [value, addr])
 
   return (
     <header className="sheet-toolbar">
       <strong>Sheet</strong>
-      <span className="addr">{addr ?? '—'}</span>
+      <button
+        type="button"
+        className="addr"
+        onClick={onAddrClick}
+        title="셀로 이동 (Ctrl/⌘+G)"
+        disabled={!onAddrClick}
+      >{addr ?? '—'}</button>
       <input
         className="formula"
         value={draft}
