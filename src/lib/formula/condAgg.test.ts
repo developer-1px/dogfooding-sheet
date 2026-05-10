@@ -57,6 +57,11 @@ describe('extra math', () => {
     expect(evaluateCell({}, '=LOG(100)')).toBe('2')
     expect(evaluateCell({}, '=LOG(8, 2)')).toBe('3')
   })
+  it('VAR/VARP/STDEV/STDEVP differ by N vs N-1', () => {
+    const cells = { A1: '2', A2: '4', A3: '4', A4: '4', A5: '5', A6: '5', A7: '7', A8: '9' }
+    expect(Number(evaluateCell(cells, '=VARP(A1:A8)'))).toBeCloseTo(4, 5)
+    expect(Number(evaluateCell(cells, '=STDEVP(A1:A8)'))).toBeCloseTo(2, 5)
+  })
   it('PRODUCT multiplies range', () => {
     expect(evaluateCell({ A1: '2', A2: '3', A3: '4' }, '=PRODUCT(A1:A3)')).toBe('24')
   })

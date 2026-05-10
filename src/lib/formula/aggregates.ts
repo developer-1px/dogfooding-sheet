@@ -3,7 +3,7 @@ import { collectRefs } from './parse'
 type NumFromCell = (ref: string) => number
 
 export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
-  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'VAR' && F !== 'MODE' && F !== 'PRODUCT') return null
+  if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT') return null
   const nums = collectRefs(rawArgs).map(numFromCell)
   if (F === 'PRODUCT') return String(nums.reduce((a, b) => a * b, 1))
   if (F === 'MODE') {
@@ -25,7 +25,11 @@ export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell):
     if (m === 0) return '0'
     return String(m % 2 ? s[(m - 1) / 2] : (s[m / 2 - 1] + s[m / 2]) / 2)
   }
-  const variance = nums.reduce((acc, n) => acc + (n - mean) ** 2, 0) / Math.max(1, nums.length - 1)
+  const ss = nums.reduce((acc, n) => acc + (n - mean) ** 2, 0)
+  const variance = ss / Math.max(1, nums.length - 1)
+  const variancep = ss / Math.max(1, nums.length)
   if (F === 'VAR') return String(variance)
+  if (F === 'VARP') return String(variancep)
+  if (F === 'STDEVP') return String(Math.sqrt(variancep))
   return String(Math.sqrt(variance))
 }
