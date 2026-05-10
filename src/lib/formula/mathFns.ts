@@ -40,6 +40,12 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'ACOS') return String(Math.acos(argsN[0]))
   if (F === 'ATAN') return String(Math.atan(argsN[0]))
   if (F === 'ATAN2') return String(Math.atan2(argsN[0], argsN[1]))
+  if (F === 'SINH') return String(Math.sinh(argsN[0]))
+  if (F === 'COSH') return String(Math.cosh(argsN[0]))
+  if (F === 'TANH') return String(Math.tanh(argsN[0]))
+  if (F === 'ASINH') return String(Math.asinh(argsN[0]))
+  if (F === 'ACOSH') return String(Math.acosh(argsN[0]))
+  if (F === 'ATANH') return String(Math.atanh(argsN[0]))
   if (F === 'DEGREES') return String(argsN[0] * 180 / Math.PI)
   if (F === 'RADIANS') return String(argsN[0] * Math.PI / 180)
   return null

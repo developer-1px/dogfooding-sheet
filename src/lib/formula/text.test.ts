@@ -232,6 +232,12 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=QUOTIENT(5, 0)')).toBe('#DIV/0!')
     expect(evaluateCell({}, '=ROUND(SQRTPI(1), 4)')).toBe('1.7725')
   })
+  it('hyperbolic: SINH/COSH/TANH + ASINH', () => {
+    expect(Number(evaluateCell({}, '=SINH(0)'))).toBe(0)
+    expect(Number(evaluateCell({}, '=COSH(0)'))).toBe(1)
+    expect(Number(evaluateCell({}, '=TANH(0)'))).toBe(0)
+    expect(evaluateCell({}, '=ROUND(ASINH(SINH(2)),4)')).toBe('2')
+  })
   it('trig: SIN/COS/TAN + DEGREES/RADIANS', () => {
     expect(evaluateCell({}, '=ROUND(SIN(RADIANS(30)),4)')).toBe('0.5')
     expect(evaluateCell({}, '=ROUND(COS(0),4)')).toBe('1')
