@@ -2,6 +2,7 @@ import type { Format } from './useFormats'
 import type { CellStyle } from './useStyles'
 import { OverflowMenu } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
+import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey } from '../lib/a1'
 
 interface Props {
@@ -55,6 +56,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => focus && deleteCol(focus[1])} title="현재 열 삭제">−열</button>
       <button onClick={() => focus && sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button>
       <button onClick={() => focus && sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
+      <button onClick={() => { const f = focus && autoSumFormula(focus[1], focusRow, display); if (f && focus) writeCell(`${focus[1]}${focusRow + 1}`, f) }} title="자동 합계 (위쪽 연속 숫자 합)">Σ</button>
       <button onClick={() => toggle('b')} title="굵게"><b>B</b></button>
       <button onClick={() => toggle('i')} title="기울임"><i>I</i></button>
       <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
