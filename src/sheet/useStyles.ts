@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 export interface CellStyle {
   b?: boolean
   i?: boolean
+  u?: boolean
   a?: 'left' | 'center' | 'right'
   bg?: string
   fg?: string
@@ -23,6 +24,7 @@ const merge = (a: CellStyle | undefined, b: Partial<CellStyle>): CellStyle | und
   const next: CellStyle = { ...(a ?? {}), ...b }
   if (next.b === false) delete next.b
   if (next.i === false) delete next.i
+  if (next.u === false) delete next.u
   if (next.a === undefined) delete next.a
   if (!next.bg) delete next.bg
   if (!next.fg) delete next.fg
@@ -58,6 +60,7 @@ export const styleToProps = (s: CellStyle | undefined): { className: string; sty
   const cn: string[] = []
   if (s.b) cn.push('bold')
   if (s.i) cn.push('italic')
+  if (s.u) cn.push('underline')
   if (s.a) cn.push(`align-${s.a}`)
   const style: React.CSSProperties = {}
   if (s.bg) style.background = s.bg

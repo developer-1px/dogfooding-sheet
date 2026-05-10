@@ -41,11 +41,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
     return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
   }
   const applyF = (f: Format) => setFormat(targetKeys(), f)
-  const toggle = (k: 'b' | 'i') => {
-    const keys = targetKeys()
-    const cur = focusKey ? styleOf(focusKey)?.[k] : undefined
-    updateStyle(keys, { [k]: !cur })
-  }
+  const toggle = (k: 'b' | 'i' | 'u') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
   const setAlign = (a: CellStyle['a']) => updateStyle(targetKeys(), { a })
 
   return (
@@ -59,6 +55,7 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => { const f = focus && autoSumFormula(focus[1], focusRow, display); if (f && focus) writeCell(`${focus[1]}${focusRow + 1}`, f) }} title="자동 합계 (위쪽 연속 숫자 합)">Σ</button>
       <button onClick={() => toggle('b')} title="굵게"><b>B</b></button>
       <button onClick={() => toggle('i')} title="기울임"><i>I</i></button>
+      <button onClick={() => toggle('u')} title="밑줄"><u>U</u></button>
       <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} title="가운데 정렬">⇔</button>
       <button onClick={() => setAlign('right')} title="오른쪽 정렬">⇥</button>
