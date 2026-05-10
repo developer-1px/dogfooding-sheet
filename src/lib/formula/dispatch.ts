@@ -1,6 +1,6 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate, largeSmall, rank, sumproduct } from './aggregates'
-import { percentile, quartile, pairStat } from './stats'
+import { percentile, quartile, pairStat, trimmean } from './stats'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
 import { dispatchDate } from './dateFns'
@@ -51,6 +51,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
   if (F === 'COVAR' || F === 'CORREL' || F === 'SLOPE' || F === 'INTERCEPT') { const [a, b] = splitArgs(rawArgs); return smartReturn(pairStat(F, a, b, c.numFromCell)) }
   if (F === 'LARGE' || F === 'SMALL') return smartReturn(largeSmall(F, splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
+  if (F === 'TRIMMEAN') return smartReturn(trimmean(splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
   if (F === 'PERCENTILE') return smartReturn(percentile(splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
   if (F === 'QUARTILE') return smartReturn(quartile(splitArgs(rawArgs)[0], Number(argsT[1]), c.numFromCell))
   if (F === 'RANK') return smartReturn(rank(Number(argsT[0]), splitArgs(rawArgs)[1], Number(argsT[2] ?? '0'), c.numFromCell))

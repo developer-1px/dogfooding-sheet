@@ -84,6 +84,13 @@ describe('COVAR / CORREL', () => {
   })
 })
 
+describe('TRIMMEAN', () => {
+  it('drops outliers from each end', () => {
+    const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5', A6: '6', A7: '7', A8: '8', A9: '9', A10: '100' }
+    expect(evaluateCell(cells, '=TRIMMEAN(A1:A10, 0.2)')).toBe('5.5')
+  })
+})
+
 describe('PERCENTILE / QUARTILE', () => {
   it('PERCENTILE interpolates', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }

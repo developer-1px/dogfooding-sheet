@@ -21,6 +21,15 @@ export function pairStat(F: 'COVAR' | 'CORREL' | 'SLOPE' | 'INTERCEPT', aStr: st
   return va === 0 || vb === 0 ? '#DIV/0!' : String(cov / Math.sqrt(va * vb))
 }
 
+/** TRIMMEAN(range, fraction) — drop fraction*N from each end, average rest. */
+export function trimmean(rangeStr: string, frac: number, numFromCell: NumFromCell): string {
+  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
+  if (frac < 0 || frac >= 1 || nums.length === 0) return '#NUM!'
+  const drop = Math.floor((nums.length * frac) / 2)
+  const kept = nums.slice(drop, nums.length - drop)
+  return String(kept.reduce((a, b) => a + b, 0) / kept.length)
+}
+
 /** PERCENTILE(range, p) — linear interpolation, p in [0,1]. */
 export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
