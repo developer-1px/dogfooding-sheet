@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
-import { copyOrCut, pasteAt, freezeFormulas } from '../lib/clipboardOps'
+import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { gotoCell } from '../lib/gotoCell'
@@ -50,13 +50,7 @@ export function useShortcuts(args: Args) {
       if (mod && !editing && (e.key === 'PageUp' || e.key === 'PageDown') && ref.current.switchTab) {
         e.preventDefault(); ref.current.switchTab(e.key === 'PageDown' ? 1 : -1); return
       }
-      if (mod && e.key === ';' && !e.altKey) {
-        e.preventDefault()
-        const p2 = focusId ? parseCellId(focusId) : null; if (!p2) return
-        const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
-        writeCell(cellKey(p2.col, p2.row), e.shiftKey ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
-        return
-      }
+      if (mod && e.key === ';' && !e.altKey) { e.preventDefault(); insertNowOrToday(focusId, e.shiftKey, writeCell); return }
       if (mod && !editing && /^Arrow(Up|Down|Left|Right)$/.test(e.key) && focusId) {
         const next = jumpToEdge(focusId, sheet.cells, ROW_COUNT, e.key as 'ArrowUp'); if (!next) return
         e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : setFocusId(next); return

@@ -14,6 +14,17 @@ export function freezeFormulas(
   }
 }
 
+export function insertNowOrToday(
+  focusId: string | null, withTime: boolean,
+  writeCell: (k: string, v: string) => void,
+): void {
+  const p = focusId ? parseCellId(focusId) : null; if (!p) return
+  const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
+  writeCell(cellKey(p.col, p.row), withTime
+    ? `${pad(d.getHours())}:${pad(d.getMinutes())}`
+    : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
+}
+
 export function copyOrCut(
   ids: string[], cut: boolean, cells: Cells,
   writeCell: (k: string, v: string) => void,
