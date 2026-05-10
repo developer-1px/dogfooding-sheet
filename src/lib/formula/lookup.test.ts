@@ -15,6 +15,14 @@ describe('HLOOKUP', () => {
   })
 })
 
+describe('INDIRECT', () => {
+  it('resolves ref string to cell value', () => {
+    expect(evaluateCell({ B5: 'hi' }, '=INDIRECT("B5")')).toBe('hi')
+    expect(evaluateCell({ A1: '7' }, '=INDIRECT(ADDRESS(1,1))')).toBe('7')
+    expect(evaluateCell({}, '=INDIRECT("nope")')).toBe('#REF!')
+  })
+})
+
 describe('ADDRESS', () => {
   it('builds A1 ref from row/col', () => {
     expect(evaluateCell({}, '=ADDRESS(5, 2)')).toBe('B5')

@@ -48,6 +48,11 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
   if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw))
+  if (F === 'INDIRECT') {
+    const ref = (argsT[0] ?? '').trim()
+    if (!/^[A-J]\d+$/.test(ref)) return smartReturn('#REF!')
+    return smartReturn(c.evalRaw(c.cells[ref] ?? ''))
+  }
   if (F === 'ADDRESS') {
     const r = Number(argsT[0]), col = Number(argsT[1])
     if (!Number.isFinite(r) || !Number.isFinite(col) || col < 1 || col > 26) return smartReturn('#VALUE!')
