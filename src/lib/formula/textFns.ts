@@ -27,6 +27,8 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     }
     return wrap(text)
   }
+  if (F === 'LINECOUNT') return String((argsT[0] ?? '') === '' ? 0 : (argsT[0].split(/\r?\n/).length))
+  if (F === 'CHARCOUNT') return String([...(argsT[0] ?? '')].length)
   if (F === 'WORDCOUNT') {
     const m = (argsT[0] ?? '').trim().match(/\S+/g)
     return String(m ? m.length : 0)

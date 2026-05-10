@@ -61,6 +61,11 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c-d", "-", "/", 2)')).toBe('a-b/c-d')
     expect(evaluateCell({}, '=SUBSTITUTE("a-b-c", "-", "/", 5)')).toBe('a-b-c')
   })
+  it('LINECOUNT / CHARCOUNT', () => {
+    expect(evaluateCell({}, '=LINECOUNT("a\nb\nc")')).toBe('3')
+    expect(evaluateCell({}, '=LINECOUNT("")')).toBe('0')
+    expect(evaluateCell({}, '=CHARCOUNT("hi😀")')).toBe('3')
+  })
   it('WORDCOUNT', () => {
     expect(evaluateCell({}, '=WORDCOUNT("hello world")')).toBe('2')
     expect(evaluateCell({}, '=WORDCOUNT("  one  ")')).toBe('1')
