@@ -11,6 +11,7 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   const ops = dispatchTextOps(F, argsT); if (ops !== null) return ops
   if (F === 'CONCAT' || F === 'CONCATENATE') return wrap(argsT.join(''))
   if (F === 'HYPERLINK') return wrap(argsT[1] ? argsT[1] : argsT[0])
+  if (F === 'IMAGE') return wrap(argsT[0] ?? '')
   if (F === 'LEN') return String(argsT[0].length)
   if (F === 'LEFT') return wrap(argsT[0].slice(0, Number(argsT[1] ?? '1')))
   if (F === 'RIGHT') return wrap(argsT[0].slice(-Number(argsT[1] ?? '1')))
