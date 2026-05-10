@@ -27,7 +27,7 @@ export function useShortcuts({ editing, focusId, sheet, ops, writeCell, startEdi
     const onKey = (e: KeyboardEvent) => {
       const ck = e.key.toLowerCase()
       const mod = e.metaKey || e.ctrlKey
-      if (!editing && (e.key === 'F1' || (e.key === '?' && !mod))) {
+      if (!editing && (e.key === 'F1' || (e.key === '?' && !mod) || (mod && e.key === '/'))) {
         e.preventDefault()
         openHelp()
         return

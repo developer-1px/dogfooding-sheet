@@ -21,7 +21,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Tab / Shift+Tab', '편집 후 오른쪽/왼쪽 셀 이동'],
   ['Delete / Backspace', '선택 셀 비우기'],
   ['F2', '셀 편집 시작'],
-  ['F1 / ?', '이 도움말 열기'],
+  ['F1 / ? / Ctrl+/', '이 도움말 열기'],
   ['Esc', '편집 취소 / 대화상자 닫기'],
 ]
 
