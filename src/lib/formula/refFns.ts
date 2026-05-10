@@ -5,6 +5,13 @@ type Cells = Record<string, string>
 interface Ctx { cells: Cells; evalRaw: (s: string) => string }
 
 export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx): string | null {
+  if (F === 'RANGEDIM') {
+    const m = /^([A-J])(\d+):([A-J])(\d+)$/.exec((rawArgs ?? '').trim())
+    if (!m) return smartReturn('#REF!')
+    const cols = Math.abs(m[3].charCodeAt(0) - m[1].charCodeAt(0)) + 1
+    const rows = Math.abs(Number(m[4]) - Number(m[2])) + 1
+    return smartReturn(`${rows}×${cols}`)
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const m = /^([A-J])(\d+)$/.exec(base)

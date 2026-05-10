@@ -24,6 +24,13 @@ describe('ISFORMULA / ISREF', () => {
   })
 })
 
+describe('RANGEDIM', () => {
+  it('returns rows×cols of a range', () => {
+    expect(evaluateCell({}, '=RANGEDIM(B2:D5)')).toBe('4×3')
+    expect(evaluateCell({}, '=RANGEDIM(A1:A1)')).toBe('1×1')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
