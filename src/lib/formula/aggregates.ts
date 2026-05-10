@@ -22,6 +22,14 @@ export function sumproduct(rangeStrs: string[], numFromCell: NumFromCell): strin
   return String(sum)
 }
 
+/** SAMPLE(range) — random non-empty cell value from range. */
+export function sample(rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
+  const refs = collectRefs(rangeStr)
+  const vals = refs.map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
+  if (vals.length === 0) return '#N/A'
+  return vals[Math.floor(Math.random() * vals.length)]
+}
+
 /** RANK(value, range, [order]) — order 0 (default) descending, non-zero ascending. */
 export function rank(value: number, rangeStr: string, order: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)

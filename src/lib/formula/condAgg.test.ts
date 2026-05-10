@@ -121,6 +121,14 @@ describe('PERCENTILE / QUARTILE', () => {
   })
 })
 
+describe('SAMPLE', () => {
+  it('picks one of the non-empty values', () => {
+    const cells = { A1: 'a', A2: 'b', A3: '', A4: 'c' }
+    const v = evaluateCell(cells, '=SAMPLE(A1:A4)')
+    expect(['a', 'b', 'c']).toContain(v)
+  })
+})
+
 describe('SUMPRODUCT', () => {
   it('sums element-wise products across ranges', () => {
     const cells = { A1: '2', A2: '3', A3: '4', B1: '10', B2: '20', B3: '30' }
