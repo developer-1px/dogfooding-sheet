@@ -6,6 +6,7 @@ import { loadInitial, saveSheet, moveCellId, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './useFormats'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp } from './rowOps'
+import { sortByColumn } from './sortOps'
 
 export function useSheet() {
   const [sheet, ops] = useJson(SheetSchema, loadInitial(), { history: 100 })
@@ -59,6 +60,8 @@ export function useSheet() {
 
   const insertRow = (atRow: number) => ops.replace('/cells' as never, insertRowOp(sheet.cells, atRow) as never)
   const deleteRow = (atRow: number) => ops.replace('/cells' as never, deleteRowOp(sheet.cells, atRow) as never)
+  const sortByCol = (col: string, dir: 'asc' | 'desc') =>
+    ops.replace('/cells' as never, sortByColumn(sheet.cells, { col, dir }) as never)
 
   useShortcuts({
     editing, focusId, sheet, ops, writeCell, startEdit, selectedIds,
@@ -89,6 +92,6 @@ export function useSheet() {
     findOpen, setFindOpen, findMode,
     setFormat: fmt.setFormat,
     formatOf: fmt.formatOf,
-    insertRow, deleteRow,
+    insertRow, deleteRow, sortByCol,
   }
 }

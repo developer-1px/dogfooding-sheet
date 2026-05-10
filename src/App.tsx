@@ -60,6 +60,8 @@ export default function App() {
                 <>
                   <button onClick={() => ctx.insertRow(focusRow)} title="위에 행 삽입">+행</button>
                   <button onClick={() => ctx.deleteRow(focusRow)} title="현재 행 삭제">−행</button>
+                  <button onClick={() => focus && ctx.sortByCol(focus[1], 'asc')} title="오름차순 정렬">↑정렬</button>
+                  <button onClick={() => focus && ctx.sortByCol(focus[1], 'desc')} title="내림차순 정렬">↓정렬</button>
                 </>
               )
             })()}
