@@ -137,6 +137,14 @@ describe('MAX_BY / MIN_BY', () => {
   })
 })
 
+describe('MAXLEN / MINLEN', () => {
+  it('max/min string length over range', () => {
+    const cells = { A1: 'red', A2: 'green', A3: 'aquamarine' }
+    expect(evaluateCell(cells, '=MAXLEN(A1:A3)')).toBe('10')
+    expect(evaluateCell(cells, '=MINLEN(A1:A3)')).toBe('3')
+  })
+})
+
 describe('FIRST / LAST non-empty', () => {
   it('first/last non-empty values', () => {
     const cells = { A1: '', A2: 'a', A3: '', A4: 'b' }

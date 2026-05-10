@@ -44,6 +44,13 @@ export function arrayToText(rangeStr: string, sep: string, cells: Record<string,
   return refs.map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '').join(sep)
 }
 
+/** MAXLEN / MINLEN — max / min string length over range. */
+export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
+  const lens = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '').length).filter((n) => n > 0)
+  if (lens.length === 0) return '0'
+  return String(F === 'MAXLEN' ? Math.max(...lens) : Math.min(...lens))
+}
+
 /** FIRST(range) / LAST(range) — first / last non-empty value. */
 export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, cells: Record<string, string>, evalRaw: (s: string) => string): string {
   const refs = collectRefs(rangeStr)
