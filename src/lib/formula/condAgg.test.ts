@@ -189,6 +189,9 @@ describe('Vector ops', () => {
   it('MANHATTAN distance', () => {
     expect(evaluateCell(cells, '=MANHATTAN(A1:A3, B1:B3)')).toBe('9')
   })
+  it('CHEBYSHEV distance', () => {
+    expect(evaluateCell(cells, '=CHEBYSHEV(A1:A3, B1:B3)')).toBe('3')
+  })
   it('DOTPROD', () => {
     expect(evaluateCell(cells, '=DOTPROD(A1:A3, B1:B3)')).toBe('32')
   })

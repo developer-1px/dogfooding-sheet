@@ -11,7 +11,7 @@ export function dispatchStat(F: string, argsT: string[], rawArgs: string, numFro
     const [a, b] = splitArgs(rawArgs)
     return smartReturn(pairStat(F, a, b, numFromCell))
   }
-  if (F === 'EUCLIDEAN' || F === 'MANHATTAN' || F === 'COSINE' || F === 'DOTPROD') {
+  if (F === 'EUCLIDEAN' || F === 'MANHATTAN' || F === 'CHEBYSHEV' || F === 'COSINE' || F === 'DOTPROD') {
     const [a, b] = splitArgs(rawArgs)
     return smartReturn(vectorOp(F, a, b, numFromCell))
   }
