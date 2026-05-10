@@ -45,6 +45,8 @@ export default function App() {
             clearFilter={ctx.clearFilter}
             hasHidden={ctx.hasHidden}
             showAll={ctx.showAll}
+            setListRule={ctx.setListRule}
+            clearRule={ctx.clearRule}
           />
         }
       />

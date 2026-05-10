@@ -23,6 +23,7 @@ interface Props {
   styleClass: string
   styleInline: React.CSSProperties
   note?: string
+  validationOptions?: string[]
 }
 
 export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
@@ -38,6 +39,19 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
       title={p.note}
     >
       {p.editing ? (
+        p.validationOptions ? (
+          <select
+            className="cell-input"
+            value={p.draft}
+            onChange={(e) => { p.setDraft(e.target.value); setTimeout(() => p.onCommit({ dRow: 1, dCol: 0 }), 0) }}
+            onBlur={() => p.onCommit()}
+            onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); p.onCancel() } }}
+            autoFocus
+          >
+            <option value="">—</option>
+            {p.validationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
+        ) : (
         <input
           ref={ref}
           className="cell-input"
@@ -57,10 +71,12 @@ export const Cell = forwardRef<HTMLInputElement, Props>(function Cell(p, ref) {
             }
           }}
         />
+        )
       ) : (
         <>
           {p.label}
           {p.note && <span className="note-mark" aria-hidden />}
+          {p.validationOptions && !p.editing && <span className="dropdown-mark" aria-hidden>▾</span>}
           {p.isFillCorner && !p.editing && (
             <span className="fill-handle" onMouseDown={p.onFillHandleMouseDown} />
           )}

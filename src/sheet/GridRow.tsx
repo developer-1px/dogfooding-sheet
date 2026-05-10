@@ -28,6 +28,7 @@ interface Props {
   hideRow: (row: number) => void
   styleOf: (k: string) => CellStyle | undefined
   noteOf: (k: string) => string | undefined
+  ruleOf: (k: string) => { type: 'list'; options: string[] } | undefined
   hiSet: Set<string>
   previewIds: Set<string>
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
@@ -64,6 +65,7 @@ export function GridRow(p: Props) {
             styleClass={sp.className + extra}
             styleInline={sp.style}
             note={p.noteOf(k)}
+            validationOptions={p.ruleOf(k)?.options}
             editing={p.editing === cell.id}
             draft={p.draft}
             setDraft={p.setDraft}

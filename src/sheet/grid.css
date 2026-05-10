@@ -37,6 +37,10 @@
 .cell.selected { background: rgba(26, 115, 232, .1); }
 .cell.ref-hi { outline: 2px dashed #34a853; outline-offset: -2px; background: rgba(52, 168, 83, .08); }
 .cell.preview { outline: 2px dashed #1a73e8; outline-offset: -2px; background: rgba(26, 115, 232, .15); }
+.dropdown-mark {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  font-size: 10px; color: #5f6368; pointer-events: none;
+}
 .note-mark {
   position: absolute; top: 0; right: 0;
   border-style: solid;

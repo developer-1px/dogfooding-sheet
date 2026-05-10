@@ -21,6 +21,8 @@ interface Props {
   clearFilter: () => void
   hasHidden: boolean
   showAll: () => void
+  setListRule: (keys: string[], options: string[]) => void
+  clearRule: (keys: string[]) => void
 }
 
 const cellIdToKey = (id: string): string => {
@@ -28,7 +30,7 @@ const cellIdToKey = (id: string): string => {
   return m ? `${m[2]}${Number(m[1]) + 1}` : id
 }
 
-export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll }: Props) {
+export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, insertRow, deleteRow, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, clearRule }: Props) {
   const focus = focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
   const focusRow = focus ? Number(focus[2]) - 1 : 0
   const targetKeys = (): string[] => {
@@ -76,6 +78,18 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       >🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button onClick={clearFilter} title="필터 해제">✕</button>}
       {hasHidden && <button onClick={showAll} title="숨김 행/열 모두 표시">👁모두표시</button>}
+      <button
+        onClick={() => {
+          const keys = targetKeys()
+          if (keys.length === 0) return
+          const csv = window.prompt('허용 값 (쉼표 구분, 비우면 해제)', '')
+          if (csv === null) return
+          const opts = csv.split(',').map((s) => s.trim()).filter(Boolean)
+          if (opts.length === 0) clearRule(keys)
+          else setListRule(keys, opts)
+        }}
+        title="유효성 검사 (드롭다운 목록)"
+      >▾목록</button>
       <button onClick={() => applyF('currency')} title="통화">$</button>
       <button onClick={() => applyF('percent')} title="백분율">%</button>
       <button onClick={() => applyF('integer')} title="정수">.0</button>
