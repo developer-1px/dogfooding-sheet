@@ -74,6 +74,10 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=DOLLAR(1234.5)')).toBe('$1,234.50')
     expect(evaluateCell({}, '=DOLLAR(1234.5, 0)')).toBe('$1,235')
   })
+  it('IFNA only replaces #N/A', () => {
+    expect(evaluateCell({}, '=IFNA(VLOOKUP("z","A1:B1",2),"none")')).toBe('none')
+    expect(evaluateCell({}, '=IFNA("ok","fallback")')).toBe('ok')
+  })
   it('IFERROR replaces error values', () => {
     expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2),"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')

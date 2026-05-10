@@ -15,6 +15,9 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
     const isErr = typeof v === 'string' && /^#[A-Z/]+!?$/.test(v)
     return smartReturn(isErr ? (argsT[1] ?? '') : v)
   }
+  if (F === 'IFNA') {
+    return smartReturn(argsT[0] === '#N/A' ? (argsT[1] ?? '') : argsT[0])
+  }
   if (F === 'IFS') {
     for (let i = 0; i + 1 < argsT.length; i += 2) {
       if (argsN[i]) return smartReturn(argsT[i + 1])
