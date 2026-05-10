@@ -127,6 +127,11 @@ describe('text functions', () => {
     // Spans a weekend
     expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-15")')).toBe('10')
   })
+  it('TYPE classifies values', () => {
+    expect(evaluateCell({}, '=TYPE(42)')).toBe('1')
+    expect(evaluateCell({}, '=TYPE("hi")')).toBe('2')
+    expect(evaluateCell({}, '=TYPE(NA())')).toBe('16')
+  })
   it('ISBETWEEN inclusive by default', () => {
     expect(evaluateCell({}, '=ISBETWEEN(5, 1, 10)')).toBe('1')
     expect(evaluateCell({}, '=ISBETWEEN(10, 1, 10)')).toBe('1')
