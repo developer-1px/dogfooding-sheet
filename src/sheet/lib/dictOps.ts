@@ -1,0 +1,23 @@
+import type { JsonOps } from 'zod-crud'
+
+/**
+ * Surgical add/replace/remove for one key inside a dict-record stored in the SSOT doc.
+ * Per zod-crud guidance — avoids `ops.replace('/path', { ...all, [k]: v })` anti-pattern
+ * that collapses every key into one history entry.
+ */
+export function upsertKey<T, V>(
+  ops: JsonOps<T>,
+  base: string,
+  current: Record<string, V>,
+  key: string,
+  value: V | undefined,
+): void {
+  const path = `${base}/${key}` as never
+  if (value === undefined) {
+    if (current[key] !== undefined) ops.remove(path)
+  } else if (current[key] === undefined) {
+    ops.add(path, value as never)
+  } else if (current[key] !== value) {
+    ops.replace(path, value as never)
+  }
+}

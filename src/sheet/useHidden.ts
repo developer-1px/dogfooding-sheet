@@ -29,13 +29,16 @@ export function useHidden(hidden: HiddenState, ops: JsonOps<Sheet>) {
 
   const hideRow = (row: number) => {
     if (hidden.rows.includes(row)) return
-    ops.replace('/hidden', { ...hidden, rows: [...hidden.rows, row] })
+    ops.add('/hidden/rows/-' as never, row as never)
   }
   const hideCol = (col: string) => {
     if (hidden.cols.includes(col)) return
-    ops.replace('/hidden', { ...hidden, cols: [...hidden.cols, col] })
+    ops.add('/hidden/cols/-' as never, col as never)
   }
-  const showAll = () => ops.replace('/hidden', { rows: [], cols: [] })
+  const showAll = () => {
+    if (hidden.rows.length) ops.replace('/hidden/rows', [])
+    if (hidden.cols.length) ops.replace('/hidden/cols', [])
+  }
 
   return {
     hidden,

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { COL_LETTERS } from './schema'
 import type { Sheet } from './schema'
+import { upsertKey } from './lib/dictOps'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 const DEFAULT_WIDTH = 100
@@ -20,7 +21,7 @@ function migrateLegacy(widths: Record<string, number>, ops: JsonOps<Sheet>) {
 
 export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>) {
   const dragRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
-  // Live drag overlay — bypasses ops to avoid one undo entry per mousemove (zod-crud#59).
+  // Live drag overlay — bypasses ops to avoid one undo entry per mousemove (zod-crud#56).
   const [liveWidth, setLiveWidth] = useState<{ col: string; w: number } | null>(null)
   useEffect(() => { migrateLegacy(widths, ops) }, [])
 
@@ -34,7 +35,7 @@ export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>
     const onUp = () => {
       const d = dragRef.current
       if (d && liveWidthRef.current && liveWidthRef.current.col === d.col) {
-        ops.replace('/colWidths', { ...widths, [d.col]: liveWidthRef.current.w })
+        upsertKey(ops, '/colWidths', widths, d.col, liveWidthRef.current.w)
       }
       dragRef.current = null
       setLiveWidth(null)
@@ -62,7 +63,7 @@ export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>
       const w = Math.ceil(ctx.measureText(s).width) + 16
       if (w > max) max = w
     }
-    ops.replace('/colWidths', { ...widths, [col]: Math.min(400, max) })
+    upsertKey(ops, '/colWidths', widths, col, Math.min(400, max))
   }
 
   const startResize = (col: string) => (e: React.MouseEvent) => {

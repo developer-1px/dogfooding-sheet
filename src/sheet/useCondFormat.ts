@@ -30,9 +30,16 @@ function migrateLegacy(rules: CondRule[], ops: JsonOps<Sheet>) {
 export function useCondFormat(rules: CondRule[], ops: JsonOps<Sheet>) {
   useEffect(() => { migrateLegacy(rules, ops) }, [])
 
-  const addRule = (r: CondRule) => ops.replace('/condFormat', [...rules.filter((x) => x.col !== r.col), r])
-  const clearRule = (col: string) => ops.replace('/condFormat', rules.filter((x) => x.col !== col))
-  const clearAll = () => ops.replace('/condFormat', [])
+  const addRule = (r: CondRule) => {
+    const idx = rules.findIndex((x) => x.col === r.col)
+    if (idx >= 0) ops.replace(`/condFormat/${idx}` as never, r as never)
+    else ops.add('/condFormat/-' as never, r as never)
+  }
+  const clearRule = (col: string) => {
+    const idx = rules.findIndex((x) => x.col === col)
+    if (idx >= 0) ops.remove(`/condFormat/${idx}` as never)
+  }
+  const clearAll = () => { if (rules.length) ops.replace('/condFormat', []) }
 
   const bgFor = (col: string, displayed: string): string | undefined => {
     for (const r of rules) {
