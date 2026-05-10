@@ -25,6 +25,8 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'TRUNC') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.trunc(n * m) / m) }
   if (F === 'SIGN') return String(Math.sign(argsN[0]))
   if (F === 'PI') return String(Math.PI)
+  if (F === 'LOGISTIC') return String(1 / (1 + Math.exp(-argsN[0])))
+  if (F === 'RELU') return String(Math.max(0, argsN[0]))
   if (F === 'TAU') return String(Math.PI * 2)
   if (F === 'E') return String(Math.E)
   if (F === 'EVEN') { const n = argsN[0]; const a = Math.ceil(Math.abs(n) / 2) * 2; return String(n < 0 ? -a : a) }
