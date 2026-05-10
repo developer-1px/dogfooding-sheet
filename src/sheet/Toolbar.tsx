@@ -62,10 +62,10 @@ export function Toolbar({ display, writeCell, focusKey, selectedIds, setFormat, 
       <button onClick={() => toggle('b')} aria-pressed={!!(focusKey && styleOf(focusKey)?.b)} title="굵게"><b>B</b></button>
       <button onClick={() => toggle('i')} aria-pressed={!!(focusKey && styleOf(focusKey)?.i)} title="기울임"><i>I</i></button>
       <button onClick={() => toggle('u')} aria-pressed={!!(focusKey && styleOf(focusKey)?.u)} title="밑줄"><u>U</u></button>
-      <button onClick={() => toggle('w')} title="텍스트 줄바꿈">↵줄</button>
-      <button onClick={() => setAlign('left')} title="왼쪽 정렬">⇤</button>
-      <button onClick={() => setAlign('center')} title="가운데 정렬">⇔</button>
-      <button onClick={() => setAlign('right')} title="오른쪽 정렬">⇥</button>
+      <button onClick={() => toggle('w')} aria-pressed={!!(focusKey && styleOf(focusKey)?.w)} title="텍스트 줄바꿈">↵줄</button>
+      <button onClick={() => setAlign('left')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬">⇤</button>
+      <button onClick={() => setAlign('center')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'center' : false} title="가운데 정렬">⇔</button>
+      <button onClick={() => setAlign('right')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'right' : false} title="오른쪽 정렬">⇥</button>
       <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} /></label>
       <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} /></label>
       <button onClick={() => updateStyle(targetKeys(), { b: false, i: false, u: false, a: undefined, bg: '', fg: '' })} title="서식 모두 해제">✕서식</button>
