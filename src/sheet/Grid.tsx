@@ -58,7 +58,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             rowCls={`grid-row${freeze.rows && rIdx === 0 ? ' freeze-row' : ''}${focusRow === rIdx ? ' active-row' : ''}`}
             freezeFirstCol={!!freeze.cols}
             rowHeight={ctx.rowHeightOf(rIdx)}
-            startResizeRow={ctx.startResizeRow}
+            startResizeRow={ctx.startResizeRow} resetRowHeight={ctx.resetRowHeight}
             hiddenCols={hiddenCols}
             focusId={focusId}
             selectedIds={selectedIds}

@@ -35,10 +35,11 @@ export function useRowHeights(heights: Record<string, number>, ops: JsonOps<Shee
     const v = Math.max(MIN_HEIGHT, Math.round(h))
     upsertKey(ops, '/rowHeights', heights, String(row), v === DEFAULT_HEIGHT ? undefined : v)
   }
+  const resetRowHeight = (row: number) => upsertKey(ops, '/rowHeights', heights, String(row), undefined)
   const startResizeRow = (row: number) => (e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation()
     dragRef.current = { row, startY: e.clientY, startH: heights[String(row)] ?? DEFAULT_HEIGHT }
     document.body.style.cursor = 'row-resize'
   }
-  return { heightOf, setHeight, startResizeRow, DEFAULT_HEIGHT, MIN_HEIGHT }
+  return { heightOf, setHeight, startResizeRow, resetRowHeight, DEFAULT_HEIGHT, MIN_HEIGHT }
 }
