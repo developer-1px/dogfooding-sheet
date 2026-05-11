@@ -1,4 +1,4 @@
-import { COL_LETTERS } from '../lib/a1'
+import { COL_LETTERS, parseCellId } from '../lib/a1'
 import { ROW_COUNT } from './schema'
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
@@ -18,10 +18,10 @@ export function resolveRange(raw: string): string[] | null {
   if (parts.length !== 2) return null
   const a = resolveCellRef(parts[0]); const b = resolveCellRef(parts[1])
   if (!a || !b) return null
-  const ma = /^r(\d+)-([A-J])$/.exec(a)!; const mb = /^r(\d+)-([A-J])$/.exec(b)!
-  const r1 = Math.min(Number(ma[1]), Number(mb[1])), r2 = Math.max(Number(ma[1]), Number(mb[1]))
-  const c1i = COL_LETTERS.indexOf(ma[2] as (typeof COL_LETTERS)[number])
-  const c2i = COL_LETTERS.indexOf(mb[2] as (typeof COL_LETTERS)[number])
+  const pa = parseCellId(a)!; const pb = parseCellId(b)!
+  const r1 = Math.min(pa.row, pb.row), r2 = Math.max(pa.row, pb.row)
+  const c1i = COL_LETTERS.indexOf(pa.col)
+  const c2i = COL_LETTERS.indexOf(pb.col)
   const cMin = Math.min(c1i, c2i), cMax = Math.max(c1i, c2i)
   const out: string[] = []
   for (let r = r1; r <= r2; r++) for (let c = cMin; c <= cMax; c++) out.push(`r${r}-${COL_LETTERS[c]}`)

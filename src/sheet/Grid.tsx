@@ -9,6 +9,7 @@ import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
 import { rectToIdSet } from './fillCorner'
 import { freezeOffsets } from '../lib/freezeOffsets'; import { buildMergeMap } from './useMerges'
+import { parseCellId } from '../lib/a1'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
@@ -24,8 +25,8 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
   const { gridTemplateFor, startResize, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
   const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(`${c}${r + 1}`)))
-  const focusM = focusId ? /^r(\d+)-([A-J])$/.exec(focusId) : null
-  const focusCol = focusM ? focusM[2] : null; const focusRow = focusM ? Number(focusM[1]) : null
+  const focusP = focusId ? parseCellId(focusId) : null
+  const focusCol = focusP ? focusP.col : null; const focusRow = focusP ? focusP.row : null
   const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))
   const { tops: freezeTops, lefts: freezeLefts } = freezeOffsets(freeze.rows, freeze.cols, ctx.rowHeightOf, widthOf); const mergeMap = buildMergeMap(ctx.merges)
   const gridTemplate = gridTemplateFor(visibleCols); const dataRows = rows

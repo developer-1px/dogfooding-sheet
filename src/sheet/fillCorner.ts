@@ -1,4 +1,5 @@
 import { COL_LETTERS } from './schema'
+import { parseCellId } from '../lib/a1'
 import { rectFromIds, type Rect } from '../lib/rect'
 
 export function rectToIdSet(rect: Rect | null): Set<string> {
@@ -14,9 +15,9 @@ export function isFillCorner(cellId: string, focusId: string | null, selectedIds
   if (selectedIds.length > 1) {
     const rect = rectFromIds(selectedIds)
     if (!rect) return false
-    const m = /^r(\d+)-([A-J])$/.exec(cellId)
-    if (!m) return false
-    return Number(m[1]) === rect.rMax && COL_LETTERS.indexOf(m[2] as (typeof COL_LETTERS)[number]) === rect.cMax
+    const p = parseCellId(cellId)
+    if (!p) return false
+    return p.row === rect.rMax && COL_LETTERS.indexOf(p.col) === rect.cMax
   }
   return cellId === focusId
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { COL_LETTERS, cellKey } from './schema'
+import { parseCellId } from '../lib/a1'
 const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 import type { MenuItem } from './ContextMenu'
 
@@ -37,9 +38,9 @@ export function useCellMenu(a: Args) {
   const close = () => setMenu(null)
 
   const items = (cellId: string): Array<MenuItem | 'separator'> => {
-    const m = /^r(\d+)-([A-J])$/.exec(cellId)
-    if (!m) return []
-    const row = Number(m[1]); const col = m[2]; const k = cellKey(col, row)
+    const p = parseCellId(cellId)
+    if (!p) return []
+    const row = p.row; const col = p.col; const k = cellKey(col, row)
     return [
       { label: '잘라내기', onClick: () => { navigator.clipboard?.writeText(a.sheet.cells[k] ?? ''); a.writeCell(k, '') } },
       { label: '복사', onClick: () => { navigator.clipboard?.writeText(a.sheet.cells[k] ?? '') } },

@@ -1,4 +1,4 @@
-import { COL_LETTERS } from './a1'
+import { COL_LETTERS, parseCellId } from './a1'
 
 export type Merge = readonly [number, number, number, number] // [rMin, rMax, cMin, cMax]
 
@@ -12,8 +12,8 @@ export function mergeSelection(selectedIds: string[], focusId: string | null, op
   if (ids.length === 0) return
   let rMin = Infinity, rMax = -1, cMin = Infinity, cMax = -1
   for (const id of ids) {
-    const m = /^r(\d+)-([A-J])$/.exec(id); if (!m) continue
-    const r = +m[1]; const c = COL_LETTERS.indexOf(m[2] as (typeof COL_LETTERS)[number])
+    const p = parseCellId(id); if (!p) continue
+    const r = p.row; const c = COL_LETTERS.indexOf(p.col)
     if (r < rMin) rMin = r; if (r > rMax) rMax = r
     if (c < cMin) cMin = c; if (c > cMax) cMax = c
   }
