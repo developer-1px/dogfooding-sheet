@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { COL_LETTERS } from './schema'
 import type { Sheet } from './schema'
-import { upsertKey } from './lib/dictOps'
-import { migrateLegacyKey } from './lib/legacyMigrate'
+import { upsertKey } from '../lib/dictOps'
+import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 const DEFAULT_WIDTH = 100

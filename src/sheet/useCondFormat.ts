@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-import { migrateLegacyKey } from './lib/legacyMigrate'
+import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:condfmt:v1'
 

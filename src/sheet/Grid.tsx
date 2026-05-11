@@ -8,18 +8,18 @@ import { useCellMenu } from './useCellMenu'
 import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
 import { rectToIdSet } from './fillCorner'
-import { freezeOffsets } from './lib/freezeOffsets'; import { buildMergeMap } from './useMerges'
+import { freezeOffsets } from '../lib/freezeOffsets'; import { buildMergeMap } from './useMerges'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
-  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
+  const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, setSelectAnchor, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight, promptColWidth: ctx.promptColWidth, setFreezeRows: ctx.setFreezeRows, setFreezeCols: ctx.setFreezeCols, freeze, mergeSelection: ctx.mergeSelection })
   const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, `r0-${col}`) }; const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e, `r${rIdx}-A`) }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, writeCells: ctx.writeCells, setSelectedIds }); const previewIds = rectToIdSet(fill.preview)
-  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, startEdit, isEditing: () => editing !== null })
+  const { rootProps, rowProps, columnHeaderProps, cellProps, rows } = useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing: () => editing !== null })
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
   const { gridTemplateFor, startResize, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)

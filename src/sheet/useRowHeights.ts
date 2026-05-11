@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-import { upsertKey } from './lib/dictOps'
+import { upsertKey } from '../lib/dictOps'
 
 const DEFAULT_HEIGHT = 28
 const MIN_HEIGHT = 18

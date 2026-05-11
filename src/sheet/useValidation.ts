@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-import { upsertKeys } from './lib/dictOps'
-import { migrateLegacyKey } from './lib/legacyMigrate'
+import { upsertKeys } from '../lib/dictOps'
+import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 export interface ListRule { type: 'list'; options: string[] }
 export interface CheckboxRule { type: 'checkbox' }

@@ -18,12 +18,13 @@ import { sheetMutations } from './sheetMutations'
 import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
-import { rowColAtFocus } from './lib/rowColAtFocus'
-import { useRowHeights } from './useRowHeights'; import { upsertKey } from './lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from './lib/mergeSelection'; import { writeCellsBatch } from './lib/writeCells'
+import { rowColAtFocus } from '../lib/rowColAtFocus'
+import { useRowHeights } from './useRowHeights'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from '../lib/mergeSelection'; import { writeCellsBatch } from '../lib/writeCells'
 
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [selectAnchor, setSelectAnchor] = useState<string | null>(null)
   const fmt = useFormats(sheet.formats, ops)
   const styles = useStyles(sheet.styles, ops)
   const freeze = useFreeze(sheet.freeze, ops)
@@ -47,7 +48,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
 
   const display = (k: string) => showFormulas ? (sheet.cells[k] ?? '') : applyFormat(evaluateCell(sheet.cells, sheet.cells[k] ?? ''), fmt.formatOf(k))
   const data = buildData((k) => display(k))
-  data.meta = { ...data.meta, focus: edit.focusId }
+  data.meta = { ...data.meta, focus: edit.focusId, selectAnchor: selectAnchor ?? undefined }
   for (const id of selectedIds) data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
 
   const { insertRow, deleteRow, insertCol, deleteCol, sortByCol } = sheetMutations(sheet, ops)
@@ -76,7 +77,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
     sheet, ops, data,
     ...edit,
     writeCell, writeCells, display,
-    selectedIds, setSelectedIds,
+    selectedIds, setSelectedIds, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     helpOpen, setHelpOpen,

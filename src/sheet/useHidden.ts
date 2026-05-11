@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-import { migrateLegacyKey } from './lib/legacyMigrate'
+import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 export interface HiddenState {
   rows: number[]

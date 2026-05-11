@@ -1,5 +1,5 @@
-import type { Merge } from '../useMerges'
-import { COL_LETTERS } from '../schema'
+import type { Merge } from '../sheet/useMerges'
+import { COL_LETTERS } from '../sheet/schema'
 
 interface MergeOps {
   addMerge: (m: Merge) => void

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import { blankBundle, bundleOf, withBundle, type Sheet, type TabBundle } from './schema'
-import { migrateLegacyKey } from './lib/legacyMigrate'
+import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 type Cells = Record<string, string>
 export interface TabsState {

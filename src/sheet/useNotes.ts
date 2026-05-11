@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-import { migrateLegacyKey } from './lib/legacyMigrate'
-import { upsertKey } from './lib/dictOps'
+import { migrateLegacyKey } from '../lib/legacyMigrate'
+import { upsertKey } from '../lib/dictOps'
 
 const LEGACY_KEY = 'spreadsheet:notes:v1'
 
