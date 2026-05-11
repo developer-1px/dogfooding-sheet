@@ -16,6 +16,7 @@ import { dispatchFinance } from './finance'
 import { dispatchLogic } from './logicFns'
 import { dispatchRef } from './refFns'
 import { evalArgs, splitArgs, type Ctx } from './args'
+import { parseA1, colIndex } from '../a1'
 import { smartReturn } from './marker'
 
 export type { Ctx } from './args'
@@ -31,9 +32,9 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
     return (c.cells[ref] ?? '').startsWith('=') ? '1' : '0'
   }
   if (F === 'ROW' || F === 'COLUMN') {
-    const m = /^([A-J])(\d+)$/.exec((rawArgs ?? '').trim())
-    if (!m) return '#REF!'
-    return F === 'ROW' ? m[2] : String(m[1].charCodeAt(0) - 64)
+    const p = parseA1((rawArgs ?? '').trim())
+    if (!p) return '#REF!'
+    return F === 'ROW' ? String(p.row + 1) : String(colIndex(p.col) + 1)
   }
 
   const agg = aggregate(F, rawArgs, c.numFromCell)
