@@ -29,6 +29,9 @@ export type WriteMany = (writes: Writes) => void
 /** Read displayed value for an A1 key: `(cellKey) => string`. */
 export type Display = (k: string) => string
 
+/** Global A1 reference regex — match all `[Letter][Digits]` occurrences. */
+export const A1_RE = /([A-J])(\d+)/g
+
 /** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
 export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
   const m = /^r(\d+)-([A-J])$/.exec(id)

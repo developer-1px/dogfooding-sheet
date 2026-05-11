@@ -1,12 +1,11 @@
-import { parseA1, cellKey, type Cells } from './a1'
+import { parseA1, cellKey, A1_RE, type Cells } from './a1'
 
-const REF_RE = /([A-J])(\d+)/g
 
 export { insertCol, deleteCol } from './colOps'
 
 const shiftFormulaRefs = (raw: string, fromRow: number, delta: number, rowCount: number): string => {
   if (!raw.startsWith('=')) return raw
-  return '=' + raw.slice(1).replace(REF_RE, (m, c: string, r: string) => {
+  return '=' + raw.slice(1).replace(A1_RE, (m, c: string, r: string) => {
     const row = Number(r)
     if (row < fromRow + 1) return m
     const newRow = row + delta
@@ -45,7 +44,7 @@ export function deleteRow(cells: Cells, atRow: number): Cells {
     if (row === atRow) continue
     let shifted = v
     if (v.startsWith('=')) {
-      shifted = '=' + v.slice(1).replace(REF_RE, (mm, cc: string, rr: string) => {
+      shifted = '=' + v.slice(1).replace(A1_RE, (mm, cc: string, rr: string) => {
         const r = Number(rr) - 1
         if (r === atRow) return '#REF!'
         if (r > atRow) return `${cc}${r}`
