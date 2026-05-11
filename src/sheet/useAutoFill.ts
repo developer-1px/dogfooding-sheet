@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Writes, type WriteCell } from './schema'
+import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Writes, type WriteCell, type WriteMany } from './schema'
 import { rectFromIds, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
@@ -8,7 +8,7 @@ interface Args {
   focusId: string | null
   cells: Record<string, string>
   writeCell: WriteCell
-  writeCells?: (writes: Writes) => void
+  writeCells?: WriteMany
   setSelectedIds: (ids: string[]) => void
 }
 

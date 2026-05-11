@@ -1,12 +1,12 @@
 import { rectFromIds } from './rect'
 import { rectToTsv, pasteTsv } from './clipboard'
-import { cellKey, parseCellId, type Cells, type Writes, type WriteCell } from './a1'
+import { cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany } from './a1'
 
 
 export function freezeFormulas(
   ids: string[], cells: Cells, display: (k: string) => string,
   writeCell: WriteCell,
-  writeCells?: (writes: Writes) => void,
+  writeCells?: WriteMany,
 ): void {
   const writes: Writes = []
   for (const id of ids) {
@@ -32,7 +32,7 @@ export function insertNowOrToday(
 export function copyOrCut(
   ids: string[], cut: boolean, cells: Cells,
   writeCell: WriteCell,
-  writeCells?: (writes: Writes) => void,
+  writeCells?: WriteMany,
 ): void {
   const rect = rectFromIds(ids)
   const tsv = rect ? rectToTsv(rect, (k) => cells[k] ?? '') : ''
@@ -46,7 +46,7 @@ export function copyOrCut(
 export function pasteAt(
   focusKey: string, p: { col: string; row: number }, maxRow: number,
   writeCell: WriteCell,
-  writeCells?: (writes: Writes) => void,
+  writeCells?: WriteMany,
 ): void {
   navigator.clipboard?.readText()
     .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow, writeMany: writeCells }) : writeCell(focusKey, t))

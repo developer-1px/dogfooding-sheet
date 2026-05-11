@@ -1,5 +1,5 @@
 import { useShortcut } from '@p/aria-kernel/key'
-import { cellKey, parseCellId, ROW_COUNT, type Sheet, type Writes, type WriteCell } from './schema'
+import { cellKey, parseCellId, ROW_COUNT, type Sheet, type Writes, type WriteCell, type WriteMany } from './schema'
 import type { JsonOps } from 'zod-crud'
 import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
@@ -11,7 +11,7 @@ export interface GlobalShortcutCtx {
   sheet: Sheet
   ops: JsonOps<Sheet>
   writeCell: WriteCell
-  writeCells: (writes: Writes) => void
+  writeCells: WriteMany
   setSelectedIds: (ids: string[]) => void
   openFind: () => void
   openReplace: () => void

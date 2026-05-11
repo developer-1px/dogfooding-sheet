@@ -23,6 +23,9 @@ export type Writes = Array<[string, string]>
 /** Single-cell write callback: `(cellKey, value) => void`. */
 export type WriteCell = (k: string, v: string) => void
 
+/** Batched-cell write callback: `(writes) => void`. */
+export type WriteMany = (writes: Writes) => void
+
 /** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
 export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
   const m = /^r(\d+)-([A-J])$/.exec(id)
