@@ -1,5 +1,5 @@
-import { COL_LETTERS } from './a1'
-import { ROW_COUNT } from '../sheet/schema'
+import { COL_LETTERS } from '../lib/a1'
+import { ROW_COUNT } from './schema'
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
 export function resolveCellRef(raw: string): string | null {
