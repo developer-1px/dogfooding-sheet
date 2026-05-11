@@ -1,5 +1,5 @@
 import { idsForRow } from '../lib/range'
-import { parseCellId } from '../lib/a1'
+import { parseCellId } from './schema'
 
 const rowSelectIds = (rIdx: number, anchor: string | null): string[] => {
   const p = anchor ? parseCellId(anchor) : null; const from = p ? p.row : rIdx

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { cellKey, type Display } from '../lib/a1'
+import { cellKey, type Display } from './schema'
 
 export interface Filter { col: string; text: string }
 

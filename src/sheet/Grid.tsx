@@ -9,7 +9,7 @@ import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
 import { rectToIdSet } from '../lib/rect'
 import { freezeOffsets } from '../lib/freezeOffsets'; import { buildMergeMap } from './useMerges'
-import { parseCellId, cellKey } from '../lib/a1'
+import { parseCellId, cellKey } from './schema'
 import type { SheetCtx } from './useSheet'
 
 

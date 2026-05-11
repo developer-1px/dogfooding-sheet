@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDialogPattern } from '@p/aria-kernel/patterns'
 import { cellKey } from './schema'
-import { parseCellId, type WriteCell, type Display, type Cells } from '../lib/a1'
+import { parseCellId, type WriteCell, type Display, type Cells } from './schema'
 import { useFind } from './useFind'
 
 interface Props {

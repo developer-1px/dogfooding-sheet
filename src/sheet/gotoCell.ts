@@ -1,4 +1,4 @@
-import { parseCellId, parseA1 } from '../lib/a1'
+import { parseCellId, parseA1 } from './schema'
 import { idsInRect, rectFromRefs } from '../lib/rect'
 import { ROW_COUNT } from './schema'
 

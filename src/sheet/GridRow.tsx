@@ -1,6 +1,6 @@
 import type { InputProps, SelectProps } from 'editable-lifecycle'
 import { COL_LETTERS } from './schema'
-import { parseCellId, cellKey, type WriteCell } from '../lib/a1'
+import { parseCellId, cellKey, type WriteCell } from './schema'
 import { Cell } from './Cell'
 import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'

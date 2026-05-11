@@ -1,5 +1,5 @@
 import { numericValue } from '../lib/numeric'
-import { cellKey, type Display, type CellRef } from '../lib/a1'
+import { cellKey, type Display, type CellRef } from './schema'
 
 interface Props {
   selectedIds: string[]

@@ -11,7 +11,7 @@ import { CondFmtButtons } from './CondFmtButtons'
 import { FormatButtons } from './FormatButtons'
 import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
-import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from '../lib/a1'
+import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
 interface Props extends SheetMutations {
   display: Display

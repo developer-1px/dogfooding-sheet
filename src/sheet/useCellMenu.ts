@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { COL_LETTERS, cellKey, colIndex, type Cells, type WriteCell } from './schema'
-import { parseCellId } from '../lib/a1'
+import { parseCellId } from './schema'
 import type { SheetMutations } from './sheetMutations'
 import type { FreezeState } from './useFreeze'
 import type { NoteLookup } from './useNotes'

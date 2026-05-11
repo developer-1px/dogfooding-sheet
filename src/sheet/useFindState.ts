@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { parseA1 } from '../lib/a1'
+import { parseA1 } from './schema'
 import { refsInFormula } from '../lib/formula'
 
 export function useFindState() {
