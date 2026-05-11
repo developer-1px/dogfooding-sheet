@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, cells as gridCells, mouseClick, setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, mouseClick, setInputValue, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -38,8 +38,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     // Backspace inside the input — simulate native: dispatch keydown then mutate value via setter.
     act(() => input!.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Backspace' })))
     // jsdom doesn't auto-mutate input.value on Backspace keydown — emulate browser by setting value.
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
-    act(() => { setter.call(input, 'Appl'); input!.dispatchEvent(new Event('input', { bubbles: true })) })
+    act(() => setInputValue(input!, 'Appl'))
 
     expect(input!.value, 'input.value should reflect deletion').toBe('Appl')
   })
@@ -57,8 +56,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     expect(input!.value).toBe('a')
 
     act(() => input!.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Backspace' })))
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
-    act(() => { setter.call(input, ''); input!.dispatchEvent(new Event('input', { bubbles: true })) })
+    act(() => setInputValue(input!, ''))
 
     expect(input!.value).toBe('')
   })

@@ -10,6 +10,16 @@ export const press = (
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
 }
 
+/**
+ * Set an input's value via React's native setter and fire an `input` event —
+ * the only way to make React see a programmatic value change in jsdom.
+ */
+export const setInputValue = (input: HTMLInputElement, value: string): void => {
+  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+  setter.call(input, value)
+  input.dispatchEvent(new Event('input', { bubbles: true }))
+}
+
 /** All grid cells currently rendered in the DOM, in document order. */
 export const cells = (): HTMLElement[] =>
   [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]

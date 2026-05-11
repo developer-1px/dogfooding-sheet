@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, mouseClick, setupReactDom } from './test-utils'
+import { cells as gridCells, mouseClick, setInputValue, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -10,11 +10,7 @@ const typeKey = (key: string) => {
   if (inp) {
     inp.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
     if (key === 'Enter' || key === 'Escape' || key === 'Tab') return
-    if (key.length === 1) {
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
-      setter.call(inp, inp.value + key)
-      inp.dispatchEvent(new Event('input', { bubbles: true }))
-    }
+    if (key.length === 1) setInputValue(inp, inp.value + key)
     return
   }
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
