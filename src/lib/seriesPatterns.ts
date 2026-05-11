@@ -1,6 +1,6 @@
+import { pad2 } from './numeric'
 /** Pattern detectors for extendSeries. Each returns an extended array or null. */
 
-const pad = (n: number) => String(n).padStart(2, '0')
 
 export function tryArith(source: string[], target: number): string[] | null {
   if (!source.every((s) => s !== '' && Number.isFinite(Number(s)))) return null
@@ -31,7 +31,7 @@ export function tryDate(source: string[], target: number): string[] | null {
   const out = [...source]
   for (let i = source.length; i < target; i++) {
     const d = new Date((days[days.length - 1] + step * (i - days.length + 1)) * 86400000)
-    out.push(`${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`)
+    out.push(`${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`)
   }
   return out
 }

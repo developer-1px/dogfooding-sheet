@@ -1,19 +1,19 @@
+import { pad2 } from '../numeric'
 import { wrap } from './marker'
 
-const pad = (n: number) => String(n).padStart(2, '0')
 
 export const today = (): string => {
   const d = new Date()
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
 }
 
 export const now = (): string => {
   const d = new Date()
-  return `${today()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  return `${today()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`
 }
 
 export const date = (y: number, m: number, d: number): string =>
-  `${y}-${pad(m)}-${pad(d)}`
+  `${y}-${pad2(m)}-${pad2(d)}`
 
 const parseDate = (s: string): Date | null => {
   const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s.trim())

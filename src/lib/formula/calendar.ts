@@ -1,7 +1,7 @@
+import { pad2 } from '../numeric'
 import { wrap } from './marker'
 
-const pad = (n: number) => String(n).padStart(2, '0')
-const fmtUTC = (r: Date) => `${r.getUTCFullYear()}-${pad(r.getUTCMonth() + 1)}-${pad(r.getUTCDate())}`
+const fmtUTC = (r: Date) => `${r.getUTCFullYear()}-${pad2(r.getUTCMonth() + 1)}-${pad2(r.getUTCDate())}`
 const parseDate = (s: string): Date | null => {
   const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s.trim())
   if (!m) return null

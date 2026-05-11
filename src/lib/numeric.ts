@@ -8,3 +8,6 @@ export const isNumeric = (s: string): boolean => {
   if (s === '') return false
   return Number.isFinite(numericValue(s))
 }
+
+/** Zero-pad a non-negative integer to 2 digits — `pad(5) === '05'`. */
+export const pad2 = (n: number): string => String(n).padStart(2, '0')

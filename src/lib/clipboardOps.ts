@@ -1,4 +1,5 @@
 import { rectFromIds } from './rect'
+import { pad2 } from './numeric'
 import { rectToTsv, pasteTsv } from './clipboard'
 import { cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
 
@@ -23,10 +24,10 @@ export function insertNowOrToday(
   writeCell: WriteCell,
 ): void {
   const p = focusId ? parseCellId(focusId) : null; if (!p) return
-  const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
+  const d = new Date()
   writeCell(cellKey(p.col, p.row), withTime
-    ? `${pad(d.getHours())}:${pad(d.getMinutes())}`
-    : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`)
+    ? `${pad2(d.getHours())}:${pad2(d.getMinutes())}`
+    : `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`)
 }
 
 export function copyOrCut(
