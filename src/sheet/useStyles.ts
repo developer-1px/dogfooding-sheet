@@ -4,6 +4,8 @@ import type { Sheet } from './schema'
 import { upsertKeys } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
+export type StyleLookup = (k: string) => CellStyle | undefined
+
 export interface CellStyle {
   b?: boolean
   i?: boolean

@@ -5,7 +5,7 @@ import { Cell } from './Cell'
 import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'
 import { isFillCorner } from './fillCorner'
-import { styleToProps, type CellStyle } from './useStyles'
+import { styleToProps, type CellStyle, type StyleLookup } from './useStyles'
 import type { GridCell } from '@p/aria-kernel/patterns'
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
 
@@ -33,7 +33,7 @@ interface Props {
   onRowHeaderContextMenu: (e: React.MouseEvent) => void
   startResizeRow: (row: number) => (e: React.MouseEvent) => void
   resetRowHeight: (row: number) => void
-  styleOf: (k: string) => CellStyle | undefined
+  styleOf: StyleLookup
   noteOf: (k: string) => string | undefined
   rawOf: (k: string) => string | undefined
   ruleOf: (k: string) => { type: 'list'; options: string[] } | { type: 'checkbox' } | undefined

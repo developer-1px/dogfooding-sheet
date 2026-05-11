@@ -1,4 +1,4 @@
-import type { CellStyle } from './useStyles'
+import type { CellStyle, StyleLookup } from './useStyles'
 
 type Flag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
 const TOGGLES: Array<[Flag, string, string, React.ReactNode]> = [
@@ -12,7 +12,7 @@ const TOGGLES: Array<[Flag, string, string, React.ReactNode]> = [
 
 interface Props {
   toggle: (k: Flag) => void
-  styleOf: (k: string) => CellStyle | undefined
+  styleOf: StyleLookup
   focusKey: string | null
 }
 

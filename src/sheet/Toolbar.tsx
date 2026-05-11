@@ -1,5 +1,5 @@
 import type { Format } from './useFormats'
-import type { CellStyle } from './useStyles'
+import type { CellStyle, StyleLookup } from './useStyles'
 import type { PromptOptions } from './usePrompt'
 import type { ConfirmOptions } from './useConfirm'
 import { OverflowMenu } from './OverflowMenu'
@@ -22,7 +22,7 @@ interface Props {
   deleteCol: (col: string) => void
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
   updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
-  styleOf: (k: string) => CellStyle | undefined
+  styleOf: StyleLookup
   freeze: { rows: 0 | 1; cols: 0 | 1 }
   toggleFreezeRows: () => void
   toggleFreezeCols: () => void
