@@ -1,5 +1,7 @@
 import { useRef } from 'react'
 import { useSheet, type SheetCtx } from './sheet/useSheet'
+import { DEFAULT_HEIGHT } from './sheet/useRowHeights'
+import { DEFAULT_WIDTH } from './sheet/useColWidths'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/Grid'
 import { StatusBar } from './sheet/StatusBar'
@@ -35,13 +37,13 @@ export default function App() {
     promptRowHeight: (row: number) => {
       const c = ctxRef.current; if (!c) return
       ask({ label: `${row + 1}행 높이 (px, 비우면 기본값)`, initial: String(c.rowHeightOf(row)), submitLabel: '적용' })
-        .then((v) => { if (v === null) return; const n = Number(v); if (v === '' || !Number.isFinite(n)) c.setRowHeight(row, 28); else c.setRowHeight(row, n) })
+        .then((v) => { if (v === null) return; const n = Number(v); if (v === '' || !Number.isFinite(n)) c.setRowHeight(row, DEFAULT_HEIGHT); else c.setRowHeight(row, n) })
     },
     promptColWidth: (col: string) => {
       const c = ctxRef.current; if (!c) return
-      const cur = c.sheet.colWidths[col] ?? 100
+      const cur = c.sheet.colWidths[col] ?? DEFAULT_WIDTH
       ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' })
-        .then((v) => { if (v === null) return; const n = Number(v); c.setColWidth(col, (v === '' || !Number.isFinite(n)) ? 100 : n) })
+        .then((v) => { if (v === null) return; const n = Number(v); c.setColWidth(col, (v === '' || !Number.isFinite(n)) ? DEFAULT_WIDTH : n) })
     },
   })
   ctxRef.current = ctx

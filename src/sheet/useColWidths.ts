@@ -4,7 +4,7 @@ import { upsertKey } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
-const DEFAULT_WIDTH = 100
+export const DEFAULT_WIDTH = 100
 const MIN_WIDTH = 40
 
 const migrateLegacy = (widths: Record<string, number>, ops: SheetOps) =>

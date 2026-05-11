@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import type { Sheet, SheetOps } from './schema'
 import { upsertKey } from '../lib/dictOps'
 
-const DEFAULT_HEIGHT = 28
-const MIN_HEIGHT = 18
+export const DEFAULT_HEIGHT = 28
+export const MIN_HEIGHT = 18
 
 export function useRowHeights(heights: Record<string, number>, ops: SheetOps) {
   const dragRef = useRef<{ row: number; startY: number; startH: number } | null>(null)
@@ -40,5 +40,5 @@ export function useRowHeights(heights: Record<string, number>, ops: SheetOps) {
     dragRef.current = { row, startY: e.clientY, startH: heights[String(row)] ?? DEFAULT_HEIGHT }
     document.body.style.cursor = 'row-resize'
   }
-  return { heightOf, setHeight, startResizeRow, resetRowHeight, DEFAULT_HEIGHT, MIN_HEIGHT }
+  return { heightOf, setHeight, startResizeRow, resetRowHeight }
 }
