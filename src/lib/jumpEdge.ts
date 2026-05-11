@@ -1,4 +1,5 @@
-import { COL_LETTERS, cellKey, parseCellId, colIndex } from './a1'
+import { COL_LETTERS, cellKey, parseCellId, colIndex, type Cells } from './a1'
+import { idsInRect } from './rect'
 
 export function jumpToEdge(
   focusId: string,
@@ -42,7 +43,5 @@ export function idsBetween(a: string, b: string): string[] {
   const r1 = Math.min(A.row, B.row), r2 = Math.max(A.row, B.row)
   const c1 = Math.min(colIndex(A.col), colIndex(B.col))
   const c2 = Math.max(colIndex(A.col), colIndex(B.col))
-  const ids: string[] = []
-  for (let r = r1; r <= r2; r++) for (let c = c1; c <= c2; c++) ids.push(`r${r}-${COL_LETTERS[c]}`)
-  return ids
+  return idsInRect({ rMin: r1, rMax: r2, cMin: c1, cMax: c2 })
 }

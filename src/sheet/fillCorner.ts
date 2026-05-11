@@ -1,14 +1,9 @@
-import { COL_LETTERS, colIndex } from './schema'
+import { colIndex } from './schema'
 import { parseCellId } from '../lib/a1'
-import { rectFromIds, type Rect } from '../lib/rect'
+import { rectFromIds, idsInRect, type Rect } from '../lib/rect'
 
 export function rectToIdSet(rect: Rect | null): Set<string> {
-  const out = new Set<string>()
-  if (!rect) return out
-  for (let r = rect.rMin; r <= rect.rMax; r++) {
-    for (let c = rect.cMin; c <= rect.cMax; c++) out.add(`r${r}-${COL_LETTERS[c]}`)
-  }
-  return out
+  return new Set(rect ? idsInRect(rect) : [])
 }
 
 export function isFillCorner(cellId: string, focusId: string | null, selectedIds: string[]): boolean {

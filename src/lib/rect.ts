@@ -8,6 +8,14 @@ export const formatRect = (rect: Rect): string => {
   return a === b ? a : `${a}:${b}`
 }
 
+/** Enumerate DOM cell ids `r{row}-{col}` covered by a rect (inclusive bounds). */
+export function idsInRect(rect: Rect): string[] {
+  const out: string[] = []
+  for (let r = rect.rMin; r <= rect.rMax; r++)
+    for (let c = rect.cMin; c <= rect.cMax; c++) out.push(`r${r}-${COL_LETTERS[c]}`)
+  return out
+}
+
 export function rectFromIds(ids: string[]): Rect | null {
   const cells = ids.map(parseCellId).flatMap((x) => x ? [x] : [])
   if (cells.length === 0) return null

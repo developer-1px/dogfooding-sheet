@@ -1,4 +1,5 @@
-import { COL_LETTERS, parseCellId, parseA1, colIndex } from '../lib/a1'
+import { parseCellId, parseA1, colIndex } from '../lib/a1'
+import { idsInRect } from '../lib/rect'
 import { ROW_COUNT } from './schema'
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
@@ -16,13 +17,13 @@ export function resolveRange(raw: string): string[] | null {
   const a = resolveCellRef(parts[0]); const b = resolveCellRef(parts[1])
   if (!a || !b) return null
   const pa = parseCellId(a)!; const pb = parseCellId(b)!
-  const r1 = Math.min(pa.row, pb.row), r2 = Math.max(pa.row, pb.row)
-  const c1i = colIndex(pa.col)
-  const c2i = colIndex(pb.col)
-  const cMin = Math.min(c1i, c2i), cMax = Math.max(c1i, c2i)
-  const out: string[] = []
-  for (let r = r1; r <= r2; r++) for (let c = cMin; c <= cMax; c++) out.push(`r${r}-${COL_LETTERS[c]}`)
-  return out
+  const c1i = colIndex(pa.col), c2i = colIndex(pb.col)
+  return idsInRect({
+    rMin: Math.min(pa.row, pb.row),
+    rMax: Math.max(pa.row, pb.row),
+    cMin: Math.min(c1i, c2i),
+    cMax: Math.max(c1i, c2i),
+  })
 }
 
 /** Resolve raw input and apply if valid. Accepts "B5" or "A1:B5". */
