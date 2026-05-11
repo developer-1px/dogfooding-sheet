@@ -9,7 +9,7 @@ import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
 import { rectToIdSet } from './fillCorner'
 import { freezeOffsets } from '../lib/freezeOffsets'; import { buildMergeMap } from './useMerges'
-import { parseCellId } from '../lib/a1'
+import { parseCellId, cellKey } from '../lib/a1'
 import type { useSheet } from './useSheet'
 
 type SheetCtx = ReturnType<typeof useSheet>
@@ -24,7 +24,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
 
   const drag = useDragSelect({ focusId, setFocusId, setSelectedIds })
   const { gridTemplateFor, startResize, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
-  const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(`${c}${r + 1}`)))
+  const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(cellKey(c, r))))
   const focusP = focusId ? parseCellId(focusId) : null
   const focusCol = focusP ? focusP.col : null; const focusRow = focusP ? focusP.row : null
   const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))

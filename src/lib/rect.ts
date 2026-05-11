@@ -1,10 +1,10 @@
-import { COL_LETTERS, parseCellId, colIndex } from './a1'
+import { COL_LETTERS, cellKey, parseCellId, colIndex } from './a1'
 
 export interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
 
 export const formatRect = (rect: Rect): string => {
-  const a = `${COL_LETTERS[rect.cMin]}${rect.rMin + 1}`
-  const b = `${COL_LETTERS[rect.cMax]}${rect.rMax + 1}`
+  const a = cellKey(COL_LETTERS[rect.cMin], rect.rMin)
+  const b = cellKey(COL_LETTERS[rect.cMax], rect.rMax)
   return a === b ? a : `${a}:${b}`
 }
 

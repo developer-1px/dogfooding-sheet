@@ -1,4 +1,4 @@
-import { COL_LETTERS } from './a1'
+import { COL_LETTERS, cellKey } from './a1'
 
 type Cells = Record<string, string>
 
@@ -32,7 +32,7 @@ export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
   const rows: Array<Record<string, string>> = []
   for (let r = fromRow; r <= toRow; r++) {
     const rec: Record<string, string> = {}
-    for (const c of COL_LETTERS) rec[c] = cells[`${c}${r + 1}`] ?? ''
+    for (const c of COL_LETTERS) rec[c] = cells[cellKey(c, r)] ?? ''
     rows.push(rec)
   }
   rows.sort((a, b) => compareValues(a[col] ?? '', b[col] ?? '', sign))
@@ -48,7 +48,7 @@ export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
     const targetRow = fromRow + i
     for (const c of COL_LETTERS) {
       const v = rows[i][c]
-      if (v !== '') next[`${c}${targetRow + 1}`] = v
+      if (v !== '') next[cellKey(c, targetRow)] = v
     }
   }
   return next

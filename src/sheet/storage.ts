@@ -1,4 +1,4 @@
-import { SheetSchema, initialSheet, COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Sheet } from './schema'
+import { SheetSchema, initialSheet, COL_LETTERS, ROW_COUNT, cellKey, parseCellId, colIndex, type Sheet } from './schema'
 import { fromTree, type NormalizedData } from '@p/aria-kernel'
 
 const STORAGE_KEY = 'spreadsheet:v1'
@@ -36,7 +36,7 @@ export function buildData(getCell: (k: string, col: string, row: number) => stri
       label: String(r + 1),
       children: COL_LETTERS.map((c) => ({
         id: `r${r}-${c}`,
-        label: getCell(`${c}${r + 1}`, c, r),
+        label: getCell(cellKey(c, r), c, r),
       })),
     })),
   ]

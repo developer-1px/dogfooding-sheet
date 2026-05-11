@@ -1,6 +1,6 @@
 import type { InputProps, SelectProps } from 'editable-lifecycle'
 import { COL_LETTERS } from './schema'
-import { parseCellId } from '../lib/a1'
+import { parseCellId, cellKey } from '../lib/a1'
 import { Cell } from './Cell'
 import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'
@@ -59,7 +59,7 @@ export function GridRow(p: Props) {
         if (p.mergeHidden.has(mergeKey)) return null
         const anchor = p.mergeAnchors.get(mergeKey)
         const pc = parseCellId(cell.id)
-        const k = pc ? `${pc.col}${pc.row + 1}` : ''
+        const k = pc ? cellKey(pc.col, pc.row) : ''
         const extra = cIdx < p.freezeCols ? ' freeze-col' : ''
         const sp = styleToProps(p.styleOf(k))
         const condBg = pc ? p.condBgOf(pc.col, cell.label) : undefined

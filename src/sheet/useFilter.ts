@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { cellKey } from '../lib/a1'
 
 export interface Filter { col: string; text: string }
 
@@ -27,7 +28,7 @@ export function hiddenRows(
   const out = new Set<number>()
   if (!filter) return out
   for (let r = 1; r < rowCount; r++) {
-    const v = display(`${filter.col}${r + 1}`).toLowerCase()
+    const v = display(cellKey(filter.col, r)).toLowerCase()
     if (!v.includes(filter.text)) out.add(r)
   }
   return out

@@ -1,4 +1,5 @@
 import { numericValue } from '../lib/numeric'
+import { cellKey } from '../lib/a1'
 
 interface Props {
   selectedIds: string[]
@@ -16,7 +17,7 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
     const p = parseId(id)
     if (!p) continue
     rows.add(p.row); cols.add(p.col)
-    const v = display(`${p.col}${p.row + 1}`)
+    const v = display(cellKey(p.col, p.row))
     if (v.trim() !== '') nonEmpty++
     const n = numericValue(v)
     if (Number.isFinite(n)) nums.push(n)
