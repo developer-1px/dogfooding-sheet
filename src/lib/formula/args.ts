@@ -7,8 +7,8 @@ export type Eval = (s: string) => string
 export interface Ctx {
   cells: Cells
   seen: Set<string>
-  numFromCell: (ref: string) => number
-  evalRaw: (raw: string) => string
+  numFromCell: NumFromCell
+  evalRaw: Eval
 }
 
 export const splitArgs = (s: string): string[] => {

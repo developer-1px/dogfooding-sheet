@@ -1,4 +1,4 @@
-import { COL_LETTERS, colIndex, type Cells } from './a1'
+import { COL_LETTERS, colIndex, parseA1, cellKey, type Cells } from './a1'
 
 
 const REF_RE = /([A-J])(\d+)/g
@@ -17,12 +17,12 @@ const shiftFormulaCols = (raw: string, fromCol: number, delta: number): string =
 export function insertCol(cells: Cells, atCol: number): Cells {
   const next: Cells = {}
   for (const [k, v] of Object.entries(cells)) {
-    const m = /^([A-J])(\d+)$/.exec(k)
-    if (!m) continue
-    const ci = colIndex(m[1])
+    const p = parseA1(k)
+    if (!p) continue
+    const ci = colIndex(p.col)
     const shifted = shiftFormulaCols(v, atCol, 1)
     if (ci < atCol) next[k] = shifted
-    else { const nc = idxCol(ci + 1); if (nc) next[`${nc}${m[2]}`] = shifted }
+    else { const nc = idxCol(ci + 1); if (nc) next[cellKey(nc, p.row)] = shifted }
   }
   return next
 }
@@ -30,9 +30,9 @@ export function insertCol(cells: Cells, atCol: number): Cells {
 export function deleteCol(cells: Cells, atCol: number): Cells {
   const next: Cells = {}
   for (const [k, v] of Object.entries(cells)) {
-    const m = /^([A-J])(\d+)$/.exec(k)
-    if (!m) continue
-    const ci = colIndex(m[1])
+    const p = parseA1(k)
+    if (!p) continue
+    const ci = colIndex(p.col)
     if (ci === atCol) continue
     let shifted = v
     if (v.startsWith('=')) {
@@ -44,7 +44,7 @@ export function deleteCol(cells: Cells, atCol: number): Cells {
       })
     }
     if (ci < atCol) next[k] = shifted
-    else next[`${idxCol(ci - 1)}${m[2]}`] = shifted
+    else { const nc = idxCol(ci - 1); if (nc) next[cellKey(nc, p.row)] = shifted }
   }
   return next
 }
