@@ -1,28 +1,13 @@
 import { act, createElement } from 'react'
-import { createRoot, type Root } from 'react-dom/client'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import App from '../App'
+import { setupReactDom } from './test-utils'
 
-let root: Root
-let host: HTMLDivElement
-
-beforeEach(() => {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true
-  localStorage.clear()
-  host = document.createElement('div')
-  document.body.append(host)
-  root = createRoot(host)
-})
-
-afterEach(() => {
-  act(() => root.unmount())
-  host.remove()
-  localStorage.clear()
-})
+const dom = setupReactDom()
 
 describe('cell edit: Backspace deletes character inside the input', () => {
   it('regression aria-kernel#140: Backspace inside cell-input is not preventDefault()-d by grid root', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
 
     const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
     const apple = cells.find((c) => c.textContent?.trim() === 'Apple')!
@@ -43,7 +28,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
 
 
   it('typing then Backspace shrinks the draft', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
 
     const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
     const apple = cells.find((c) => c.textContent?.trim() === 'Apple')!
@@ -68,7 +53,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
   })
 
   it('typed-letter-start: pressing Backspace after starting edit by typing should delete the letter', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
 
     const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
     const empty = cells.find((c) => c.textContent?.trim() === '')!
@@ -90,7 +75,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
   })
 
   it('FormulaBar: Backspace inside formula input does NOT clear the focused cell', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
 
     const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
     const apple = cells.find((c) => c.textContent?.trim() === 'Apple')!
