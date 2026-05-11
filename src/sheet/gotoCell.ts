@@ -1,6 +1,5 @@
-import { parseCellId, parseA1 } from './schema'
+import { parseCellId, parseA1, ROW_COUNT } from './schema'
 import { idsInRect, rectFromRefs } from '../lib/rect'
-import { ROW_COUNT } from './schema'
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
 export function resolveCellRef(raw: string): string | null {

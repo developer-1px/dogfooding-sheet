@@ -1,6 +1,5 @@
-import { COL_LETTERS, colIndex } from './schema'
+import { COL_LETTERS, colIndex, ROW_COUNT } from './schema'
 import { idsForCol, idsForAll } from '../lib/range'
-import { ROW_COUNT } from './schema'
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
 
 interface Props {

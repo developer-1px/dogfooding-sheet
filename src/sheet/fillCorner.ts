@@ -1,5 +1,4 @@
-import { colIndex } from './schema'
-import { parseCellId } from './schema'
+import { colIndex, parseCellId } from './schema'
 import { rectFromIds } from '../lib/rect'
 
 export function isFillCorner(cellId: string, focusId: string | null, selectedIds: string[]): boolean {

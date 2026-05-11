@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS } from './schema'
-import type { Sheet, SheetOps } from './schema'
+import { COL_LETTERS, type Sheet, type SheetOps } from './schema'
 import { upsertKey } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 

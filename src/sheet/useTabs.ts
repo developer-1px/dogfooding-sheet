@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { blankBundle, bundleOf, withBundle, type Sheet, type SheetOps, type TabBundle } from './schema'
+import { blankBundle, bundleOf, withBundle, type Sheet, type SheetOps, type TabBundle, type Cells } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
-import type { Cells } from './schema'
 
 export interface TabsState {
   order: string[]

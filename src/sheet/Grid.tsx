@@ -1,4 +1,4 @@
-import { COL_LETTERS, ROW_COUNT } from './schema'
+import { COL_LETTERS, ROW_COUNT, parseCellId, cellKey } from './schema'
 import { GridHeader } from './GridHeader'
 import { GridRow } from './GridRow'
 import { useDragSelect } from './useDragSelect'
@@ -9,7 +9,6 @@ import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from './useAutoFill'
 import { rectToIdSet } from '../lib/rect'
 import { freezeOffsets } from '../lib/freezeOffsets'; import { buildMergeMap } from './useMerges'
-import { parseCellId, cellKey } from './schema'
 import type { SheetCtx } from './useSheet'
 
 
