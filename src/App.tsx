@@ -17,12 +17,14 @@ import { buildMergeMap } from './sheet/useMerges'
 import { SheetToolbar } from './sheet/SheetToolbar'
 import './App.css'
 
+const GOTO_PROMPT = { label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' }
+
 export default function App() {
   const { ask, dialog: promptDialog } = usePrompt()
   const { confirm, dialog: confirmDialog } = useConfirm()
   const ctxRef = useRef<SheetCtx | null>(null)
   const ctx = useSheet({
-    openGoto: () => ask({ label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' })
+    openGoto: () => ask(GOTO_PROMPT)
       .then((v) => { if (v && ctxRef.current) gotoCell(v, ctxRef.current.setFocusId, ctxRef.current.setSelectedIds) }),
     openNote: () => {
       const c = ctxRef.current; const k = c?.focusKey; if (!c || !k) return
@@ -55,7 +57,7 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
-        onAddrClick={() => ask({ label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' }).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds) })}
+        onAddrClick={() => ask(GOTO_PROMPT).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds) })}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}
