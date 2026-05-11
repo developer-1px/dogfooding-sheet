@@ -1,6 +1,6 @@
 import type { Eval } from './args'
 import { COL_LETTERS, cellKey, parseA1, colIndex, type Cells } from '../a1'
-import type { Rect } from '../rect'
+import { rectOfCell, type Rect } from '../rect'
 
 
 export const parseRange = (s: string): Rect | null => {
@@ -9,8 +9,7 @@ export const parseRange = (s: string): Rect | null => {
   if (colon < 0) {
     const p = parseA1(trimmed)
     if (!p) return null
-    const ci = colIndex(p.col)
-    return { rMin: p.row, rMax: p.row, cMin: ci, cMax: ci }
+    return rectOfCell(p)
   }
   const a = parseA1(trimmed.slice(0, colon))
   const b = parseA1(trimmed.slice(colon + 1))

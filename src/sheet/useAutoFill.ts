@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
-import { rectFromIds, type Rect } from '../lib/rect'
+import { rectFromIds, rectOfCell, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
 interface Args {
@@ -21,10 +21,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     if (selectedIds.length > 1) return rectFromIds(selectedIds)
     if (focusId) {
       const p = parseCellId(focusId)
-      if (p) {
-        const ci = colIndex(p.col)
-        return { rMin: p.row, rMax: p.row, cMin: ci, cMax: ci }
-      }
+      if (p) return rectOfCell(p)
     }
     return null
   }

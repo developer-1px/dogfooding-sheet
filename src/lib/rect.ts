@@ -1,6 +1,12 @@
-import { COL_LETTERS, cellKey, parseCellId, colIndex } from './a1'
+import { COL_LETTERS, cellKey, parseCellId, colIndex, type CellRef } from './a1'
 
 export interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
+
+/** Single-cell rect at the given cell reference. */
+export const rectOfCell = (p: CellRef): Rect => {
+  const ci = colIndex(p.col)
+  return { rMin: p.row, rMax: p.row, cMin: ci, cMax: ci }
+}
 
 export const formatRect = (rect: Rect): string => {
   const a = cellKey(COL_LETTERS[rect.cMin], rect.rMin)
