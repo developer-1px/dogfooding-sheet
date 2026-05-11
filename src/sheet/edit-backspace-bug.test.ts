@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, cells as gridCells, setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, mouseClick, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -10,11 +10,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     await act(async () => dom.root.render(createElement(App)))
 
     const apple = cellByText('Apple')!
-    act(() => {
-      apple.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
-      apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
-      apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
-    })
+    act(() => mouseClick(apple))
     act(() => apple.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
     const input = document.querySelector<HTMLInputElement>('input.cell-input')!
     expect(input).not.toBeNull()
@@ -30,9 +26,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     await act(async () => dom.root.render(createElement(App)))
 
     const apple = cellByText('Apple')!
-    act(() => apple.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })))
-    act(() => apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 })))
-    act(() => apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 })))
+    act(() => mouseClick(apple))
 
     // Press F2 to start edit
     act(() => apple.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
@@ -54,9 +48,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     await act(async () => dom.root.render(createElement(App)))
 
     const empty = gridCells().find((c) => c.textContent?.trim() === '')!
-    act(() => empty.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })))
-    act(() => empty.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 })))
-    act(() => empty.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 })))
+    act(() => mouseClick(empty))
 
     act(() => window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'a' })))
 
@@ -75,9 +67,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     await act(async () => dom.root.render(createElement(App)))
 
     const apple = cellByText('Apple')!
-    act(() => apple.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })))
-    act(() => apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 })))
-    act(() => apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 })))
+    act(() => mouseClick(apple))
 
     const fbar = document.querySelector<HTMLInputElement>('input.formula')
     expect(fbar).not.toBeNull()

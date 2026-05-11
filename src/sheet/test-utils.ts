@@ -19,10 +19,11 @@ export const cellByText = (text: string): HTMLElement | undefined =>
   cells().find((c) => c.textContent?.trim() === text)
 
 /** Synthesize a full mousedown → mouseup → click sequence on the target. */
-export const mouseClick = (target: Element): void => {
-  target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
-  target.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
-  target.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
+export const mouseClick = (target: Element, mod: { shiftKey?: boolean } = {}): void => {
+  const init = { bubbles: true, button: 0, ...mod }
+  target.dispatchEvent(new MouseEvent('mousedown', init))
+  target.dispatchEvent(new MouseEvent('mouseup', init))
+  target.dispatchEvent(new MouseEvent('click', init))
 }
 
 /**

@@ -39,10 +39,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     await act(async () => dom.root.render(createElement(App)))
     const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
     act(() => click(apple))
-    act(() => {
-      milk.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0, shiftKey: true }))
-      milk.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, shiftKey: true }))
-    })
+    act(() => click(milk, { shiftKey: true }))
     act(() => press('x', { ctrlKey: true }))
     expect(cellByText('Apple')).toBeUndefined()
     expect(cellByText('Milk')).toBeUndefined()
@@ -55,10 +52,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     await act(async () => dom.root.render(createElement(App)))
     const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
     act(() => click(apple))
-    act(() => {
-      milk.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0, shiftKey: true }))
-      milk.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, shiftKey: true }))
-    })
+    act(() => click(milk, { shiftKey: true }))
     act(() => press('d', { ctrlKey: true }))
     expect(gridCells().filter((c) => c.textContent === 'Apple').length).toBe(3)
     act(() => press('z', { ctrlKey: true }))
@@ -76,10 +70,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     const milk = cellByText('Milk')!
     act(() => click(apple))
     // Shift-click via mousedown with shiftKey
-    act(() => {
-      milk.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0, shiftKey: true }))
-      milk.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, shiftKey: true }))
-    })
+    act(() => click(milk, { shiftKey: true }))
 
     act(() => press('Backspace'))
     expect(cellByText('Apple')).toBeUndefined()
