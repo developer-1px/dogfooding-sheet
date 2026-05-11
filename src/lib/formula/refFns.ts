@@ -1,6 +1,6 @@
+import type { Cells } from '../a1'
 import { smartReturn } from './marker'
 
-type Cells = Record<string, string>
 
 interface Ctx { cells: Cells; evalRaw: (s: string) => string }
 

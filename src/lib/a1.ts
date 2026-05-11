@@ -14,6 +14,9 @@ export type ColLetter = (typeof COL_LETTERS)[number]
 /** A1 cell key: `${col}${row+1}` — `cellKey('A', 0) === 'A1'`. */
 export const cellKey = (col: string, row: number): string => `${col}${row + 1}`
 
+/** Sheet cell map: A1-key → raw value. */
+export type Cells = Record<string, string>
+
 /** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
 export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
   const m = /^r(\d+)-([A-J])$/.exec(id)

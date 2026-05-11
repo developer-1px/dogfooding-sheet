@@ -1,6 +1,6 @@
+import type { Cells } from '../a1'
 import { parseRange, evalCell } from './rangeRect'
 
-type Cells = Record<string, string>
 
 export { parseRange }
 

@@ -1,6 +1,5 @@
-import { COL_LETTERS, cellKey, parseCellId } from './a1'
+import { COL_LETTERS, cellKey, parseCellId, type Cells } from './a1'
 
-type Cells = Record<string, string>
 type Writes = Array<[string, string]>
 type WriteMany = (w: Writes) => void
 

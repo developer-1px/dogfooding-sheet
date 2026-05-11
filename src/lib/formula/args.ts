@@ -1,6 +1,6 @@
+import type { Cells } from '../a1'
 import { stripText } from './marker'
 
-type Cells = Record<string, string>
 
 export interface Ctx {
   cells: Cells

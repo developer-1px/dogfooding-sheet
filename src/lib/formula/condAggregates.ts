@@ -1,7 +1,7 @@
+import type { Cells } from '../a1'
 import { collectRefs } from './parse'
 import { matchCriteria } from './criteriaMatch'
 
-type Cells = Record<string, string>
 
 export function countif(rangeStr: string, criteria: string, cells: Cells, evalRaw: (s: string) => string): number {
   const refs = collectRefs(rangeStr)

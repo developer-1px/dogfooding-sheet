@@ -1,6 +1,6 @@
+import type { Cells } from '../a1'
 import type { Rect } from '../rect'
 
-type Cells = Record<string, string>
 
 export const parseRange = (s: string): Rect | null => {
   const m = /^([A-J])(\d+):([A-J])(\d+)$/.exec(s.trim())

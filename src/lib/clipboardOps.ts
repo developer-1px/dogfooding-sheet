@@ -1,8 +1,7 @@
 import { rectFromIds } from './rect'
 import { rectToTsv, pasteTsv } from './clipboard'
-import { cellKey, parseCellId } from './a1'
+import { cellKey, parseCellId, type Cells } from './a1'
 
-type Cells = Record<string, string>
 
 export function freezeFormulas(
   ids: string[], cells: Cells, display: (k: string) => string,

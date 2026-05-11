@@ -1,6 +1,5 @@
-import { COL_LETTERS, cellKey } from './a1'
+import { COL_LETTERS, cellKey, type Cells } from './a1'
 
-type Cells = Record<string, string>
 
 const compareValues = (a: string, b: string, dir: 1 | -1): number => {
   const na = Number(a), nb = Number(b)

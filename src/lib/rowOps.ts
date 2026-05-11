@@ -1,4 +1,4 @@
-type Cells = Record<string, string>
+import type { Cells } from './a1'
 
 const REF_RE = /([A-J])(\d+)/g
 

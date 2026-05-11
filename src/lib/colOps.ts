@@ -1,6 +1,5 @@
-import { COL_LETTERS, colIndex } from './a1'
+import { COL_LETTERS, colIndex, type Cells } from './a1'
 
-type Cells = Record<string, string>
 
 const REF_RE = /([A-J])(\d+)/g
 const idxCol = (i: number) => COL_LETTERS[i]

@@ -1,7 +1,7 @@
+import type { Cells } from '../a1'
 import { collectRefs } from './parse'
 import { matchCriteria } from './criteriaMatch'
 
-type Cells = Record<string, string>
 
 /** Build a predicate from interleaved (range, criteria) pairs. */
 const matchAll = (pairs: string[], cells: Cells, evalRaw: (s: string) => string) =>

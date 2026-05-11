@@ -1,7 +1,7 @@
+import type { Cells } from '../a1'
 import { A1_RE, FUNC_RE } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 
-type Cells = Record<string, string>
 
 const numFromCellFactory = (cells: Cells, seen: Set<string>) => (ref: string): number => {
   const v = evaluate(cells, cells[ref] ?? '', seen)
