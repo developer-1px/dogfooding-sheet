@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, cellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
+import { useRef } from 'react'
+import { useFillHandleGesture } from '@p/aria-kernel/gesture/lab/useFillHandleGesture'
+import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, cellId, type Cells, type WriteCell, type WriteMany } from './schema'
 import { rectFromIds, rectOfCell, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
@@ -12,9 +13,9 @@ interface Args {
   setSelectedIds: (ids: string[]) => void
 }
 
+const rectEq = (a: Rect, b: Rect) => a.rMin === b.rMin && a.rMax === b.rMax && a.cMin === b.cMin && a.cMax === b.cMax
 
 export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds }: Args) {
-  const [preview, setPreview] = useState<Rect | null>(null)
   const sourceRef = useRef<Rect | null>(null)
 
   const sourceRect = (): Rect | null => {
@@ -26,49 +27,39 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     return null
   }
 
-  const onHandleMouseDown = (e: React.MouseEvent) => {
-    const src = sourceRect()
-    if (!src) return
-    e.preventDefault()
-    e.stopPropagation()
-    sourceRef.current = src
-    setPreview(src)
-  }
-
-  const onCellEnterDuringFill = (cellId: string) => {
-    if (!sourceRef.current) return
-    const p = parseCellId(cellId)
-    if (!p) return
-    const src = sourceRef.current
-    const ci = colIndex(p.col)
-    // Extend either downward or rightward — whichever is larger delta
-    const dRow = p.row - src.rMax
-    const dCol = ci - src.cMax
-    if (dRow <= 0 && dCol <= 0) { setPreview(src); return }
-    if (dRow >= dCol) setPreview({ ...src, rMax: Math.min(ROW_COUNT - 1, p.row) })
-    else setPreview({ ...src, cMax: Math.min(COL_LETTERS.length - 1, ci) })
-  }
-
-  useEffect(() => {
-    if (!sourceRef.current) return
-    const onUp = () => {
-      const src = sourceRef.current!
-      const tgt = preview
+  const fill = useFillHandleGesture<Rect>({
+    equals: rectEq,
+    onCommit: (src, tgt) => {
       sourceRef.current = null
-      setPreview(null)
-      if (!tgt || (tgt.rMax === src.rMax && tgt.cMax === src.cMax)) return
       applyFill(src, tgt, cells, writeCell, writeCells)
-      // Re-select the filled rect
       const ids: string[] = []
       for (let r = tgt.rMin; r <= tgt.rMax; r++) {
         for (let c = tgt.cMin; c <= tgt.cMax; c++) ids.push(cellId(COL_LETTERS[c], r))
       }
       setSelectedIds(ids)
-    }
-    window.addEventListener('mouseup', onUp)
-    return () => window.removeEventListener('mouseup', onUp)
-  }, [preview, cells, writeCell, setSelectedIds])
+    },
+  })
 
-  return { onHandleMouseDown, onCellEnterDuringFill, preview, dragging: !!sourceRef.current }
+  const onHandleMouseDown = (e: React.MouseEvent) => {
+    const src = sourceRect()
+    if (!src) return
+    e.stopPropagation()
+    sourceRef.current = src
+    fill.handleProps(src).onMouseDown(e)
+  }
+
+  const onCellEnterDuringFill = (id: string) => {
+    const src = sourceRef.current
+    if (!src) return
+    const p = parseCellId(id)
+    if (!p) return
+    const ci = colIndex(p.col)
+    const dRow = p.row - src.rMax
+    const dCol = ci - src.cMax
+    if (dRow <= 0 && dCol <= 0) { fill.setTarget(src); return }
+    if (dRow >= dCol) fill.setTarget({ ...src, rMax: Math.min(ROW_COUNT - 1, p.row) })
+    else fill.setTarget({ ...src, cMax: Math.min(COL_LETTERS.length - 1, ci) })
+  }
+
+  return { onHandleMouseDown, onCellEnterDuringFill, preview: fill.preview, dragging: sourceRef.current !== null }
 }
-
