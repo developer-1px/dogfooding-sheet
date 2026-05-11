@@ -1,4 +1,4 @@
-import { SheetSchema, initialSheet, COL_LETTERS, ROW_COUNT, parseCellId, type Sheet } from './schema'
+import { SheetSchema, initialSheet, COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Sheet } from './schema'
 import { fromTree, type NormalizedData } from '@p/aria-kernel'
 
 const STORAGE_KEY = 'spreadsheet:v1'
@@ -19,7 +19,7 @@ export const saveSheet = (sheet: Sheet) => {
 export const moveCellId = (id: string, dRow: number, dCol: number): string | null => {
   const p = parseCellId(id)
   if (!p) return null
-  const colIdx = COL_LETTERS.indexOf(p.col as (typeof COL_LETTERS)[number])
+  const colIdx = colIndex(p.col)
   const nCol = colIdx + dCol
   const nRow = p.row + dRow
   if (nCol < 0 || nCol >= COL_LETTERS.length || nRow < 0 || nRow >= ROW_COUNT) return id

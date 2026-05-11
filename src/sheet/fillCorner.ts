@@ -1,4 +1,4 @@
-import { COL_LETTERS } from './schema'
+import { COL_LETTERS, colIndex } from './schema'
 import { parseCellId } from '../lib/a1'
 import { rectFromIds, type Rect } from '../lib/rect'
 
@@ -17,7 +17,7 @@ export function isFillCorner(cellId: string, focusId: string | null, selectedIds
     if (!rect) return false
     const p = parseCellId(cellId)
     if (!p) return false
-    return p.row === rect.rMax && COL_LETTERS.indexOf(p.col) === rect.cMax
+    return p.row === rect.rMax && colIndex(p.col) === rect.cMax
   }
   return cellId === focusId
 }

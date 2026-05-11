@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, parseCellId } from './a1'
+import { COL_LETTERS, cellKey, parseCellId, colIndex } from './a1'
 
 export function jumpToEdge(
   focusId: string,
@@ -9,7 +9,7 @@ export function jumpToEdge(
   const p = parseCellId(focusId); if (!p) return null
   const dRow = arrow === 'ArrowDown' ? 1 : arrow === 'ArrowUp' ? -1 : 0
   const dCol = arrow === 'ArrowRight' ? 1 : arrow === 'ArrowLeft' ? -1 : 0
-  let r = p.row, c = COL_LETTERS.indexOf(p.col)
+  let r = p.row, c = colIndex(p.col)
   while (true) {
     const nr = r + dRow, nc = c + dCol
     if (nr < 0 || nr >= rowCount || nc < 0 || nc >= COL_LETTERS.length) break
@@ -22,7 +22,7 @@ export function jumpToEdge(
 /** Tab / Shift-Tab target — one column right / left within bounds. Returns null at edge. */
 export function tabTarget(focusId: string, shift: boolean): string | null {
   const p = parseCellId(focusId); if (!p) return null
-  const ci = COL_LETTERS.indexOf(p.col), nci = ci + (shift ? -1 : 1)
+  const ci = colIndex(p.col), nci = ci + (shift ? -1 : 1)
   return nci < 0 || nci >= COL_LETTERS.length ? null : `r${p.row}-${COL_LETTERS[nci]}`
 }
 
@@ -40,8 +40,8 @@ export function idsBetween(a: string, b: string): string[] {
   const A = parseCellId(a), B = parseCellId(b)
   if (!A || !B) return []
   const r1 = Math.min(A.row, B.row), r2 = Math.max(A.row, B.row)
-  const c1 = Math.min(COL_LETTERS.indexOf(A.col), COL_LETTERS.indexOf(B.col))
-  const c2 = Math.max(COL_LETTERS.indexOf(A.col), COL_LETTERS.indexOf(B.col))
+  const c1 = Math.min(colIndex(A.col), colIndex(B.col))
+  const c2 = Math.max(colIndex(A.col), colIndex(B.col))
   const ids: string[] = []
   for (let r = r1; r <= r2; r++) for (let c = c1; c <= c2; c++) ids.push(`r${r}-${COL_LETTERS[c]}`)
   return ids

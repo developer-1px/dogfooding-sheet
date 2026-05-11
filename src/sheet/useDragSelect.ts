@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { COL_LETTERS, parseCellId, cellKey } from './schema'
+import { COL_LETTERS, parseCellId, cellKey, colIndex } from './schema'
 
-const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 
 const rangeIds = (a: { col: string; row: number }, b: { col: string; row: number }): string[] => {
-  const c1 = colIdx(a.col), c2 = colIdx(b.col)
+  const c1 = colIndex(a.col), c2 = colIndex(b.col)
   const r1 = a.row, r2 = b.row
   const out: string[] = []
   for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++) {

@@ -1,5 +1,5 @@
 import { isNumeric } from './numeric'
-import { COL_LETTERS } from './a1'
+import { COL_LETTERS, colIndex } from './a1'
 
 /**
  * SUM of contiguous numeric cells above the given row. Falls back to the
@@ -11,7 +11,7 @@ export function autoSumFormula(col: string, row: number, display: (k: string) =>
   const startRow0 = top + 1
   if (startRow0 < row) return `=SUM(${col}${startRow0 + 1}:${col}${row})`
 
-  const colIdx = COL_LETTERS.indexOf(col)
+  const colIdx = colIndex(col)
   if (colIdx <= 0) return null
   let left = colIdx - 1
   while (left >= 0 && isNumeric(display(`${COL_LETTERS[left]}${row + 1}`))) left -= 1

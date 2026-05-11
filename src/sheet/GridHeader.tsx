@@ -1,4 +1,4 @@
-import { COL_LETTERS } from './schema'
+import { COL_LETTERS, colIndex } from './schema'
 import { idsForCol, idsForAll } from '../lib/range'
 import { ROW_COUNT } from './schema'
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
@@ -15,8 +15,8 @@ interface Props {
 }
 
 const colRangeIds = (target: string, anchor: string | null): string[] => {
-  const a = anchor ? COL_LETTERS.indexOf(anchor as (typeof COL_LETTERS)[number]) : -1
-  const t = COL_LETTERS.indexOf(target as (typeof COL_LETTERS)[number])
+  const a = anchor ? colIndex(anchor) : -1
+  const t = colIndex(target)
   if (a < 0) return idsForCol(target, ROW_COUNT)
   const ids: string[] = []
   for (let i = Math.min(a, t); i <= Math.max(a, t); i++) ids.push(...idsForCol(COL_LETTERS[i], ROW_COUNT))

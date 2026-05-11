@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
+import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex } from './schema'
 import { rectFromIds, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
@@ -12,7 +12,6 @@ interface Args {
   setSelectedIds: (ids: string[]) => void
 }
 
-const colIdx = (c: string) => COL_LETTERS.indexOf(c as (typeof COL_LETTERS)[number])
 
 export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds }: Args) {
   const [preview, setPreview] = useState<Rect | null>(null)
@@ -23,7 +22,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     if (focusId) {
       const p = parseCellId(focusId)
       if (p) {
-        const ci = colIdx(p.col)
+        const ci = colIndex(p.col)
         return { rMin: p.row, rMax: p.row, cMin: ci, cMax: ci }
       }
     }
@@ -44,7 +43,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     const p = parseCellId(cellId)
     if (!p) return
     const src = sourceRef.current
-    const ci = colIdx(p.col)
+    const ci = colIndex(p.col)
     // Extend either downward or rightward — whichever is larger delta
     const dRow = p.row - src.rMax
     const dCol = ci - src.cMax
