@@ -1,7 +1,8 @@
 import { idsForRow } from '../lib/range'
+import { parseCellId } from '../lib/a1'
 
 const rowSelectIds = (rIdx: number, anchor: string | null): string[] => {
-  const m = anchor && /^r(\d+)/.exec(anchor); const from = m ? Number(m[1]) : rIdx
+  const p = anchor ? parseCellId(anchor) : null; const from = p ? p.row : rIdx
   const ids: string[] = []
   for (let r = Math.min(from, rIdx); r <= Math.max(from, rIdx); r++) ids.push(...idsForRow(r))
   return ids
