@@ -1,4 +1,5 @@
-import { rectFromIds, rectToTsv, pasteTsv } from './clipboard'
+import { rectFromIds } from './rect'
+import { rectToTsv, pasteTsv } from './clipboard'
 import { cellKey, parseCellId } from './a1'
 
 type Cells = Record<string, string>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { COL_LETTERS, ROW_COUNT, parseCellId } from './schema'
-import { rectFromIds, type Rect } from '../lib/clipboard'
+import { rectFromIds, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
 interface Args {

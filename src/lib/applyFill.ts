@@ -1,5 +1,5 @@
 import { COL_LETTERS, cellKey } from './a1'
-import type { Rect } from './clipboard'
+import type { Rect } from './rect'
 import { extendSeries } from './series'
 
 export function applyFill(
