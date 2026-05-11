@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
+import type { Patch } from '../lib/dictOps'
 
 export interface HiddenState {
   rows: number[]
@@ -35,7 +36,7 @@ export function useHidden(hidden: HiddenState, ops: JsonOps<Sheet>) {
     ops.add('/hidden/cols/-' as never, col as never)
   }
   const showAll = () => {
-    const patch: Array<{ op: 'replace'; path: string; value: unknown }> = []
+    const patch: Patch = []
     if (hidden.rows.length) patch.push({ op: 'replace', path: '/hidden/rows', value: [] })
     if (hidden.cols.length) patch.push({ op: 'replace', path: '/hidden/cols', value: [] })
     if (patch.length) ops.patch(patch as never)

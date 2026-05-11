@@ -2,11 +2,12 @@ import type { JsonOps } from 'zod-crud'
 import { COL_LETTERS, ROW_COUNT, colIndex, type Sheet } from './schema'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp } from '../lib/rowOps'
 import { sortByColumn } from '../lib/sortOps'
+import type { Patch } from '../lib/dictOps'
 
 // Row/col mutations invalidate merge row/col indices. Clear merges defensively
 // (preferable to silently mis-aligned merges) and batch with the cells write so undo is atomic.
 const apply = (sheet: Sheet, ops: JsonOps<Sheet>, nextCells: Record<string, string>) => {
-  const patch: Array<{ op: 'replace'; path: string; value: unknown }> = [{ op: 'replace', path: '/cells', value: nextCells }]
+  const patch: Patch = [{ op: 'replace', path: '/cells', value: nextCells }]
   if (sheet.merges.length > 0) patch.push({ op: 'replace', path: '/merges', value: [] })
   ops.patch(patch as never)
 }

@@ -1,5 +1,8 @@
 import type { JsonOps } from 'zod-crud'
 
+/** JSON-patch ops accepted by `ops.patch()`. Value typed loosely; site narrows as needed. */
+export type Patch = Array<{ op: 'add' | 'replace' | 'remove'; path: string; value?: unknown }>
+
 /**
  * Surgical add/replace/remove for one key inside a dict-record stored in the SSOT doc.
  * Per zod-crud guidance — avoids `ops.replace('/path', { ...all, [k]: v })` anti-pattern
@@ -29,7 +32,7 @@ export function upsertKeys<T, V>(
   current: Record<string, V>,
   entries: Array<[string, V | undefined]>,
 ): void {
-  const patch: Array<{ op: 'add' | 'replace' | 'remove'; path: string; value?: unknown }> = []
+  const patch: Patch = []
   for (const [key, value] of entries) {
     const path = `${base}/${key}`
     if (value === undefined) { if (current[key] !== undefined) patch.push({ op: 'remove', path }) }
