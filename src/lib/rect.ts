@@ -16,6 +16,10 @@ export function idsInRect(rect: Rect): string[] {
   return out
 }
 
+/** Convenience: enumerate as a Set; `null` → empty set. */
+export const rectToIdSet = (rect: Rect | null): Set<string> =>
+  new Set(rect ? idsInRect(rect) : [])
+
 export function rectFromIds(ids: string[]): Rect | null {
   const cells = ids.map(parseCellId).flatMap((x) => x ? [x] : [])
   if (cells.length === 0) return null
