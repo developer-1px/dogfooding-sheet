@@ -1,24 +1,9 @@
 import { act, createElement } from 'react'
-import { createRoot, type Root } from 'react-dom/client'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import App from '../App'
+import { press, setupReactDom } from './test-utils'
 
-let root: Root
-let host: HTMLDivElement
-
-beforeEach(() => {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true
-  localStorage.clear()
-  host = document.createElement('div')
-  document.body.append(host)
-  root = createRoot(host)
-})
-
-afterEach(() => {
-  act(() => root.unmount())
-  host.remove()
-  localStorage.clear()
-})
+const dom = setupReactDom()
 
 const click = (el: Element) => {
   el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
@@ -32,7 +17,7 @@ const cellByText = (text: string) =>
 
 describe('surgical key-path undo (zod-crud audit fix)', () => {
   it('bolding two cells then one undo only un-bolds the second', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
 
     const apple = cellByText('Apple')!
     const bread = cellByText('Bread')!
@@ -54,7 +39,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
   })
 
   it('formula evaluation result is shown in cell (sanity check)', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
     // initialSheet has D2 = '=B2*C2' where B2=3, C2=1.50 → 4.5 (formatted '4.5')
     const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
     const d2 = cells.find((c) => c.textContent?.trim() === '4.5')
@@ -62,7 +47,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
   })
 
   it('Cmd+X (cut) on multi-cell selection is a single undo entry', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
     const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
     act(() => click(apple))
     act(() => {
@@ -78,7 +63,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
   })
 
   it('Cmd+D fillDown across N cells is a single undo entry', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
     const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
     act(() => click(apple))
     act(() => {
@@ -94,7 +79,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
   })
 
   it('Backspace on multi-cell selection clears N cells in a single undo entry', async () => {
-    await act(async () => root.render(createElement(App)))
+    await act(async () => dom.root.render(createElement(App)))
 
     // Select A2:A4 (Apple, Bread, Milk) by clicking A2, shift-clicking A4 — but drag select is
     // simpler: just shift-click to extend.

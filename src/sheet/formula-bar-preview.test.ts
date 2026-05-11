@@ -1,13 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { mouseClick as click, setupReactDom } from './test-utils'
+import { mouseClick as click, setupReactDom, press } from './test-utils'
 
 const dom = setupReactDom()
-
-const press = (key: string) => {
-  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
-}
 
 describe('formula bar preview interactions', () => {
   it('does not let grid typing shortcuts steal keyboard input from the formula bar', async () => {

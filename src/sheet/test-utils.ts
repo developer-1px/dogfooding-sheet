@@ -2,6 +2,14 @@ import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach } from 'vitest'
 
+/** Dispatch a `keydown` on `window` with optional modifier keys. */
+export const press = (
+  key: string,
+  mod: { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean; altKey?: boolean } = {},
+): void => {
+  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
+}
+
 /** Synthesize a full mousedown → mouseup → click sequence on the target. */
 export const mouseClick = (target: Element): void => {
   target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))

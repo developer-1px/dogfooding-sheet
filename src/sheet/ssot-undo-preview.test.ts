@@ -1,12 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { mouseClick, setupReactDom } from './test-utils'
+import { mouseClick, setupReactDom, press } from './test-utils'
 
 const dom = setupReactDom()
-
-const press = (key: string, mod: { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean } = {}) =>
-  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
 
 describe('SSOT: undo restores ancillary state', () => {
   it('Cmd+B applies bold; Cmd+Z removes it (styles undoable)', async () => {
