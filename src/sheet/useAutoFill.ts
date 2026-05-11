@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Writes, type WriteCell, type WriteMany } from './schema'
+import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 import { rectFromIds, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 

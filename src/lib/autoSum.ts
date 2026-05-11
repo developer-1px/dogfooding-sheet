@@ -1,11 +1,11 @@
 import { isNumeric } from './numeric'
-import { COL_LETTERS, cellKey, colIndex } from './a1'
+import { COL_LETTERS, cellKey, colIndex, type Display } from './a1'
 
 /**
  * SUM of contiguous numeric cells above the given row. Falls back to the
  * contiguous numeric run to the left if nothing is above (Sheets parity).
  */
-export function autoSumFormula(col: string, row: number, display: (k: string) => string): string | null {
+export function autoSumFormula(col: string, row: number, display: Display): string | null {
   let top = row - 1
   while (top >= 0 && isNumeric(display(cellKey(col, top)))) top -= 1
   const startRow0 = top + 1

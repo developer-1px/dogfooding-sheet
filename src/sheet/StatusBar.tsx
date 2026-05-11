@@ -1,9 +1,9 @@
 import { numericValue } from '../lib/numeric'
-import { cellKey } from '../lib/a1'
+import { cellKey, type Display } from '../lib/a1'
 
 interface Props {
   selectedIds: string[]
-  display: (k: string) => string
+  display: Display
   parseId: (id: string) => { col: string; row: number } | null
 }
 

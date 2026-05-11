@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { cellKey } from '../lib/a1'
+import { cellKey, type Display } from '../lib/a1'
 
 export interface Filter { col: string; text: string }
 
@@ -23,7 +23,7 @@ export function useFilter() {
 export function hiddenRows(
   filter: Filter | null,
   rowCount: number,
-  display: (k: string) => string,
+  display: Display,
 ): Set<number> {
   const out = new Set<number>()
   if (!filter) return out

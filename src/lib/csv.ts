@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, type Writes, type WriteCell, type WriteMany } from './a1'
+import { COL_LETTERS, cellKey, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
 
 const CSV_NEEDS_QUOTE = /[",\n\r]/
 
@@ -6,7 +6,7 @@ const quote = (s: string) => CSV_NEEDS_QUOTE.test(s) ? `"${s.replace(/"/g, '""')
 
 interface ExportOpts { rowCount: number }
 
-export function exportCsv(get: (k: string) => string, opts: ExportOpts): string {
+export function exportCsv(get: Display, opts: ExportOpts): string {
   const { rowCount } = opts
   let lastRow = -1
   let lastCol = -1

@@ -1,5 +1,5 @@
 import { useShortcut } from '@p/aria-kernel/key'
-import { cellKey, parseCellId, ROW_COUNT, type Sheet, type Writes, type WriteCell, type WriteMany } from './schema'
+import { cellKey, parseCellId, ROW_COUNT, type Sheet, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 import type { JsonOps } from 'zod-crud'
 import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
@@ -24,7 +24,7 @@ export interface GlobalShortcutCtx {
   clearFormat: () => void
   saveCsv: () => void
   switchTab?: (delta: 1 | -1) => void
-  display?: (k: string) => string
+  display?: Display
   applyFormat?: (key: 'plain' | 'currency' | 'percent' | 'date') => void
   editNote?: () => void
   insertLink?: () => void

@@ -1,7 +1,7 @@
-import { COL_LETTERS, cellKey, colIndex, type Writes, type WriteCell, type WriteMany } from './a1'
+import { COL_LETTERS, cellKey, colIndex, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
 import type { Rect } from './rect'
 
-export function rectToTsv(rect: Rect, get: (k: string) => string): string {
+export function rectToTsv(rect: Rect, get: Display): string {
   const rows: string[] = []
   for (let r = rect.rMin; r <= rect.rMax; r++) {
     const cols: string[] = []

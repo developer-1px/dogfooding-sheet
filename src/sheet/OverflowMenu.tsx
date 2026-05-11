@@ -3,10 +3,10 @@ import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useMenuButtonPattern } from '@p/aria-kernel/patterns'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
 import type { ConfirmOptions } from './useConfirm'
-import { ROW_COUNT, SheetSchema, type Sheet, type Writes, type WriteCell, type WriteMany } from './schema'
+import { ROW_COUNT, SheetSchema, type Sheet, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
 interface Props {
-  display: (k: string) => string
+  display: Display
   writeCell: WriteCell
   writeCells: WriteMany
   openHelp: () => void

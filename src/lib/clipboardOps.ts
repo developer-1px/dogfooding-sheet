@@ -1,10 +1,10 @@
 import { rectFromIds } from './rect'
 import { rectToTsv, pasteTsv } from './clipboard'
-import { cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany } from './a1'
+import { cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
 
 
 export function freezeFormulas(
-  ids: string[], cells: Cells, display: (k: string) => string,
+  ids: string[], cells: Cells, display: Display,
   writeCell: WriteCell,
   writeCells?: WriteMany,
 ): void {
