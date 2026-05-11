@@ -1,4 +1,4 @@
-import { COL_LETTERS, ROW_COUNT, colIndex, type Sheet, type SheetOps } from './schema'
+import { ROW_COUNT, colIndex, type Sheet, type SheetOps } from './schema'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp } from '../lib/rowOps'
 import { sortByColumn } from '../lib/sortOps'
 import type { Patch } from '../lib/dictOps'
