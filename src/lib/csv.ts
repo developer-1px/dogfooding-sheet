@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, type Writes } from './a1'
+import { COL_LETTERS, cellKey, type Writes, type WriteCell } from './a1'
 
 const CSV_NEEDS_QUOTE = /[",\n\r]/
 
@@ -56,7 +56,7 @@ export function parseCsv(text: string): string[][] {
   return rows
 }
 
-export function importCsvInto(text: string, write: (k: string, v: string) => void, opts: { rowCount: number; writeMany?: (writes: Writes) => void }) {
+export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; writeMany?: (writes: Writes) => void }) {
   const rows = parseCsv(text)
   const writes: Writes = []
   for (let r = 0; r < rows.length && r < opts.rowCount; r++) {

@@ -1,11 +1,11 @@
 import { rectFromIds } from './rect'
 import { rectToTsv, pasteTsv } from './clipboard'
-import { cellKey, parseCellId, type Cells, type Writes } from './a1'
+import { cellKey, parseCellId, type Cells, type Writes, type WriteCell } from './a1'
 
 
 export function freezeFormulas(
   ids: string[], cells: Cells, display: (k: string) => string,
-  writeCell: (k: string, v: string) => void,
+  writeCell: WriteCell,
   writeCells?: (writes: Writes) => void,
 ): void {
   const writes: Writes = []
@@ -20,7 +20,7 @@ export function freezeFormulas(
 
 export function insertNowOrToday(
   focusId: string | null, withTime: boolean,
-  writeCell: (k: string, v: string) => void,
+  writeCell: WriteCell,
 ): void {
   const p = focusId ? parseCellId(focusId) : null; if (!p) return
   const d = new Date(), pad = (n: number) => String(n).padStart(2, '0')
@@ -31,7 +31,7 @@ export function insertNowOrToday(
 
 export function copyOrCut(
   ids: string[], cut: boolean, cells: Cells,
-  writeCell: (k: string, v: string) => void,
+  writeCell: WriteCell,
   writeCells?: (writes: Writes) => void,
 ): void {
   const rect = rectFromIds(ids)
@@ -45,7 +45,7 @@ export function copyOrCut(
 
 export function pasteAt(
   focusKey: string, p: { col: string; row: number }, maxRow: number,
-  writeCell: (k: string, v: string) => void,
+  writeCell: WriteCell,
   writeCells?: (writes: Writes) => void,
 ): void {
   navigator.clipboard?.readText()

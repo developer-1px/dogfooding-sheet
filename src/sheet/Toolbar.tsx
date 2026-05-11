@@ -7,11 +7,11 @@ import { CondFmtButtons } from './CondFmtButtons'
 import { FormatButtons } from './FormatButtons'
 import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
-import { cellIdToKey, cellKey, type Writes } from '../lib/a1'
+import { cellIdToKey, cellKey, type Writes, type WriteCell } from '../lib/a1'
 
 interface Props {
   display: (k: string) => string
-  writeCell: (k: string, v: string) => void; writeCells: (writes: Writes) => void
+  writeCell: WriteCell; writeCells: (writes: Writes) => void
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void

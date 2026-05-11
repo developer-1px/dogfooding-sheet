@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { COL_LETTERS, cellKey, colIndex } from './schema'
+import { COL_LETTERS, cellKey, colIndex, type WriteCell } from './schema'
 import { parseCellId } from '../lib/a1'
 import type { MenuItem } from './ContextMenu'
 
 interface Args {
   sheet: { cells: Record<string, string> }
   setFocusId: (id: string) => void
-  writeCell: (k: string, v: string) => void
+  writeCell: WriteCell
   insertRow: (atRow: number) => void
   deleteRow: (atRow: number) => void
   insertCol: (col: string) => void

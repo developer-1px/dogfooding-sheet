@@ -1,6 +1,6 @@
 import type { InputProps, SelectProps } from 'editable-lifecycle'
 import { COL_LETTERS } from './schema'
-import { parseCellId, cellKey } from '../lib/a1'
+import { parseCellId, cellKey, type WriteCell } from '../lib/a1'
 import { Cell } from './Cell'
 import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'
@@ -37,7 +37,7 @@ interface Props {
   noteOf: (k: string) => string | undefined
   rawOf: (k: string) => string | undefined
   ruleOf: (k: string) => { type: 'list'; options: string[] } | { type: 'checkbox' } | undefined
-  writeCell: (k: string, v: string) => void
+  writeCell: WriteCell
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
   previewIds: Set<string>

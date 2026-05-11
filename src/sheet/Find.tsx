@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDialogPattern } from '@p/aria-kernel/patterns'
 import { cellKey } from './schema'
-import { parseCellId } from '../lib/a1'
+import { parseCellId, type WriteCell } from '../lib/a1'
 import { useFind } from './useFind'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
   cells: Record<string, string>
   display: (k: string) => string
   onJump: (cellId: string) => void
-  writeCell: (k: string, v: string) => void
+  writeCell: WriteCell
   skipIds?: Set<string>
 }
 

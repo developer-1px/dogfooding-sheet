@@ -1,10 +1,10 @@
 import { useEditable, type NavDir } from 'editable-lifecycle'
-import { cellKey, parseCellId } from './schema'
+import { cellKey, parseCellId, type WriteCell } from './schema'
 import { moveCellId } from './storage'
 
 interface Args {
   cells: Record<string, string>
-  writeCell: (k: string, v: string) => void
+  writeCell: WriteCell
 }
 
 const dirDelta: Record<NavDir, { dRow: number; dCol: number }> = {

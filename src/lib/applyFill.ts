@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, type Writes } from './a1'
+import { COL_LETTERS, cellKey, type Writes, type WriteCell } from './a1'
 import type { Rect } from './rect'
 import { extendSeries } from './series'
 
@@ -6,7 +6,7 @@ export function applyFill(
   src: Rect,
   tgt: Rect,
   cells: Record<string, string>,
-  write: (k: string, v: string) => void,
+  write: WriteCell,
   writeMany?: (writes: Writes) => void,
 ) {
   const writes: Writes = []
