@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDialogPattern } from '@p/aria-kernel/patterns'
-import { cellKey, parseCellId, type WriteCell, type Display, type Cells } from './schema'
+import { cellIdToKey, type WriteCell, type Display, type Cells } from './schema'
 import { useFind } from './useFind'
 
 interface Props {
@@ -12,11 +12,6 @@ interface Props {
   onJump: (cellId: string) => void
   writeCell: WriteCell
   skipIds?: Set<string>
-}
-
-const cellIdToKey = (id: string): string | null => {
-  const p = parseCellId(id)
-  return p ? cellKey(p.col, p.row) : null
 }
 
 export function Find({ open, mode, onClose, cells, display, onJump, writeCell, skipIds }: Props) {

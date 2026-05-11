@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { COL_LETTERS, parseCellId, cellKey, cellId, colIndex, type CellRef } from './schema'
+import { COL_LETTERS, parseCellId, cellId, colIndex, type CellRef } from './schema'
 
 
 const rangeIds = (a: CellRef, b: CellRef): string[] => {
@@ -53,9 +53,4 @@ export function useDragSelect({ focusId, setFocusId, setSelectedIds }: Args) {
   }
 
   return { onMouseDown, onMouseEnter }
-}
-
-export const cellOf = (id: string) => {
-  const p = parseCellId(id)
-  return p ? cellKey(p.col, p.row) : null
 }
