@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { COL_LETTERS, cellKey, colIndex, type Cells, type WriteCell } from './schema'
 import { parseCellId } from '../lib/a1'
 import type { SheetMutations } from './sheetMutations'
+import type { FreezeState } from './useFreeze'
 import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 
@@ -19,7 +20,7 @@ interface Args extends SheetMutations {
   promptColWidth: (col: string) => void
   setFreezeRows: (n: number) => void
   setFreezeCols: (n: number) => void
-  freeze: { rows: number; cols: number }
+  freeze: FreezeState
   mergeSelection: () => void
 }
 

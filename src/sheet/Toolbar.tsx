@@ -1,5 +1,6 @@
 import type { Format, FormatLookup } from './useFormats'
 import type { SheetMutations } from './sheetMutations'
+import type { FreezeState } from './useFreeze'
 import type { CellStyle, StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
 import type { Confirm } from './useConfirm'
@@ -19,7 +20,7 @@ interface Props extends SheetMutations {
   formatOf: FormatLookup
   updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
   styleOf: StyleLookup
-  freeze: { rows: 0 | 1; cols: 0 | 1 }
+  freeze: FreezeState
   toggleFreezeRows: () => void
   toggleFreezeCols: () => void
   filter: { col: string; text: string } | null
@@ -88,7 +89,7 @@ export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds,
         })
       }} title="유효성 검사 (드롭다운 목록)">▾목록</button>
       <button onClick={() => { const keys = targetKeys(); if (keys.length) setCheckboxRule(keys) }} title="체크박스로 변환">☑체크</button>
-      <CondFmtButtons col={focus?.[1] ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
+      <CondFmtButtons col={focus?.col ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
       <FormatButtons apply={applyF} current={focusKey ? formatOf(focusKey) : 'plain'} />
       <OverflowMenu display={display} writeCell={writeCell} writeCells={writeCells} openHelp={openHelp} insertLink={insertLink} sheet={sheet} resetSheet={resetSheet} resetCells={resetCells} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} showGridlines={showGridlines} toggleShowGridlines={toggleShowGridlines} clearAllFormats={clearAllFormats} />
     </>
