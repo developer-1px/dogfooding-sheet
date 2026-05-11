@@ -4,6 +4,7 @@ import type { FreezeState } from './useFreeze'
 import type { CellStyle, StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
 import type { CondRule } from './useCondFormat'
+import type { Filter } from './useFilter'
 import type { Confirm } from './useConfirm'
 import { OverflowMenu } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
@@ -24,7 +25,7 @@ interface Props extends SheetMutations {
   freeze: FreezeState
   toggleFreezeRows: () => void
   toggleFreezeCols: () => void
-  filter: { col: string; text: string } | null
+  filter: Filter | null
   applyFilter: (col: string, text: string) => void
   clearFilter: () => void
   hasHidden: boolean
