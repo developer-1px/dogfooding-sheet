@@ -8,6 +8,12 @@ export interface CheckboxRule { type: 'checkbox' }
 export type Rule = ListRule | CheckboxRule
 export type RuleLookup = (k: string) => Rule | undefined
 
+export interface ValidationActions {
+  setListRule: (keys: string[], options: string[]) => void
+  setCheckboxRule: (keys: string[]) => void
+  clearRule: (keys: string[]) => void
+}
+
 const LEGACY_KEY = 'spreadsheet:validation:v1'
 
 const migrateLegacy = (rules: Record<string, Rule>, ops: SheetOps) =>

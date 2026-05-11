@@ -5,6 +5,7 @@ import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
 import type { CondRule } from './useCondFormat'
 import type { Filter } from './useFilter'
+import type { ValidationActions } from './useValidation'
 import type { Confirm } from './useConfirm'
 import { OverflowMenu, type OverflowProps } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
@@ -13,7 +14,7 @@ import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
-interface Props extends SheetMutations, OverflowProps {
+interface Props extends SheetMutations, OverflowProps, ValidationActions {
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void
@@ -28,9 +29,6 @@ interface Props extends SheetMutations, OverflowProps {
   clearFilter: () => void
   hasHidden: boolean
   showAll: () => void
-  setListRule: (keys: string[], options: string[]) => void
-  setCheckboxRule: (keys: string[]) => void
-  clearRule: (keys: string[]) => void
   addCondRule: (r: CondRule) => void
   clearCondRules: () => void
   ask: Ask
