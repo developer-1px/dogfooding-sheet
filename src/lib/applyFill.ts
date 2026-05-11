@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey } from './a1'
+import { COL_LETTERS, cellKey, type Writes } from './a1'
 import type { Rect } from './rect'
 import { extendSeries } from './series'
 
@@ -7,9 +7,9 @@ export function applyFill(
   tgt: Rect,
   cells: Record<string, string>,
   write: (k: string, v: string) => void,
-  writeMany?: (writes: Array<[string, string]>) => void,
+  writeMany?: (writes: Writes) => void,
 ) {
-  const writes: Array<[string, string]> = []
+  const writes: Writes = []
   const fillingDown = tgt.rMax > src.rMax
   if (fillingDown) {
     for (let c = src.cMin; c <= src.cMax; c++) {

@@ -1,5 +1,5 @@
 import { useShortcut } from '@p/aria-kernel/key'
-import { cellKey, parseCellId, ROW_COUNT, type Sheet } from './schema'
+import { cellKey, parseCellId, ROW_COUNT, type Sheet, type Writes } from './schema'
 import type { JsonOps } from 'zod-crud'
 import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
 import { fillDown, fillRight } from '../lib/fillDown'
@@ -11,7 +11,7 @@ export interface GlobalShortcutCtx {
   sheet: Sheet
   ops: JsonOps<Sheet>
   writeCell: (k: string, v: string) => void
-  writeCells: (writes: Array<[string, string]>) => void
+  writeCells: (writes: Writes) => void
   setSelectedIds: (ids: string[]) => void
   openFind: () => void
   openReplace: () => void
@@ -83,7 +83,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
 
   const clearFocused = () => {
     const c = get()
-    const writes: Array<[string, string]> = []
+    const writes: Writes = []
     for (const id of targetIds(c)) { const pp = parseCellId(id); if (pp) writes.push([cellKey(pp.col, pp.row), '']) }
     if (writes.length) c.writeCells(writes)
   }

@@ -1,14 +1,14 @@
 import { rectFromIds } from './rect'
 import { rectToTsv, pasteTsv } from './clipboard'
-import { cellKey, parseCellId, type Cells } from './a1'
+import { cellKey, parseCellId, type Cells, type Writes } from './a1'
 
 
 export function freezeFormulas(
   ids: string[], cells: Cells, display: (k: string) => string,
   writeCell: (k: string, v: string) => void,
-  writeCells?: (writes: Array<[string, string]>) => void,
+  writeCells?: (writes: Writes) => void,
 ): void {
-  const writes: Array<[string, string]> = []
+  const writes: Writes = []
   for (const id of ids) {
     const p = parseCellId(id); if (!p) continue
     const k = cellKey(p.col, p.row)
@@ -32,13 +32,13 @@ export function insertNowOrToday(
 export function copyOrCut(
   ids: string[], cut: boolean, cells: Cells,
   writeCell: (k: string, v: string) => void,
-  writeCells?: (writes: Array<[string, string]>) => void,
+  writeCells?: (writes: Writes) => void,
 ): void {
   const rect = rectFromIds(ids)
   const tsv = rect ? rectToTsv(rect, (k) => cells[k] ?? '') : ''
   navigator.clipboard?.writeText(tsv).catch(() => {})
   if (!cut) return
-  const clears: Array<[string, string]> = []
+  const clears: Writes = []
   for (const id of ids) { const p = parseCellId(id); if (p) clears.push([cellKey(p.col, p.row), '']) }
   if (writeCells) writeCells(clears); else for (const [k, v] of clears) writeCell(k, v)
 }
@@ -46,7 +46,7 @@ export function copyOrCut(
 export function pasteAt(
   focusKey: string, p: { col: string; row: number }, maxRow: number,
   writeCell: (k: string, v: string) => void,
-  writeCells?: (writes: Array<[string, string]>) => void,
+  writeCells?: (writes: Writes) => void,
 ): void {
   navigator.clipboard?.readText()
     .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow, writeMany: writeCells }) : writeCell(focusKey, t))

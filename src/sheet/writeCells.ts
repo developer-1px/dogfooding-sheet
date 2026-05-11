@@ -1,8 +1,8 @@
 import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, Writes } from './schema'
 
 /** Batch multiple cell writes into a single ops.patch — atomic undo for fillDown/Right etc. */
-export function writeCellsBatch(ops: JsonOps<Sheet>, cells: Record<string, string>, writes: Array<[string, string]>): void {
+export function writeCellsBatch(ops: JsonOps<Sheet>, cells: Record<string, string>, writes: Writes): void {
   const patch: Array<{ op: 'add' | 'replace' | 'remove'; path: string; value?: string }> = []
   for (const [k, v] of writes) {
     const path = `/cells/${k}`; const cur = cells[k]

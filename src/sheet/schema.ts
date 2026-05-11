@@ -1,6 +1,6 @@
 import * as z from 'zod'
 
-export { COL_LETTERS, cellKey, parseCellId, colIndex } from '../lib/a1'
+export { COL_LETTERS, cellKey, parseCellId, colIndex, type Cells, type Writes } from '../lib/a1'
 
 export const ROW_COUNT = 20
 

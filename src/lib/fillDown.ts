@@ -1,6 +1,5 @@
-import { COL_LETTERS, cellKey, parseCellId, type Cells } from './a1'
+import { COL_LETTERS, cellKey, parseCellId, type Cells, type Writes } from './a1'
 
-type Writes = Array<[string, string]>
 type WriteMany = (w: Writes) => void
 
 const flush = (writes: Writes, write: (k: string, v: string) => void, writeMany?: WriteMany) => {

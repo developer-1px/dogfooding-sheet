@@ -12,7 +12,7 @@ import { useHidden } from './useHidden'
 import { useNotes } from './useNotes'
 import { useValidation } from './useValidation'
 import { useCondFormat } from './useCondFormat'
-import { cellIdToKey } from '../lib/a1'
+import { cellIdToKey, type Writes } from '../lib/a1'
 import { exportCsv, downloadFile } from '../lib/csv'
 import { sheetMutations } from './sheetMutations'
 import { useFindState, highlightedIdsFor } from './useFindState'
@@ -42,7 +42,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
   const writeCell = (k: string, v: string) => upsertKey(ops, '/cells', sheet.cells, k, v === '' ? undefined : v)
-  const writeCells = (writes: Array<[string, string]>) => writeCellsBatch(ops, sheet.cells, writes)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes)
 
   const edit = useEditState({ cells: sheet.cells, writeCell })
 

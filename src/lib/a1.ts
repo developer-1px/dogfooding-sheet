@@ -17,6 +17,9 @@ export const cellKey = (col: string, row: number): string => `${col}${row + 1}`
 /** Sheet cell map: A1-key → raw value. */
 export type Cells = Record<string, string>
 
+/** Batched cell writes: array of `[cellKey, value]` tuples. */
+export type Writes = Array<[string, string]>
+
 /** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
 export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
   const m = /^r(\d+)-([A-J])$/.exec(id)
