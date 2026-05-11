@@ -6,6 +6,8 @@ import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'
 import { isFillCorner } from './fillCorner'
 import { styleToProps, type CellStyle, type StyleLookup } from './useStyles'
+import type { NoteLookup } from './useNotes'
+import type { RuleLookup } from './useValidation'
 import type { GridCell } from '@p/aria-kernel/patterns'
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
 
@@ -34,9 +36,9 @@ interface Props {
   startResizeRow: (row: number) => (e: React.MouseEvent) => void
   resetRowHeight: (row: number) => void
   styleOf: StyleLookup
-  noteOf: (k: string) => string | undefined
-  rawOf: (k: string) => string | undefined
-  ruleOf: (k: string) => { type: 'list'; options: string[] } | { type: 'checkbox' } | undefined
+  noteOf: NoteLookup
+  rawOf: NoteLookup
+  ruleOf: RuleLookup
   writeCell: WriteCell
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>

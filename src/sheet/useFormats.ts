@@ -5,6 +5,7 @@ import { upsertKeys } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date'
+export type FormatLookup = (k: string) => Format
 const LEGACY_KEY = 'spreadsheet:formats:v1'
 
 const migrateLegacy = (formats: Record<string, Format>, ops: JsonOps<Sheet>) =>

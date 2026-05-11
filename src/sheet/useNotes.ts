@@ -4,6 +4,8 @@ import type { Sheet } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 import { upsertKey } from '../lib/dictOps'
 
+export type NoteLookup = (k: string) => string | undefined
+
 const LEGACY_KEY = 'spreadsheet:notes:v1'
 
 const migrateLegacy = (notes: Record<string, string>, ops: JsonOps<Sheet>) =>

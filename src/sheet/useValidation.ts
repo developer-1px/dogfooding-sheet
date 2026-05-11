@@ -7,6 +7,7 @@ import { migrateLegacyKey } from '../lib/legacyMigrate'
 export interface ListRule { type: 'list'; options: string[] }
 export interface CheckboxRule { type: 'checkbox' }
 export type Rule = ListRule | CheckboxRule
+export type RuleLookup = (k: string) => Rule | undefined
 
 const LEGACY_KEY = 'spreadsheet:validation:v1'
 

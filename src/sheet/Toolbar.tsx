@@ -1,4 +1,4 @@
-import type { Format } from './useFormats'
+import type { Format, FormatLookup } from './useFormats'
 import type { CellStyle, StyleLookup } from './useStyles'
 import type { PromptOptions } from './usePrompt'
 import type { ConfirmOptions } from './useConfirm'
@@ -15,7 +15,7 @@ interface Props {
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void
-  formatOf: (k: string) => Format
+  formatOf: FormatLookup
   insertRow: (atRow: number) => void
   deleteRow: (atRow: number) => void
   insertCol: (col: string) => void

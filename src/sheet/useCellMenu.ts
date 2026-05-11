@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { COL_LETTERS, cellKey, colIndex, type Cells, type WriteCell } from './schema'
 import { parseCellId } from '../lib/a1'
+import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 
 interface Args {
@@ -14,7 +15,7 @@ interface Args {
   hideCol: (col: string) => void
   hideRow: (row: number) => void
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
-  noteOf: (k: string) => string | undefined
+  noteOf: NoteLookup
   setNote: (k: string, text: string) => void
   editNote: () => void
   insertLink: () => void
