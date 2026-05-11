@@ -57,7 +57,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; o
 
   const targetKeys = (): string[] => {
     const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
-    return ids.map((id) => id.includes('-') ? cellIdToKey(id) : id)
+    return ids.map(cellIdToKey)
   }
   const toggle = (k: 'b' | 'i' | 'u' | 's') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
   const toggleShowFormulas = () => setShowFormulas((v) => !v)
