@@ -7,6 +7,11 @@ const LEGACY_KEY = 'spreadsheet:condfmt:v1'
 export type CondOp = '>' | '<' | '=' | '!=' | 'contains'
 export interface CondRule { col: string; op: CondOp; value: string; color: string }
 
+export interface CondActions {
+  addCondRule: (r: CondRule) => void
+  clearCondRules: () => void
+}
+
 export const matchRule = (rule: CondRule, displayed: string): boolean => {
   if (rule.op === 'contains') return displayed.toLowerCase().includes(rule.value.toLowerCase())
   if (rule.op === '=') return displayed === rule.value

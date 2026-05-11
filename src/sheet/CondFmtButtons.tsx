@@ -1,10 +1,8 @@
-import type { CondRule, CondOp } from './useCondFormat'
+import type { CondOp, CondActions } from './useCondFormat'
 import type { Ask } from './usePrompt'
 
-interface Props {
+interface Props extends CondActions {
   col: string | null
-  addCondRule: (r: CondRule) => void
-  clearCondRules: () => void
   ask: Ask
 }
 

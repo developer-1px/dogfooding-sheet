@@ -3,7 +3,7 @@ import type { SheetMutations } from './sheetMutations'
 import type { FreezeState } from './useFreeze'
 import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
-import type { CondRule } from './useCondFormat'
+import type { CondActions } from './useCondFormat'
 import type { Filter } from './useFilter'
 import type { ValidationActions } from './useValidation'
 import type { Confirm } from './useConfirm'
@@ -14,7 +14,7 @@ import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
-interface Props extends SheetMutations, OverflowProps, ValidationActions {
+interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions {
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void
@@ -29,8 +29,6 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions {
   clearFilter: () => void
   hasHidden: boolean
   showAll: () => void
-  addCondRule: (r: CondRule) => void
-  clearCondRules: () => void
   ask: Ask
   undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean
   mergeSelection: () => void
