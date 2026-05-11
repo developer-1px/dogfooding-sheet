@@ -8,6 +8,8 @@ export interface ConfirmOptions {
   cancelLabel?: string
 }
 
+export type Confirm = (opts: ConfirmOptions) => Promise<boolean>
+
 interface State {
   opts: ConfirmOptions
   resolve: (ok: boolean) => void

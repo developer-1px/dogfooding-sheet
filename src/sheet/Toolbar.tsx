@@ -1,7 +1,7 @@
 import type { Format, FormatLookup } from './useFormats'
 import type { CellStyle, StyleLookup } from './useStyles'
-import type { PromptOptions } from './usePrompt'
-import type { ConfirmOptions } from './useConfirm'
+import type { Ask } from './usePrompt'
+import type { Confirm } from './useConfirm'
 import { OverflowMenu } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
 import { FormatButtons } from './FormatButtons'
@@ -41,8 +41,8 @@ interface Props {
   sheet: import('./schema').Sheet
   resetSheet: (s: import('./schema').Sheet) => void
   resetCells: (c: Cells) => void
-  ask: (opts: PromptOptions) => Promise<string | null>
-  confirm: (opts: ConfirmOptions) => Promise<boolean>
+  ask: Ask
+  confirm: Confirm
   undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean
   showFormulas: boolean; toggleShowFormulas: () => void
   showGridlines: boolean; toggleShowGridlines: () => void

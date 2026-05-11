@@ -1,11 +1,9 @@
 import { Toolbar } from './Toolbar'
-import type { PromptOptions } from './usePrompt'
-import type { ConfirmOptions } from './useConfirm'
+import type { Ask } from './usePrompt'
+import type { Confirm } from './useConfirm'
 import type { SheetCtx } from './useSheet'
 
 type Ctx = SheetCtx
-type Ask = (opts: PromptOptions) => Promise<string | null>
-type Confirm = (opts: ConfirmOptions) => Promise<boolean>
 
 export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confirm: Confirm }) {
   return (

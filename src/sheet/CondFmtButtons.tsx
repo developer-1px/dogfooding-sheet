@@ -1,10 +1,10 @@
-import type { PromptOptions } from './usePrompt'
+import type { Ask } from './usePrompt'
 
 interface Props {
   col: string | null
   addCondRule: (r: { col: string; op: '>' | '<' | '=' | '!=' | 'contains'; value: string; color: string }) => void
   clearCondRules: () => void
-  ask: (opts: PromptOptions) => Promise<string | null>
+  ask: Ask
 }
 
 export function CondFmtButtons({ col, addCondRule, clearCondRules, ask }: Props) {

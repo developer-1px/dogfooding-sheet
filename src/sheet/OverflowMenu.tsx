@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useMenuButtonPattern } from '@p/aria-kernel/patterns'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
-import type { ConfirmOptions } from './useConfirm'
+import type { Confirm } from './useConfirm'
 import { ROW_COUNT, SheetSchema, type Sheet, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
   sheet: Sheet
   resetSheet: (s: Sheet) => void
   resetCells: (cells: Cells) => void
-  confirm: (opts: ConfirmOptions) => Promise<boolean>
+  confirm: Confirm
   showFormulas: boolean
   toggleShowFormulas: () => void
   showGridlines: boolean

@@ -9,6 +9,8 @@ export interface PromptOptions {
   submitLabel?: string
 }
 
+export type Ask = (opts: PromptOptions) => Promise<string | null>
+
 interface State {
   opts: PromptOptions
   resolve: (value: string | null) => void

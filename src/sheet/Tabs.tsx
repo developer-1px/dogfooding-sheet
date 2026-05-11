@@ -1,7 +1,7 @@
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useTabsPattern } from '@p/aria-kernel/patterns'
 import { useEditable } from 'editable-lifecycle'
-import type { ConfirmOptions } from './useConfirm'
+import type { Confirm } from './useConfirm'
 import type { TabsState } from './useTabs'
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   duplicateSheet: (name: string) => void
   setTabColor: (name: string, color: string) => void
   reorderTab: (from: string, to: string) => void
-  confirm: (opts: ConfirmOptions) => Promise<boolean>
+  confirm: Confirm
 }
 
 export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, setTabColor, reorderTab, confirm }: Props) {
