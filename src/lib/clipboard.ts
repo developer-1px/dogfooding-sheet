@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, colIndex, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
+import { COL_LETTERS, cellKey, colIndex, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from './a1'
 import type { Rect } from './rect'
 
 export function rectToTsv(rect: Rect, get: Display): string {
@@ -15,7 +15,7 @@ export function rectToTsv(rect: Rect, get: Display): string {
 
 export function pasteTsv(
   tsv: string,
-  anchor: { col: string; row: number },
+  anchor: CellRef,
   write: WriteCell,
   bounds: { maxRow?: number; maxCol?: number; writeMany?: WriteMany } = {},
 ) {

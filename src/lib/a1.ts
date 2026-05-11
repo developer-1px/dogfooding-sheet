@@ -11,6 +11,9 @@ export const COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] as
 
 export type ColLetter = (typeof COL_LETTERS)[number]
 
+/** Parsed cell reference: column letter + 0-based row. */
+export interface CellRef { col: string; row: number }
+
 /** A1 cell key: `${col}${row+1}` — `cellKey('A', 0) === 'A1'`. */
 export const cellKey = (col: string, row: number): string => `${col}${row + 1}`
 
@@ -45,7 +48,7 @@ export const cellIdToKey = (id: string): string => {
 }
 
 /** Parse an A1 key like "B3" into `{ col: 'B', row: 2 }`. Returns `null` on mismatch. */
-export const parseA1 = (key: string): { col: string; row: number } | null => {
+export const parseA1 = (key: string): CellRef | null => {
   const m = /^([A-J])(\d+)$/.exec(key)
   return m ? { col: m[1], row: Number(m[2]) - 1 } : null
 }

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { COL_LETTERS, parseCellId, cellKey, colIndex } from './schema'
+import { COL_LETTERS, parseCellId, cellKey, colIndex, type CellRef } from './schema'
 
 
-const rangeIds = (a: { col: string; row: number }, b: { col: string; row: number }): string[] => {
+const rangeIds = (a: CellRef, b: CellRef): string[] => {
   const c1 = colIndex(a.col), c2 = colIndex(b.col)
   const r1 = a.row, r2 = b.row
   const out: string[] = []

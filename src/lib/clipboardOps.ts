@@ -1,7 +1,7 @@
 import { rectFromIds } from './rect'
 import { pad2 } from './numeric'
 import { rectToTsv, pasteTsv } from './clipboard'
-import { cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
+import { cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from './a1'
 
 
 export function freezeFormulas(
@@ -45,7 +45,7 @@ export function copyOrCut(
 }
 
 export function pasteAt(
-  focusKey: string, p: { col: string; row: number }, maxRow: number,
+  focusKey: string, p: CellRef, maxRow: number,
   writeCell: WriteCell,
   writeCells?: WriteMany,
 ): void {

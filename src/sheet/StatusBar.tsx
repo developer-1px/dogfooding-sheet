@@ -1,10 +1,10 @@
 import { numericValue } from '../lib/numeric'
-import { cellKey, type Display } from '../lib/a1'
+import { cellKey, type Display, type CellRef } from '../lib/a1'
 
 interface Props {
   selectedIds: string[]
   display: Display
-  parseId: (id: string) => { col: string; row: number } | null
+  parseId: (id: string) => CellRef | null
 }
 
 export function StatusBar({ selectedIds, display, parseId }: Props) {
