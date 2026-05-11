@@ -8,6 +8,17 @@ export const rectOfCell = (p: CellRef): Rect => {
   return { rMin: p.row, rMax: p.row, cMin: ci, cMax: ci }
 }
 
+/** Bounding rect of two cell references (corners in any order). */
+export const rectFromRefs = (a: CellRef, b: CellRef): Rect => {
+  const c1 = colIndex(a.col), c2 = colIndex(b.col)
+  return {
+    rMin: Math.min(a.row, b.row),
+    rMax: Math.max(a.row, b.row),
+    cMin: Math.min(c1, c2),
+    cMax: Math.max(c1, c2),
+  }
+}
+
 export const formatRect = (rect: Rect): string => {
   const a = cellKey(COL_LETTERS[rect.cMin], rect.rMin)
   const b = cellKey(COL_LETTERS[rect.cMax], rect.rMax)

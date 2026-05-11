@@ -1,5 +1,5 @@
 import { COL_LETTERS, cellKey, parseCellId, colIndex, type Cells } from './a1'
-import { idsInRect } from './rect'
+import { idsInRect, rectFromRefs } from './rect'
 
 export function jumpToEdge(
   focusId: string,
@@ -39,9 +39,5 @@ export function homeEndTarget(focusId: string, rowCount: number, key: 'Home' | '
 /** Cell ids covering the rectangular area between two cells (inclusive). */
 export function idsBetween(a: string, b: string): string[] {
   const A = parseCellId(a), B = parseCellId(b)
-  if (!A || !B) return []
-  const r1 = Math.min(A.row, B.row), r2 = Math.max(A.row, B.row)
-  const c1 = Math.min(colIndex(A.col), colIndex(B.col))
-  const c2 = Math.max(colIndex(A.col), colIndex(B.col))
-  return idsInRect({ rMin: r1, rMax: r2, cMin: c1, cMax: c2 })
+  return A && B ? idsInRect(rectFromRefs(A, B)) : []
 }
