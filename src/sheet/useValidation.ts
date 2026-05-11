@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { upsertKeys } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
@@ -11,7 +10,7 @@ export type RuleLookup = (k: string) => Rule | undefined
 
 const LEGACY_KEY = 'spreadsheet:validation:v1'
 
-const migrateLegacy = (rules: Record<string, Rule>, ops: JsonOps<Sheet>) =>
+const migrateLegacy = (rules: Record<string, Rule>, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(rules).length === 0, ops,
     (raw) => {
       if (!raw || typeof raw !== 'object') return undefined
@@ -26,7 +25,7 @@ const migrateLegacy = (rules: Record<string, Rule>, ops: JsonOps<Sheet>) =>
     (o, v) => o.replace('/validation', v),
   )
 
-export function useValidation(rules: Record<string, Rule>, ops: JsonOps<Sheet>) {
+export function useValidation(rules: Record<string, Rule>, ops: SheetOps) {
   useEffect(() => { migrateLegacy(rules, ops) }, [])
 
   const setListRule = (keys: string[], options: string[]) => {

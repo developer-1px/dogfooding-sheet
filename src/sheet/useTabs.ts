@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import type { JsonOps } from 'zod-crud'
-import { blankBundle, bundleOf, withBundle, type Sheet, type TabBundle } from './schema'
+import { blankBundle, bundleOf, withBundle, type Sheet, type SheetOps, type TabBundle } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 import type { Cells } from '../lib/a1'
 
@@ -13,7 +12,7 @@ export interface TabsState {
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
 
-const migrateLegacy = (state: TabsState, ops: JsonOps<Sheet>) =>
+const migrateLegacy = (state: TabsState, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, state.order.length <= 1 && Object.keys(state.saved).length === 0, ops,
     (raw) => {
       const o = raw as { order?: unknown; active?: unknown; saved?: unknown } | null
@@ -27,7 +26,7 @@ const migrateLegacy = (state: TabsState, ops: JsonOps<Sheet>) =>
     (o, v) => o.replace('/tabs', v),
   )
 
-export function useTabs(state: TabsState, ops: JsonOps<Sheet>) {
+export function useTabs(state: TabsState, ops: SheetOps) {
   useEffect(() => { migrateLegacy(state, ops) }, [])
   const setState = (s: TabsState) => ops.replace('/tabs', s)
   return { state, setState }
@@ -39,7 +38,7 @@ const uniqueName = (order: string[]): string => {
   return `Sheet${n}`
 }
 
-export function tabActions(sheet: Sheet, ops: JsonOps<Sheet>) {
+export function tabActions(sheet: Sheet, ops: SheetOps) {
   const state = sheet.tabs
   const snapshotSaved = (): Record<string, TabBundle> => ({ ...state.saved, [state.active]: bundleOf(sheet) })
   const setTabs = (next: TabsState) => ({ ...sheet, tabs: next })

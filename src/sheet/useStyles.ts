@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { upsertKeys } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
@@ -34,13 +33,13 @@ const merge = (a: CellStyle | undefined, b: Partial<CellStyle>): CellStyle | und
   return Object.keys(next).length === 0 ? undefined : next
 }
 
-const migrateLegacy = (styles: Record<string, CellStyle>, ops: JsonOps<Sheet>) =>
+const migrateLegacy = (styles: Record<string, CellStyle>, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(styles).length === 0, ops,
     (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, CellStyle> : undefined,
     (o, v) => o.replace('/styles', v),
   )
 
-export function useStyles(styles: Record<string, CellStyle>, ops: JsonOps<Sheet>) {
+export function useStyles(styles: Record<string, CellStyle>, ops: SheetOps) {
   useEffect(() => { migrateLegacy(styles, ops) }, [])
 
   const updateStyle = (keys: string[], patch: Partial<CellStyle>) => {

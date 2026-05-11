@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 import type { Patch } from '../lib/dictOps'
 
@@ -11,7 +10,7 @@ export interface HiddenState {
 
 const LEGACY_KEY = 'spreadsheet:hidden:v1'
 
-const migrateLegacy = (hidden: HiddenState, ops: JsonOps<Sheet>) =>
+const migrateLegacy = (hidden: HiddenState, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, !hidden.rows.length && !hidden.cols.length, ops,
     (raw) => {
       const o = raw as { rows?: unknown; cols?: unknown } | null
@@ -24,7 +23,7 @@ const migrateLegacy = (hidden: HiddenState, ops: JsonOps<Sheet>) =>
     (o, v) => o.replace('/hidden', v),
   )
 
-export function useHidden(hidden: HiddenState, ops: JsonOps<Sheet>) {
+export function useHidden(hidden: HiddenState, ops: SheetOps) {
   useEffect(() => { migrateLegacy(hidden, ops) }, [])
 
   const hideRow = (row: number) => {

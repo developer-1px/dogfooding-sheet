@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { upsertKeys } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
@@ -8,13 +7,13 @@ export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer
 export type FormatLookup = (k: string) => Format
 const LEGACY_KEY = 'spreadsheet:formats:v1'
 
-const migrateLegacy = (formats: Record<string, Format>, ops: JsonOps<Sheet>) =>
+const migrateLegacy = (formats: Record<string, Format>, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(formats).length === 0, ops,
     (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, Format> : undefined,
     (o, v) => o.replace('/formats', v),
   )
 
-export function useFormats(formats: Record<string, Format>, ops: JsonOps<Sheet>) {
+export function useFormats(formats: Record<string, Format>, ops: SheetOps) {
   useEffect(() => { migrateLegacy(formats, ops) }, [])
 
   const setFormat = (keys: string[], fmt: Format) => {

@@ -1,4 +1,5 @@
 import * as z from 'zod'
+import type { JsonOps } from 'zod-crud'
 
 export { COL_LETTERS, cellKey, parseCellId, colIndex, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '../lib/a1'
 
@@ -54,6 +55,7 @@ export const SheetSchema = TabBundleSchema.extend({
   }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
 })
 export type Sheet = z.infer<typeof SheetSchema>
+export type SheetOps = JsonOps<Sheet>
 
 const emptyBundle: TabBundle = {
   cells: {}, notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],

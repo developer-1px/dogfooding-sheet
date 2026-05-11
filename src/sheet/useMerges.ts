@@ -1,5 +1,4 @@
-import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import type { Merge } from '../lib/mergeSelection'
 
 export interface MergeInfo { anchorR: number; anchorC: number; rows: number; cols: number }
@@ -22,7 +21,7 @@ export function buildMergeMap(merges: ReadonlyArray<Merge>): {
   return { anchors, hidden }
 }
 
-export function useMerges(merges: ReadonlyArray<Merge>, ops: JsonOps<Sheet>) {
+export function useMerges(merges: ReadonlyArray<Merge>, ops: SheetOps) {
   const addMerge = (m: Merge) => {
     const next = merges.filter((e) => !overlap(e, m))
     ops.replace('/merges', [...next, m])

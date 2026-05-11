@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import type { JsonOps } from 'zod-crud'
 import { COL_LETTERS } from './schema'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { upsertKey } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
@@ -9,13 +8,13 @@ const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 const DEFAULT_WIDTH = 100
 const MIN_WIDTH = 40
 
-const migrateLegacy = (widths: Record<string, number>, ops: JsonOps<Sheet>) =>
+const migrateLegacy = (widths: Record<string, number>, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(widths).length === 0, ops,
     (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, number> : undefined,
     (o, v) => o.replace('/colWidths', v),
   )
 
-export function useColWidths(widths: Record<string, number>, ops: JsonOps<Sheet>) {
+export function useColWidths(widths: Record<string, number>, ops: SheetOps) {
   const dragRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
   // Live drag overlay — bypasses ops to avoid one undo entry per mousemove (zod-crud#56).
   const [liveWidth, setLiveWidth] = useState<{ col: string; w: number } | null>(null)

@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { upsertKey } from '../lib/dictOps'
 
 const DEFAULT_HEIGHT = 28
 const MIN_HEIGHT = 18
 
-export function useRowHeights(heights: Record<string, number>, ops: JsonOps<Sheet>) {
+export function useRowHeights(heights: Record<string, number>, ops: SheetOps) {
   const dragRef = useRef<{ row: number; startY: number; startH: number } | null>(null)
   const [live, setLive] = useState<{ row: number; h: number } | null>(null)
   const liveRef = useRef<{ row: number; h: number } | null>(null)

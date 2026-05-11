@@ -1,13 +1,12 @@
 import { useEffect } from 'react'
-import type { JsonOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 export interface FreezeState { rows: number; cols: number }
 
 const LEGACY_KEY = 'spreadsheet:freeze:v1'
 
-const migrateLegacy = (freeze: FreezeState, ops: JsonOps<Sheet>) =>
+const migrateLegacy = (freeze: FreezeState, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, !freeze.rows && !freeze.cols, ops,
     (raw) => {
       const o = raw as { rows?: unknown; cols?: unknown } | null
@@ -17,7 +16,7 @@ const migrateLegacy = (freeze: FreezeState, ops: JsonOps<Sheet>) =>
     (o, v) => o.replace('/freeze', v),
   )
 
-export function useFreeze(freeze: FreezeState, ops: JsonOps<Sheet>) {
+export function useFreeze(freeze: FreezeState, ops: SheetOps) {
   useEffect(() => { migrateLegacy(freeze, ops) }, [])
 
   const toggleRows = () => ops.replace('/freeze', { ...freeze, rows: freeze.rows ? 0 : 1 })
