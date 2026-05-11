@@ -2,6 +2,7 @@ import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import App from '../App'
+import { mouseClick } from './test-utils'
 
 let root: Root
 let host: HTMLDivElement
@@ -19,12 +20,6 @@ afterEach(() => {
   host.remove()
   localStorage.clear()
 })
-
-const mouseClick = (target: Element) => {
-  target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
-  target.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
-  target.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
-}
 
 describe('validation preview interactions', () => {
   it('does not crash when the list validation button is clicked with the mouse', async () => {

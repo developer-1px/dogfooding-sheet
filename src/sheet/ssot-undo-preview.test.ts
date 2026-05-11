@@ -2,6 +2,7 @@ import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import App from '../App'
+import { mouseClick } from './test-utils'
 
 let root: Root
 let host: HTMLDivElement
@@ -19,12 +20,6 @@ afterEach(() => {
   host.remove()
   localStorage.clear()
 })
-
-const mouseClick = (target: Element) => {
-  target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
-  target.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
-  target.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
-}
 
 const press = (key: string, mod: { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean } = {}) =>
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
