@@ -1,19 +1,19 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, mouseClick, setInputValue, setupReactDom } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
 
 const typeKey = (key: string) => {
   const inp = document.querySelector<HTMLInputElement>('input.cell-input')
   if (inp) {
-    inp.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
+    keyDown(inp, key)
     if (key === 'Enter' || key === 'Escape' || key === 'Tab') return
     if (key.length === 1) setInputValue(inp, inp.value + key)
     return
   }
-  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key }))
+  press(key)
 }
 
 describe('spreadsheet preview interactions', () => {

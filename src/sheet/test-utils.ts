@@ -2,12 +2,16 @@ import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach } from 'vitest'
 
+type KeyMod = { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean; altKey?: boolean }
+
 /** Dispatch a `keydown` on `window` with optional modifier keys. */
-export const press = (
-  key: string,
-  mod: { ctrlKey?: boolean; metaKey?: boolean; shiftKey?: boolean; altKey?: boolean } = {},
-): void => {
+export const press = (key: string, mod: KeyMod = {}): void => {
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
+}
+
+/** Dispatch a `keydown` on a specific element (cell, input, formula bar, …). */
+export const keyDown = (target: EventTarget, key: string, mod: KeyMod = {}): void => {
+  target.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
 }
 
 /**

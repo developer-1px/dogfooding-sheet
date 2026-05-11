@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, cells as gridCells, mouseClick, setInputValue, setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -11,7 +11,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
 
     const apple = cellByText('Apple')!
     act(() => mouseClick(apple))
-    act(() => apple.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
+    act(() => keyDown(apple, 'F2'))
     const input = document.querySelector<HTMLInputElement>('input.cell-input')!
     expect(input).not.toBeNull()
 
@@ -29,14 +29,14 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     act(() => mouseClick(apple))
 
     // Press F2 to start edit
-    act(() => apple.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'F2' })))
+    act(() => keyDown(apple, 'F2'))
 
     const input = document.querySelector<HTMLInputElement>('input.cell-input')
     expect(input, 'input should mount on edit').not.toBeNull()
     expect(input!.value).toBe('Apple')
 
     // Backspace inside the input — simulate native: dispatch keydown then mutate value via setter.
-    act(() => input!.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Backspace' })))
+    act(() => keyDown(input!, 'Backspace'))
     // jsdom doesn't auto-mutate input.value on Backspace keydown — emulate browser by setting value.
     act(() => setInputValue(input!, 'Appl'))
 
@@ -49,13 +49,13 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     const empty = gridCells().find((c) => c.textContent?.trim() === '')!
     act(() => mouseClick(empty))
 
-    act(() => window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'a' })))
+    act(() => press('a'))
 
     const input = document.querySelector<HTMLInputElement>('input.cell-input')
     expect(input).not.toBeNull()
     expect(input!.value).toBe('a')
 
-    act(() => input!.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Backspace' })))
+    act(() => keyDown(input!, 'Backspace'))
     act(() => setInputValue(input!, ''))
 
     expect(input!.value).toBe('')
@@ -72,7 +72,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     fbar!.focus()
     expect(document.activeElement).toBe(fbar)
 
-    act(() => fbar!.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Backspace' })))
+    act(() => keyDown(fbar!, 'Backspace'))
 
     // The Apple cell should still show its content — the cell-clear shortcut must not have fired.
     expect(apple.textContent).toContain('Apple')
