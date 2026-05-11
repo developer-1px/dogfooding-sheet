@@ -21,6 +21,8 @@ import { useEditState } from './useEditState'
 import { rowColAtFocus } from '../lib/rowColAtFocus'
 import { useRowHeights } from './useRowHeights'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from '../lib/mergeSelection'; import { writeCellsBatch } from './writeCells'
 
+export type SheetCtx = ReturnType<typeof useSheet>
+
 export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
   const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
   const [selectedIds, setSelectedIds] = useState<string[]>([])

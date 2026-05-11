@@ -1,9 +1,9 @@
 import { Toolbar } from './Toolbar'
 import type { PromptOptions } from './usePrompt'
 import type { ConfirmOptions } from './useConfirm'
-import type { useSheet } from './useSheet'
+import type { SheetCtx } from './useSheet'
 
-type Ctx = ReturnType<typeof useSheet>
+type Ctx = SheetCtx
 type Ask = (opts: PromptOptions) => Promise<string | null>
 type Confirm = (opts: ConfirmOptions) => Promise<boolean>
 

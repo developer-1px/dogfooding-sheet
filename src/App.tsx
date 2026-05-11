@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useSheet } from './sheet/useSheet'
+import { useSheet, type SheetCtx } from './sheet/useSheet'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/Grid'
 import { StatusBar } from './sheet/StatusBar'
@@ -18,7 +18,7 @@ import './App.css'
 export default function App() {
   const { ask, dialog: promptDialog } = usePrompt()
   const { confirm, dialog: confirmDialog } = useConfirm()
-  const ctxRef = useRef<ReturnType<typeof useSheet> | null>(null)
+  const ctxRef = useRef<SheetCtx | null>(null)
   const ctx = useSheet({
     openGoto: () => ask({ label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' })
       .then((v) => { if (v && ctxRef.current) gotoCell(v, ctxRef.current.setFocusId, ctxRef.current.setSelectedIds) }),

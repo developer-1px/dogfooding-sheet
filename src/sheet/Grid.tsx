@@ -10,9 +10,9 @@ import { useAutoFill } from './useAutoFill'
 import { rectToIdSet } from './fillCorner'
 import { freezeOffsets } from '../lib/freezeOffsets'; import { buildMergeMap } from './useMerges'
 import { parseCellId, cellKey } from '../lib/a1'
-import type { useSheet } from './useSheet'
+import type { SheetCtx } from './useSheet'
 
-type SheetCtx = ReturnType<typeof useSheet>
+
 
 export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, setSelectAnchor, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
