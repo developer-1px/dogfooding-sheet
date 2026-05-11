@@ -1,15 +1,12 @@
-import { COL_LETTERS, parseCellId, colIndex } from '../lib/a1'
+import { COL_LETTERS, parseCellId, parseA1, colIndex } from '../lib/a1'
 import { ROW_COUNT } from './schema'
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
 export function resolveCellRef(raw: string): string | null {
-  const m = /^([A-J])(\d+)$/i.exec(raw.trim().toUpperCase())
-  if (!m) return null
-  const col = m[1].toUpperCase()
-  if (!COL_LETTERS.includes(col as (typeof COL_LETTERS)[number])) return null
-  const row = Number(m[2]) - 1
-  if (row < 0 || row >= ROW_COUNT) return null
-  return `r${row}-${col}`
+  const p = parseA1(raw.trim().toUpperCase())
+  if (!p) return null
+  if (p.row < 0 || p.row >= ROW_COUNT) return null
+  return `r${p.row}-${p.col}`
 }
 
 /** Resolve a range like "A1:B5" to a list of cell ids, or null on bad input. */

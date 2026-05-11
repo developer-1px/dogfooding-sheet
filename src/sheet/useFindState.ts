@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { COL_LETTERS } from './schema'
+import { parseA1 } from '../lib/a1'
 import { refsInFormula } from '../lib/formula'
 
 export function useFindState() {
@@ -16,9 +16,8 @@ export function highlightedIdsFor(editing: string | null, draft: string): string
   if (!editing || !draft.startsWith('=')) return []
   return refsInFormula(draft)
     .map((ref) => {
-      const m = /^([A-J])(\d+)$/.exec(ref)
-      if (!m || !COL_LETTERS.includes(m[1] as (typeof COL_LETTERS)[number])) return ''
-      return `r${Number(m[2]) - 1}-${m[1]}`
+      const p = parseA1(ref)
+      return p ? `r${p.row}-${p.col}` : ''
     })
     .filter(Boolean)
 }
