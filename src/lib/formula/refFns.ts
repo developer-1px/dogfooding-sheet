@@ -1,5 +1,5 @@
 import type { Eval } from './args'
-import { parseA1, cellKey, colIndex, type Cells } from '../a1'
+import { COL_LETTERS, parseA1, cellKey, colIndex, type Cells } from '../a1'
 import { parseRange } from './rangeRect'
 import { smartReturn } from './marker'
 
@@ -20,7 +20,7 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const dr = Number(argsT[1]), dc = Number(argsT[2])
     const col = colIndex(p.col) + dc, row = p.row + dr
     if (col < 0 || col > 9 || row < 0) return smartReturn('#REF!')
-    const ref = cellKey(String.fromCharCode(65 + col), row)
+    const ref = cellKey(COL_LETTERS[col], row)
     return smartReturn(c.evalRaw(c.cells[ref] ?? ''))
   }
   if (F === 'INDIRECT') {

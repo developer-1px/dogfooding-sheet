@@ -1,26 +1,28 @@
 import type { Eval } from './args'
-import type { Cells } from '../a1'
+import { COL_LETTERS, cellKey, parseA1, colIndex, type Cells } from '../a1'
 import type { Rect } from '../rect'
 
 
 export const parseRange = (s: string): Rect | null => {
-  const m = /^([A-J])(\d+):([A-J])(\d+)$/.exec(s.trim())
-  if (!m) {
-    const single = /^([A-J])(\d+)$/.exec(s.trim())
-    if (!single) return null
-    const c = single[1].charCodeAt(0) - 65
-    const r = Number(single[2]) - 1
-    return { rMin: r, rMax: r, cMin: c, cMax: c }
+  const trimmed = s.trim()
+  const colon = trimmed.indexOf(':')
+  if (colon < 0) {
+    const p = parseA1(trimmed)
+    if (!p) return null
+    const ci = colIndex(p.col)
+    return { rMin: p.row, rMax: p.row, cMin: ci, cMax: ci }
   }
-  const c1 = m[1].charCodeAt(0) - 65
-  const c2 = m[3].charCodeAt(0) - 65
+  const a = parseA1(trimmed.slice(0, colon))
+  const b = parseA1(trimmed.slice(colon + 1))
+  if (!a || !b) return null
+  const c1 = colIndex(a.col), c2 = colIndex(b.col)
   return {
-    rMin: Math.min(Number(m[2]), Number(m[4])) - 1,
-    rMax: Math.max(Number(m[2]), Number(m[4])) - 1,
+    rMin: Math.min(a.row, b.row),
+    rMax: Math.max(a.row, b.row),
     cMin: Math.min(c1, c2),
     cMax: Math.max(c1, c2),
   }
 }
 
 export const evalCell = (cells: Cells, c: number, r: number, evalRaw: Eval): string =>
-  evalRaw(cells[`${String.fromCharCode(65 + c)}${r + 1}`] ?? '')
+  evalRaw(cells[cellKey(COL_LETTERS[c], r)] ?? '')
