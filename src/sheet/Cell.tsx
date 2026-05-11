@@ -16,7 +16,7 @@ interface Props {
   onCancel: () => void
   onStartEdit: () => void
   onMouseDown: (e: React.MouseEvent) => void
-  onMouseEnter: () => void
+  onMouseEnter: (e: React.MouseEvent) => void
   onContextMenu: (e: React.MouseEvent) => void
   isFillCorner: boolean
   previewing: boolean

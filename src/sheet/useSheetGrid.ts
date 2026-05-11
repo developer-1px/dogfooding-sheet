@@ -1,5 +1,7 @@
 import { type UiEvent } from '@p/aria-kernel'
 import { useGridPattern } from '@p/aria-kernel/patterns'
+import { useGridDragSelectGesture } from '@p/aria-kernel/gesture'
+import { gridRectEvents } from '@p/aria-kernel/axes/gridMultiSelect'
 import { COL_LETTERS, ROW_COUNT } from './schema'
 import type { NormalizedData } from '@p/aria-kernel'
 
@@ -30,7 +32,7 @@ export function useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor
       else setSelectedIds((p) => p.filter((id) => !e.ids.includes(id)))
     }
   }
-  return useGridPattern(data, onEvent, {
+  const grid = useGridPattern(data, onEvent, {
     label: 'Spreadsheet',
     rowCount: ROW_COUNT + 1,
     colCount: COL_LETTERS.length,
@@ -41,4 +43,25 @@ export function useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor
     // useShortcut layer (which DOES editable-guard).
     disableBuiltinChords: true,
   })
+  const drag = useGridDragSelectGesture(data, onEvent)
+  // Workaround aria-kernel#157 — useGridDragSelectGesture는 e.shiftKey를 무시함.
+  // Shift+Click rect 확장은 여기서 gridRectEvents로 직접 분기 (anchor = data.meta.selectAnchor ?? focus).
+  const getCellHandlers = (id: string) => {
+    const native = drag.getCellHandlers(id)
+    return {
+      onMouseDown: (e: React.MouseEvent) => {
+        if (e.shiftKey) {
+          const anchor = data.meta?.selectAnchor ?? data.meta?.focus
+          if (anchor) {
+            e.preventDefault()
+            for (const ev of gridRectEvents(data, anchor, id)) onEvent(ev)
+            return
+          }
+        }
+        native.onMouseDown(e)
+      },
+      onMouseEnter: native.onMouseEnter,
+    }
+  }
+  return { ...grid, getCellHandlers }
 }

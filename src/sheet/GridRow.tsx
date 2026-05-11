@@ -43,7 +43,7 @@ interface Props {
   hiSet: Set<string>
   previewIds: Set<string>
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
-  onCellMouseEnter: (id: string) => void
+  onCellMouseEnter: (id: string, e: React.MouseEvent) => void
   onFillHandleMouseDown: (e: React.MouseEvent) => void
   onCellContextMenu: (e: React.MouseEvent, id: string) => void
   inputProps: InputProps
@@ -87,7 +87,7 @@ export function GridRow(p: Props) {
             setDraft={p.setDraft}
             onCommit={p.commitEdit} onCancel={p.cancelEdit}
             onStartEdit={() => p.startEdit(cell.id)}
-            onMouseDown={(e) => p.onCellMouseDown(cell.id, e)} onMouseEnter={() => p.onCellMouseEnter(cell.id)}
+            onMouseDown={(e) => p.onCellMouseDown(cell.id, e)} onMouseEnter={(e) => p.onCellMouseEnter(cell.id, e)}
             isFillCorner={isFillCorner(cell.id, p.focusId, p.selectedIds)}
             onFillHandleMouseDown={p.onFillHandleMouseDown}
             previewing={p.previewIds.has(cell.id)}
