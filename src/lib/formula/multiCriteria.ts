@@ -1,10 +1,11 @@
+import type { Eval } from './args'
 import type { Cells } from '../a1'
 import { collectRefs } from './parse'
 import { matchCriteria } from './criteriaMatch'
 
 
 /** Build a predicate from interleaved (range, criteria) pairs. */
-const matchAll = (pairs: string[], cells: Cells, evalRaw: (s: string) => string) =>
+const matchAll = (pairs: string[], cells: Cells, evalRaw: Eval) =>
   (i: number): boolean => {
     for (let p = 0; p < pairs.length; p += 2) {
       const refs = collectRefs(pairs[p])
@@ -13,7 +14,7 @@ const matchAll = (pairs: string[], cells: Cells, evalRaw: (s: string) => string)
     return true
   }
 
-export function countifs(args: string[], cells: Cells, evalRaw: (s: string) => string): number {
+export function countifs(args: string[], cells: Cells, evalRaw: Eval): number {
   const len = collectRefs(args[0]).length
   const pred = matchAll(args, cells, evalRaw)
   let n = 0
@@ -21,7 +22,7 @@ export function countifs(args: string[], cells: Cells, evalRaw: (s: string) => s
   return n
 }
 
-export function sumifs(args: string[], cells: Cells, evalRaw: (s: string) => string): number {
+export function sumifs(args: string[], cells: Cells, evalRaw: Eval): number {
   const sumRefs = collectRefs(args[0])
   const pred = matchAll(args.slice(1), cells, evalRaw)
   let sum = 0
@@ -39,7 +40,7 @@ export function minMaxIf(
   critRangeStr: string,
   criteria: string,
   cells: Cells,
-  evalRaw: (s: string) => string,
+  evalRaw: Eval,
 ): number {
   const values = collectRefs(valueRangeStr)
   const crits = collectRefs(critRangeStr)

@@ -1,9 +1,10 @@
+import type { Eval } from './args'
 import type { Cells } from '../a1'
 import { collectRefs } from './parse'
 import { matchCriteria } from './criteriaMatch'
 
 
-export function countif(rangeStr: string, criteria: string, cells: Cells, evalRaw: (s: string) => string): number {
+export function countif(rangeStr: string, criteria: string, cells: Cells, evalRaw: Eval): number {
   const refs = collectRefs(rangeStr)
   let n = 0
   for (const r of refs) {
@@ -17,7 +18,7 @@ export function sumif(
   criteria: string,
   sumRangeStr: string | undefined,
   cells: Cells,
-  evalRaw: (s: string) => string,
+  evalRaw: Eval,
 ): number {
   const refs = collectRefs(rangeStr)
   const sumRefs = sumRangeStr ? collectRefs(sumRangeStr) : refs
@@ -31,7 +32,7 @@ export function sumif(
   return sum
 }
 
-export function counta(rangeStr: string, cells: Cells, evalRaw: (s: string) => string): number {
+export function counta(rangeStr: string, cells: Cells, evalRaw: Eval): number {
   const refs = collectRefs(rangeStr)
   let n = 0
   for (const r of refs) {
@@ -40,7 +41,7 @@ export function counta(rangeStr: string, cells: Cells, evalRaw: (s: string) => s
   return n
 }
 
-export function countblank(rangeStr: string, cells: Cells, evalRaw: (s: string) => string): number {
+export function countblank(rangeStr: string, cells: Cells, evalRaw: Eval): number {
   const refs = collectRefs(rangeStr)
   let n = 0
   for (const r of refs) {
@@ -49,7 +50,7 @@ export function countblank(rangeStr: string, cells: Cells, evalRaw: (s: string) 
   return n
 }
 
-export function countunique(rangeStr: string, cells: Cells, evalRaw: (s: string) => string): number {
+export function countunique(rangeStr: string, cells: Cells, evalRaw: Eval): number {
   const seen = new Set<string>()
   for (const r of collectRefs(rangeStr)) {
     const v = evalRaw(cells[r] ?? '')
@@ -63,7 +64,7 @@ export function averageif(
   criteria: string,
   avgRangeStr: string | undefined,
   cells: Cells,
-  evalRaw: (s: string) => string,
+  evalRaw: Eval,
 ): number {
   const refs = collectRefs(rangeStr)
   const avgRefs = avgRangeStr ? collectRefs(avgRangeStr) : refs

@@ -1,8 +1,9 @@
+import type { Eval } from './args'
 import type { Cells } from '../a1'
 import { smartReturn } from './marker'
 
 
-interface Ctx { cells: Cells; evalRaw: (s: string) => string }
+interface Ctx { cells: Cells; evalRaw: Eval }
 
 export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx): string | null {
   if (F === 'RANGEDIM') {

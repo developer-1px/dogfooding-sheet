@@ -1,3 +1,4 @@
+import type { Eval } from './args'
 import type { Cells } from '../a1'
 import { parseRange, evalCell } from './rangeRect'
 
@@ -9,7 +10,7 @@ export function vlookup(
   rangeStr: string,
   colIdx: number,
   cells: Cells,
-  evalRaw: (s: string) => string,
+  evalRaw: Eval,
 ): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
@@ -28,7 +29,7 @@ export function hlookup(
   rangeStr: string,
   rowIdx: number,
   cells: Cells,
-  evalRaw: (s: string) => string,
+  evalRaw: Eval,
 ): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
@@ -48,7 +49,7 @@ export function xlookup(
   resultRangeStr: string,
   ifNotFound: string | undefined,
   cells: Cells,
-  evalRaw: (s: string) => string,
+  evalRaw: Eval,
 ): string {
   const L = parseRange(lookupRangeStr), R = parseRange(resultRangeStr)
   if (!L || !R) return '#REF!'
@@ -66,7 +67,7 @@ export function xlookup(
   return ifNotFound ?? '#N/A'
 }
 
-export function index(rangeStr: string, row: number, col: number, cells: Cells, evalRaw: (s: string) => string): string {
+export function index(rangeStr: string, row: number, col: number, cells: Cells, evalRaw: Eval): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   const tr = r.rMin + row - 1
@@ -75,7 +76,7 @@ export function index(rangeStr: string, row: number, col: number, cells: Cells, 
   return evalCell(cells, tc, tr, evalRaw)
 }
 
-export function match(key: string, rangeStr: string, cells: Cells, evalRaw: (s: string) => string): string {
+export function match(key: string, rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   let pos = 0

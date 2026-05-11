@@ -1,3 +1,4 @@
+import type { Eval } from './args'
 import type { Cells } from '../a1'
 import type { Rect } from '../rect'
 
@@ -21,5 +22,5 @@ export const parseRange = (s: string): Rect | null => {
   }
 }
 
-export const evalCell = (cells: Cells, c: number, r: number, evalRaw: (s: string) => string): string =>
+export const evalCell = (cells: Cells, c: number, r: number, evalRaw: Eval): string =>
   evalRaw(cells[`${String.fromCharCode(65 + c)}${r + 1}`] ?? '')
