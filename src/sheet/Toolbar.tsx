@@ -7,7 +7,7 @@ import { CondFmtButtons } from './CondFmtButtons'
 import { FormatButtons } from './FormatButtons'
 import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
-import { cellIdToKey, cellKey, type Writes, type WriteCell, type WriteMany, type Display } from '../lib/a1'
+import { cellIdToKey, cellKey, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from '../lib/a1'
 
 interface Props {
   display: Display
@@ -40,7 +40,7 @@ interface Props {
   clearCondRules: () => void
   sheet: import('./schema').Sheet
   resetSheet: (s: import('./schema').Sheet) => void
-  resetCells: (c: Record<string, string>) => void
+  resetCells: (c: Cells) => void
   ask: (opts: PromptOptions) => Promise<string | null>
   confirm: (opts: ConfirmOptions) => Promise<boolean>
   undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean

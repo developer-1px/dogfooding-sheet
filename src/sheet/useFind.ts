@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, cellKey, colIndex, type Display } from './schema'
+import { COL_LETTERS, ROW_COUNT, cellKey, colIndex, type Cells, type Display } from './schema'
 
 interface Args {
   query: string
-  cells: Record<string, string>
+  cells: Cells
   display: Display
   onJump: (cellId: string) => void
   caseSensitive?: boolean

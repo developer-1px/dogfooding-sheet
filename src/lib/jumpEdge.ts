@@ -2,7 +2,7 @@ import { COL_LETTERS, cellKey, parseCellId, colIndex } from './a1'
 
 export function jumpToEdge(
   focusId: string,
-  cells: Record<string, string>,
+  cells: Cells,
   rowCount: number,
   arrow: 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight',
 ): string | null {

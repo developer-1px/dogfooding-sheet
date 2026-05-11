@@ -1,9 +1,9 @@
 import { useEditable, type NavDir } from 'editable-lifecycle'
-import { cellKey, parseCellId, type WriteCell } from './schema'
+import { cellKey, parseCellId, type WriteCell, type Cells } from './schema'
 import { moveCellId } from './storage'
 
 interface Args {
-  cells: Record<string, string>
+  cells: Cells
   writeCell: WriteCell
 }
 

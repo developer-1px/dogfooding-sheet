@@ -1,13 +1,14 @@
+import type { Cells } from '../a1'
 import type { Eval } from './args'
 import { collectRefs } from './parse'
 
 
 /** ARRAYTOTEXT(range, [sep=", "]) — flatten non-empty values to a separated string. */
-export function arrayToText(rangeStr: string, sep: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function arrayToText(rangeStr: string, sep: string, cells: Cells, evalRaw: Eval): string {
   return collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '').join(sep)
 }
 
-export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
   if (vals.length === 0) return '#N/A'
   let best = vals[0]
@@ -15,20 +16,20 @@ export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string, cells: Record<
   return best
 }
 
-export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const lens = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '').length).filter((n) => n > 0)
   if (lens.length === 0) return '0'
   return String(F === 'MAXLEN' ? Math.max(...lens) : Math.min(...lens))
 }
 
-export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const refs = collectRefs(rangeStr)
   const seq = F === 'FIRST' ? refs : [...refs].reverse()
   for (const r of seq) { const v = evalRaw(cells[r] ?? ''); if (v !== '') return v }
   return '#N/A'
 }
 
-export function rangeHash(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function rangeHash(rangeStr: string, cells: Cells, evalRaw: Eval): string {
   let h = 2166136261
   for (const r of collectRefs(rangeStr)) {
     const v = evalRaw(cells[r] ?? '') + '|'
@@ -39,7 +40,7 @@ export function rangeHash(rangeStr: string, cells: Record<string, string>, evalR
 
 export { rangeJson, rangeCsv, rangeUnique, rangeSort } from './rangeSerial'
 
-export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const counts = new Map<string, number>()
   for (const r of collectRefs(rangeStr)) {
     const v = evalRaw(cells[r] ?? '')
@@ -52,7 +53,7 @@ export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cell
 }
 
 /** ENTROPY(range) — Shannon entropy (base 2) over value frequencies. */
-export function entropy(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function entropy(rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const counts = new Map<string, number>()
   let n = 0
   for (const r of collectRefs(rangeStr)) {
@@ -65,10 +66,10 @@ export function entropy(rangeStr: string, cells: Record<string, string>, evalRaw
   return String(h)
 }
 
-export const mostCommon = (r: string, c: Record<string, string>, e: Eval) => freqStat('MOSTCOMMON', r, c, e)
+export const mostCommon = (r: string, c: Cells, e: Eval) => freqStat('MOSTCOMMON', r, c, e)
 
 /** COUNTNUMERIC(range) — number of cells whose evaluated value is finite. */
-export function countNumeric(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function countNumeric(rangeStr: string, cells: Cells, evalRaw: Eval): string {
   let n = 0
   for (const r of collectRefs(rangeStr)) {
     const v = evalRaw(cells[r] ?? '')
@@ -77,7 +78,7 @@ export function countNumeric(rangeStr: string, cells: Record<string, string>, ev
   return String(n)
 }
 
-export function sample(rangeStr: string, cells: Record<string, string>, evalRaw: Eval): string {
+export function sample(rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const vals = collectRefs(rangeStr).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== '')
   if (vals.length === 0) return '#N/A'
   return vals[Math.floor(Math.random() * vals.length)]

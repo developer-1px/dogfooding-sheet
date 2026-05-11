@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
+import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 import { rectFromIds, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
 interface Args {
   selectedIds: string[]
   focusId: string | null
-  cells: Record<string, string>
+  cells: Cells
   writeCell: WriteCell
   writeCells?: WriteMany
   setSelectedIds: (ids: string[]) => void

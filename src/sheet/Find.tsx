@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { useDialogPattern } from '@p/aria-kernel/patterns'
 import { cellKey } from './schema'
-import { parseCellId, type WriteCell, type Display } from '../lib/a1'
+import { parseCellId, type WriteCell, type Display, type Cells } from '../lib/a1'
 import { useFind } from './useFind'
 
 interface Props {
   open: boolean
   mode: 'find' | 'replace'
   onClose: () => void
-  cells: Record<string, string>
+  cells: Cells
   display: Display
   onJump: (cellId: string) => void
   writeCell: WriteCell

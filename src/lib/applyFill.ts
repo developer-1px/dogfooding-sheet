@@ -1,11 +1,11 @@
-import { COL_LETTERS, cellKey, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
+import { COL_LETTERS, cellKey, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
 import type { Rect } from './rect'
 import { extendSeries } from './series'
 
 export function applyFill(
   src: Rect,
   tgt: Rect,
-  cells: Record<string, string>,
+  cells: Cells,
   write: WriteCell,
   writeMany?: WriteMany,
 ) {

@@ -1,10 +1,10 @@
-import { parseCellId, ROW_COUNT } from './schema'
+import { parseCellId, ROW_COUNT, type Cells } from './schema'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { idsForCol, idsForRow } from '../lib/range'
 
 interface NavArgs {
   focusId: string
-  cells: Record<string, string>
+  cells: Cells
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
 }

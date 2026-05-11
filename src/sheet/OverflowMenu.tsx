@@ -3,7 +3,7 @@ import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useMenuButtonPattern } from '@p/aria-kernel/patterns'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
 import type { ConfirmOptions } from './useConfirm'
-import { ROW_COUNT, SheetSchema, type Sheet, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
+import { ROW_COUNT, SheetSchema, type Sheet, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
 interface Props {
   display: Display
@@ -13,7 +13,7 @@ interface Props {
   insertLink: () => void
   sheet: Sheet
   resetSheet: (s: Sheet) => void
-  resetCells: (cells: Record<string, string>) => void
+  resetCells: (cells: Cells) => void
   confirm: (opts: ConfirmOptions) => Promise<boolean>
   showFormulas: boolean
   toggleShowFormulas: () => void
