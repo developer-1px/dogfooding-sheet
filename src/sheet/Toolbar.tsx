@@ -1,4 +1,5 @@
 import type { Format, FormatLookup } from './useFormats'
+import type { SheetMutations } from './sheetMutations'
 import type { CellStyle, StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
 import type { Confirm } from './useConfirm'
@@ -9,18 +10,13 @@ import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from '../lib/a1'
 
-interface Props {
+interface Props extends SheetMutations {
   display: Display
   writeCell: WriteCell; writeCells: WriteMany
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void
   formatOf: FormatLookup
-  insertRow: (atRow: number) => void
-  deleteRow: (atRow: number) => void
-  insertCol: (col: string) => void
-  deleteCol: (col: string) => void
-  sortByCol: (col: string, dir: 'asc' | 'desc') => void
   updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
   styleOf: StyleLookup
   freeze: { rows: 0 | 1; cols: 0 | 1 }

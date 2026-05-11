@@ -1,20 +1,16 @@
 import { useState } from 'react'
 import { COL_LETTERS, cellKey, colIndex, type Cells, type WriteCell } from './schema'
 import { parseCellId } from '../lib/a1'
+import type { SheetMutations } from './sheetMutations'
 import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 
-interface Args {
+interface Args extends SheetMutations {
   sheet: { cells: Cells }
   setFocusId: (id: string) => void
   writeCell: WriteCell
-  insertRow: (atRow: number) => void
-  deleteRow: (atRow: number) => void
-  insertCol: (col: string) => void
-  deleteCol: (col: string) => void
   hideCol: (col: string) => void
   hideRow: (row: number) => void
-  sortByCol: (col: string, dir: 'asc' | 'desc') => void
   noteOf: NoteLookup
   setNote: (k: string, text: string) => void
   editNote: () => void

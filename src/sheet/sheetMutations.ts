@@ -11,12 +11,20 @@ const apply = (sheet: Sheet, ops: SheetOps, nextCells: Record<string, string>) =
   ops.patch(patch as never)
 }
 
-export function sheetMutations(sheet: Sheet, ops: SheetOps) {
+export interface SheetMutations {
+  insertRow: (atRow: number) => void
+  deleteRow: (atRow: number) => void
+  insertCol: (col: string) => void
+  deleteCol: (col: string) => void
+  sortByCol: (col: string, dir: 'asc' | 'desc') => void
+}
+
+export function sheetMutations(sheet: Sheet, ops: SheetOps): SheetMutations {
   return {
-    insertRow: (atRow: number) => apply(sheet, ops, insertRowOp(sheet.cells, atRow, ROW_COUNT)),
-    deleteRow: (atRow: number) => apply(sheet, ops, deleteRowOp(sheet.cells, atRow)),
-    insertCol: (col: string) => apply(sheet, ops, insertColOp(sheet.cells, colIndex(col))),
-    deleteCol: (col: string) => apply(sheet, ops, deleteColOp(sheet.cells, colIndex(col))),
-    sortByCol: (col: string, dir: 'asc' | 'desc') => apply(sheet, ops, sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT })),
+    insertRow: (atRow) => apply(sheet, ops, insertRowOp(sheet.cells, atRow, ROW_COUNT)),
+    deleteRow: (atRow) => apply(sheet, ops, deleteRowOp(sheet.cells, atRow)),
+    insertCol: (col) => apply(sheet, ops, insertColOp(sheet.cells, colIndex(col))),
+    deleteCol: (col) => apply(sheet, ops, deleteColOp(sheet.cells, colIndex(col))),
+    sortByCol: (col, dir) => apply(sheet, ops, sortByColumn(sheet.cells, { col, dir, rowCount: ROW_COUNT })),
   }
 }
