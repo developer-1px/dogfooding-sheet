@@ -1,5 +1,6 @@
-import type { Merge } from '../sheet/useMerges'
 import { COL_LETTERS } from './a1'
+
+export type Merge = readonly [number, number, number, number] // [rMin, rMax, cMin, cMax]
 
 interface MergeOps {
   addMerge: (m: Merge) => void

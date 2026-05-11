@@ -1,7 +1,7 @@
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
-
-export type Merge = readonly [number, number, number, number] // [rMin, rMax, cMin, cMax]
+import type { Merge } from '../lib/mergeSelection'
+export type { Merge }
 
 export interface MergeInfo { anchorR: number; anchorC: number; rows: number; cols: number }
 
