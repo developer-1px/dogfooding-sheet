@@ -6,16 +6,14 @@ import type { Ask } from './usePrompt'
 import type { CondRule } from './useCondFormat'
 import type { Filter } from './useFilter'
 import type { Confirm } from './useConfirm'
-import { OverflowMenu } from './OverflowMenu'
+import { OverflowMenu, type OverflowProps } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
 import { FormatButtons } from './FormatButtons'
 import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
-interface Props extends SheetMutations {
-  display: Display
-  writeCell: WriteCell; writeCells: WriteMany
+interface Props extends SheetMutations, OverflowProps {
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void
@@ -33,19 +31,10 @@ interface Props extends SheetMutations {
   setListRule: (keys: string[], options: string[]) => void
   setCheckboxRule: (keys: string[]) => void
   clearRule: (keys: string[]) => void
-  openHelp: () => void
-  insertLink: () => void
   addCondRule: (r: CondRule) => void
   clearCondRules: () => void
-  sheet: import('./schema').Sheet
-  resetSheet: (s: import('./schema').Sheet) => void
-  resetCells: (c: Cells) => void
   ask: Ask
-  confirm: Confirm
   undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean
-  showFormulas: boolean; toggleShowFormulas: () => void
-  showGridlines: boolean; toggleShowGridlines: () => void
-  clearAllFormats: () => void
   mergeSelection: () => void
 }
 

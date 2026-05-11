@@ -5,7 +5,7 @@ import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
 import type { Confirm } from './useConfirm'
 import { ROW_COUNT, SheetSchema, type Sheet, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
-interface Props {
+export interface OverflowProps {
   display: Display
   writeCell: WriteCell
   writeCells: WriteMany
@@ -22,7 +22,7 @@ interface Props {
   clearAllFormats: () => void
 }
 
-export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: Props) {
+export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
