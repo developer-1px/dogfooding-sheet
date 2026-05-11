@@ -1,8 +1,8 @@
+import type { Rect } from '../rect'
+
 type Cells = Record<string, string>
 
-export interface RangeRect { rMin: number; rMax: number; cMin: number; cMax: number }
-
-export const parseRange = (s: string): RangeRect | null => {
+export const parseRange = (s: string): Rect | null => {
   const m = /^([A-J])(\d+):([A-J])(\d+)$/.exec(s.trim())
   if (!m) {
     const single = /^([A-J])(\d+)$/.exec(s.trim())
