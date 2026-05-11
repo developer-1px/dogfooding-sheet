@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, type Cells } from './a1'
+import { COL_LETTERS, cellKey, parseA1, type Cells } from './a1'
 
 
 const compareValues = (a: string, b: string, dir: 1 | -1): number => {
@@ -38,10 +38,9 @@ export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
 
   const next: Cells = {}
   for (const [k, v] of Object.entries(cells)) {
-    const m = /^[A-J](\d+)$/.exec(k)
-    if (!m) continue
-    const r = Number(m[1]) - 1
-    if (r < fromRow || r > toRow) next[k] = v
+    const p = parseA1(k)
+    if (!p) continue
+    if (p.row < fromRow || p.row > toRow) next[k] = v
   }
   for (let i = 0; i < rows.length; i++) {
     const targetRow = fromRow + i

@@ -1,3 +1,5 @@
+import { parseA1 } from './a1'
+
 interface Mut {
   insertRow: (r: number) => void
   deleteRow: (r: number) => void
@@ -8,13 +10,13 @@ interface Mut {
 }
 
 export function rowColAtFocus(focusKey: string | null, m: Mut) {
-  const at = () => focusKey ? /^([A-J])(\d+)$/.exec(focusKey) : null
+  const at = () => focusKey ? parseA1(focusKey) : null
   return {
-    insertRowAtFocus: () => { const p = at(); if (p) m.insertRow(Number(p[2]) - 1) },
-    deleteRowAtFocus: () => { const p = at(); if (p) m.deleteRow(Number(p[2]) - 1) },
-    insertColAtFocus: () => { const p = at(); if (p) m.insertCol(p[1]) },
-    deleteColAtFocus: () => { const p = at(); if (p) m.deleteCol(p[1]) },
-    hideRowAtFocus: () => { const p = at(); if (p) m.hideRow(Number(p[2]) - 1) },
-    hideColAtFocus: () => { const p = at(); if (p) m.hideCol(p[1]) },
+    insertRowAtFocus: () => { const p = at(); if (p) m.insertRow(p.row) },
+    deleteRowAtFocus: () => { const p = at(); if (p) m.deleteRow(p.row) },
+    insertColAtFocus: () => { const p = at(); if (p) m.insertCol(p.col) },
+    deleteColAtFocus: () => { const p = at(); if (p) m.deleteCol(p.col) },
+    hideRowAtFocus: () => { const p = at(); if (p) m.hideRow(p.row) },
+    hideColAtFocus: () => { const p = at(); if (p) m.hideCol(p.col) },
   }
 }
