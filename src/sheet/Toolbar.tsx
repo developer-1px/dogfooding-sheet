@@ -3,6 +3,7 @@ import type { SheetMutations } from './sheetMutations'
 import type { FreezeState } from './useFreeze'
 import type { CellStyle, StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
+import type { CondRule } from './useCondFormat'
 import type { Confirm } from './useConfirm'
 import { OverflowMenu } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
@@ -33,7 +34,7 @@ interface Props extends SheetMutations {
   clearRule: (keys: string[]) => void
   openHelp: () => void
   insertLink: () => void
-  addCondRule: (r: { col: string; op: '>' | '<' | '=' | '!=' | 'contains'; value: string; color: string }) => void
+  addCondRule: (r: CondRule) => void
   clearCondRules: () => void
   sheet: import('./schema').Sheet
   resetSheet: (s: import('./schema').Sheet) => void

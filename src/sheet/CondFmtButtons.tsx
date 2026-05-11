@@ -1,8 +1,9 @@
+import type { CondRule } from './useCondFormat'
 import type { Ask } from './usePrompt'
 
 interface Props {
   col: string | null
-  addCondRule: (r: { col: string; op: '>' | '<' | '=' | '!=' | 'contains'; value: string; color: string }) => void
+  addCondRule: (r: CondRule) => void
   clearCondRules: () => void
   ask: Ask
 }
