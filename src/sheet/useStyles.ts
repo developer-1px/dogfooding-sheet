@@ -17,6 +17,9 @@ export interface CellStyle {
   fg?: string
 }
 
+/** Patch that clears every style flag — pass to `updateStyle` for "remove all formatting". */
+export const CLEAR_STYLE: Partial<CellStyle> = { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' }
+
 const LEGACY_KEY = 'spreadsheet:styles:v1'
 
 const merge = (a: CellStyle | undefined, b: Partial<CellStyle>): CellStyle | undefined => {
