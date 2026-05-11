@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { mouseClick, setupReactDom } from './test-utils'
+import { cells as gridCells, mouseClick, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -24,8 +24,7 @@ describe('spreadsheet preview interactions', () => {
   it('commits text typed directly after selecting an empty cell with the mouse', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const a5 = cells[40]
+    const a5 = gridCells()[40]
 
     expect(a5).not.toBeUndefined()
 

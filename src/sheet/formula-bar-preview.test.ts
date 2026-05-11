@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { mouseClick as click, setupReactDom, press } from './test-utils'
+import { cells as gridCells, mouseClick as click, setupReactDom, press } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -10,7 +10,7 @@ describe('formula bar preview interactions', () => {
     await act(async () => dom.root.render(createElement(App)))
 
     const formula = document.querySelector<HTMLInputElement>('input[placeholder="값 또는 =A1+B1"]')
-    const firstCell = document.querySelector<HTMLElement>('[role="gridcell"]')
+    const firstCell = gridCells()[0]
 
     expect(formula?.value).toBe('Item')
     expect(firstCell?.textContent).toContain('Item')

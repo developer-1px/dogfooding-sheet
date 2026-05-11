@@ -1,21 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, mouseClick as click, press, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
-
-const click = (el: Element) => {
-  el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
-  el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
-  el.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
-}
-
-const press = (key: string, mod: { metaKey?: boolean; ctrlKey?: boolean } = {}) =>
-  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
-
-const cellByText = (text: string) =>
-  [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')].find((c) => c.textContent?.trim() === text)
 
 describe('multi-sheet partition (preview)', () => {
   it('bold on Sheet1 A2 does not leak into Sheet2; survives switch back', async () => {
@@ -31,8 +19,7 @@ describe('multi-sheet partition (preview)', () => {
     expect(addBtn).not.toBeNull()
     act(() => click(addBtn!))
 
-    const allCells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const fresh = allCells.find((c) => c.textContent?.trim() === '')
+    const fresh = gridCells().find((c) => c.textContent?.trim() === '')
     expect(fresh, 'Sheet2 cells should be empty').toBeDefined()
     expect(fresh!.className).not.toContain('bold')
 

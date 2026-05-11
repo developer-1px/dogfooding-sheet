@@ -10,6 +10,14 @@ export const press = (
   window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
 }
 
+/** All grid cells currently rendered in the DOM, in document order. */
+export const cells = (): HTMLElement[] =>
+  [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
+
+/** First grid cell whose trimmed text equals `text`, or `undefined`. */
+export const cellByText = (text: string): HTMLElement | undefined =>
+  cells().find((c) => c.textContent?.trim() === text)
+
 /** Synthesize a full mousedown → mouseup → click sequence on the target. */
 export const mouseClick = (target: Element): void => {
   target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))

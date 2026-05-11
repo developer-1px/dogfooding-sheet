@@ -1,19 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { press, setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, mouseClick as click, press, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
-
-const click = (el: Element) => {
-  el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
-  el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
-  el.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }))
-}
-const press = (key: string, mod: { ctrlKey?: boolean } = {}) =>
-  window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key, ...mod }))
-const cellByText = (text: string) =>
-  [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')].find((c) => c.textContent?.trim() === text)
 
 describe('surgical key-path undo (zod-crud audit fix)', () => {
   it('bolding two cells then one undo only un-bolds the second', async () => {
@@ -41,8 +31,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
   it('formula evaluation result is shown in cell (sanity check)', async () => {
     await act(async () => dom.root.render(createElement(App)))
     // initialSheet has D2 = '=B2*C2' where B2=3, C2=1.50 → 4.5 (formatted '4.5')
-    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const d2 = cells.find((c) => c.textContent?.trim() === '4.5')
+    const d2 = cellByText('4.5')
     expect(d2, '=B2*C2 should compute to 4.5 (3 × 1.50)').toBeDefined()
   })
 
@@ -71,7 +60,7 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
       milk.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, shiftKey: true }))
     })
     act(() => press('d', { ctrlKey: true }))
-    expect([...document.querySelectorAll<HTMLElement>('[role="gridcell"]')].filter((c) => c.textContent === 'Apple').length).toBe(3)
+    expect(gridCells().filter((c) => c.textContent === 'Apple').length).toBe(3)
     act(() => press('z', { ctrlKey: true }))
     // Bread/Milk should be restored, Apple count back to 1
     expect(cellByText('Bread'), 'Bread should restore').toBeDefined()

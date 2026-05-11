@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, setupReactDom } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -9,8 +9,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
   it('regression aria-kernel#140: Backspace inside cell-input is not preventDefault()-d by grid root', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const apple = cells.find((c) => c.textContent?.trim() === 'Apple')!
+    const apple = cellByText('Apple')!
     act(() => {
       apple.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
       apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }))
@@ -30,8 +29,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
   it('typing then Backspace shrinks the draft', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const apple = cells.find((c) => c.textContent?.trim() === 'Apple')!
+    const apple = cellByText('Apple')!
     act(() => apple.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })))
     act(() => apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 })))
     act(() => apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 })))
@@ -55,8 +53,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
   it('typed-letter-start: pressing Backspace after starting edit by typing should delete the letter', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const empty = cells.find((c) => c.textContent?.trim() === '')!
+    const empty = gridCells().find((c) => c.textContent?.trim() === '')!
     act(() => empty.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })))
     act(() => empty.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 })))
     act(() => empty.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 })))
@@ -77,8 +74,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
   it('FormulaBar: Backspace inside formula input does NOT clear the focused cell', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const apple = cells.find((c) => c.textContent?.trim() === 'Apple')!
+    const apple = cellByText('Apple')!
     act(() => apple.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })))
     act(() => apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 })))
     act(() => apple.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 })))

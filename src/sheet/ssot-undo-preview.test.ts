@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { mouseClick, setupReactDom, press } from './test-utils'
+import { cellByText, mouseClick, setupReactDom, press } from './test-utils'
 
 const dom = setupReactDom()
 
@@ -9,8 +9,7 @@ describe('SSOT: undo restores ancillary state', () => {
   it('Cmd+B applies bold; Cmd+Z removes it (styles undoable)', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const cells = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-    const a2 = cells.find((c) => c.textContent?.trim() === 'Apple')
+    const a2 = cellByText('Apple')
     expect(a2, 'A2 cell should render as "Apple"').toBeDefined()
 
     act(() => mouseClick(a2!))
