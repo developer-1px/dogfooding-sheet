@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { COL_LETTERS, cellKey, colIndex, parseCellId, type Cells, type WriteCell } from './schema'
+import { cellKey, colIndex, parseCellId, type Cells, type WriteCell } from './schema'
 import type { SheetMutations } from './sheetMutations'
 import type { FreezeState, FreezeActions } from './useFreeze'
 import type { HiddenActions } from './useHidden'
