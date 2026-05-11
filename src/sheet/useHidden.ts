@@ -8,6 +8,12 @@ export interface HiddenState {
   cols: string[]
 }
 
+export interface HiddenActions {
+  hideRow: (row: number) => void
+  hideCol: (col: string) => void
+  showAll: () => void
+}
+
 const LEGACY_KEY = 'spreadsheet:hidden:v1'
 
 const migrateLegacy = (hidden: HiddenState, ops: SheetOps) =>

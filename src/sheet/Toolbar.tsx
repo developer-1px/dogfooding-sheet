@@ -5,6 +5,7 @@ import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
 import type { CondActions } from './useCondFormat'
 import type { Filter } from './useFilter'
+import type { HiddenActions } from './useHidden'
 import type { ValidationActions } from './useValidation'
 import type { Confirm } from './useConfirm'
 import { OverflowMenu, type OverflowProps } from './OverflowMenu'
@@ -14,7 +15,7 @@ import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
-interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions {
+interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void
@@ -26,7 +27,6 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions, CondAc
   applyFilter: (col: string, text: string) => void
   clearFilter: () => void
   hasHidden: boolean
-  showAll: () => void
   ask: Ask
   undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean
   mergeSelection: () => void

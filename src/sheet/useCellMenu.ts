@@ -2,15 +2,14 @@ import { useState } from 'react'
 import { COL_LETTERS, cellKey, colIndex, parseCellId, type Cells, type WriteCell } from './schema'
 import type { SheetMutations } from './sheetMutations'
 import type { FreezeState, FreezeActions } from './useFreeze'
+import type { HiddenActions } from './useHidden'
 import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 
-interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'> {
+interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>, Pick<HiddenActions, 'hideRow' | 'hideCol'> {
   sheet: { cells: Cells }
   setFocusId: (id: string) => void
   writeCell: WriteCell
-  hideCol: (col: string) => void
-  hideRow: (row: number) => void
   noteOf: NoteLookup
   setNote: (k: string, text: string) => void
   editNote: () => void
