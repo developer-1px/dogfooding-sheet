@@ -1,5 +1,5 @@
-import { COL_LETTERS, cellKey, colIndex, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from './a1'
-import type { Rect } from './rect'
+import { COL_LETTERS, cellKey, colIndex, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from './a1'
+import { rectFromIds, type Rect } from './rect'
 
 export function rectToTsv(rect: Rect, get: Display): string {
   const rows: string[] = []
@@ -34,4 +34,28 @@ export function pasteTsv(
   }
   if (writes.length === 0) return
   if (bounds.writeMany) bounds.writeMany(writes); else for (const [k, v] of writes) write(k, v)
+}
+
+export function copyOrCut(
+  ids: string[], cut: boolean, cells: Cells,
+  writeCell: WriteCell,
+  writeCells?: WriteMany,
+): void {
+  const rect = rectFromIds(ids)
+  const tsv = rect ? rectToTsv(rect, (k) => cells[k] ?? '') : ''
+  navigator.clipboard?.writeText(tsv).catch(() => {})
+  if (!cut) return
+  const clears: Writes = []
+  for (const id of ids) { const p = parseCellId(id); if (p) clears.push([cellKey(p.col, p.row), '']) }
+  if (writeCells) writeCells(clears); else for (const [k, v] of clears) writeCell(k, v)
+}
+
+export function pasteAt(
+  focusKey: string, p: CellRef, maxRow: number,
+  writeCell: WriteCell,
+  writeCells?: WriteMany,
+): void {
+  navigator.clipboard?.readText()
+    .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow, writeMany: writeCells }) : writeCell(focusKey, t))
+    .catch(() => {})
 }

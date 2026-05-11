@@ -1,8 +1,27 @@
 import { useShortcut } from '@p/aria-kernel/key'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet, type SheetOps, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
-import { copyOrCut, pasteAt, freezeFormulas, insertNowOrToday } from '../lib/clipboardOps'
+import { copyOrCut, pasteAt } from '../lib/clipboard'
 import { fillDown, fillRight } from '../lib/fillDown'
 import { idsForAll } from '../lib/range'
+import { pad2 } from '../lib/numeric'
+
+const freezeFormulas = (ids: string[], cells: Sheet['cells'], display: Display, writeCells: WriteMany) => {
+  const writes: Writes = []
+  for (const id of ids) {
+    const p = parseCellId(id); if (!p) continue
+    const k = cellKey(p.col, p.row)
+    if ((cells[k] ?? '').startsWith('=')) writes.push([k, display(k)])
+  }
+  if (writes.length) writeCells(writes)
+}
+
+const insertNowOrToday = (focusId: string | null, withTime: boolean, writeCell: WriteCell) => {
+  const p = focusId ? parseCellId(focusId) : null; if (!p) return
+  const d = new Date()
+  writeCell(cellKey(p.col, p.row), withTime
+    ? `${pad2(d.getHours())}:${pad2(d.getMinutes())}`
+    : `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`)
+}
 
 export interface GlobalShortcutCtx {
   focusId: string | null
@@ -78,7 +97,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+z', () => get().ops.undo())
   useShortcut('mod+shift+z', () => get().ops.redo())
   useShortcut('mod+y', () => get().ops.redo())
-  useShortcut('F9', () => { const c = get(); if (c.display) freezeFormulas(targetIds(c), c.sheet.cells, c.display, c.writeCell, c.writeCells) })
+  useShortcut('F9', () => { const c = get(); if (c.display) freezeFormulas(targetIds(c), c.sheet.cells, c.display, c.writeCells) })
 
   const clearFocused = () => {
     const c = get()
