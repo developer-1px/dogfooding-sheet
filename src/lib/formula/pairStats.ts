@@ -1,6 +1,6 @@
+import type { NumFromCell } from './args'
 import { collectRefs } from './parse'
 
-type NumFromCell = (ref: string) => number
 
 /** FORECAST(x, known_y, known_x) — predict y for given x via linear regression. */
 export function forecast(x: number, yStr: string, xStr: string, numFromCell: NumFromCell): string {

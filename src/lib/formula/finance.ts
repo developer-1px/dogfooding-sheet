@@ -1,6 +1,6 @@
+import type { NumFromCell } from './args'
 import { collectRefs } from './parse'
 
-type NumFromCell = (ref: string) => number
 
 const pmtVal = (rate: number, nper: number, pv: number, fv = 0): number => {
   if (rate === 0) return -(pv + fv) / nper

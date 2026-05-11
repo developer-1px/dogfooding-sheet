@@ -1,6 +1,6 @@
+import type { NumFromCell } from './args'
 import { collectRefs } from './parse'
 
-type NumFromCell = (ref: string) => number
 
 export function largeSmall(F: 'LARGE' | 'SMALL', rangeStr: string, k: number, numFromCell: NumFromCell): string {
   const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)

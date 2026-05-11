@@ -1,6 +1,6 @@
+import type { Eval } from './args'
 import { collectRefs } from './parse'
 
-type Eval = (s: string) => string
 
 /** ARRAYTOTEXT(range, [sep=", "]) — flatten non-empty values to a separated string. */
 export function arrayToText(rangeStr: string, sep: string, cells: Record<string, string>, evalRaw: Eval): string {

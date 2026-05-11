@@ -1,6 +1,8 @@
 import type { Cells } from '../a1'
 import { stripText } from './marker'
 
+export type NumFromCell = (ref: string) => number
+export type Eval = (s: string) => string
 
 export interface Ctx {
   cells: Cells

@@ -1,6 +1,6 @@
+import type { NumFromCell } from './args'
 import { collectRefs } from './parse'
 
-type NumFromCell = (ref: string) => number
 
 export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null

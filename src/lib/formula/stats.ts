@@ -1,6 +1,6 @@
+import type { NumFromCell } from './args'
 import { collectRefs } from './parse'
 
-type NumFromCell = (ref: string) => number
 
 export { forecast, pairStat } from './pairStats'
 

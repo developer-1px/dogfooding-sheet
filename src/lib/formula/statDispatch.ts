@@ -1,10 +1,10 @@
+import type { NumFromCell } from './args'
 import { largeSmall, rank } from './rangeOps'
 import { percentile, quartile, pairStat, trimmean, forecast, percentRank, zScore, moment, gini } from './stats'
 import { vectorOp, pairSum } from './pairStats'
 import { splitArgs } from './args'
 import { smartReturn } from './marker'
 
-type NumFromCell = (ref: string) => number
 
 export function dispatchStat(F: string, argsT: string[], rawArgs: string, numFromCell: NumFromCell): string | null {
   if (F === 'COVAR' || F === 'CORREL' || F === 'RSQ' || F === 'SLOPE' || F === 'INTERCEPT') {

@@ -1,6 +1,6 @@
+import type { Eval } from './args'
 import { collectRefs } from './parse'
 
-type Eval = (s: string) => string
 const vals = (r: string, cells: Record<string, string>, e: Eval) =>
   collectRefs(r).map((x) => e(cells[x] ?? ''))
 
