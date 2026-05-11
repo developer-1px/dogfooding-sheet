@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { COL_LETTERS, parseCellId, cellKey, colIndex, type CellRef } from './schema'
+import { COL_LETTERS, parseCellId, cellKey, cellId, colIndex, type CellRef } from './schema'
 
 
 const rangeIds = (a: CellRef, b: CellRef): string[] => {
@@ -8,7 +8,7 @@ const rangeIds = (a: CellRef, b: CellRef): string[] => {
   const out: string[] = []
   for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++) {
     for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) {
-      out.push(`r${r}-${COL_LETTERS[c]}`)
+      out.push(cellId(COL_LETTERS[c], r))
     }
   }
   return out

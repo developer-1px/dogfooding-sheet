@@ -35,6 +35,9 @@ export type Display = (k: string) => string
 /** Global A1 reference regex — match all `[Letter][Digits]` occurrences. */
 export const A1_RE = /([A-J])(\d+)/g
 
+/** Format a DOM cell id: `cellId('A', 0) === 'r0-A'` (inverse of `parseCellId`). */
+export const cellId = (col: string, row: number): string => `r${row}-${col}`
+
 /** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
 export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
   const m = /^r(\d+)-([A-J])$/.exec(id)

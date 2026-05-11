@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, cellKey, colIndex, type Cells, type Display } from './schema'
+import { COL_LETTERS, ROW_COUNT, cellKey, cellId, colIndex, type Cells, type Display } from './schema'
 
 interface Args {
   query: string
@@ -22,7 +22,7 @@ export function useFind({ query, cells, display, onJump, caseSensitive = false, 
     const out: string[] = []
     for (let row = 0; row < ROW_COUNT; row++) {
       for (const c of COL_LETTERS) {
-        const k = cellKey(c, row); const id = `r${row}-${c}`
+        const k = cellKey(c, row); const id = cellId(c, row)
         if (skipIds?.has(`${row},${colIndex(c)}`)) continue
         if (test(cells[k] ?? '') || test(display(k))) out.push(id)
       }

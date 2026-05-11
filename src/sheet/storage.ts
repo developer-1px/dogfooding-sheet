@@ -1,4 +1,4 @@
-import { SheetSchema, initialSheet, COL_LETTERS, ROW_COUNT, cellKey, parseCellId, colIndex, type Sheet } from './schema'
+import { SheetSchema, initialSheet, COL_LETTERS, ROW_COUNT, cellKey, cellId, parseCellId, colIndex, type Sheet } from './schema'
 import { fromTree, type NormalizedData } from '@p/aria-kernel'
 
 const STORAGE_KEY = 'spreadsheet:v1'
@@ -23,7 +23,7 @@ export const moveCellId = (id: string, dRow: number, dCol: number): string | nul
   const nCol = colIdx + dCol
   const nRow = p.row + dRow
   if (nCol < 0 || nCol >= COL_LETTERS.length || nRow < 0 || nRow >= ROW_COUNT) return id
-  return `r${nRow}-${COL_LETTERS[nCol]}`
+  return cellId(COL_LETTERS[nCol], nRow)
 }
 
 interface Node { id: string; label: string; children?: Node[] }
@@ -35,7 +35,7 @@ export function buildData(getCell: (k: string, col: string, row: number) => stri
       id: `r${r}`,
       label: String(r + 1),
       children: COL_LETTERS.map((c) => ({
-        id: `r${r}-${c}`,
+        id: cellId(c, r),
         label: getCell(cellKey(c, r), c, r),
       })),
     })),

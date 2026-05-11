@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, parseCellId, colIndex, type Cells } from './a1'
+import { COL_LETTERS, cellKey, cellId, parseCellId, colIndex, type Cells } from './a1'
 import { idsInRect, rectFromRefs } from './rect'
 
 export function jumpToEdge(
@@ -17,14 +17,14 @@ export function jumpToEdge(
     if ((cells[cellKey(COL_LETTERS[nc], nr)] ?? '') === '') break
     r = nr; c = nc
   }
-  return `r${r}-${COL_LETTERS[c]}`
+  return cellId(COL_LETTERS[c], r)
 }
 
 /** Tab / Shift-Tab target — one column right / left within bounds. Returns null at edge. */
 export function tabTarget(focusId: string, shift: boolean): string | null {
   const p = parseCellId(focusId); if (!p) return null
   const ci = colIndex(p.col), nci = ci + (shift ? -1 : 1)
-  return nci < 0 || nci >= COL_LETTERS.length ? null : `r${p.row}-${COL_LETTERS[nci]}`
+  return nci < 0 || nci >= COL_LETTERS.length ? null : cellId(COL_LETTERS[nci], p.row)
 }
 
 /** Home / End / Ctrl+Home / Ctrl+End target cell id. */
@@ -33,7 +33,7 @@ export function homeEndTarget(focusId: string, rowCount: number, key: 'Home' | '
   const lastIdx = COL_LETTERS.length - 1
   const targetRow = ctrl ? (key === 'Home' ? 0 : rowCount - 1) : p.row
   const targetCol = key === 'Home' ? COL_LETTERS[0] : COL_LETTERS[lastIdx]
-  return `r${targetRow}-${targetCol}`
+  return cellId(targetCol, targetRow)
 }
 
 /** Cell ids covering the rectangular area between two cells (inclusive). */

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { parseA1 } from './schema'
+import { parseA1, cellId } from './schema'
 import { refsInFormula } from '../lib/formula'
 
 export function useFindState() {
@@ -17,7 +17,7 @@ export function highlightedIdsFor(editing: string | null, draft: string): string
   return refsInFormula(draft)
     .map((ref) => {
       const p = parseA1(ref)
-      return p ? `r${p.row}-${p.col}` : ''
+      return p ? cellId(p.col, p.row) : ''
     })
     .filter(Boolean)
 }

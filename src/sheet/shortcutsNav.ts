@@ -1,4 +1,4 @@
-import { parseCellId, ROW_COUNT, type Cells } from './schema'
+import { parseCellId, ROW_COUNT, cellId, type Cells } from './schema'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { idsForCol, idsForRow } from '../lib/range'
 
@@ -21,7 +21,7 @@ export function handleNavigation(e: KeyboardEvent, mod: boolean, a: NavArgs): bo
   }
   if (e.key === 'PageUp' || e.key === 'PageDown') {
     const p = parseCellId(focusId); if (!p) return true
-    const next = `r${Math.max(0, Math.min(ROW_COUNT - 1, p.row + (e.key === 'PageUp' ? -10 : 10)))}-${p.col}`
+    const next = cellId(p.col, Math.max(0, Math.min(ROW_COUNT - 1, p.row + (e.key === 'PageUp' ? -10 : 10))))
     e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : setFocusId(next); return true
   }
   if (e.key === 'Home' || e.key === 'End') {

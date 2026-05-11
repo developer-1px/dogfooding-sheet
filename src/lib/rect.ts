@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, parseCellId, colIndex, type CellRef } from './a1'
+import { COL_LETTERS, cellKey, cellId, parseCellId, colIndex, type CellRef } from './a1'
 
 export interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
 
@@ -29,7 +29,7 @@ export const formatRect = (rect: Rect): string => {
 export function idsInRect(rect: Rect): string[] {
   const out: string[] = []
   for (let r = rect.rMin; r <= rect.rMax; r++)
-    for (let c = rect.cMin; c <= rect.cMax; c++) out.push(`r${r}-${COL_LETTERS[c]}`)
+    for (let c = rect.cMin; c <= rect.cMax; c++) out.push(cellId(COL_LETTERS[c], r))
   return out
 }
 

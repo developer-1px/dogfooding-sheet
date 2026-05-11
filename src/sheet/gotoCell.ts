@@ -1,4 +1,4 @@
-import { parseCellId, parseA1, ROW_COUNT } from './schema'
+import { parseCellId, parseA1, ROW_COUNT, cellId } from './schema'
 import { idsInRect, rectFromRefs } from '../lib/rect'
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
@@ -6,7 +6,7 @@ export function resolveCellRef(raw: string): string | null {
   const p = parseA1(raw.trim().toUpperCase())
   if (!p) return null
   if (p.row < 0 || p.row >= ROW_COUNT) return null
-  return `r${p.row}-${p.col}`
+  return cellId(p.col, p.row)
 }
 
 /** Resolve a range like "A1:B5" to a list of cell ids, or null on bad input. */

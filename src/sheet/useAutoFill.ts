@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
+import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, cellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 import { rectFromIds, rectOfCell, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
@@ -61,7 +61,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
       // Re-select the filled rect
       const ids: string[] = []
       for (let r = tgt.rMin; r <= tgt.rMax; r++) {
-        for (let c = tgt.cMin; c <= tgt.cMax; c++) ids.push(`r${r}-${COL_LETTERS[c]}`)
+        for (let c = tgt.cMin; c <= tgt.cMax; c++) ids.push(cellId(COL_LETTERS[c], r))
       }
       setSelectedIds(ids)
     }

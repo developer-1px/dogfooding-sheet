@@ -1,7 +1,7 @@
 import * as z from 'zod'
 import type { JsonOps } from 'zod-crud'
 
-export { COL_LETTERS, cellKey, parseCellId, parseA1, cellIdToKey, colIndex, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '../lib/a1'
+export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '../lib/a1'
 
 export const ROW_COUNT = 20
 
