@@ -1,10 +1,10 @@
 ---
 active: true
-iteration: 121
-session_id: ec7c9e38-f2da-4c66-b5bf-5678508200a5
+iteration: 3
+session_id: dd0f9bf6-67ba-4195-aec3-e4674d5cb819
 max_iterations: 0
 completion_promise: null
-started_at: "2026-05-10T18:01:17Z"
+started_at: "2026-05-11T02:32:27Z"
 ---
 
-/team 변경사항은 항상 커밋, aria-kernel과 zod-crud 개밥먹기 중. 구글 시트를 완성해줘. 소스코드가 100줄 넘어가면 리팩토링 스킬 사용, 패키지에서 필요한 기능이 있으면 깃헙이슈에 등록
+/cohesion

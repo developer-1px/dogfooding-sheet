@@ -1,4 +1,4 @@
-import { COL_LETTERS } from '../sheet/schema'
+import { COL_LETTERS } from './a1'
 
 const HEADER_H = 30
 const ROW_HEADER_W = 48
