@@ -73,6 +73,7 @@ export const withBundle = (sheet: Sheet, b: TabBundle): Sheet => ({ ...sheet, ..
 export const blankBundle = (): TabBundle => ({ ...emptyBundle, freeze: { ...emptyBundle.freeze }, hidden: { rows: [], cols: [] } })
 
 export const initialSheet: Sheet = {
+  ...blankBundle(),
   cells: {
     A1: 'Item', B1: 'Qty', C1: 'Price', D1: 'Total',
     A2: 'Apple', B2: '3', C2: '1.50', D2: '=B2*C2',
@@ -80,7 +81,5 @@ export const initialSheet: Sheet = {
     A4: 'Milk', B4: '1', C4: '3.00', D4: '=B4*C4',
     A6: 'Sum', D6: '=SUM(D2:D4)',
   },
-  notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
-  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {}, merges: [],
   tabs: { order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} },
 }
