@@ -4,6 +4,13 @@ import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 export interface FreezeState { rows: number; cols: number }
 
+export interface FreezeActions {
+  toggleFreezeRows: () => void
+  toggleFreezeCols: () => void
+  setFreezeRows: (n: number) => void
+  setFreezeCols: (n: number) => void
+}
+
 const LEGACY_KEY = 'spreadsheet:freeze:v1'
 
 const migrateLegacy = (freeze: FreezeState, ops: SheetOps) =>

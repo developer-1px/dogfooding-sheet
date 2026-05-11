@@ -1,6 +1,6 @@
 import type { Format, FormatLookup } from './useFormats'
 import type { SheetMutations } from './sheetMutations'
-import type { FreezeState } from './useFreeze'
+import type { FreezeState, FreezeActions } from './useFreeze'
 import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './useStyles'
 import type { Ask } from './usePrompt'
 import type { CondActions } from './useCondFormat'
@@ -14,7 +14,7 @@ import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
 import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 
-interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions {
+interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions {
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void
@@ -22,8 +22,6 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions, CondAc
   updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
   styleOf: StyleLookup
   freeze: FreezeState
-  toggleFreezeRows: () => void
-  toggleFreezeCols: () => void
   filter: Filter | null
   applyFilter: (col: string, text: string) => void
   clearFilter: () => void

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { COL_LETTERS, cellKey, colIndex, parseCellId, type Cells, type WriteCell } from './schema'
 import type { SheetMutations } from './sheetMutations'
-import type { FreezeState } from './useFreeze'
+import type { FreezeState, FreezeActions } from './useFreeze'
 import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 
-interface Args extends SheetMutations {
+interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'> {
   sheet: { cells: Cells }
   setFocusId: (id: string) => void
   writeCell: WriteCell
@@ -17,8 +17,6 @@ interface Args extends SheetMutations {
   insertLink: () => void
   promptRowHeight: (row: number) => void
   promptColWidth: (col: string) => void
-  setFreezeRows: (n: number) => void
-  setFreezeCols: (n: number) => void
   freeze: FreezeState
   mergeSelection: () => void
 }
