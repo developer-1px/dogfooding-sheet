@@ -1,5 +1,6 @@
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useTabsPattern } from '@p/aria-kernel/patterns'
+import { useReorderDnDGestureRaw } from '@p/aria-kernel/gesture'
 import { useEditable } from '@p/anyeditable'
 import type { Confirm } from './useConfirm'
 import type { TabsState } from './useTabs'
@@ -37,6 +38,10 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
     activationMode: 'automatic',
     active: state.active,
   })
+  const reorder = useReorderDnDGestureRaw({
+    onDrop: (from, to) => { if (from !== to) reorderTab(from, to) },
+    mime: 'text/x-tab',
+  })
 
   return (
     <div {...rootProps} className="tabs-bar">
@@ -44,11 +49,8 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
         <span
           key={name}
           {...tabProps(name)}
-          className={`tab${name === state.active ? ' active' : ''}`}
-          draggable
-          onDragStart={(e) => e.dataTransfer.setData('text/x-tab', name)}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); const from = e.dataTransfer.getData('text/x-tab'); if (from && from !== name) reorderTab(from, name) }}
+          {...reorder.getItemHandlers(name)}
+          className={`tab${name === state.active ? ' active' : ''}${reorder.overId === name ? ` reorder-over-${reorder.overPosition}` : ''}`}
           onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
           style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
           title="더블클릭=이름 변경 / 드래그=순서 변경"
