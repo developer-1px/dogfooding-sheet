@@ -47,7 +47,7 @@ interface Props {
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
   onCellMouseEnter: (id: string, e: React.MouseEvent) => void
   onFillHandleMouseDown: (e: React.MouseEvent) => void
-  onCellContextMenu: (e: React.MouseEvent, id: string) => void
+  getCellCtxHandlers: (id: string) => { onContextMenu: (e: React.MouseEvent) => void; onKeyDown: (e: React.KeyboardEvent) => void }
   inputProps: InputProps
   selectProps: SelectProps
 }
@@ -93,7 +93,7 @@ export function GridRow(p: Props) {
             isFillCorner={isFillCorner(cell.id, p.focusId, p.selectedIds)}
             onFillHandleMouseDown={p.onFillHandleMouseDown}
             previewing={p.previewIds.has(cell.id)}
-            onContextMenu={(e) => p.onCellContextMenu(e, cell.id)}
+            ctxHandlers={p.getCellCtxHandlers(cell.id)}
             inputProps={p.inputProps}
             selectProps={p.selectProps}
           />

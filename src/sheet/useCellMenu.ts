@@ -23,10 +23,9 @@ interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'se
 export function useCellMenu(a: Args) {
   const [menu, setMenu] = useState<{ x: number; y: number; cellId: string } | null>(null)
 
-  const open = (e: React.MouseEvent, cellId: string) => {
-    e.preventDefault()
+  const open = (x: number, y: number, cellId: string) => {
     a.setFocusId(cellId)
-    setMenu({ x: e.clientX, y: e.clientY, cellId })
+    setMenu({ x, y, cellId })
   }
   const close = () => setMenu(null)
 

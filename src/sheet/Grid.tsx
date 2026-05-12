@@ -1,3 +1,4 @@
+import { useContextMenuGesture } from '@p/aria-kernel/gesture'
 import { COL_LETTERS, ROW_COUNT, parseCellId, cellKey, cellId } from './schema'
 import { GridHeader } from './GridHeader'
 import { GridRow } from './GridRow'
@@ -16,7 +17,11 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, setSelectAnchor, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
   const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight, promptColWidth: ctx.promptColWidth, setFreezeRows: ctx.setFreezeRows, setFreezeCols: ctx.setFreezeCols, freeze, mergeSelection: ctx.mergeSelection })
-  const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, cellId(col, 0)) }; const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e, cellId('A', rIdx)) }
+  // useContextMenuGesture#156 — getHandlers(id) factory: hook 1회 + N개 핸들러.
+  // contextmenu(우클릭) + Shift+F10/ContextMenu 키 둘 다 동일 onOpen으로 흡수.
+  const cellCtx = useContextMenuGesture<string>({ onOpen: (id, x, y) => cellMenu.open(x, y, id) })
+  const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e.clientX, e.clientY, cellId(col, 0)) }
+  const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e.clientX, e.clientY, cellId('A', rIdx)) }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, writeCells: ctx.writeCells, setSelectedIds }); const previewIds = rectToIdSet(fill.preview)
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing: () => editing !== null })
   const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
@@ -79,7 +84,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             onCellMouseDown={(id, e) => getCellHandlers(id).onMouseDown(e)}
             onCellMouseEnter={(id, e) => fill.dragging ? fill.onCellEnterDuringFill(id) : getCellHandlers(id).onMouseEnter(e)}
             onFillHandleMouseDown={fill.onHandleMouseDown}
-            onCellContextMenu={(e, id) => cellMenu.open(e, id)}
+            getCellCtxHandlers={cellCtx.getHandlers}
             inputProps={inputProps}
             selectProps={selectProps}
           />

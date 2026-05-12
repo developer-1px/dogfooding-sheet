@@ -17,7 +17,7 @@ interface Props {
   onStartEdit: () => void
   onMouseDown: (e: React.MouseEvent) => void
   onMouseEnter: (e: React.MouseEvent) => void
-  onContextMenu: (e: React.MouseEvent) => void
+  ctxHandlers: { onContextMenu: (e: React.MouseEvent) => void; onKeyDown: (e: React.KeyboardEvent) => void }
   isFillCorner: boolean
   previewing: boolean
   onFillHandleMouseDown: (e: React.MouseEvent) => void
@@ -41,7 +41,8 @@ export function Cell(p: Props) {
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}
-      onContextMenu={p.onContextMenu}
+      onContextMenu={p.ctxHandlers.onContextMenu}
+      onKeyDown={(e) => { p.ctxHandlers.onKeyDown(e); if (!e.defaultPrevented) p.cellProps.onKeyDown?.(e) }}
       title={p.note ?? p.tooltip ?? (p.label.length > 20 ? p.label : undefined)}
     >
       {p.isCheckbox ? (
