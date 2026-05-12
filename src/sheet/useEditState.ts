@@ -1,4 +1,4 @@
-import { useEditable, type NavDir } from 'editable-lifecycle'
+import { useEditable, type NavDir } from '@p/anyeditable'
 import { cellKey, parseCellId, type WriteCell, type Cells } from './schema'
 import { moveCellId } from './storage'
 
@@ -31,7 +31,7 @@ export function useEditState({ cells, writeCell }: Args) {
     initialFocus: 'r0-A',
   })
 
-  // Adapt commitEdit({ dRow, dCol }) → editable-lifecycle NavDir API to keep callers untouched.
+  // Adapt commitEdit({ dRow, dCol }) → @p/anyeditable NavDir API to keep callers untouched.
   const commitEdit = (move?: { dRow: number; dCol: number }) => {
     if (!move) return ed.commitEdit()
     const dir = move.dRow > 0 ? 'down' : move.dRow < 0 ? 'up' : move.dCol > 0 ? 'right' : 'left'

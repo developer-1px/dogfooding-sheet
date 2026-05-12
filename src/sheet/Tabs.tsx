@@ -1,6 +1,6 @@
 import { fromList, type UiEvent } from '@p/aria-kernel'
 import { useTabsPattern } from '@p/aria-kernel/patterns'
-import { useEditable } from 'editable-lifecycle'
+import { useEditable } from '@p/anyeditable'
 import type { Confirm } from './useConfirm'
 import type { TabsState } from './useTabs'
 

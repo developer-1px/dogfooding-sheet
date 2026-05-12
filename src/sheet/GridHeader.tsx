@@ -1,3 +1,4 @@
+import { useResizeGesture } from '@p/aria-kernel/gesture'
 import { COL_LETTERS, colIndex, ROW_COUNT } from './schema'
 import { idsForCol, idsForAll } from '../lib/range'
 import type { ItemProps } from '@p/aria-kernel/patterns/types'
@@ -5,7 +6,9 @@ import type { ItemProps } from '@p/aria-kernel/patterns/types'
 interface Props {
   gridTemplate: string
   columnHeaderProps: (id: string) => ItemProps
-  startResize: (col: string) => (e: React.MouseEvent) => void
+  widthOf: (col: string) => number
+  onResize: (col: string, w: number) => void
+  onResizeEnd: (col: string, w: number) => void
   autoFitCol: (col: string) => void
   setSelectedIds: (ids: string[]) => void
   hiddenCols: Set<string>
@@ -22,7 +25,25 @@ const colRangeIds = (target: string, anchor: string | null): string[] => {
   return ids
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoFitCol, setSelectedIds, hiddenCols, focusCol, onHeaderContextMenu }: Props) {
+function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
+  col: string
+  widthOf: (col: string) => number
+  onResize: (col: string, w: number) => void
+  onResizeEnd: (col: string, w: number) => void
+  autoFitCol: (col: string) => void
+}) {
+  const { handleProps } = useResizeGesture({
+    axis: 'x',
+    initial: () => widthOf(col),
+    onChange: (w) => onResize(col, w),
+    onEnd: (w) => onResizeEnd(col, w),
+    min: 40,
+    max: 400,
+  })
+  return <span className="col-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
+}
+
+export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, hiddenCols, focusCol, onHeaderContextMenu }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(ROW_COUNT))} />
@@ -38,7 +59,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, startResize, autoF
             title="우클릭으로 열 메뉴"
           >
             {c}
-            <span className="col-resizer" onMouseDown={startResize(c)} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(c) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
+            <ColResizer col={c} widthOf={widthOf} onResize={onResize} onResizeEnd={onResizeEnd} autoFitCol={autoFitCol} />
           </span>
         )
       })}

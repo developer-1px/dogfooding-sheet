@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@p/aria-kernel": "file:../ds/packages/aria-kernel",
-    "editable-lifecycle": "file:../editable-lifecycle/packages/editable-lifecycle",
+    "@p/anyeditable": "file:../editable-lifecycle/packages/anyeditable",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zod": "^4.0.0",

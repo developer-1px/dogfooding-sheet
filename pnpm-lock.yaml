@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@p/anyeditable':
+        specifier: file:../editable-lifecycle/packages/anyeditable
+        version: file:../editable-lifecycle/packages/anyeditable(@p/aria-kernel@file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
       '@p/aria-kernel':
         specifier: file:../ds/packages/aria-kernel
-        version: file:../ds/packages/aria-kernel(react@19.2.6)
-      editable-lifecycle:
-        specifier: file:../editable-lifecycle/packages/editable-lifecycle
-        version: file:../editable-lifecycle/packages/editable-lifecycle(@p/aria-kernel@file:../ds/packages/aria-kernel(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
+        version: file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -299,10 +299,29 @@ packages:
   '@oxc-project/types@0.128.0':
     resolution: {integrity: sha512-huv1Y/LzBJkBVHt3OlC7u0zHBW9qXf1FdD7sGmc1rXc2P1mTwHssYv7jyGx5KAACSCH+9B3Bhn6Z9luHRvf7pQ==}
 
+  '@p/anyeditable@file:../editable-lifecycle/packages/anyeditable':
+    resolution: {directory: ../editable-lifecycle/packages/anyeditable, type: directory}
+    peerDependencies:
+      '@p/aria-kernel': '*'
+      react: '>=18'
+      zod: '>=4'
+      zod-crud: '>=0.9'
+    peerDependenciesMeta:
+      '@p/aria-kernel':
+        optional: true
+      zod:
+        optional: true
+      zod-crud:
+        optional: true
+
   '@p/aria-kernel@file:../ds/packages/aria-kernel':
     resolution: {directory: ../ds/packages/aria-kernel, type: directory}
     peerDependencies:
+      '@types/react': ^19.0.0
       react: ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -627,21 +646,6 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
-
-  editable-lifecycle@file:../editable-lifecycle/packages/editable-lifecycle:
-    resolution: {directory: ../editable-lifecycle/packages/editable-lifecycle, type: directory}
-    peerDependencies:
-      '@p/aria-kernel': '*'
-      react: '>=18'
-      zod: '>=4'
-      zod-crud: '>=0.9'
-    peerDependenciesMeta:
-      '@p/aria-kernel':
-        optional: true
-      zod:
-        optional: true
-      zod-crud:
-        optional: true
 
   electron-to-chromium@1.5.353:
     resolution: {integrity: sha512-kOrWphBi8TOZyiJZqsgqIle0lw+tzmnQK83pV9dZUd01Nm2POECSyFQMAuarzZdYqQW7FH9RaYOuaRo3h+bQ3w==}
@@ -1538,10 +1542,20 @@ snapshots:
 
   '@oxc-project/types@0.128.0': {}
 
-  '@p/aria-kernel@file:../ds/packages/aria-kernel(react@19.2.6)':
+  '@p/anyeditable@file:../editable-lifecycle/packages/anyeditable(@p/aria-kernel@file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)':
+    dependencies:
+      react: 19.2.6
+    optionalDependencies:
+      '@p/aria-kernel': file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
+      zod: 4.4.3
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@p/aria-kernel@file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)':
     dependencies:
       react: 19.2.6
       zod: 4.4.3
+    optionalDependencies:
+      '@types/react': 19.2.14
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -1848,14 +1862,6 @@ snapshots:
   deep-is@0.1.4: {}
 
   detect-libc@2.1.2: {}
-
-  editable-lifecycle@file:../editable-lifecycle/packages/editable-lifecycle(@p/aria-kernel@file:../ds/packages/aria-kernel(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3):
-    dependencies:
-      react: 19.2.6
-    optionalDependencies:
-      '@p/aria-kernel': file:../ds/packages/aria-kernel(react@19.2.6)
-      zod: 4.4.3
-      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   electron-to-chromium@1.5.353: {}
 

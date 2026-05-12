@@ -1,3 +1,4 @@
+import { useResizeGesture } from '@p/aria-kernel/gesture'
 import { idsForRow } from '../lib/range'
 import { parseCellId } from './schema'
 
@@ -12,12 +13,25 @@ interface Props {
   rIdx: number
   focusId: string | null
   setSelectedIds: (ids: string[]) => void
-  startResizeRow: (row: number) => (e: React.MouseEvent) => void
+  heightOf: (row: number) => number
+  onResize: (row: number, h: number) => void
+  onResizeEnd: (row: number, h: number) => void
   resetRowHeight: (row: number) => void
   onContextMenu: (e: React.MouseEvent) => void
 }
 
-export function RowHeader({ rIdx, focusId, setSelectedIds, startResizeRow, resetRowHeight, onContextMenu }: Props) {
+function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: Pick<Props, 'rIdx' | 'heightOf' | 'onResize' | 'onResizeEnd' | 'resetRowHeight'>) {
+  const { handleProps } = useResizeGesture({
+    axis: 'y',
+    initial: () => heightOf(rIdx),
+    onChange: (h) => onResize(rIdx, h),
+    onEnd: (h) => onResizeEnd(rIdx, h),
+    min: 18,
+  })
+  return <span className="row-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }} title="드래그=높이 조정 / 더블클릭=기본값 복원" />
+}
+
+export function RowHeader({ rIdx, focusId, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu }: Props) {
   return (
     <span
       className="row-header"
@@ -26,7 +40,7 @@ export function RowHeader({ rIdx, focusId, setSelectedIds, startResizeRow, reset
       title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정"
     >
       {rIdx + 1}
-      <span className="row-resizer" onMouseDown={startResizeRow(rIdx)} onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }} title="드래그=높이 조정 / 더블클릭=기본값 복원" />
+      <RowResizer rIdx={rIdx} heightOf={heightOf} onResize={onResize} onResizeEnd={onResizeEnd} resetRowHeight={resetRowHeight} />
     </span>
   )
 }

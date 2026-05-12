@@ -1,4 +1,4 @@
-import type { InputProps, SelectProps } from 'editable-lifecycle'
+import type { InputProps, SelectProps } from '@p/anyeditable'
 import { COL_LETTERS, parseCellId, cellKey, type WriteCell } from './schema'
 import { Cell } from './Cell'
 import { isNumeric } from '../lib/numeric'
@@ -32,7 +32,9 @@ interface Props {
   cancelEdit: () => void
   hideRow: (row: number) => void
   onRowHeaderContextMenu: (e: React.MouseEvent) => void
-  startResizeRow: (row: number) => (e: React.MouseEvent) => void
+  heightOf: (row: number) => number
+  onResize: (row: number, h: number) => void
+  onResizeEnd: (row: number, h: number) => void
   resetRowHeight: (row: number) => void
   styleOf: StyleLookup
   noteOf: NoteLookup
@@ -53,7 +55,7 @@ interface Props {
 export function GridRow(p: Props) {
   return (
     <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight, ...(p.freezeTop !== undefined ? { top: p.freezeTop } : {}) }}>
-      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} startResizeRow={p.startResizeRow} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} />
+      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} heightOf={p.heightOf} onResize={p.onResize} onResizeEnd={p.onResizeEnd} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} />
       {p.rowItemProps.cells.map((cell, cIdx) => {
         if (p.hiddenCols.has(COL_LETTERS[cIdx])) return null
         const mergeKey = `${p.rIdx},${cIdx}`

@@ -19,7 +19,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e, cellId(col, 0)) }; const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e, cellId('A', rIdx)) }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, writeCells: ctx.writeCells, setSelectedIds }); const previewIds = rectToIdSet(fill.preview)
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing: () => editing !== null })
-  const { gridTemplateFor, startResize, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
+  const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
   const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(cellKey(c, r))))
   const focusP = focusId ? parseCellId(focusId) : null
   const focusCol = focusP ? focusP.col : null; const focusRow = focusP ? focusP.row : null
@@ -32,7 +32,9 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
       <GridHeader
         gridTemplate={gridTemplate}
         columnHeaderProps={columnHeaderProps}
-        startResize={startResize}
+        widthOf={widthOf}
+        onResize={onResize}
+        onResizeEnd={onResizeEnd}
         autoFitCol={autoFitCol}
         setSelectedIds={setSelectedIds}
         hiddenCols={hiddenCols}
@@ -54,7 +56,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             freezeCols={freeze.cols}
             freezeLefts={freezeLefts}
             rowHeight={ctx.rowHeightOf(rIdx)}
-            startResizeRow={ctx.startResizeRow} resetRowHeight={ctx.resetRowHeight} onRowHeaderContextMenu={onRowHCtx(rIdx)} mergeAnchors={mergeMap.anchors} mergeHidden={mergeMap.hidden}
+            heightOf={ctx.rowHeightOf} onResize={ctx.onRowResize} onResizeEnd={ctx.onRowResizeEnd} resetRowHeight={ctx.resetRowHeight} onRowHeaderContextMenu={onRowHCtx(rIdx)} mergeAnchors={mergeMap.anchors} mergeHidden={mergeMap.hidden}
             hiddenCols={hiddenCols}
             focusId={focusId}
             selectedIds={selectedIds}
