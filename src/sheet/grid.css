@@ -1,5 +1,5 @@
 .grid { flex: 1; overflow: auto; background: #fff; }
-.grid-row { display: grid; border-bottom: 1px solid #e0e0e0; }
+.grid-row { display: grid; width: max-content; min-width: 100%; border-bottom: 1px solid #e0e0e0; }
 .header-row {
   position: sticky; top: 0; z-index: 2;
   background: #f8f9fa; font-weight: 500; color: #5f6368; font-size: 12px;
