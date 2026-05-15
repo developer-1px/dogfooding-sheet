@@ -19,19 +19,20 @@ import { tabTarget } from './jumpEdge'
 describe('tabTarget', () => {
   it('moves right by 1', () => { expect(tabTarget('r0-A', false)).toBe('r0-B') })
   it('shift moves left', () => { expect(tabTarget('r0-B', true)).toBe('r0-A') })
-  it('null at edge', () => { expect(tabTarget('r0-J', false)).toBeNull(); expect(tabTarget('r0-A', true)).toBeNull() })
+  it('null at visible edge', () => { expect(tabTarget('r0-J', false, ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])).toBeNull(); expect(tabTarget('r0-A', true)).toBeNull() })
+  it('can move into appended columns', () => { expect(tabTarget('r0-J', false, ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'])).toBe('r0-K') })
 })
 
 describe('homeEndTarget', () => {
   it('Home goes to col A in same row', () => {
     expect(homeEndTarget('r3-E', 20, 'Home', false)).toBe('r3-A')
   })
-  it('End goes to col J in same row', () => {
-    expect(homeEndTarget('r3-E', 20, 'End', false)).toBe('r3-J')
+  it('End goes to last visible column in same row', () => {
+    expect(homeEndTarget('r3-E', 20, 'End', false, ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])).toBe('r3-J')
   })
-  it('Ctrl+Home = A1, Ctrl+End = J{last}', () => {
+  it('Ctrl+Home = A1, Ctrl+End = last visible column last row', () => {
     expect(homeEndTarget('r3-E', 20, 'Home', true)).toBe('r0-A')
-    expect(homeEndTarget('r3-E', 20, 'End', true)).toBe('r19-J')
+    expect(homeEndTarget('r3-E', 20, 'End', true, ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])).toBe('r19-J')
   })
 })
 

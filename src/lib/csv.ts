@@ -4,15 +4,15 @@ const CSV_NEEDS_QUOTE = /[",\n\r]/
 
 const quote = (s: string) => CSV_NEEDS_QUOTE.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 
-interface ExportOpts { rowCount: number }
+interface ExportOpts { rowCount: number; colLetters?: readonly string[] }
 
 export function exportCsv(get: Display, opts: ExportOpts): string {
-  const { rowCount } = opts
+  const { rowCount, colLetters = COL_LETTERS } = opts
   let lastRow = -1
   let lastCol = -1
   for (let r = 0; r < rowCount; r++) {
-    for (let c = 0; c < COL_LETTERS.length; c++) {
-      if (get(cellKey(COL_LETTERS[c], r))) {
+    for (let c = 0; c < colLetters.length; c++) {
+      if (get(cellKey(colLetters[c], r))) {
         if (r > lastRow) lastRow = r
         if (c > lastCol) lastCol = c
       }
@@ -23,7 +23,7 @@ export function exportCsv(get: Display, opts: ExportOpts): string {
   for (let r = 0; r <= lastRow; r++) {
     const cols: string[] = []
     for (let c = 0; c <= lastCol; c++) {
-      cols.push(quote(get(cellKey(COL_LETTERS[c], r))))
+      cols.push(quote(get(cellKey(colLetters[c], r))))
     }
     lines.push(cols.join(','))
   }
@@ -56,12 +56,13 @@ export function parseCsv(text: string): string[][] {
   return rows
 }
 
-export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; writeMany?: WriteMany }) {
+export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
+  const colLetters = opts.colLetters ?? COL_LETTERS
   const rows = parseCsv(text)
   const writes: Writes = []
   for (let r = 0; r < rows.length && r < opts.rowCount; r++) {
-    for (let c = 0; c < rows[r].length && c < COL_LETTERS.length; c++) {
-      writes.push([cellKey(COL_LETTERS[c], r), rows[r][c]])
+    for (let c = 0; c < rows[r].length && c < colLetters.length; c++) {
+      writes.push([cellKey(colLetters[c], r), rows[r][c]])
     }
   }
   if (writes.length === 0) return

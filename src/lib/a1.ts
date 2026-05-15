@@ -2,14 +2,14 @@
  * A1 notation utilities.
  *
  * Conventions:
- * - Column letters: 'A'..'J' (10 columns; widen the regex to extend).
+ * - Column letters: 'A'..'Z' max pool; sheet state chooses how many are visible.
  * - Row index: 0-based internally, 1-based in A1 display ("A1" ⇄ row=0,col='A').
  * - Cell DOM ids: `r{row}-{col}` (e.g. "r0-A").
  */
 
-export const COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] as const
+export const COL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))
 
-export type ColLetter = (typeof COL_LETTERS)[number]
+export type ColLetter = string
 
 /** Parsed cell reference: column letter + 0-based row. */
 export interface CellRef { col: string; row: number }
@@ -33,15 +33,15 @@ export type WriteMany = (writes: Writes) => void
 export type Display = (k: string) => string
 
 /** Global A1 reference regex — match all `[Letter][Digits]` occurrences. */
-export const A1_RE = /([A-J])(\d+)/g
+export const A1_RE = /([A-Z])(\d+)/g
 
 /** Format a DOM cell id: `cellId('A', 0) === 'r0-A'` (inverse of `parseCellId`). */
 export const cellId = (col: string, row: number): string => `r${row}-${col}`
 
 /** Parse a DOM cell id like "r0-A" into `{ row: 0, col: 'A' }`. Returns `null` on mismatch. */
 export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
-  const m = /^r(\d+)-([A-J])$/.exec(id)
-  return m ? { row: Number(m[1]), col: m[2] as ColLetter } : null
+  const m = /^r(\d+)-([A-Z])$/.exec(id)
+  return m && COL_LETTERS.includes(m[2]) ? { row: Number(m[1]), col: m[2] } : null
 }
 
 /** Convert a DOM cell id "r{row}-{col}" to A1 key like "B3". Falls back to input on mismatch. */
@@ -52,8 +52,8 @@ export const cellIdToKey = (id: string): string => {
 
 /** Parse an A1 key like "B3" into `{ col: 'B', row: 2 }`. Returns `null` on mismatch. */
 export const parseA1 = (key: string): CellRef | null => {
-  const m = /^([A-J])(\d+)$/.exec(key)
-  return m ? { col: m[1], row: Number(m[2]) - 1 } : null
+  const m = /^([A-Z])(\d+)$/.exec(key)
+  return m && COL_LETTERS.includes(m[1]) ? { col: m[1], row: Number(m[2]) - 1 } : null
 }
 
 /** 0-based column index for a letter — `colIndex('C') === 2`. Returns `-1` if unknown. */

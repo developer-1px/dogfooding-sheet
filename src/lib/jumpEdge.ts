@@ -6,6 +6,7 @@ export function jumpToEdge(
   cells: Cells,
   rowCount: number,
   arrow: 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight',
+  colLetters: readonly string[] = COL_LETTERS,
 ): string | null {
   const p = parseCellId(focusId); if (!p) return null
   const dRow = arrow === 'ArrowDown' ? 1 : arrow === 'ArrowUp' ? -1 : 0
@@ -13,26 +14,26 @@ export function jumpToEdge(
   let r = p.row, c = colIndex(p.col)
   while (true) {
     const nr = r + dRow, nc = c + dCol
-    if (nr < 0 || nr >= rowCount || nc < 0 || nc >= COL_LETTERS.length) break
-    if ((cells[cellKey(COL_LETTERS[nc], nr)] ?? '') === '') break
+    if (nr < 0 || nr >= rowCount || nc < 0 || nc >= colLetters.length) break
+    if ((cells[cellKey(colLetters[nc], nr)] ?? '') === '') break
     r = nr; c = nc
   }
-  return cellId(COL_LETTERS[c], r)
+  return cellId(colLetters[c], r)
 }
 
 /** Tab / Shift-Tab target — one column right / left within bounds. Returns null at edge. */
-export function tabTarget(focusId: string, shift: boolean): string | null {
+export function tabTarget(focusId: string, shift: boolean, colLetters: readonly string[] = COL_LETTERS): string | null {
   const p = parseCellId(focusId); if (!p) return null
   const ci = colIndex(p.col), nci = ci + (shift ? -1 : 1)
-  return nci < 0 || nci >= COL_LETTERS.length ? null : cellId(COL_LETTERS[nci], p.row)
+  return nci < 0 || nci >= colLetters.length ? null : cellId(colLetters[nci], p.row)
 }
 
 /** Home / End / Ctrl+Home / Ctrl+End target cell id. */
-export function homeEndTarget(focusId: string, rowCount: number, key: 'Home' | 'End', ctrl: boolean): string | null {
+export function homeEndTarget(focusId: string, rowCount: number, key: 'Home' | 'End', ctrl: boolean, colLetters: readonly string[] = COL_LETTERS): string | null {
   const p = parseCellId(focusId); if (!p) return null
-  const lastIdx = COL_LETTERS.length - 1
+  const lastIdx = colLetters.length - 1
   const targetRow = ctrl ? (key === 'Home' ? 0 : rowCount - 1) : p.row
-  const targetCol = key === 'Home' ? COL_LETTERS[0] : COL_LETTERS[lastIdx]
+  const targetCol = key === 'Home' ? colLetters[0] : colLetters[lastIdx]
   return cellId(targetCol, targetRow)
 }
 

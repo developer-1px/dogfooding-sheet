@@ -2,11 +2,12 @@ import { type UiEvent } from '@interactive-os/aria-kernel'
 import { useGridPattern } from '@interactive-os/aria-kernel/patterns'
 import { useGridDragSelectGesture } from '@interactive-os/aria-kernel/gesture'
 import { gridRectEvents } from '@interactive-os/aria-kernel/axes/gridMultiSelect'
-import { COL_LETTERS, ROW_COUNT } from './schema'
 import type { NormalizedData } from '@interactive-os/aria-kernel'
 
 interface Args {
   data: NormalizedData
+  rowCount: number
+  colCount: number
   setFocusId: (id: string) => void
   setSelectedIds: (ids: string[] | ((prev: string[]) => string[])) => void
   setSelectAnchor: (id: string | null) => void
@@ -14,7 +15,7 @@ interface Args {
   isEditing?: () => boolean
 }
 
-export function useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
+export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
   const onEvent = (e: UiEvent) => {
     // Plain navigate (click/Arrow): selection cleared; the following select{anchor:true} re-locks anchor.
     // Shift+Arrow navigate: no select{anchor:true} follows, so existing anchor is preserved.
@@ -34,8 +35,8 @@ export function useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor
   }
   const grid = useGridPattern(data, onEvent, {
     label: 'Spreadsheet',
-    rowCount: ROW_COUNT + 1,
-    colCount: COL_LETTERS.length,
+    rowCount: rowCount + 1,
+    colCount,
     editable: true,
     selectionMode: 'rect',
     // Workaround aria-kernel#140 — built-in Backspace/Delete chord lacks an editable-guard,

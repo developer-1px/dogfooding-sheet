@@ -12,15 +12,17 @@ interface Props {
   onJump: (cellId: string) => void
   writeCell: WriteCell
   skipIds?: Set<string>
+  rowCount: number
+  colLetters: readonly string[]
 }
 
-export function Find({ open, mode, onClose, cells, display, onJump, writeCell, skipIds }: Props) {
+export function Find({ open, mode, onClose, cells, display, onJump, writeCell, skipIds, rowCount, colLetters }: Props) {
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
   const [caseSensitive, setCS] = useState(false)
   const [regex, setRegex] = useState(false)
 
-  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex, skipIds })
+  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex, skipIds, rowCount, colLetters })
 
   const { rootProps } = useDialogModalPattern({
     open, modal: false,

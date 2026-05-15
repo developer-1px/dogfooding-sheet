@@ -3,7 +3,7 @@ import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuButtonPattern } from '@interactive-os/aria-kernel/patterns'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
 import type { Confirm } from './useConfirm'
-import { ROW_COUNT, SheetSchema, type Sheet, type Cells, type WriteCell, type WriteMany, type Display } from './schema'
+import { SheetSchema, colLettersFor, type Sheet, type Cells, type WriteCell, type WriteMany, type Display } from './schema'
 
 export interface OverflowProps {
   display: Display
@@ -25,10 +25,11 @@ export interface OverflowProps {
 export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
-  const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: ROW_COUNT }))
+  const colLetters = colLettersFor(sheet.colCount)
+  const exportCsvFile = () => downloadFile('sheet.csv', exportCsv((k) => display(k), { rowCount: sheet.rowCount, colLetters }))
   const importCsvFile = async (f: File) => {
     const t = await f.text(); try { parseCsv(t) } catch { return }
-    if (await confirm({ message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)', confirmLabel: '가져오기' })) importCsvInto(t, writeCell, { rowCount: ROW_COUNT, writeMany: writeCells })
+    if (await confirm({ message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)', confirmLabel: '가져오기' })) importCsvInto(t, writeCell, { rowCount: sheet.rowCount, colLetters, writeMany: writeCells })
   }
   const exportJson = () => downloadFile('sheet.json', JSON.stringify(sheet, null, 2))
   const importJson = async (f: File) => {

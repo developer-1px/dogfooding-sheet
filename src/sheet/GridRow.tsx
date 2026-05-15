@@ -1,5 +1,5 @@
 import type { InputProps, SelectProps } from '../interactive-os/useEditable'
-import { COL_LETTERS, parseCellId, cellKey, type WriteCell } from './schema'
+import { parseCellId, cellKey, type WriteCell } from './schema'
 import { Cell } from './Cell'
 import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'
@@ -50,14 +50,15 @@ interface Props {
   getCellCtxHandlers: (id: string) => { onContextMenu: (e: React.MouseEvent) => void; onKeyDown: (e: React.KeyboardEvent) => void }
   inputProps: InputProps
   selectProps: SelectProps
+  colLetters: readonly string[]
 }
 
 export function GridRow(p: Props) {
   return (
     <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight, ...(p.freezeTop !== undefined ? { top: p.freezeTop } : {}) }}>
-      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} heightOf={p.heightOf} onResize={p.onResize} onResizeEnd={p.onResizeEnd} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} />
+      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setSelectedIds={p.setSelectedIds} heightOf={p.heightOf} onResize={p.onResize} onResizeEnd={p.onResizeEnd} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} colLetters={p.colLetters} />
       {p.rowItemProps.cells.map((cell, cIdx) => {
-        if (p.hiddenCols.has(COL_LETTERS[cIdx])) return null
+        if (p.hiddenCols.has(p.colLetters[cIdx])) return null
         const mergeKey = `${p.rIdx},${cIdx}`
         if (p.mergeHidden.has(mergeKey)) return null
         const anchor = p.mergeAnchors.get(mergeKey)

@@ -27,8 +27,8 @@ export const splitArgs = (s: string): string[] => {
 export const argString = (raw: string, c: Ctx): string => {
   const a = raw.trim()
   if (a.startsWith('"') && a.endsWith('"')) return a.slice(1, -1).replace(/""/g, '"')
-  if (/^[A-J]\d+:[A-J]\d+$/.test(a)) return a
-  if (/^[A-J]\d+$/.test(a)) return c.evalRaw(c.cells[a] ?? '')
+  if (/^[A-Z]\d+:[A-Z]\d+$/.test(a)) return a
+  if (/^[A-Z]\d+$/.test(a)) return c.evalRaw(c.cells[a] ?? '')
   return stripText(c.evalRaw('=' + a))
 }
 

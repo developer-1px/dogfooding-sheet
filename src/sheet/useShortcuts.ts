@@ -28,7 +28,7 @@ export function useShortcuts(args: Args) {
       const ae = document.activeElement
       if (isEditableTarget(ae) && !(ae as HTMLElement).classList.contains('cell-input')) return
       const { editing, focusId, setSelectedIds, setFocusId, sheet, selectedIds, startEdit } = c
-      if (!editing && focusId && handleNavigation(e, e.metaKey || e.ctrlKey, { focusId, cells: sheet.cells, setSelectedIds, setFocusId })) return
+      if (!editing && focusId && handleNavigation(e, e.metaKey || e.ctrlKey, { focusId, cells: sheet.cells, rowCount: c.rowCount, colLetters: c.colLetters, setSelectedIds, setFocusId })) return
       if (e.key === 'Escape' && !editing && selectedIds.length > 0) { setSelectedIds([]); e.preventDefault(); return }
       if (editing) return
       if (!focusId) return

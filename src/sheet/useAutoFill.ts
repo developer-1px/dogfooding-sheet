@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, cellId, type Cells, type WriteCell, type WriteMany } from './schema'
+import { parseCellId, colIndex, cellId, type Cells, type WriteCell, type WriteMany } from './schema'
 import { rectFromIds, rectOfCell, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
 
@@ -10,6 +10,8 @@ interface Args {
   writeCell: WriteCell
   writeCells?: WriteMany
   setSelectedIds: (ids: string[]) => void
+  rowCount: number
+  colLetters: readonly string[]
 }
 
 const rectEq = (a: Rect, b: Rect) => a.rMin === b.rMin && a.rMax === b.rMax && a.cMin === b.cMin && a.cMax === b.cMax
@@ -54,7 +56,7 @@ function useFillHandleGesture(args: {
   }
 }
 
-export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds }: Args) {
+export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds, rowCount, colLetters }: Args) {
   const sourceRef = useRef<Rect | null>(null)
 
   const sourceRect = (): Rect | null => {
@@ -73,7 +75,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
       applyFill(src, tgt, cells, writeCell, writeCells)
       const ids: string[] = []
       for (let r = tgt.rMin; r <= tgt.rMax; r++) {
-        for (let c = tgt.cMin; c <= tgt.cMax; c++) ids.push(cellId(COL_LETTERS[c], r))
+        for (let c = tgt.cMin; c <= tgt.cMax; c++) ids.push(cellId(colLetters[c], r))
       }
       setSelectedIds(ids)
     },
@@ -96,8 +98,8 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     const dRow = p.row - src.rMax
     const dCol = ci - src.cMax
     if (dRow <= 0 && dCol <= 0) { fill.setTarget(src); return }
-    if (dRow >= dCol) fill.setTarget({ ...src, rMax: Math.min(ROW_COUNT - 1, p.row) })
-    else fill.setTarget({ ...src, cMax: Math.min(COL_LETTERS.length - 1, ci) })
+    if (dRow >= dCol) fill.setTarget({ ...src, rMax: Math.min(rowCount - 1, p.row) })
+    else fill.setTarget({ ...src, cMax: Math.min(colLetters.length - 1, ci) })
   }
 
   return { onHandleMouseDown, onCellEnterDuringFill, preview: fill.preview, dragging: sourceRef.current !== null }

@@ -1,9 +1,17 @@
 import * as z from 'zod'
 import type { JsonOps } from 'zod-crud'
+import { COL_LETTERS as COLS } from '../lib/a1'
 
 export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '../lib/a1'
 
-export const ROW_COUNT = 20
+export const DEFAULT_ROW_COUNT = 20
+export const DEFAULT_COL_COUNT = 10
+export const MAX_ROW_COUNT = 1000
+export const MAX_COL_COUNT = COLS.length
+export const ROW_COUNT = DEFAULT_ROW_COUNT
+
+export const colLettersFor = (colCount: number): string[] =>
+  COLS.slice(0, Math.max(1, Math.min(MAX_COL_COUNT, colCount)))
 
 const CellStyleSchema = z.object({
   b: z.boolean().optional(),
@@ -33,8 +41,8 @@ const TabBundleSchema = z.object({
     color: z.string(),
   })).default([]),
   freeze: z.object({
-    rows: z.number().int().min(0).max(ROW_COUNT),
-    cols: z.number().int().min(0).max(10),
+    rows: z.number().int().min(0).max(MAX_ROW_COUNT),
+    cols: z.number().int().min(0).max(MAX_COL_COUNT),
   }).default({ rows: 0, cols: 0 }),
   hidden: z.object({
     rows: z.array(z.number()),
@@ -43,6 +51,8 @@ const TabBundleSchema = z.object({
   colWidths: z.record(z.string(), z.number()).default({}),
   rowHeights: z.record(z.string(), z.number()).default({}),
   merges: z.array(z.tuple([z.number(), z.number(), z.number(), z.number()])).default([]),
+  rowCount: z.number().int().min(1).max(MAX_ROW_COUNT).default(DEFAULT_ROW_COUNT),
+  colCount: z.number().int().min(1).max(MAX_COL_COUNT).default(DEFAULT_COL_COUNT),
 })
 export type TabBundle = z.infer<typeof TabBundleSchema>
 
@@ -65,12 +75,14 @@ export type SheetOps = JsonOps<Sheet> & {
 const emptyBundle: TabBundle = {
   cells: {}, notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
   freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {}, merges: [],
+  rowCount: DEFAULT_ROW_COUNT, colCount: DEFAULT_COL_COUNT,
 }
 
 export const bundleOf = (sheet: Sheet): TabBundle => ({
   cells: sheet.cells, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats,
   validation: sheet.validation, condFormat: sheet.condFormat,
   freeze: sheet.freeze, hidden: sheet.hidden, colWidths: sheet.colWidths, rowHeights: sheet.rowHeights, merges: sheet.merges,
+  rowCount: sheet.rowCount, colCount: sheet.colCount,
 })
 
 export const withBundle = (sheet: Sheet, b: TabBundle): Sheet => ({ ...sheet, ...b })

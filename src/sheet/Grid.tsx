@@ -1,5 +1,5 @@
 import { useContextMenuGesture } from '@interactive-os/aria-kernel/gesture'
-import { COL_LETTERS, ROW_COUNT, parseCellId, cellKey, cellId } from './schema'
+import { parseCellId, cellKey, cellId } from './schema'
 import { GridHeader } from './GridHeader'
 import { GridRow } from './GridRow'
 import { useColWidths } from './useColWidths'
@@ -16,19 +16,19 @@ import type { SheetCtx } from './useSheet'
 export function Grid({ ctx }: { ctx: SheetCtx }) {
   const { data, setFocusId, editing, draft, setDraft, startEdit, commitEdit, cancelEdit, inputProps, selectProps, focusId, selectedIds, setSelectedIds, setSelectAnchor, highlightedIds, sheet, writeCell, insertRow, deleteRow, sortByCol, styleOf, noteOf, setNote, ruleOf, condBgOf, insertCol, deleteCol, freeze, hiddenRowSet, hiddenRows: hiddenRowsManual, hiddenCols, hideRow, hideCol } = ctx
   const hiSet = new Set(highlightedIds)
-  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight, promptColWidth: ctx.promptColWidth, setFreezeRows: ctx.setFreezeRows, setFreezeCols: ctx.setFreezeCols, freeze, mergeSelection: ctx.mergeSelection })
+  const cellMenu = useCellMenu({ sheet, setFocusId, writeCell, insertRow, deleteRow, insertCol, deleteCol, appendRows: ctx.appendRows, appendCols: ctx.appendCols, sortByCol, noteOf, setNote, hideCol, hideRow, editNote: ctx.editNote, insertLink: ctx.insertLink, promptRowHeight: ctx.promptRowHeight, promptColWidth: ctx.promptColWidth, setFreezeRows: ctx.setFreezeRows, setFreezeCols: ctx.setFreezeCols, freeze, mergeSelection: ctx.mergeSelection })
   // useContextMenuGesture#156 — getHandlers(id) factory: hook 1회 + N개 핸들러.
   // contextmenu(우클릭) + Shift+F10/ContextMenu 키 둘 다 동일 onOpen으로 흡수.
   const cellCtx = useContextMenuGesture<string>({ onOpen: (id, x, y) => cellMenu.open(x, y, id) })
   const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e.clientX, e.clientY, cellId(col, 0)) }
   const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e.clientX, e.clientY, cellId('A', rIdx)) }
-  const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, writeCells: ctx.writeCells, setSelectedIds }); const previewIds = rectToIdSet(fill.preview)
-  const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing: () => editing !== null })
+  const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, writeCells: ctx.writeCells, setSelectedIds, rowCount: ctx.rowCount, colLetters: ctx.colLetters }); const previewIds = rectToIdSet(fill.preview)
+  const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({ data, rowCount: ctx.rowCount, colCount: ctx.colLetters.length, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing: () => editing !== null })
   const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
-  const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ROW_COUNT }, (_, r) => ctx.display(cellKey(c, r))))
+  const autoFitCol = (c: string) => autoFit(c, Array.from({ length: ctx.rowCount }, (_, r) => ctx.display(cellKey(c, r))))
   const focusP = focusId ? parseCellId(focusId) : null
   const focusCol = focusP ? focusP.col : null; const focusRow = focusP ? focusP.row : null
-  const visibleCols = COL_LETTERS.filter((c) => !hiddenCols.has(c))
+  const visibleCols = ctx.colLetters.filter((c) => !hiddenCols.has(c))
   const { tops: freezeTops, lefts: freezeLefts } = freezeOffsets(freeze.rows, freeze.cols, ctx.rowHeightOf, widthOf); const mergeMap = buildMergeMap(ctx.merges)
   const gridTemplate = gridTemplateFor(visibleCols); const dataRows = rows
 
@@ -45,6 +45,8 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         hiddenCols={hiddenCols}
         focusCol={focusCol}
         onHeaderContextMenu={onHeaderContextMenu}
+        rowCount={ctx.rowCount}
+        colLetters={ctx.colLetters}
       />
       {dataRows.map((row, rIdx) => {
         if (hiddenRowSet.has(rIdx) || hiddenRowsManual.has(rIdx)) return null
@@ -87,6 +89,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             getCellCtxHandlers={cellCtx.getHandlers}
             inputProps={inputProps}
             selectProps={selectProps}
+            colLetters={ctx.colLetters}
           />
         )
       })}

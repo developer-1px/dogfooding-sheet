@@ -5,6 +5,8 @@ import { moveCellId } from './storage'
 interface Args {
   cells: Cells
   writeCell: WriteCell
+  rowCount: number
+  colLetters: readonly string[]
 }
 
 const dirDelta: Record<NavDir, { dRow: number; dCol: number }> = {
@@ -14,7 +16,7 @@ const dirDelta: Record<NavDir, { dRow: number; dCol: number }> = {
   left: { dRow: 0, dCol: -1 },
 }
 
-export function useEditState({ cells, writeCell }: Args) {
+export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   const ed = useEditable<string>({
     getValue: (id) => {
       const p = parseCellId(id)
@@ -26,7 +28,7 @@ export function useEditState({ cells, writeCell }: Args) {
     },
     onNavigate: (id, dir) => {
       const { dRow, dCol } = dirDelta[dir]
-      return moveCellId(id, dRow, dCol)
+      return moveCellId(id, dRow, dCol, rowCount, colLetters)
     },
     initialFocus: 'r0-A',
   })

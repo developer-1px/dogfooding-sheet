@@ -54,8 +54,9 @@ export function pasteAt(
   focusKey: string, p: CellRef, maxRow: number,
   writeCell: WriteCell,
   writeCells?: WriteMany,
+  maxCol?: number,
 ): void {
   navigator.clipboard?.readText()
-    .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow, writeMany: writeCells }) : writeCell(focusKey, t))
+    .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsv(t, p, writeCell, { maxRow, maxCol, writeMany: writeCells }) : writeCell(focusKey, t))
     .catch(() => {})
 }

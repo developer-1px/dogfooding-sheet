@@ -19,6 +19,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       deleteRow={ctx.deleteRow}
       insertCol={ctx.insertCol}
       deleteCol={ctx.deleteCol}
+      appendRows={ctx.appendRows}
+      appendCols={ctx.appendCols}
       sortByCol={ctx.sortByCol}
       updateStyle={ctx.updateStyle}
       styleOf={ctx.styleOf}
@@ -56,6 +58,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
         { op: 'replace', path: '/condFormat', value: [] },
       ])}
       mergeSelection={ctx.mergeSelection}
+      rowCount={ctx.rowCount}
+      colCount={ctx.colCount}
       ask={ask}
       confirm={confirm}
     />

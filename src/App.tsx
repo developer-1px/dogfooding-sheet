@@ -26,7 +26,10 @@ export default function App() {
   const ctxRef = useRef<SheetCtx | null>(null)
   const ctx = useSheet({
     openGoto: () => ask(GOTO_PROMPT)
-      .then((v) => { if (v && ctxRef.current) gotoCell(v, ctxRef.current.setFocusId, ctxRef.current.setSelectedIds) }),
+      .then((v) => {
+        const c = ctxRef.current
+        if (v && c) gotoCell(v, c.setFocusId, c.setSelectedIds, { rowCount: c.rowCount, colCount: c.colCount })
+      }),
     openNote: (key?: string) => {
       const c = ctxRef.current; const k = key ?? c?.focusKey; if (!c || !k) return
       ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' })
@@ -58,7 +61,7 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
-        onAddrClick={() => ask(GOTO_PROMPT).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds) })}
+        onAddrClick={() => ask(GOTO_PROMPT).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds, { rowCount: ctx.rowCount, colCount: ctx.colCount }) })}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}
@@ -90,6 +93,8 @@ export default function App() {
         onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
         writeCell={ctx.writeCell}
         skipIds={buildMergeMap(ctx.merges).hidden}
+        rowCount={ctx.rowCount}
+        colLetters={ctx.colLetters}
       />
       {promptDialog}
       {confirmDialog}
