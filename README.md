@@ -17,6 +17,12 @@ src/sheet/Tabs / Grid / …      ← consume aria-kernel patterns
 src/lib/formula/               ← formula parser + ~200 functions
 ```
 
+### Standardization candidates
+
+- `src/lib/formula/` is registered as the seed for an Excel-like interactive
+  formula engine candidate. See
+  [`docs/standardization/formula-engine.md`](docs/standardization/formula-engine.md).
+
 ### SSOT (single source of truth)
 
 Everything persisted lives in **one** `useJsonDocument(SheetSchema)`:
