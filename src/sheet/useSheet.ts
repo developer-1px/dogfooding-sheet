@@ -80,7 +80,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     toggleBold: () => toggle('b'), toggleItalic: () => toggle('i'), toggleUnderline: () => toggle('u'), toggleStrike: () => toggle('s'),
     clearFormat: () => styles.updateStyle(targetKeys(), CLEAR_STYLE),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount, colLetters })),
-    setSelectedIds, setFocusId: edit.setFocusId, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
+    setSelectedIds, setFocusId: edit.setFocusId, setSelectAnchor, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
     toggleShowFormulas, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
     ...rowColAtFocus(edit.focusKey, { insertRow, deleteRow, insertCol, deleteCol, hideRow: hidden.hideRow, hideCol: hidden.hideCol }), showAll: hidden.showAll,
   })

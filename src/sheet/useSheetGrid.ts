@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { type UiEvent } from '@interactive-os/aria-kernel'
 import { useGridPattern } from '@interactive-os/aria-kernel/patterns'
 import { useGridDragSelectGesture } from '@interactive-os/aria-kernel/gesture'
@@ -16,15 +17,33 @@ interface Args {
 }
 
 export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
+  const pendingAnchor = useRef<string | null>(null)
+
+  const schedulePlainNavigateAnchor = (id: string) => {
+    pendingAnchor.current = id
+    queueMicrotask(() => {
+      if (pendingAnchor.current === id) {
+        setSelectAnchor(id)
+        pendingAnchor.current = null
+      }
+    })
+  }
+
   const onEvent = (e: UiEvent) => {
     // Plain navigate (click/Arrow): selection cleared; the following select{anchor:true} re-locks anchor.
     // Shift+Arrow navigate: no select{anchor:true} follows, so existing anchor is preserved.
-    if (e.type === 'navigate' && e.id) { setFocusId(e.id); setSelectedIds([]); return }
+    if (e.type === 'navigate' && e.id) {
+      setFocusId(e.id)
+      setSelectedIds([])
+      schedulePlainNavigateAnchor(e.id)
+      return
+    }
     if (e.type === 'activate' && e.id) return
     // aria-kernel#141 — Enter inside cell-input bubbles to grid root and matches the editable-mode
     // chord, re-firing editStart and resetting draft. Guard until the kernel adds editable-guard.
     if (e.type === 'editStart' && e.id) { if (isEditing?.()) return; startEdit?.(e.id, undefined, { caret: 'end' }); return }
     if (e.type === 'select') {
+      pendingAnchor.current = null
       // aria-kernel#142 — kernel signals new range anchor via select{anchor:true}; persist so
       // subsequent Shift+Arrow extends from this point instead of silently using currentId.
       if (e.anchor && e.ids?.[0]) setSelectAnchor(e.ids[0])
