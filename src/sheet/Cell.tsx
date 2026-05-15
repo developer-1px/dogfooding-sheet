@@ -20,6 +20,7 @@ interface Props {
   ctxHandlers: { onContextMenu: (e: React.MouseEvent) => void; onKeyDown: (e: React.KeyboardEvent) => void }
   isFillCorner: boolean
   previewing: boolean
+  onFormulaPickKeyDown: (e: React.KeyboardEvent) => void
   onFillHandleMouseDown: (e: React.MouseEvent) => void
   styleClass: string
   styleInline: React.CSSProperties
@@ -33,6 +34,21 @@ interface Props {
 }
 
 export function Cell(p: Props) {
+  const inputProps = {
+    ...p.inputProps,
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+      p.onFormulaPickKeyDown(e)
+      if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
+    },
+  }
+  const textareaProps = {
+    ...p.inputProps,
+    onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      p.onFormulaPickKeyDown(e)
+      if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
+    },
+  } as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> }
+
   return (
     <span
       {...p.cellProps}
@@ -61,8 +77,8 @@ export function Cell(p: Props) {
           </select>
         ) : (
           p.styleClass.split(' ').includes('wrap')
-            ? <textarea className="cell-input wrap-input" {...(p.inputProps as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> })} />
-            : <input className="cell-input" {...p.inputProps} />
+            ? <textarea className="cell-input wrap-input" {...textareaProps} />
+            : <input className="cell-input" {...inputProps} />
         )
       ) : (
         <>

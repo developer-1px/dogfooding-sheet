@@ -83,7 +83,28 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             condBgOf={condBgOf}
             hiSet={hiSet}
             previewIds={previewIds}
-            onCellMouseDown={(id, e) => getCellHandlers(id).onMouseDown(e)}
+            onFormulaPickKeyDown={(e) => {
+              const delta =
+                e.key === 'ArrowUp' ? { dRow: -1, dCol: 0 }
+                  : e.key === 'ArrowDown' ? { dRow: 1, dCol: 0 }
+                    : e.key === 'ArrowLeft' ? { dRow: 0, dCol: -1 }
+                      : e.key === 'ArrowRight' ? { dRow: 0, dCol: 1 }
+                        : null
+              if (!delta || !ctx.formulaPickActive) return
+              e.preventDefault()
+              e.stopPropagation()
+              ctx.moveFormulaPick(delta, e.shiftKey)
+            }}
+            onCellMouseDown={(id, e) => {
+              const target = e.target as Element
+              if (ctx.formulaPickActive && editing && e.button === 0 && !target.closest('.cell-input')) {
+                e.preventDefault()
+                e.stopPropagation()
+                ctx.pickFormulaRef(id, { extend: e.shiftKey })
+                return
+              }
+              getCellHandlers(id).onMouseDown(e)
+            }}
             onCellMouseEnter={(id, e) => fill.dragging ? fill.onCellEnterDuringFill(id) : getCellHandlers(id).onMouseEnter(e)}
             onFillHandleMouseDown={fill.onHandleMouseDown}
             getCellCtxHandlers={cellCtx.getHandlers}

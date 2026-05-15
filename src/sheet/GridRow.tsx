@@ -44,6 +44,7 @@ interface Props {
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
   previewIds: Set<string>
+  onFormulaPickKeyDown: (e: React.KeyboardEvent) => void
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
   onCellMouseEnter: (id: string, e: React.MouseEvent) => void
   onFillHandleMouseDown: (e: React.MouseEvent) => void
@@ -94,6 +95,7 @@ export function GridRow(p: Props) {
             isFillCorner={isFillCorner(cell.id, p.focusId, p.selectedIds)}
             onFillHandleMouseDown={p.onFillHandleMouseDown}
             previewing={p.previewIds.has(cell.id)}
+            onFormulaPickKeyDown={p.onFormulaPickKeyDown}
             ctxHandlers={p.getCellCtxHandlers(cell.id)}
             inputProps={p.inputProps}
             selectProps={p.selectProps}

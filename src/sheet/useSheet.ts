@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useJsonDocument } from 'zod-crud'
 import { SheetSchema, colLettersFor, cellIdToKey, type Writes } from './schema'
 import { evaluateCell } from '@spredsheet/formula'
-import { loadInitial, saveSheet, buildData } from './storage'
+import { loadInitial, saveSheet, buildData, moveCellId } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './useFormats'
 import { CLEAR_STYLE } from './useStyles'
@@ -18,6 +18,7 @@ import { sheetMutations } from './sheetMutations'
 import { useFindState, highlightedIdsFor } from './useFindState'
 import { useTabs, tabActions } from './useTabs'
 import { useEditState } from './useEditState'
+import { idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './formulaPick'
 import { rowColAtFocus } from '../lib/rowColAtFocus'
 import { useRowHeights } from './useRowHeights'; import { DEFAULT_WIDTH } from './useColWidths'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from '../lib/mergeSelection'; import { writeCellsBatch } from './writeCells'
 
@@ -57,6 +58,54 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes)
 
   const edit = useEditState({ cells: sheet.cells, writeCell, rowCount, colLetters })
+  const formulaPickActive = edit.editing !== null && edit.draft.startsWith('=')
+  const [formulaPickAnchor, setFormulaPickAnchor] = useState<string | null>(null)
+  const [formulaPickTarget, setFormulaPickTarget] = useState<string | null>(null)
+
+  const pickFormulaRef = useCallback((id: string, opts: { extend?: boolean } = {}) => {
+    if (!formulaPickActive) return
+    const anchor = opts.extend && formulaPickAnchor ? formulaPickAnchor : id
+    const ref = refForFormulaPick(anchor, id)
+    if (!ref) return
+    setFormulaPickAnchor(anchor)
+    setFormulaPickTarget(id)
+    setSelectedIds(idsForFormulaPick(anchor, id))
+    setSelectAnchor(anchor)
+    edit.setDraft(replaceTrailingFormulaRef(edit.draft, ref))
+  }, [edit, formulaPickActive, formulaPickAnchor])
+
+  const moveFormulaPick = useCallback((delta: { dRow: number; dCol: number }, extend = false) => {
+    if (!formulaPickActive || !edit.editing) return
+    const base = formulaPickTarget ?? formulaPickAnchor ?? edit.editing
+    const next = moveCellId(base, delta.dRow, delta.dCol, rowCount, colLetters)
+    if (next) pickFormulaRef(next, { extend })
+  }, [colLetters, edit.editing, formulaPickActive, formulaPickAnchor, formulaPickTarget, pickFormulaRef, rowCount])
+
+  useEffect(() => {
+    if (formulaPickActive) return
+    setFormulaPickAnchor(null)
+    setFormulaPickTarget(null)
+  }, [formulaPickActive])
+
+  const commitEdit = (move?: { dRow: number; dCol: number }) => {
+    const wasPicking = formulaPickActive
+    edit.commitEdit(move)
+    if (wasPicking) {
+      setFormulaPickAnchor(null)
+      setFormulaPickTarget(null)
+      setSelectedIds([])
+    }
+  }
+
+  const cancelEdit = () => {
+    const wasPicking = formulaPickActive
+    edit.cancelEdit()
+    if (wasPicking) {
+      setFormulaPickAnchor(null)
+      setFormulaPickTarget(null)
+      setSelectedIds([])
+    }
+  }
 
   const display = (k: string) => showFormulas ? (sheet.cells[k] ?? '') : applyFormat(evaluateCell(sheet.cells, sheet.cells[k] ?? ''), fmt.formatOf(k))
   const data = buildData((k) => display(k), rowCount, colLetters)
@@ -88,9 +137,11 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   return {
     sheet, ops, data,
     ...edit,
+    commitEdit, cancelEdit,
     writeCell, writeCells, display,
     selectedIds, setSelectedIds, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
+    formulaPickActive, pickFormulaRef, moveFormulaPick,
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     helpOpen, setHelpOpen,
     showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines: () => setShowGridlines((v) => !v),
