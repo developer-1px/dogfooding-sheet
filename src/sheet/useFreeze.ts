@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { Sheet, SheetOps } from './schema'
+import type { SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 export interface FreezeState { rows: number; cols: number }

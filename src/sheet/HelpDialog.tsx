@@ -1,4 +1,4 @@
-import { useDialogPattern } from '@p/aria-kernel/patterns'
+import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
   open: boolean
@@ -53,7 +53,7 @@ const SHORTCUTS: Array<[string, string]> = [
 ]
 
 export function HelpDialog({ open, onClose }: Props) {
-  const { rootProps, backdropProps } = useDialogPattern({
+  const { rootProps, backdropProps } = useDialogModalPattern({
     open, modal: true, label: '키보드 단축키',
     onOpenChange: (next) => { if (!next) onClose() },
   })

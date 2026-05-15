@@ -1,4 +1,4 @@
-import { useShortcut } from '@p/aria-kernel/key'
+import { useShortcut } from '@interactive-os/aria-kernel/key'
 import { cellKey, parseCellId, ROW_COUNT, type Sheet, type SheetOps, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 import { copyOrCut, pasteAt } from '../lib/clipboard'
 import { fillDown, fillRight } from '../lib/fillDown'

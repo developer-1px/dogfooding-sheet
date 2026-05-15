@@ -12,7 +12,7 @@ interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'se
   writeCell: WriteCell
   noteOf: NoteLookup
   setNote: (k: string, text: string) => void
-  editNote: () => void
+  editNote: (key?: string) => void
   insertLink: () => void
   promptRowHeight: (row: number) => void
   promptColWidth: (col: string) => void
@@ -39,7 +39,7 @@ export function useCellMenu(a: Args) {
       { label: '붙여넣기', onClick: () => { navigator.clipboard?.readText().then((t) => a.writeCell(k, t)) } },
       { label: '지우기', onClick: () => a.writeCell(k, '') },
       'separator',
-      { label: a.noteOf(k) ? '노트 편집' : '노트 추가', onClick: a.editNote },
+      { label: a.noteOf(k) ? '노트 편집' : '노트 추가', onClick: () => a.editNote(k) },
       ...(a.noteOf(k) ? [{ label: '노트 삭제', onClick: () => a.setNote(k, '') }] : []),
       { label: '하이퍼링크 삽입', onClick: a.insertLink },
       'separator',

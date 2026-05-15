@@ -1,7 +1,7 @@
-import { useResizeGesture } from '@p/aria-kernel/gesture'
+import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { COL_LETTERS, colIndex, ROW_COUNT } from './schema'
 import { idsForCol, idsForAll } from '../lib/range'
-import type { ItemProps } from '@p/aria-kernel/patterns/types'
+import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 
 interface Props {
   gridTemplate: string

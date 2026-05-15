@@ -1,14 +1,14 @@
-import type { InputProps, SelectProps } from '@p/anyeditable'
+import type { InputProps, SelectProps } from '../interactive-os/useEditable'
 import { COL_LETTERS, parseCellId, cellKey, type WriteCell } from './schema'
 import { Cell } from './Cell'
 import { isNumeric } from '../lib/numeric'
 import { RowHeader } from './RowHeader'
 import { isFillCorner } from './fillCorner'
-import { styleToProps, type CellStyle, type StyleLookup } from './useStyles'
+import { styleToProps, type StyleLookup } from './useStyles'
 import type { NoteLookup } from './useNotes'
 import type { RuleLookup } from './useValidation'
-import type { GridCell } from '@p/aria-kernel/patterns'
-import type { ItemProps } from '@p/aria-kernel/patterns/types'
+import type { GridCell } from '@interactive-os/aria-kernel/patterns'
+import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 
 interface Props {
   rIdx: number

@@ -1,5 +1,5 @@
-import type { ItemProps } from '@p/aria-kernel/patterns/types'
-import type { InputProps, SelectProps } from '@p/anyeditable'
+import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
+import type { InputProps, SelectProps } from '../interactive-os/useEditable'
 import { numericValue } from '../lib/numeric'
 
 interface Props {

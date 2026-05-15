@@ -1,4 +1,4 @@
-import type { Sheet, SheetOps } from './schema'
+import type { SheetOps } from './schema'
 import type { Merge } from '../lib/mergeSelection'
 
 export interface MergeInfo { anchorR: number; anchorC: number; rows: number; cols: number }

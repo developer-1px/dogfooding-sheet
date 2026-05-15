@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { Sheet, SheetOps } from './schema'
+import type { SheetOps } from './schema'
 import { upsertKeys } from '../lib/dictOps'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 

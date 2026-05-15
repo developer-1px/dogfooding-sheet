@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useFillHandleGesture } from '@p/aria-kernel/gesture/lab/useFillHandleGesture'
+import { useFillHandleGesture } from '@interactive-os/aria-kernel/gesture/lab/useFillHandleGesture'
 import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, cellId, type Cells, type WriteCell, type WriteMany } from './schema'
 import { rectFromIds, rectOfCell, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'

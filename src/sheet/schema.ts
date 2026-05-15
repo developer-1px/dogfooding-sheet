@@ -55,7 +55,12 @@ export const SheetSchema = TabBundleSchema.extend({
   }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
 })
 export type Sheet = z.infer<typeof SheetSchema>
-export type SheetOps = JsonOps<Sheet>
+export type SheetOps = JsonOps<Sheet> & {
+  undo(): boolean
+  redo(): boolean
+  canUndo(): boolean
+  canRedo(): boolean
+}
 
 const emptyBundle: TabBundle = {
   cells: {}, notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],

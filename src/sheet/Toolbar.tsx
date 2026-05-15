@@ -7,13 +7,12 @@ import type { CondActions } from './useCondFormat'
 import type { Filter } from './useFilter'
 import type { HiddenActions } from './useHidden'
 import type { ValidationActions } from './useValidation'
-import type { Confirm } from './useConfirm'
 import { OverflowMenu, type OverflowProps } from './OverflowMenu'
 import { CondFmtButtons } from './CondFmtButtons'
 import { FormatButtons } from './FormatButtons'
 import { StyleToggleButtons } from './StyleToggleButtons'
 import { autoSumFormula } from '../lib/autoSum'
-import { cellIdToKey, cellKey, parseA1, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
+import { cellIdToKey, cellKey, parseA1 } from './schema'
 
 interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
   focusKey: string | null

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { isEditableTarget, isPrintable } from '@interactive-os/keyboard'
 import type { JsonOps } from 'zod-crud'
 import type { Sheet } from './schema'
 import { handleNavigation } from './shortcutsNav'
@@ -12,13 +13,6 @@ interface Args extends GlobalShortcutCtx {
 // Re-export for callers that already import the surface from this module.
 export type { Sheet }
 export type { JsonOps }
-
-const isEditableTarget = (t: EventTarget | null): boolean => {
-  const el = t as HTMLElement | null
-  if (!el) return false
-  if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') return true
-  return el.isContentEditable
-}
 
 export function useShortcuts(args: Args) {
   const ref = useRef(args)
@@ -39,7 +33,7 @@ export function useShortcuts(args: Args) {
       if (editing) return
       if (!focusId) return
       // F2/Enter — grid pattern emits editStart from cell.onKeyDown (see useSheetGrid).
-      if (e.key.length === 1 && !(e.metaKey || e.ctrlKey) && !e.altKey) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
+      if (isPrintable(e)) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)

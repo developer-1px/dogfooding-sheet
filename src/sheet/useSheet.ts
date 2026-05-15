@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useJsonDocument } from 'zod-crud'
 import { SheetSchema, ROW_COUNT, cellIdToKey, type Writes } from './schema'
 import { evaluateCell } from '../lib/formula'
@@ -23,8 +23,16 @@ import { useRowHeights } from './useRowHeights'; import { DEFAULT_WIDTH } from '
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
-export function useSheet(opts: { openGoto?: () => void; openNote?: () => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
-  const { value: sheet, ops } = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
+export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string) => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
+  const doc = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
+  const { value: sheet } = doc
+  const ops = useMemo(() => ({
+    ...doc.ops,
+    undo: () => doc.commands.undo(),
+    redo: () => doc.commands.redo(),
+    canUndo: () => doc.history.canUndo,
+    canRedo: () => doc.history.canRedo,
+  }), [doc.commands, doc.history, doc.ops])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [selectAnchor, setSelectAnchor] = useState<string | null>(null)
   const fmt = useFormats(sheet.formats, ops)

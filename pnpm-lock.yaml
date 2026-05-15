@@ -8,12 +8,30 @@ importers:
 
   .:
     dependencies:
-      '@p/anyeditable':
-        specifier: file:../editable-lifecycle/packages/anyeditable
-        version: file:../editable-lifecycle/packages/anyeditable(@p/aria-kernel@file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
-      '@p/aria-kernel':
-        specifier: file:../ds/packages/aria-kernel
-        version: file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
+      '@interactive-os/anyeditable':
+        specifier: file:../editable/packages/anyeditable
+        version: file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
+      '@interactive-os/aria-kernel':
+        specifier: file:../aria-kernel/packages/aria-kernel
+        version: file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
+      '@interactive-os/devtools':
+        specifier: file:../aria-kernel/packages/devtools
+        version: file:../aria-kernel/packages/devtools
+      '@interactive-os/document':
+        specifier: file:../document
+        version: file:../document
+      '@interactive-os/editor':
+        specifier: file:../editor
+        version: file:../editor(@interactive-os/anyeditable@file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3))(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
+      '@interactive-os/keyboard':
+        specifier: file:../keyboard/packages/keyboard
+        version: file:../keyboard/packages/keyboard
+      '@interactive-os/keyboard-navigation':
+        specifier: file:../keyboard-navigation/packages/keyboard-navigation
+        version: file:../keyboard-navigation/packages/keyboard-navigation
+      '@interactive-os/site-generator':
+        specifier: file:../site-generator
+        version: file:../site-generator
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -41,7 +59,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vitejs/plugin-react':
         specifier: ^6.0.1
-        version: 6.0.1(vite@8.0.11(@types/node@24.12.3))
+        version: 6.0.1(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))
       '@vitest/ui':
         specifier: ^4.1.5
         version: 4.1.5(vitest@4.1.5)
@@ -68,10 +86,10 @@ importers:
         version: 8.59.2(eslint@10.3.0)(typescript@6.0.3)
       vite:
         specifier: ^8.0.10
-        version: 8.0.11(@types/node@24.12.3)
+        version: 8.0.11(@types/node@24.12.3)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3))
+        version: 4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))
 
 packages:
 
@@ -274,6 +292,56 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
+  '@interactive-os/anyeditable@file:../editable/packages/anyeditable':
+    resolution: {directory: ../editable/packages/anyeditable, type: directory}
+    peerDependencies:
+      '@interactive-os/aria-kernel': '*'
+      '@interactive-os/keyboard': '>=0.1.0'
+      react: '>=18'
+      zod: '>=4'
+      zod-crud: '>=0.9'
+    peerDependenciesMeta:
+      '@interactive-os/aria-kernel':
+        optional: true
+      zod:
+        optional: true
+      zod-crud:
+        optional: true
+
+  '@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel':
+    resolution: {directory: ../aria-kernel/packages/aria-kernel, type: directory}
+    peerDependencies:
+      '@types/react': ^19.0.0
+      react: ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@interactive-os/devtools@file:../aria-kernel/packages/devtools':
+    resolution: {directory: ../aria-kernel/packages/devtools, type: directory}
+
+  '@interactive-os/document@file:../document':
+    resolution: {directory: ../document, type: directory}
+
+  '@interactive-os/editor@file:../editor':
+    resolution: {directory: ../editor, type: directory}
+    peerDependencies:
+      '@interactive-os/anyeditable': '>=0.4.0'
+      '@interactive-os/aria-kernel': '*'
+      '@interactive-os/keyboard': '>=0.1.0'
+      react: '>=18'
+      zod: '>=4'
+      zod-crud: '>=0.12'
+
+  '@interactive-os/keyboard-navigation@file:../keyboard-navigation/packages/keyboard-navigation':
+    resolution: {directory: ../keyboard-navigation/packages/keyboard-navigation, type: directory}
+
+  '@interactive-os/keyboard@file:../keyboard/packages/keyboard':
+    resolution: {directory: ../keyboard/packages/keyboard, type: directory}
+
+  '@interactive-os/site-generator@file:../site-generator':
+    resolution: {directory: ../site-generator, type: directory}
+
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
 
@@ -298,30 +366,6 @@ packages:
 
   '@oxc-project/types@0.128.0':
     resolution: {integrity: sha512-huv1Y/LzBJkBVHt3OlC7u0zHBW9qXf1FdD7sGmc1rXc2P1mTwHssYv7jyGx5KAACSCH+9B3Bhn6Z9luHRvf7pQ==}
-
-  '@p/anyeditable@file:../editable-lifecycle/packages/anyeditable':
-    resolution: {directory: ../editable-lifecycle/packages/anyeditable, type: directory}
-    peerDependencies:
-      '@p/aria-kernel': '*'
-      react: '>=18'
-      zod: '>=4'
-      zod-crud: '>=0.9'
-    peerDependenciesMeta:
-      '@p/aria-kernel':
-        optional: true
-      zod:
-        optional: true
-      zod-crud:
-        optional: true
-
-  '@p/aria-kernel@file:../ds/packages/aria-kernel':
-    resolution: {directory: ../ds/packages/aria-kernel, type: directory}
-    peerDependencies:
-      '@types/react': ^19.0.0
-      react: ^19.0.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -1274,6 +1318,11 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
+  yaml@2.9.0:
+    resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
+
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
@@ -1514,6 +1563,43 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
+  '@interactive-os/anyeditable@file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)':
+    dependencies:
+      '@interactive-os/keyboard': file:../keyboard/packages/keyboard
+      react: 19.2.6
+    optionalDependencies:
+      '@interactive-os/aria-kernel': file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
+      zod: 4.4.3
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)':
+    dependencies:
+      '@interactive-os/keyboard': file:../keyboard/packages/keyboard
+      '@interactive-os/keyboard-navigation': file:../keyboard-navigation/packages/keyboard-navigation
+      react: 19.2.6
+      zod: 4.4.3
+    optionalDependencies:
+      '@types/react': 19.2.14
+
+  '@interactive-os/devtools@file:../aria-kernel/packages/devtools': {}
+
+  '@interactive-os/document@file:../document': {}
+
+  '@interactive-os/editor@file:../editor(@interactive-os/anyeditable@file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3))(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)':
+    dependencies:
+      '@interactive-os/anyeditable': file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
+      '@interactive-os/aria-kernel': file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
+      '@interactive-os/keyboard': file:../keyboard/packages/keyboard
+      react: 19.2.6
+      zod: 4.4.3
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@interactive-os/keyboard-navigation@file:../keyboard-navigation/packages/keyboard-navigation': {}
+
+  '@interactive-os/keyboard@file:../keyboard/packages/keyboard': {}
+
+  '@interactive-os/site-generator@file:../site-generator': {}
+
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -1541,21 +1627,6 @@ snapshots:
     optional: true
 
   '@oxc-project/types@0.128.0': {}
-
-  '@p/anyeditable@file:../editable-lifecycle/packages/anyeditable(@p/aria-kernel@file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)':
-    dependencies:
-      react: 19.2.6
-    optionalDependencies:
-      '@p/aria-kernel': file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
-      zod: 4.4.3
-      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
-
-  '@p/aria-kernel@file:../ds/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)':
-    dependencies:
-      react: 19.2.6
-      zod: 4.4.3
-    optionalDependencies:
-      '@types/react': 19.2.14
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -1735,10 +1806,10 @@ snapshots:
       '@typescript-eslint/types': 8.59.2
       eslint-visitor-keys: 5.0.1
 
-  '@vitejs/plugin-react@6.0.1(vite@8.0.11(@types/node@24.12.3))':
+  '@vitejs/plugin-react@6.0.1(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.7
-      vite: 8.0.11(@types/node@24.12.3)
+      vite: 8.0.11(@types/node@24.12.3)(yaml@2.9.0)
 
   '@vitest/expect@4.1.5':
     dependencies:
@@ -1749,13 +1820,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.5(vite@8.0.11(@types/node@24.12.3))':
+  '@vitest/mocker@4.1.5(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.5
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.11(@types/node@24.12.3)
+      vite: 8.0.11(@types/node@24.12.3)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.5':
     dependencies:
@@ -1784,7 +1855,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vitest: 4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3))
+      vitest: 4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))
 
   '@vitest/utils@4.1.5':
     dependencies:
@@ -2321,7 +2392,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite@8.0.11(@types/node@24.12.3):
+  vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -2331,11 +2402,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.3
       fsevents: 2.3.3
+      yaml: 2.9.0
 
-  vitest@4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3)):
+  vitest@4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.5
-      '@vitest/mocker': 4.1.5(vite@8.0.11(@types/node@24.12.3))
+      '@vitest/mocker': 4.1.5(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.5
       '@vitest/runner': 4.1.5
       '@vitest/snapshot': 4.1.5
@@ -2352,7 +2424,7 @@ snapshots:
       tinyexec: 1.1.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.0.11(@types/node@24.12.3)
+      vite: 8.0.11(@types/node@24.12.3)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.12.3
@@ -2393,6 +2465,9 @@ snapshots:
   xmlchars@2.2.0: {}
 
   yallist@3.1.1: {}
+
+  yaml@2.9.0:
+    optional: true
 
   yocto-queue@0.1.0: {}
 

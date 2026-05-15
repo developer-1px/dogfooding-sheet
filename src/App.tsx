@@ -15,6 +15,7 @@ import { useConfirm } from './sheet/useConfirm'
 import { Tabs } from './sheet/Tabs'
 import { buildMergeMap } from './sheet/useMerges'
 import { SheetToolbar } from './sheet/SheetToolbar'
+import { DevToolsOverlay } from './interactive-os/DevToolsOverlay'
 import './App.css'
 
 const GOTO_PROMPT = { label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' }
@@ -26,10 +27,10 @@ export default function App() {
   const ctx = useSheet({
     openGoto: () => ask(GOTO_PROMPT)
       .then((v) => { if (v && ctxRef.current) gotoCell(v, ctxRef.current.setFocusId, ctxRef.current.setSelectedIds) }),
-    openNote: () => {
-      const c = ctxRef.current; const k = c?.focusKey; if (!c || !k) return
+    openNote: (key?: string) => {
+      const c = ctxRef.current; const k = key ?? c?.focusKey; if (!c || !k) return
       ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' })
-        .then((v) => { if (v !== null) c.setNote(k, v) })
+        .then((v) => { if (v !== null) ctxRef.current?.setNote(k, v) })
     },
     openLink: () => {
       const c = ctxRef.current; const k = c?.focusKey; if (!c || !k) return
@@ -92,6 +93,7 @@ export default function App() {
       />
       {promptDialog}
       {confirmDialog}
+      <DevToolsOverlay />
     </div>
   )
 }

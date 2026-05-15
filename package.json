@@ -11,8 +11,14 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@p/aria-kernel": "file:../ds/packages/aria-kernel",
-    "@p/anyeditable": "file:../editable-lifecycle/packages/anyeditable",
+    "@interactive-os/anyeditable": "file:../editable/packages/anyeditable",
+    "@interactive-os/aria-kernel": "file:../aria-kernel/packages/aria-kernel",
+    "@interactive-os/devtools": "file:../aria-kernel/packages/devtools",
+    "@interactive-os/document": "file:../document",
+    "@interactive-os/editor": "file:../editor",
+    "@interactive-os/keyboard": "file:../keyboard/packages/keyboard",
+    "@interactive-os/keyboard-navigation": "file:../keyboard-navigation/packages/keyboard-navigation",
+    "@interactive-os/site-generator": "file:../site-generator",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zod": "^4.0.0",

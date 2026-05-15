@@ -1,4 +1,4 @@
-import { useResizeGesture } from '@p/aria-kernel/gesture'
+import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { idsForRow } from '../lib/range'
 import { parseCellId } from './schema'
 

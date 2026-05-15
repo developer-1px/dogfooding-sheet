@@ -1,7 +1,7 @@
-import { fromList, type UiEvent } from '@p/aria-kernel'
-import { useTabsPattern } from '@p/aria-kernel/patterns'
-import { useReorderDnDGestureRaw } from '@p/aria-kernel/gesture'
-import { useEditable } from '@p/anyeditable'
+import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
+import { useTabsPattern } from '@interactive-os/aria-kernel/patterns'
+import { useReorderDndGestureRaw } from '@interactive-os/aria-kernel/gesture'
+import { useEditable } from '../interactive-os/useEditable'
 import type { Confirm } from './useConfirm'
 import type { TabsState } from './useTabs'
 
@@ -38,7 +38,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
     activationMode: 'automatic',
     active: state.active,
   })
-  const reorder = useReorderDnDGestureRaw({
+  const reorder = useReorderDndGestureRaw({
     onDrop: (from, to) => { if (from !== to) reorderTab(from, to) },
     mime: 'text/x-tab',
   })

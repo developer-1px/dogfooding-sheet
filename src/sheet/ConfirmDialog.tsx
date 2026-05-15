@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useAlertDialogPattern } from '@p/aria-kernel/patterns'
+import { useAlertdialogPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
   open: boolean
@@ -12,7 +12,7 @@ interface Props {
 
 export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLabel = '취소', onConfirm, onCancel }: Props) {
   const cancelRef = useRef<HTMLButtonElement | null>(null)
-  const { rootProps } = useAlertDialogPattern({
+  const { rootProps } = useAlertdialogPattern({
     open, label: '확인',
     cancelRef,
     onOpenChange: (next) => { if (!next) onCancel() },

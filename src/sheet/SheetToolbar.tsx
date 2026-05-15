@@ -25,6 +25,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: Ctx; ask: Ask; confir
       freeze={ctx.freeze}
       toggleFreezeRows={ctx.toggleFreezeRows}
       toggleFreezeCols={ctx.toggleFreezeCols}
+      setFreezeRows={ctx.setFreezeRows}
+      setFreezeCols={ctx.setFreezeCols}
       filter={ctx.filter}
       applyFilter={ctx.applyFilter}
       clearFilter={ctx.clearFilter}

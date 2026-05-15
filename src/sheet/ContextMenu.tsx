@@ -1,5 +1,5 @@
-import { fromList, type UiEvent } from '@p/aria-kernel'
-import { useMenuPattern } from '@p/aria-kernel/patterns'
+import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
+import { useMenuPattern } from '@interactive-os/aria-kernel/patterns'
 
 export interface MenuItem {
   label: string

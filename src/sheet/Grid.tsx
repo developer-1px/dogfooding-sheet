@@ -1,4 +1,4 @@
-import { useContextMenuGesture } from '@p/aria-kernel/gesture'
+import { useContextMenuGesture } from '@interactive-os/aria-kernel/gesture'
 import { COL_LETTERS, ROW_COUNT, parseCellId, cellKey, cellId } from './schema'
 import { GridHeader } from './GridHeader'
 import { GridRow } from './GridRow'

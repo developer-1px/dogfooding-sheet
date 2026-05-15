@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
+import { COL_LETTERS, cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany } from './a1'
 
 
 const flush = (writes: Writes, write: WriteCell, writeMany?: WriteMany) => {

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { Sheet, SheetOps } from './schema'
+import type { SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:condfmt:v1'

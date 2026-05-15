@@ -1,9 +1,9 @@
-import { type UiEvent } from '@p/aria-kernel'
-import { useGridPattern } from '@p/aria-kernel/patterns'
-import { useGridDragSelectGesture } from '@p/aria-kernel/gesture'
-import { gridRectEvents } from '@p/aria-kernel/axes/gridMultiSelect'
+import { type UiEvent } from '@interactive-os/aria-kernel'
+import { useGridPattern } from '@interactive-os/aria-kernel/patterns'
+import { useGridDragSelectGesture } from '@interactive-os/aria-kernel/gesture'
+import { gridRectEvents } from '@interactive-os/aria-kernel/axes/gridMultiSelect'
 import { COL_LETTERS, ROW_COUNT } from './schema'
-import type { NormalizedData } from '@p/aria-kernel'
+import type { NormalizedData } from '@interactive-os/aria-kernel'
 
 interface Args {
   data: NormalizedData

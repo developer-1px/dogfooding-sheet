@@ -1,6 +1,6 @@
-import { COL_LETTERS, parseCellId, colIndex } from './a1'
+import { parseCellId, colIndex } from './a1'
 
-export type Merge = readonly [number, number, number, number] // [rMin, rMax, cMin, cMax]
+export type Merge = [number, number, number, number] // [rMin, rMax, cMin, cMax]
 
 interface MergeOps {
   addMerge: (m: Merge) => void
@@ -18,6 +18,6 @@ export function mergeSelection(selectedIds: string[], focusId: string | null, op
     if (c < cMin) cMin = c; if (c > cMax) cMax = c
   }
   if (rMin === rMax && cMin === cMax) ops.unmergeAt(rMin, cMin)
-  else if (rMin === rMax) ops.addMerge([rMin, rMax, cMin, cMax] as const)
-  else { console.warn('Multi-row merge not yet supported (CSS grid spans don\'t cross row containers)'); ops.addMerge([rMin, rMin, cMin, cMax] as const) }
+  else if (rMin === rMax) ops.addMerge([rMin, rMax, cMin, cMax])
+  else { console.warn('Multi-row merge not yet supported (CSS grid spans don\'t cross row containers)'); ops.addMerge([rMin, rMin, cMin, cMax]) }
 }

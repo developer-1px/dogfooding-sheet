@@ -8,6 +8,7 @@ const make = (): Sheet => ({
   tabs: {
     order: ['Sheet1', 'Sheet2'],
     active: 'Sheet1',
+    colors: {},
     saved: {
       Sheet1: { ...blankBundle(), cells: { A1: 'a' } },
       Sheet2: { ...blankBundle(), cells: { A1: 'b' } },
@@ -61,7 +62,7 @@ describe('tabActions', () => {
     expect(s.reset!.tabs.saved.Sheet1.notes).toEqual({ A1: 'hello' })
   })
   it('deleteSheet refuses last sheet', () => {
-    const sheet: Sheet = { ...initialSheet, tabs: { order: ['Only'], active: 'Only', saved: { Only: blankBundle() } } }
+    const sheet: Sheet = { ...initialSheet, tabs: { order: ['Only'], active: 'Only', colors: {}, saved: { Only: blankBundle() } } }
     const s: Stub = {}
     tabActions(sheet, stubOps(s)).deleteSheet('Only')
     expect(s.reset).toBeUndefined()

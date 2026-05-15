@@ -1,3 +1,4 @@
+import { matches } from '@interactive-os/keyboard'
 import { parseCellId, ROW_COUNT, cellId, type Cells } from './schema'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from '../lib/jumpEdge'
 import { idsForCol, idsForRow } from '../lib/range'
@@ -12,7 +13,7 @@ interface NavArgs {
 /** Cursor-movement keys when not editing. Returns true if handled. */
 export function handleNavigation(e: KeyboardEvent, mod: boolean, a: NavArgs): boolean {
   const { focusId, cells, setSelectedIds, setFocusId } = a
-  if (mod && /^Arrow(Up|Down|Left|Right)$/.test(e.key)) {
+  if (matches(e, 'Mod+ArrowUp Mod+ArrowDown Mod+ArrowLeft Mod+ArrowRight')) {
     const next = jumpToEdge(focusId, cells, ROW_COUNT, e.key as 'ArrowUp'); if (!next) return true
     e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : setFocusId(next); return true
   }

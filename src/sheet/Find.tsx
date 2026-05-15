@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useDialogPattern } from '@p/aria-kernel/patterns'
+import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 import { cellIdToKey, type WriteCell, type Display, type Cells } from './schema'
 import { useFind } from './useFind'
 
@@ -22,7 +22,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, s
 
   const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex, skipIds })
 
-  const { rootProps } = useDialogPattern({
+  const { rootProps } = useDialogModalPattern({
     open, modal: false,
     label: mode === 'replace' ? '찾기 및 바꾸기' : '찾기',
     onOpenChange: (next) => { if (!next) onClose() },

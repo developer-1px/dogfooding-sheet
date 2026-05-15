@@ -1,4 +1,4 @@
-import type { CellStyle, StyleLookup } from './useStyles'
+import type { StyleLookup } from './useStyles'
 
 type Flag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
 const TOGGLES: Array<[Flag, string, string, React.ReactNode]> = [

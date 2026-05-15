@@ -1,4 +1,4 @@
-import type { Sheet, SheetOps, Cells, Writes } from './schema'
+import type { SheetOps, Cells, Writes } from './schema'
 import type { Patch } from '../lib/dictOps'
 
 /** Batch multiple cell writes into a single ops.patch — atomic undo for fillDown/Right etc. */

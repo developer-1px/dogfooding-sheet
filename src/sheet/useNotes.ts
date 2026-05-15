@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import type { Sheet, SheetOps } from './schema'
+import { parseMarkdown, serializeMarkdown } from '@interactive-os/editor'
+import type { SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 import { upsertKey } from '../lib/dictOps'
 
@@ -17,7 +18,7 @@ export function useNotes(notes: Record<string, string>, ops: SheetOps) {
   useEffect(() => { migrateLegacy(notes, ops) }, [])
 
   const setNote = (k: string, text: string) => {
-    const trimmed = text.trim()
+    const trimmed = serializeMarkdown(parseMarkdown(text)).trim()
     upsertKey(ops, '/notes', notes, k, trimmed || undefined)
   }
 
