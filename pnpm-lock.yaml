@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@interactive-os/document': file:../document
+
 importers:
 
   .:
@@ -15,8 +18,8 @@ importers:
         specifier: file:../aria-kernel/packages/aria-kernel
         version: file:../aria-kernel/packages/aria-kernel(@types/react@19.2.14)(react@19.2.6)
       '@interactive-os/devtools':
-        specifier: file:../aria-kernel/packages/devtools
-        version: file:../aria-kernel/packages/devtools
+        specifier: file:../devtools
+        version: file:../devtools(@babel/parser@7.29.3)(@babel/types@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))(yaml@2.9.0)
       '@interactive-os/document':
         specifier: file:../document
         version: file:../document
@@ -32,6 +35,9 @@ importers:
       '@interactive-os/site-generator':
         specifier: file:../site-generator
         version: file:../site-generator
+      '@spredsheet/formula':
+        specifier: workspace:*
+        version: link:packages/formula
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -87,6 +93,15 @@ importers:
       vite:
         specifier: ^8.0.10
         version: 8.0.11(@types/node@24.12.3)(yaml@2.9.0)
+      vitest:
+        specifier: ^4.1.5
+        version: 4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))
+
+  packages/formula:
+    devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
       vitest:
         specifier: ^4.1.5
         version: 4.1.5(@types/node@24.12.3)(@vitest/ui@4.1.5)(jsdom@29.1.1)(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))
@@ -317,8 +332,75 @@ packages:
       '@types/react':
         optional: true
 
-  '@interactive-os/devtools@file:../aria-kernel/packages/devtools':
-    resolution: {directory: ../aria-kernel/packages/devtools, type: directory}
+  '@interactive-os/devtools@file:../devtools':
+    resolution: {directory: ../devtools, type: directory}
+    peerDependencies:
+      '@aria/engine': '*'
+      '@aria/pattern': '*'
+      '@aria/plugins-core': '*'
+      '@aria/primitives': '*'
+      '@aria/store': '*'
+      '@ax/core': '*'
+      '@babel/parser': '*'
+      '@babel/types': '*'
+      '@p/aria-kernel': '*'
+      '@tanstack/react-router': '*'
+      '@testing-library/react': '*'
+      aria-ui: '*'
+      lucide-react: '*'
+      react: ^19.0.0
+      react-dom: ^19.0.0
+      react-markdown: '*'
+      rehype-raw: '*'
+      remark-breaks: '*'
+      remark-gfm: '*'
+      shiki: '*'
+      unified: '*'
+      vite: '*'
+      yaml: '*'
+    peerDependenciesMeta:
+      '@aria/engine':
+        optional: true
+      '@aria/pattern':
+        optional: true
+      '@aria/plugins-core':
+        optional: true
+      '@aria/primitives':
+        optional: true
+      '@aria/store':
+        optional: true
+      '@ax/core':
+        optional: true
+      '@babel/parser':
+        optional: true
+      '@babel/types':
+        optional: true
+      '@p/aria-kernel':
+        optional: true
+      '@tanstack/react-router':
+        optional: true
+      '@testing-library/react':
+        optional: true
+      aria-ui:
+        optional: true
+      lucide-react:
+        optional: true
+      react-markdown:
+        optional: true
+      rehype-raw:
+        optional: true
+      remark-breaks:
+        optional: true
+      remark-gfm:
+        optional: true
+      shiki:
+        optional: true
+      unified:
+        optional: true
+      vite:
+        optional: true
+      yaml:
+        optional: true
 
   '@interactive-os/document@file:../document':
     resolution: {directory: ../document, type: directory}
@@ -1581,7 +1663,15 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  '@interactive-os/devtools@file:../aria-kernel/packages/devtools': {}
+  '@interactive-os/devtools@file:../devtools(@babel/parser@7.29.3)(@babel/types@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vite@8.0.11(@types/node@24.12.3)(yaml@2.9.0))(yaml@2.9.0)':
+    dependencies:
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+    optionalDependencies:
+      '@babel/parser': 7.29.3
+      '@babel/types': 7.29.0
+      vite: 8.0.11(@types/node@24.12.3)(yaml@2.9.0)
+      yaml: 2.9.0
 
   '@interactive-os/document@file:../document': {}
 
@@ -1598,7 +1688,9 @@ snapshots:
 
   '@interactive-os/keyboard@file:../keyboard/packages/keyboard': {}
 
-  '@interactive-os/site-generator@file:../site-generator': {}
+  '@interactive-os/site-generator@file:../site-generator':
+    dependencies:
+      '@interactive-os/document': file:../document
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:

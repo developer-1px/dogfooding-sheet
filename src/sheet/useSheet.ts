@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useJsonDocument } from 'zod-crud'
 import { SheetSchema, ROW_COUNT, cellIdToKey, type Writes } from './schema'
-import { evaluateCell } from '../lib/formula'
+import { evaluateCell } from '@spredsheet/formula'
 import { loadInitial, saveSheet, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './useFormats'

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { parseA1, cellId } from './schema'
-import { refsInFormula } from '../lib/formula'
+import { refsInFormula } from '@spredsheet/formula'
 
 export function useFindState() {
   const [findOpen, setFindOpen] = useState(false)

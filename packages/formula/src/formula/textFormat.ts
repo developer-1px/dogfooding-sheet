@@ -2,10 +2,15 @@ import { wrap } from './marker'
 import { dispatchColor } from './colorFns'
 import { dispatchHumanFmt } from './humanFmt'
 
+const currentLanguage = (): string => {
+  const g = globalThis as { navigator?: { language?: string } }
+  return g.navigator?.language ?? 'en-US'
+}
+
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
   const col = dispatchColor(F, argsT); if (col !== null) return col
   const human = dispatchHumanFmt(F, argsT); if (human !== null) return human
-  if (F === 'LANG') return wrap(typeof navigator !== 'undefined' ? navigator.language : 'en-US')
+  if (F === 'LANG') return wrap(currentLanguage())
   if (F === 'TIMEZONE') { try { return wrap(Intl.DateTimeFormat().resolvedOptions().timeZone) } catch { return wrap('UTC') } }
   if (F === 'STRINGIFY') return wrap(JSON.stringify(argsT.length === 1 ? argsT[0] : argsT))
   if (F === 'TEXT') {

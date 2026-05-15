@@ -14,12 +14,12 @@ src/sheet/useSheet.ts          ← root hook, exposes ctx
 src/sheet/schema.ts            ← single SSOT TabBundle + Sheet (zod)
 src/sheet/use{Notes,Styles,…}  ← thin readers/writers over ops.replace
 src/sheet/Tabs / Grid / …      ← consume aria-kernel patterns
-src/lib/formula/               ← formula parser + ~200 functions
+packages/formula/              ← internal formula package + standardization seed
 ```
 
 ### Standardization candidates
 
-- `src/lib/formula/` is registered as the seed for an Excel-like interactive
+- `packages/formula/` is registered as the seed for an Excel-like interactive
   formula engine candidate. See
   [`docs/standardization/formula-engine.md`](docs/standardization/formula-engine.md).
 

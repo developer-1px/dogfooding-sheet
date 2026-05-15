@@ -5,20 +5,21 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm --dir packages/formula build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run && pnpm --dir packages/formula test"
   },
   "dependencies": {
     "@interactive-os/anyeditable": "file:../editable/packages/anyeditable",
     "@interactive-os/aria-kernel": "file:../aria-kernel/packages/aria-kernel",
-    "@interactive-os/devtools": "file:../aria-kernel/packages/devtools",
+    "@interactive-os/devtools": "file:../devtools",
     "@interactive-os/document": "file:../document",
     "@interactive-os/editor": "file:../editor",
     "@interactive-os/keyboard": "file:../keyboard/packages/keyboard",
     "@interactive-os/keyboard-navigation": "file:../keyboard-navigation/packages/keyboard-navigation",
     "@interactive-os/site-generator": "file:../site-generator",
+    "@spredsheet/formula": "workspace:*",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zod": "^4.0.0",
@@ -40,5 +41,10 @@
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10",
     "vitest": "^4.1.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@interactive-os/document": "file:../document"
+    }
   }
 }

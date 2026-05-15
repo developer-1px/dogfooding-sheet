@@ -2,11 +2,11 @@
 
 ## Status
 
-Candidate.
+Internal package candidate.
 
-The package should first be split as an internal workspace package, then promoted
-to `@interactive-os/formula-engine` only after a second non-spreadsheet consumer
-exists.
+The evaluator has been split into the private `@spredsheet/formula` workspace
+package. It should be promoted to `@interactive-os/formula-engine` only after a
+second non-spreadsheet consumer exists.
 
 ## Decision
 
@@ -160,7 +160,7 @@ Track this document as the standardization record.
 
 ### Phase 1: Internal Package
 
-Move `src/lib/formula` into an internal workspace package:
+Done. The evaluator now lives in an internal workspace package:
 
 ```txt
 packages/formula
@@ -206,9 +206,9 @@ Promote to `@interactive-os/formula-engine` after:
 
 ## Acceptance Criteria
 
-The candidate is ready for internal package split when:
+The internal package split is accepted when:
 
-- `src/lib/formula` can move without importing React, DOM, zod, or zod-crud,
+- `packages/formula` imports no React, DOM, zod, or zod-crud,
 - current spreadsheet tests continue to pass,
 - `spredsheet` imports formula through a package boundary,
 - README explains that this is Excel-like, not Excel-complete.
@@ -220,4 +220,3 @@ The candidate is ready for public interactive-os promotion when:
 - state/property references are supported or explicitly planned,
 - reference extraction can drive dependency graphs,
 - the package exposes no app-specific schema or UI.
-

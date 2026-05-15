@@ -6,5 +6,4 @@ being evaluated for public interactive-os promotion.
 
 | Candidate | Status | Source | Target package |
 |---|---|---|---|
-| Formula engine | Candidate | `src/lib/formula` | `@interactive-os/formula-engine` |
-
+| Formula engine | Candidate | `packages/formula` | `@interactive-os/formula-engine` |

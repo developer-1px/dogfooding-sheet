@@ -1,18 +1,23 @@
 import { wrap } from './marker'
 import { dispatchBaseConv } from './baseConv'
 
+const randomUUID = (): string | undefined => {
+  const g = globalThis as { crypto?: { randomUUID?: () => string } }
+  return g.crypto?.randomUUID?.()
+}
+
 export function dispatchNumeric(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'RANDPICK') {
     if (argsT.length === 0) return wrap('#N/A')
     return wrap(argsT[Math.floor(Math.random() * argsT.length)])
   }
   if (F === 'UUID') {
-    const u = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
-      ? crypto.randomUUID()
-      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-          const r = Math.random() * 16 | 0
-          return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
-        })
+    const u = randomUUID()
+      ??
+      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0
+        return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+      })
     return wrap(u)
   }
   if (F === 'DIGITSUM') {

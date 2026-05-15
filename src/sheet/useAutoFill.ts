@@ -1,5 +1,4 @@
-import { useRef } from 'react'
-import { useFillHandleGesture } from '@interactive-os/aria-kernel/gesture/lab/useFillHandleGesture'
+import { useRef, useState } from 'react'
 import { COL_LETTERS, ROW_COUNT, parseCellId, colIndex, cellId, type Cells, type WriteCell, type WriteMany } from './schema'
 import { rectFromIds, rectOfCell, type Rect } from '../lib/rect'
 import { applyFill } from '../lib/applyFill'
@@ -15,6 +14,46 @@ interface Args {
 
 const rectEq = (a: Rect, b: Rect) => a.rMin === b.rMin && a.rMax === b.rMax && a.cMin === b.cMin && a.cMax === b.cMax
 
+function useFillHandleGesture(args: {
+  equals: (a: Rect, b: Rect) => boolean
+  onCommit: (source: Rect, target: Rect) => void
+}) {
+  const sourceRef = useRef<Rect | null>(null)
+  const targetRef = useRef<Rect | null>(null)
+  const [preview, setPreview] = useState<Rect | null>(null)
+
+  const clear = () => {
+    sourceRef.current = null
+    targetRef.current = null
+    setPreview(null)
+  }
+
+  const commit = () => {
+    const source = sourceRef.current
+    const target = targetRef.current
+    if (source && target && !args.equals(source, target)) args.onCommit(source, target)
+    clear()
+  }
+
+  return {
+    preview,
+    setTarget(target: Rect) {
+      targetRef.current = target
+      setPreview(target)
+    },
+    handleProps(source: Rect) {
+      return {
+        onMouseDown(_event: React.MouseEvent) {
+          sourceRef.current = source
+          targetRef.current = source
+          setPreview(source)
+          window.addEventListener('mouseup', commit, { once: true })
+        },
+      }
+    },
+  }
+}
+
 export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds }: Args) {
   const sourceRef = useRef<Rect | null>(null)
 
@@ -27,7 +66,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     return null
   }
 
-  const fill = useFillHandleGesture<Rect>({
+  const fill = useFillHandleGesture({
     equals: rectEq,
     onCommit: (src, tgt) => {
       sourceRef.current = null
