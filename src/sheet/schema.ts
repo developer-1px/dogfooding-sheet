@@ -29,7 +29,7 @@ const TabBundleSchema = z.object({
   cells: z.record(z.string(), z.string()).default({}),
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
-  formats: z.record(z.string(), z.enum(['plain', 'currency', 'eur', 'krw', 'percent', 'integer', 'thousand', 'scientific', 'date'])).default({}),
+  formats: z.record(z.string(), z.enum(['plain', 'currency', 'eur', 'krw', 'percent', 'integer', 'thousand', 'scientific', 'date', 'time'])).default({}),
   validation: z.record(z.string(), z.discriminatedUnion('type', [
     z.object({ type: z.literal('list'), options: z.array(z.string()) }),
     z.object({ type: z.literal('checkbox') }),
