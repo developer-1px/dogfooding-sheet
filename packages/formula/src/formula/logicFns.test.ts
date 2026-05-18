@@ -26,6 +26,7 @@ describe('logic functions', () => {
     expect(evaluateCell({}, '=TYPE(42)')).toBe('1')
     expect(evaluateCell({}, '=TYPE("hi")')).toBe('2')
     expect(evaluateCell({}, '=TYPE(NA())')).toBe('16')
+    expect(evaluateCell({}, '=TYPE(1/0)')).toBe('16')
   })
 
   it('ISBETWEEN inclusive by default', () => {
@@ -37,6 +38,7 @@ describe('logic functions', () => {
 
   it('ISERROR / ISEVEN / ISODD predicates', () => {
     expect(evaluateCell({}, '=ISERROR(VLOOKUP("z","A1:B1",2))')).toBe('1')
+    expect(evaluateCell({}, '=ISERROR(1/0)')).toBe('1')
     expect(evaluateCell({}, '=ISERROR(5)')).toBe('0')
     expect(evaluateCell({}, '=ISEVEN(4)')).toBe('1')
     expect(evaluateCell({}, '=ISODD(3)')).toBe('1')
@@ -49,6 +51,7 @@ describe('logic functions', () => {
 
   it('IFERROR replaces error values', () => {
     expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2),"none")')).toBe('none')
+    expect(evaluateCell({}, '=IFERROR(1/0,"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')
   })
 })

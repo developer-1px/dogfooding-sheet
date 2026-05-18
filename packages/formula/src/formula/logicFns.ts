@@ -1,6 +1,8 @@
 import { smartReturn } from './marker'
 import { coerceNumber } from './coerce'
 
+const isErrorValue = (value: string): boolean => /^#[A-Z0-9/]+!?$/.test(value)
+
 export function dispatchLogic(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'AND') return argsN.every((n) => !!n) ? '1' : '0'
   if (F === 'OR') return argsN.some((n) => !!n) ? '1' : '0'
@@ -20,10 +22,10 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   if (F === 'ISBLANK') return argsT[0] === '' ? '1' : '0'
   if (F === 'ISNUMBER') return argsT[0] !== '' && Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0'
   if (F === 'ISTEXT') return argsT[0] !== '' && !Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0'
-  if (F === 'ISERROR') return /^#[A-Z/]+!?$/.test(argsT[0]) ? '1' : '0'
+  if (F === 'ISERROR') return isErrorValue(argsT[0]) ? '1' : '0'
   if (F === 'TYPE') {
     const v = argsT[0]
-    if (/^#[A-Z/]+!?$/.test(v)) return '16'
+    if (isErrorValue(v)) return '16'
     if (v === '1' || v === '0') return '4'
     if (v !== '' && Number.isFinite(coerceNumber(v))) return '1'
     return '2'
@@ -47,7 +49,7 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   }
   if (F === 'IFERROR') {
     const v = argsT[0]
-    const isErr = typeof v === 'string' && /^#[A-Z/]+!?$/.test(v)
+    const isErr = typeof v === 'string' && isErrorValue(v)
     return smartReturn(isErr ? (argsT[1] ?? '') : v)
   }
   if (F === 'IFNA') {
