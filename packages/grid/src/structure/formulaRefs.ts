@@ -1,6 +1,6 @@
-import { A1_RE, ABS_A1_RE, COL_LETTERS, colIndex } from '../coordinates/a1'
+import { A1_RE, ABS_A1_RE, colIndex, columnLabel } from '../coordinates/a1'
 
-const idxCol = (i: number) => COL_LETTERS[i]
+const idxCol = (i: number) => columnLabel(i)
 
 export function shiftFormulaRows(raw: string, fromRow: number, delta: 1 | -1, rowCount = Infinity): string {
   if (!raw.startsWith('=')) return raw

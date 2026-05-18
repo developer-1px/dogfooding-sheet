@@ -1,7 +1,7 @@
-import { COL_LETTERS, cellKey, colIndex, parseA1, type Cells } from '../coordinates/a1'
+import { cellKey, colIndex, columnLabel, parseA1, type Cells } from '../coordinates/a1'
 import { shiftFormulaCols } from './formulaRefs'
 
-const idxCol = (i: number) => COL_LETTERS[i]
+const idxCol = (i: number) => columnLabel(i)
 
 export function insertCol(cells: Cells, atCol: number): Cells {
   const next: Cells = {}

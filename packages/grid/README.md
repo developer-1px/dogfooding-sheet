@@ -1,10 +1,10 @@
 # @spredsheet/grid
 
-Internal grid data engine for `spredsheet`.
+Headless grid editing engine with no runtime dependencies.
 
 Scope:
 
-- A1 keys and DOM cell ids
+- A1 keys, column labels, and stable cell ids
 - rectangular ranges and id sets
 - goto/address parsing and selection address formatting
 - keyboard navigation target calculation
@@ -20,6 +20,16 @@ Scope:
 - internal clipboard paste write generation
 - pure edit state transitions
 - pure sorting and aggregate helpers
+
+Independence contract:
+
+- no runtime dependencies
+- no React or DOM access
+- no system clipboard access
+- no app-specific imports
+- no validation, schema, persistence, or history ownership
+
+Adapters own rendering, events, validation, persistence, and undo/redo. The engine only returns pure state transitions and cell writes.
 
 Internal responsibility groups:
 

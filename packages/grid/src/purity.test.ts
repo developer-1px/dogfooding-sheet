@@ -15,9 +15,11 @@ const sourceFiles = (dir: string): string[] =>
 describe('@spredsheet/grid package boundary', () => {
   it('has no runtime dependencies', () => {
     const pkg = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8')) as {
+      private?: boolean
       dependencies?: Record<string, string>
       peerDependencies?: Record<string, string>
     }
+    expect(pkg.private).not.toBe(true)
     expect(pkg.dependencies ?? {}).toEqual({})
     expect(pkg.peerDependencies ?? {}).toEqual({})
   })

@@ -1,11 +1,26 @@
 import { describe, expect, it } from 'vitest'
-import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
     expect(cellKey('B', 2)).toBe('B3')
     expect(cellId('C', 4)).toBe('r4-C')
     expect(rectFromIds(['r1-B', 'r3-D'])).toEqual({ rMin: 1, rMax: 3, cMin: 1, cMax: 3 })
+  })
+
+  it('supports column labels beyond single-letter spreadsheet columns', () => {
+    expect(columnLabel(25)).toBe('Z')
+    expect(columnLabel(26)).toBe('AA')
+    expect(columnLabel(27)).toBe('AB')
+    expect(columnLabels(28).at(-1)).toBe('AB')
+    expect(colIndex('AA')).toBe(26)
+    expect(cellId('AA', 0)).toBe('r0-AA')
+    expect(rectFromIds(['r0-Z', 'r1-AA'])).toEqual({ rMin: 0, rMax: 1, cMin: 25, cMax: 26 })
+    expect(writesFromTsv('x\ty', { col: 'Z', row: 0 })).toEqual([
+      ['Z1', 'x'],
+      ['AA1', 'y'],
+    ])
+    expect(offsetFormulaRefs('=Z1+AA1', 0, 1)).toBe('=AA1+AB1')
   })
 
   it('moves cell ids within grid bounds', () => {

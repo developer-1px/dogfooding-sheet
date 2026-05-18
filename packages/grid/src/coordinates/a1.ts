@@ -1,4 +1,19 @@
-export const COL_LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))
+export const columnLabel = (index: number): string => {
+  if (!Number.isInteger(index) || index < 0) return ''
+  let n = index + 1
+  let label = ''
+  while (n > 0) {
+    n -= 1
+    label = String.fromCharCode(65 + (n % 26)) + label
+    n = Math.floor(n / 26)
+  }
+  return label
+}
+
+export const columnLabels = (count: number): string[] =>
+  Array.from({ length: Math.max(0, count) }, (_, i) => columnLabel(i))
+
+export const COL_LETTERS = columnLabels(26)
 
 export type ColLetter = string
 
@@ -16,14 +31,14 @@ export type WriteMany = (writes: Writes) => void
 
 export type Display = (k: string) => string
 
-export const A1_RE = /([A-Z])(\d+)/g
-export const ABS_A1_RE = /(\$?)([A-Z])(\$?)(\d+)/g
+export const A1_RE = /([A-Z]+)(\d+)/g
+export const ABS_A1_RE = /(\$?)([A-Z]+)(\$?)(\d+)/g
 
 export const cellId = (col: string, row: number): string => `r${row}-${col}`
 
 export const parseCellId = (id: string): { col: ColLetter; row: number } | null => {
-  const m = /^r(\d+)-([A-Z])$/.exec(id)
-  return m && COL_LETTERS.includes(m[2]) ? { row: Number(m[1]), col: m[2] } : null
+  const m = /^r(\d+)-([A-Z]+)$/.exec(id)
+  return m ? { row: Number(m[1]), col: m[2] } : null
 }
 
 export const cellIdToKey = (id: string): string => {
@@ -32,12 +47,14 @@ export const cellIdToKey = (id: string): string => {
 }
 
 export const parseA1 = (key: string): CellRef | null => {
-  const m = /^\$?([A-Z])\$?(\d+)$/.exec(key)
-  return m && COL_LETTERS.includes(m[1]) ? { col: m[1], row: Number(m[2]) - 1 } : null
+  const m = /^\$?([A-Z]+)\$?(\d+)$/.exec(key)
+  return m ? { col: m[1], row: Number(m[2]) - 1 } : null
 }
 
 export const colIndex = (col: string): number =>
-  (COL_LETTERS as readonly string[]).indexOf(col)
+  /^[A-Z]+$/.test(col)
+    ? [...col].reduce((acc, ch) => acc * 26 + ch.charCodeAt(0) - 64, 0) - 1
+    : -1
 
 export const moveCellIdByDelta = (
   id: string,

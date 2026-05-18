@@ -1,8 +1,7 @@
 {
   "name": "@spredsheet/grid",
-  "private": true,
   "version": "0.0.0",
-  "description": "Internal grid data engine candidate for interactive-os standardization.",
+  "description": "Headless grid editing engine with no runtime dependencies.",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -19,7 +18,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "build": "pnpm run clean && tsc -p tsconfig.json",
     "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

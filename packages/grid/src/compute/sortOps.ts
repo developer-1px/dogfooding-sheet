@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, parseA1, type Cells } from '../coordinates/a1'
+import { COL_LETTERS, cellKey, colIndex, columnLabels, parseA1, type Cells } from '../coordinates/a1'
 
 const coerceNumber = (value: string): number => {
   const s = value.trim()
@@ -34,17 +34,19 @@ export interface SortOpts {
   col: string
   dir: 'asc' | 'desc'
   rowCount: number
+  colCount?: number
   fromRow?: number
   toRow?: number
 }
 
 export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
-  const { col, dir, rowCount, fromRow = 1, toRow = rowCount - 1 } = opts
+  const { col, dir, rowCount, colCount = Math.max(COL_LETTERS.length, colIndex(col) + 1), fromRow = 1, toRow = rowCount - 1 } = opts
+  const cols = columnLabels(colCount)
   const sign = dir === 'asc' ? 1 : -1
   const rows: Array<Record<string, string>> = []
   for (let r = fromRow; r <= toRow; r++) {
     const rec: Record<string, string> = {}
-    for (const c of COL_LETTERS) rec[c] = cells[cellKey(c, r)] ?? ''
+    for (const c of cols) rec[c] = cells[cellKey(c, r)] ?? ''
     rows.push(rec)
   }
   rows.sort((a, b) => compareValues(a[col] ?? '', b[col] ?? '', sign))
@@ -57,7 +59,7 @@ export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
   }
   for (let i = 0; i < rows.length; i++) {
     const targetRow = fromRow + i
-    for (const c of COL_LETTERS) {
+    for (const c of cols) {
       const v = rows[i][c]
       if (v !== '') next[cellKey(c, targetRow)] = v
     }

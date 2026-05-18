@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, colIndex, type Display } from '../coordinates/a1'
+import { cellKey, colIndex, columnLabel, type Display } from '../coordinates/a1'
 import { isNumeric } from './numeric'
 
 export function autoSumFormula(col: string, row: number, display: Display): string | null {
@@ -10,8 +10,8 @@ export function autoSumFormula(col: string, row: number, display: Display): stri
   const colIdx = colIndex(col)
   if (colIdx <= 0) return null
   let left = colIdx - 1
-  while (left >= 0 && isNumeric(display(cellKey(COL_LETTERS[left], row)))) left -= 1
+  while (left >= 0 && isNumeric(display(cellKey(columnLabel(left), row)))) left -= 1
   const startCol = left + 1
-  if (startCol < colIdx) return `=SUM(${COL_LETTERS[startCol]}${row + 1}:${COL_LETTERS[colIdx - 1]}${row + 1})`
+  if (startCol < colIdx) return `=SUM(${columnLabel(startCol)}${row + 1}:${columnLabel(colIdx - 1)}${row + 1})`
   return null
 }

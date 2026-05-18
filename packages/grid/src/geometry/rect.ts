@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellId, cellKey, colIndex, parseCellId, type CellRef } from '../coordinates/a1'
+import { cellId, cellKey, colIndex, columnLabel, parseCellId, type CellRef } from '../coordinates/a1'
 
 export interface Rect { rMin: number; rMax: number; cMin: number; cMax: number }
 
@@ -19,15 +19,15 @@ export const rectFromRefs = (a: CellRef, b: CellRef): Rect => {
 }
 
 export const formatRect = (rect: Rect): string => {
-  const a = cellKey(COL_LETTERS[rect.cMin], rect.rMin)
-  const b = cellKey(COL_LETTERS[rect.cMax], rect.rMax)
+  const a = cellKey(columnLabel(rect.cMin), rect.rMin)
+  const b = cellKey(columnLabel(rect.cMax), rect.rMax)
   return a === b ? a : `${a}:${b}`
 }
 
 export function idsInRect(rect: Rect): string[] {
   const out: string[] = []
   for (let r = rect.rMin; r <= rect.rMax; r++) {
-    for (let c = rect.cMin; c <= rect.cMax; c++) out.push(cellId(COL_LETTERS[c], r))
+    for (let c = rect.cMin; c <= rect.cMax; c++) out.push(cellId(columnLabel(c), r))
   }
   return out
 }

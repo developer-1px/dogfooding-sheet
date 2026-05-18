@@ -1,4 +1,4 @@
-import { cellId, colIndex, parseA1, parseCellId } from '../coordinates/a1'
+import { cellId, colIndex, columnLabels, parseA1, parseCellId } from '../coordinates/a1'
 import { formatRect, idsInRect, rectFromIds, rectFromRefs } from '../geometry/rect'
 import { idsForCol, idsForRow } from './range'
 
@@ -42,8 +42,8 @@ export function resolveRange(
   if (parts.length !== 2) return null
   const rowCount = bounds?.rowCount
   const colCount = bounds?.colCount
-  const colA = /^[A-Z]$/.test(parts[0]) ? parts[0] : null
-  const colB = /^[A-Z]$/.test(parts[1]) ? parts[1] : null
+  const colA = /^[A-Z]+$/.test(parts[0]) ? parts[0] : null
+  const colB = /^[A-Z]+$/.test(parts[1]) ? parts[1] : null
   if (colA && colB) {
     if (!rowCount) return null
     const a = colIndex(colA)
@@ -85,4 +85,4 @@ export function resolveGotoTarget(raw: string | null, bounds?: GridBounds, colLe
 }
 
 const defaultColLetters = (colCount = 26): string[] =>
-  Array.from({ length: Math.max(1, Math.min(26, colCount)) }, (_, i) => String.fromCharCode(65 + i))
+  columnLabels(Math.max(1, colCount))
