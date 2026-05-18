@@ -30,8 +30,18 @@ describe('resolveRange', () => {
   it('normalizes reverse order', () => {
     expect(resolveRange('B2:A1')).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
   })
+  it('expands whole-column ranges', () => {
+    expect(resolveRange('B:B', defaultBounds)?.slice(0, 3)).toEqual(['r0-B', 'r1-B', 'r2-B'])
+    expect(resolveRange('A:B', { rowCount: 2, colCount: 10 })).toEqual(['r0-A', 'r1-A', 'r0-B', 'r1-B'])
+  })
+  it('expands whole-row ranges', () => {
+    expect(resolveRange('2:2', defaultBounds)).toEqual(['r1-A', 'r1-B', 'r1-C', 'r1-D', 'r1-E', 'r1-F', 'r1-G', 'r1-H', 'r1-I', 'r1-J'])
+    expect(resolveRange('2:1', { rowCount: 20, colCount: 2 })).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
+  })
   it('null on bad input', () => {
     expect(resolveRange('A1')).toBeNull()
     expect(resolveRange('A1:Z5', defaultBounds)).toBeNull()
+    expect(resolveRange('K:K', defaultBounds)).toBeNull()
+    expect(resolveRange('21:21', defaultBounds)).toBeNull()
   })
 })

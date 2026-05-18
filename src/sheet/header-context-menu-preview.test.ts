@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, keyDown, mouseClick, press, setupReactDOM } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -241,5 +241,31 @@ describe('header context menus', () => {
 
     expect(col.classList.contains('selected-header')).toBe(false)
     expect(col.getAttribute('aria-selected')).toBe('false')
+  })
+
+  it('goes to whole column and row ranges from the address prompt', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(document.querySelector<HTMLButtonElement>('.addr')!))
+    const prompt = document.querySelector<HTMLInputElement>('.prompt-dialog input')!
+    act(() => {
+      setInputValue(prompt, 'B:B')
+      keyDown(prompt, 'Enter')
+    })
+    await act(async () => {})
+
+    expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('B:B')
+
+    act(() => mouseClick(document.querySelector<HTMLButtonElement>('.addr')!))
+    const prompt2 = document.querySelector<HTMLInputElement>('.prompt-dialog input')!
+    act(() => {
+      setInputValue(prompt2, '2:2')
+      keyDown(prompt2, 'Enter')
+    })
+    await act(async () => {})
+
+    expect(rowHeader('2')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('2:2')
   })
 })
