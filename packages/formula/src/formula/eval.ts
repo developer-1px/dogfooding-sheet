@@ -1,11 +1,12 @@
 import type { Cells } from '../a1'
 import { ABS_A1_RE, FUNC_RE } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
+import { coerceNumber } from './coerce'
 
 
 const numFromCellFactory = (cells: Cells, seen: Set<string>) => (ref: string): number => {
   const v = evaluate(cells, cells[ref] ?? '', seen)
-  const n = Number(v)
+  const n = coerceNumber(v)
   return Number.isFinite(n) ? n : 0
 }
 

@@ -587,6 +587,9 @@ describe('text functions', () => {
   })
   it('VALUE / N coerce to number', () => {
     expect(evaluateCell({}, '=VALUE("3.14")')).toBe('3.14')
+    expect(evaluateCell({}, '=VALUE("1,234.5")')).toBe('1234.5')
+    expect(evaluateCell({}, '=VALUE("50%")')).toBe('0.5')
+    expect(evaluateCell({}, '=N("$2.50")')).toBe('2.5')
     expect(evaluateCell({}, '=N("abc")')).toBe('0')
     expect(evaluateCell({}, '=N("7")')).toBe('7')
   })

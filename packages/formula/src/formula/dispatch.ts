@@ -18,6 +18,7 @@ import { dispatchRef } from './refFns'
 import { evalArgs, splitArgs, type Ctx } from './args'
 import { parseA1, colIndex } from '../a1'
 import { smartReturn } from './marker'
+import { coerceNumber } from './coerce'
 
 export type { Ctx } from './args'
 export { TM, stripText } from './marker'
@@ -71,7 +72,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
   const stat = dispatchStat(F, argsT, rawArgs, c.numFromCell); if (stat !== null) return stat
 
-  const argsN = argsT.map(Number)
+  const argsN = argsT.map(coerceNumber)
 
   const date = dispatchDate(F, argsT); if (date !== null) return date
   const time = dispatchTime(F, argsT); if (time !== null) return time

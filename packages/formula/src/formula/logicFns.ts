@@ -1,4 +1,5 @@
 import { smartReturn } from './marker'
+import { coerceNumber } from './coerce'
 
 export function dispatchLogic(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'AND') return argsN.every((n) => !!n) ? '1' : '0'
@@ -17,14 +18,14 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   if (F === 'ISURL') return /^https?:\/\/[^\s]+$/.test(argsT[0] ?? '') ? '1' : '0'
   if (F === 'ISEMAIL') return /^[\w.+-]+@[\w.-]+\.\w{2,}$/.test(argsT[0] ?? '') ? '1' : '0'
   if (F === 'ISBLANK') return argsT[0] === '' ? '1' : '0'
-  if (F === 'ISNUMBER') return argsT[0] !== '' && Number.isFinite(Number(argsT[0])) ? '1' : '0'
-  if (F === 'ISTEXT') return argsT[0] !== '' && !Number.isFinite(Number(argsT[0])) ? '1' : '0'
+  if (F === 'ISNUMBER') return argsT[0] !== '' && Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0'
+  if (F === 'ISTEXT') return argsT[0] !== '' && !Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0'
   if (F === 'ISERROR') return /^#[A-Z/]+!?$/.test(argsT[0]) ? '1' : '0'
   if (F === 'TYPE') {
     const v = argsT[0]
     if (/^#[A-Z/]+!?$/.test(v)) return '16'
     if (v === '1' || v === '0') return '4'
-    if (v !== '' && Number.isFinite(Number(v))) return '1'
+    if (v !== '' && Number.isFinite(coerceNumber(v))) return '1'
     return '2'
   }
   if (F === 'NA') return smartReturn('#N/A')

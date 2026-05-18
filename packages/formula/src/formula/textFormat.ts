@@ -1,6 +1,7 @@
 import { wrap } from './marker'
 import { dispatchColor } from './colorFns'
 import { dispatchHumanFmt } from './humanFmt'
+import { coerceNumber } from './coerce'
 
 const currentLanguage = (): string => {
   const g = globalThis as { navigator?: { language?: string } }
@@ -36,11 +37,11 @@ export function dispatchTextFormat(F: string, argsT: string[]): string | null {
     return Number.isFinite(n) ? String(n) : wrap('#VALUE!')
   }
   if (F === 'VALUE') {
-    const n = Number(argsT[0])
+    const n = coerceNumber(argsT[0])
     return Number.isFinite(n) ? String(n) : wrap('#VALUE!')
   }
   if (F === 'N') {
-    const n = Number(argsT[0])
+    const n = coerceNumber(argsT[0])
     return Number.isFinite(n) ? String(n) : '0'
   }
   return null
