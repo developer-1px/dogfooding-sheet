@@ -1,8 +1,5 @@
-import { parseCellId, parseA1, colIndex, cellId } from '../schema'
+import { parseCellId, parseA1, colIndex, cellId, colLettersFor } from '../schema'
 import { idsForCol, idsForRow, idsInRect, rectFromRefs } from '@spredsheet/grid'
-
-const colLettersForCount = (count: number): string[] =>
-  Array.from({ length: count }, (_, i) => String.fromCharCode(65 + i))
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
 export function resolveCellRef(raw: string, bounds?: { rowCount: number; colCount: number }): string | null {
@@ -27,8 +24,9 @@ export function resolveRange(raw: string, bounds?: { rowCount: number; colCount:
     const a = colIndex(colA); const b = colIndex(colB)
     if (a < 0 || b < 0) return null
     if (colCount && (a >= colCount || b >= colCount)) return null
+    const colLetters = colLettersFor(colCount ?? Math.max(a, b) + 1)
     const ids: string[] = []
-    for (let c = Math.min(a, b); c <= Math.max(a, b); c++) ids.push(...idsForCol(String.fromCharCode(65 + c), rowCount))
+    for (let c = Math.min(a, b); c <= Math.max(a, b); c++) ids.push(...idsForCol(colLetters[c], rowCount))
     return ids
   }
   const rowA = /^\d+$/.test(parts[0]) ? Number(parts[0]) - 1 : null
@@ -36,7 +34,7 @@ export function resolveRange(raw: string, bounds?: { rowCount: number; colCount:
   if (rowA !== null && rowB !== null) {
     if (!bounds || !colCount || rowA < 0 || rowB < 0 || rowA >= bounds.rowCount || rowB >= bounds.rowCount) return null
     const ids: string[] = []
-    const colLetters = colLettersForCount(colCount)
+    const colLetters = colLettersFor(colCount)
     for (let r = Math.min(rowA, rowB); r <= Math.max(rowA, rowB); r++) ids.push(...idsForRow(r, colLetters))
     return ids
   }
