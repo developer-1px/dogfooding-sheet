@@ -31,6 +31,26 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     }
     return smartReturn(JSON.stringify(rows))
   }
+  if (F === 'SEQUENCE') {
+    const rowCount = Math.trunc(Number(argsT[0]))
+    const colCount = Math.trunc(Number(argsT[1] ?? '1'))
+    const start = Number(argsT[2] ?? '1')
+    const step = Number(argsT[3] ?? '1')
+    if (
+      !Number.isFinite(rowCount) || !Number.isFinite(colCount) ||
+      !Number.isFinite(start) || !Number.isFinite(step) ||
+      rowCount < 1 || colCount < 1
+    ) return smartReturn('#VALUE!')
+    const rows: string[][] = []
+    for (let row = 0; row < rowCount; row++) {
+      const values: string[] = []
+      for (let col = 0; col < colCount; col++) {
+        values.push(String(start + (row * colCount + col) * step))
+      }
+      rows.push(values)
+    }
+    return smartReturn(JSON.stringify(rows))
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const p = parseA1(base)

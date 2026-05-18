@@ -58,6 +58,21 @@ describe('TRANSPOSE', () => {
   })
 })
 
+describe('SEQUENCE', () => {
+  it('returns a generated JSON matrix', () => {
+    expect(evaluateCell({}, '=SEQUENCE(2, 3)')).toBe('[["1","2","3"],["4","5","6"]]')
+  })
+
+  it('supports start and step arguments', () => {
+    expect(evaluateCell({}, '=SEQUENCE(2, 2, 10, 5)')).toBe('[["10","15"],["20","25"]]')
+  })
+
+  it('rejects invalid dimensions', () => {
+    expect(evaluateCell({}, '=SEQUENCE(0, 2)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=SEQUENCE(2, -1)')).toBe('#VALUE!')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
