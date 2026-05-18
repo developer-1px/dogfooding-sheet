@@ -138,6 +138,31 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const result = F === 'TOCOL' ? values.map(value => [value]) : [values]
     return smartReturn(JSON.stringify(result))
   }
+  if (F === 'WRAPROWS' || F === 'WRAPCOLS') {
+    const raw = splitArgs(rawArgs)
+    const matrix = rangeMatrix(raw[0] ?? '', c)
+    if (!matrix) return smartReturn('#REF!')
+    const wrapCount = Math.trunc(Number(argsT[1]))
+    if (!Number.isFinite(wrapCount) || wrapCount < 1) return smartReturn('#VALUE!')
+    const values = flattenMatrix(matrix, false)
+    const pad = argsT[2] ?? '#N/A'
+    if (F === 'WRAPROWS') {
+      const rows: string[][] = []
+      for (let index = 0; index < values.length; index += wrapCount) {
+        const row = values.slice(index, index + wrapCount)
+        while (row.length < wrapCount) row.push(pad)
+        rows.push(row)
+      }
+      return smartReturn(JSON.stringify(rows))
+    }
+    const rowCount = wrapCount
+    const colCount = Math.ceil(values.length / rowCount)
+    const rows = Array.from({ length: rowCount }, () => Array.from({ length: colCount }, () => pad))
+    values.forEach((value, index) => {
+      rows[index % rowCount][Math.floor(index / rowCount)] = value
+    })
+    return smartReturn(JSON.stringify(rows))
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const p = parseA1(base)

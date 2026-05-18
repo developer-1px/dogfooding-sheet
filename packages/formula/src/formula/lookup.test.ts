@@ -143,6 +143,28 @@ describe('TOCOL / TOROW', () => {
   })
 })
 
+describe('WRAPROWS / WRAPCOLS', () => {
+  const cells = { A1: 'a', B1: 'b', C1: 'c', D1: 'd', E1: 'e' }
+
+  it('wraps a vector into fixed-width rows', () => {
+    expect(evaluateCell(cells, '=WRAPROWS(A1:E1, 2)')).toBe('[["a","b"],["c","d"],["e","#N/A"]]')
+  })
+
+  it('wraps a vector into fixed-height columns', () => {
+    expect(evaluateCell(cells, '=WRAPCOLS(A1:E1, 2)')).toBe('[["a","c","e"],["b","d","#N/A"]]')
+  })
+
+  it('supports custom padding', () => {
+    expect(evaluateCell(cells, '=WRAPROWS(A1:E1, 3, "-")')).toBe('[["a","b","c"],["d","e","-"]]')
+    expect(evaluateCell(cells, '=WRAPCOLS(A1:E1, 3, "-")')).toBe('[["a","d"],["b","e"],["c","-"]]')
+  })
+
+  it('rejects invalid wrap counts', () => {
+    expect(evaluateCell(cells, '=WRAPROWS(A1:E1, 0)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=WRAPCOLS(A1:E1, -1)')).toBe('#VALUE!')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
