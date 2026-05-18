@@ -12,10 +12,23 @@ export const now = (): string => {
   return `${today()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`
 }
 
-export const date = (y: number, m: number, d: number): string =>
-  `${y}-${pad2(m)}-${pad2(d)}`
+const SHEET_EPOCH_UTC = Date.UTC(1899, 11, 30)
+const DAY_MS = 86400000
+
+const fmtUTC = (d: Date): string =>
+  `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`
+
+export const date = (y: number, m: number, d: number): string => {
+  const dt = new Date(Date.UTC(y, m - 1, d))
+  return isNaN(dt.getTime()) ? '#VALUE!' : fmtUTC(dt)
+}
 
 const parseDate = (s: string): Date | null => {
+  const n = Number(s)
+  if (Number.isFinite(n)) {
+    const d = new Date(SHEET_EPOCH_UTC + n * DAY_MS)
+    return isNaN(d.getTime()) ? null : d
+  }
   const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s.trim())
   if (!m) return null
   const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
@@ -44,7 +57,7 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
   if (F === 'DATEVALUE') {
     const d = parseDate(argsT[0]); if (!d) return wrap('#VALUE!')
     // Sheets epoch: 1899-12-30
-    return String(Math.round((d.getTime() - Date.UTC(1899, 11, 30)) / 86400000))
+    return String(Math.round((d.getTime() - SHEET_EPOCH_UTC) / DAY_MS))
   }
   if (F === 'WEEKDAY') {
     const d = parseDate(argsT[0])
