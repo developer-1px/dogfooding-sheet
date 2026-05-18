@@ -1,4 +1,4 @@
-import { parseA1 } from '@spredsheet/grid'
+import { rowColActionAtFocus, type RowColFocusCommand } from '@spredsheet/grid'
 
 interface Mut {
   insertRow: (r: number) => void
@@ -10,13 +10,22 @@ interface Mut {
 }
 
 export function rowColAtFocus(focusKey: string | null, m: Mut) {
-  const at = () => focusKey ? parseA1(focusKey) : null
+  const run = (command: RowColFocusCommand) => {
+    const action = rowColActionAtFocus(focusKey, command)
+    if (action.type === 'none') return
+    if (action.type === 'insertRow') m.insertRow(action.row)
+    else if (action.type === 'deleteRow') m.deleteRow(action.row)
+    else if (action.type === 'insertCol') m.insertCol(action.col)
+    else if (action.type === 'deleteCol') m.deleteCol(action.col)
+    else if (action.type === 'hideRow') m.hideRow(action.row)
+    else m.hideCol(action.col)
+  }
   return {
-    insertRowAtFocus: () => { const p = at(); if (p) m.insertRow(p.row) },
-    deleteRowAtFocus: () => { const p = at(); if (p) m.deleteRow(p.row) },
-    insertColAtFocus: () => { const p = at(); if (p) m.insertCol(p.col) },
-    deleteColAtFocus: () => { const p = at(); if (p) m.deleteCol(p.col) },
-    hideRowAtFocus: () => { const p = at(); if (p) m.hideRow(p.row) },
-    hideColAtFocus: () => { const p = at(); if (p) m.hideCol(p.col) },
+    insertRowAtFocus: () => run('insertRow'),
+    deleteRowAtFocus: () => run('deleteRow'),
+    insertColAtFocus: () => run('insertCol'),
+    deleteColAtFocus: () => run('deleteCol'),
+    hideRowAtFocus: () => run('hideRow'),
+    hideColAtFocus: () => run('hideCol'),
   }
 }

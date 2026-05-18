@@ -13,6 +13,7 @@ Scope:
 - pure formula reference picking
 - row and column structural transforms
 - merge action and merge map calculation
+- focus-based row and column action calculation
 - pure TSV read/write conversion
 - internal clipboard paste write generation
 - pure edit state transitions
@@ -26,7 +27,7 @@ Internal responsibility groups:
 - `selection/selectionEngine`: focus, anchor, and selected id state transitions
 - `clipboard`: grid-shaped payload conversion and internal clipboard write generation
 - `editing`: focus/editing/draft state transitions, series extension, formula reference picking, and fill write generation
-- `structure`: row/column transforms, merge calculations, and formula reference repair
+- `structure`: row/column transforms, focus actions, merge calculations, and formula reference repair
 - `compute`: numeric parsing, sorting, and aggregate helpers
 
 Non-scope:

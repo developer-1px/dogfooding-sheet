@@ -10,6 +10,12 @@ import type { RuleLookup } from '../validation/useValidation'
 import type { GridCell } from '@interactive-os/aria-kernel/patterns'
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 
+const mergeRangeLabel = (rIdx: number, cIdx: number, anchor: { rows: number; cols: number }, colLetters: readonly string[]): string => {
+  const start = cellKey(colLetters[cIdx], rIdx)
+  const end = cellKey(colLetters[cIdx + anchor.cols - 1] ?? colLetters[cIdx], rIdx + anchor.rows - 1)
+  return start === end ? start : `${start}:${end}`
+}
+
 interface Props {
   rIdx: number
   rowItemProps: { id: string; cells: GridCell[] }
@@ -86,6 +92,9 @@ export function GridRow(p: Props) {
             focused={p.focusId === cell.id}
             highlighted={p.hiSet.has(cell.id)}
             isNum={cell.label !== '' && (isNumeric(cell.label) || isNumeric(p.rawOf(k) ?? ''))}
+            mergeRange={anchor ? mergeRangeLabel(p.rIdx, cIdx, anchor, p.colLetters) : undefined}
+            mergeRows={anchor?.rows}
+            mergeCols={anchor?.cols}
             styleClass={sp.className + extra}
             styleInline={styleInline}
             note={p.noteOf(k)}

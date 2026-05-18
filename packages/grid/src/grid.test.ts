@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, internalClipboardFromTsv, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, internalClipboardFromTsv, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -180,6 +180,13 @@ describe('@spredsheet/grid', () => {
     const { anchors, hidden } = buildMergeMap([[0, 0, 0, 2]])
     expect(anchors.get('0,0')).toEqual({ anchorR: 0, anchorC: 0, rows: 1, cols: 3 })
     expect(hidden.has('0,1')).toBe(true)
+  })
+
+  it('computes row and column actions at focus', () => {
+    expect(rowColActionAtFocus('B5', 'insertRow')).toEqual({ type: 'insertRow', row: 4 })
+    expect(rowColActionAtFocus('B5', 'hideCol')).toEqual({ type: 'hideCol', col: 'B' })
+    expect(rowColActionAtFocus(null, 'deleteRow')).toEqual({ type: 'none' })
+    expect(rowColActionAtFocus('garbage', 'deleteCol')).toEqual({ type: 'none' })
   })
 
   it('sorts grid rows by a column while preserving outside rows', () => {

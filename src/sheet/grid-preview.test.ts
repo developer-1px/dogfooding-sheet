@@ -57,6 +57,20 @@ describe('spreadsheet preview interactions', () => {
     expect(editor?.getAttribute('aria-label')).toBe('A1 편집')
   })
 
+  it('exposes merged cells with range and span metadata', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const cells = gridCells()
+    act(() => mouseClick(cells[0]))
+    act(() => keyDown(cells[0], 'ArrowRight', { shiftKey: true }))
+    act(() => keyDown(document.querySelector<HTMLElement>('.cell.focused')!, 'ArrowRight', { shiftKey: true }))
+    act(() => press('m', { altKey: true, shiftKey: true }))
+
+    const merged = document.querySelector<HTMLElement>('.cell.merged')
+    expect(merged?.getAttribute('aria-label')).toContain('병합 셀 A1:C1')
+    expect(merged?.getAttribute('aria-colspan')).toBe('3')
+  })
+
   it('commits text typed directly after selecting an empty cell with the mouse', async () => {
     await act(async () => dom.root.render(createElement(App)))
 

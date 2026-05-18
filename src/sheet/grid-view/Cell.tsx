@@ -10,6 +10,9 @@ interface Props {
   focused: boolean
   highlighted: boolean
   isNum: boolean
+  mergeRange?: string
+  mergeRows?: number
+  mergeCols?: number
   editing: boolean
   draft: string
   setDraft: (v: string) => void
@@ -40,6 +43,7 @@ export function Cell(p: Props) {
     p.address,
     p.label === '' ? '빈 셀' : p.label,
     isError ? '오류' : '',
+    p.mergeRange ? `병합 셀 ${p.mergeRange}` : '',
     p.selected ? '선택됨' : '',
     p.focused ? '현재 셀' : '',
     p.editing ? '편집 중' : '',
@@ -69,7 +73,9 @@ export function Cell(p: Props) {
       aria-current={p.focused ? 'true' : undefined}
       aria-selected={p.selected}
       aria-invalid={isError || undefined}
-      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.isNum && numericValue(p.label) < 0 ? ' negative' : ''}${isError ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
+      aria-colspan={p.mergeCols && p.mergeCols > 1 ? p.mergeCols : undefined}
+      aria-rowspan={p.mergeRows && p.mergeRows > 1 ? p.mergeRows : undefined}
+      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.mergeRange ? ' merged' : ''}${p.isNum ? ' numeric' : ''}${p.isNum && numericValue(p.label) < 0 ? ' negative' : ''}${isError ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
       style={p.styleInline}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
