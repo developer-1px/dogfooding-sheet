@@ -133,6 +133,20 @@ describe('header context menus', () => {
     expect(row!.getAttribute('aria-selected')).toBe('true')
   })
 
+  it('keeps selected and current states together on header selections', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const col = header('.header-cell', 'B')!
+    act(() => mouseClick(col))
+    expect(col.getAttribute('aria-selected')).toBe('true')
+    expect(col.getAttribute('aria-current')).toBe('true')
+
+    const row = rowHeader('2')!
+    act(() => mouseClick(row))
+    expect(row.getAttribute('aria-selected')).toBe('true')
+    expect(row.getAttribute('aria-current')).toBe('true')
+  })
+
   it('marks current row and column headers for the focused cell', async () => {
     await act(async () => dom.root.render(createElement(App)))
 

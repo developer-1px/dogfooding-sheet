@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, deleteRow, fillDownWrites, fillRightWrites, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
+import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, deleteRow, extendSeries, fillDownWrites, fillRightWrites, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -64,6 +64,20 @@ describe('@spredsheet/grid', () => {
       ['C1', 'x'],
       ['B2', 'y'],
       ['C2', 'y'],
+    ])
+  })
+
+  it('extends fill series and computes auto-fill writes', () => {
+    expect(extendSeries(['Mon', 'Tue'], 5)).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
+    expect(extendSeries(['2026-01-01', '2026-01-02'], 4)).toEqual(['2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04'])
+    expect(applyFillWrites(
+      { rMin: 0, rMax: 1, cMin: 0, cMax: 0 },
+      { rMin: 0, rMax: 4, cMin: 0, cMax: 0 },
+      { A1: '1', A2: '2' },
+    )).toEqual([
+      ['A3', '3'],
+      ['A4', '4'],
+      ['A5', '5'],
     ])
   })
 

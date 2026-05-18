@@ -7,7 +7,7 @@ Scope:
 - A1 keys and DOM cell ids
 - rectangular ranges and id sets
 - pure focus/anchor/selection state transitions
-- pure fill write generation
+- pure fill and auto-fill write generation
 - row and column structural transforms
 - pure TSV read/write conversion
 - pure edit state transitions
@@ -20,7 +20,7 @@ Internal responsibility groups:
 - `selection`: row, column, and full-grid id ranges
 - `selection/selectionEngine`: focus, anchor, and selected id state transitions
 - `clipboard`: grid-shaped payload conversion
-- `editing`: focus/editing/draft state transitions and fill write generation
+- `editing`: focus/editing/draft state transitions, series extension, and fill write generation
 - `structure`: row/column transforms and formula reference repair
 - `compute`: numeric parsing, sorting, and aggregate helpers
 
