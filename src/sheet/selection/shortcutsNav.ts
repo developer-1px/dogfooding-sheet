@@ -1,13 +1,14 @@
 import { matchesShortcut } from '@interactive-os/keyboard'
 import { parseCellId, cellId, type Cells } from '../schema'
 import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from './jumpEdge'
-import { idsForCol, idsForRow } from '@spredsheet/grid'
+import { idsForCol, idsForRow, rectFromIds } from '@spredsheet/grid'
 
 interface NavArgs {
   focusId: string
   cells: Cells
   rowCount: number
   colLetters: readonly string[]
+  selectedIds: string[]
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
   setSelectAnchor: (id: string | null) => void
@@ -15,7 +16,7 @@ interface NavArgs {
 
 /** Cursor-movement keys when not editing. Returns true if handled. */
 export function handleNavigation(e: KeyboardEvent, mod: boolean, a: NavArgs): boolean {
-  const { focusId, cells, rowCount, colLetters, setSelectedIds, setFocusId, setSelectAnchor } = a
+  const { focusId, cells, rowCount, colLetters, selectedIds, setSelectedIds, setFocusId, setSelectAnchor } = a
   const moveFocus = (next: string) => {
     setFocusId(next)
     setSelectAnchor(next)
@@ -37,7 +38,17 @@ export function handleNavigation(e: KeyboardEvent, mod: boolean, a: NavArgs): bo
   }
   if (e.key === ' ' && (e.ctrlKey !== e.shiftKey)) {
     const sp = parseCellId(focusId); if (!sp) return true
-    setSelectedIds(e.ctrlKey ? idsForCol(sp.col, rowCount) : idsForRow(sp.row, colLetters)); e.preventDefault(); return true
+    const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null
+    if (e.ctrlKey && rect) {
+      setSelectedIds(colLetters.slice(rect.cMin, rect.cMax + 1).flatMap((col) => idsForCol(col, rowCount)))
+    } else if (e.shiftKey && rect) {
+      const ids: string[] = []
+      for (let row = rect.rMin; row <= rect.rMax; row++) ids.push(...idsForRow(row, colLetters))
+      setSelectedIds(ids)
+    } else {
+      setSelectedIds(e.ctrlKey ? idsForCol(sp.col, rowCount) : idsForRow(sp.row, colLetters))
+    }
+    e.preventDefault(); return true
   }
   return false
 }

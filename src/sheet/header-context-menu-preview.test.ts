@@ -192,6 +192,7 @@ describe('header context menus', () => {
     expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
     expect(addressText()).toBe('B:B')
 
+    act(() => mouseClick(cells[11]))
     act(() => press(' ', { shiftKey: true }))
     expect(rowHeader('2')?.classList.contains('selected-header')).toBe(true)
     expect(addressText()).toBe('2:2')
@@ -200,5 +201,28 @@ describe('header context menus', () => {
     expect(document.querySelector<HTMLElement>('.corner-cell')?.classList.contains('selected-header')).toBe(true)
     expect(addressText()).toBe('A:J')
     expect(formulaValue()).toBe('Item')
+  })
+
+  it('expands selected ranges to whole rows or columns with keyboard shortcuts', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const cells = gridCells()
+    act(() => mouseClick(cells[0]))
+    act(() => keyDown(cells[0], 'ArrowRight', { shiftKey: true }))
+    await act(async () => {})
+
+    act(() => press(' ', { ctrlKey: true }))
+    expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('A:B')
+
+    act(() => mouseClick(cells[0]))
+    act(() => keyDown(cells[0], 'ArrowDown', { shiftKey: true }))
+    await act(async () => {})
+
+    act(() => press(' ', { shiftKey: true }))
+    expect(rowHeader('1')?.classList.contains('selected-header')).toBe(true)
+    expect(rowHeader('2')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('1:2')
   })
 })
