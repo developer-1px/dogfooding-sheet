@@ -11,6 +11,8 @@ export interface HiddenState {
 export interface HiddenActions {
   hideRow: (row: number) => void
   hideCol: (col: string) => void
+  showRow: (row: number) => void
+  showCol: (col: string) => void
   showAll: () => void
 }
 
@@ -40,6 +42,14 @@ export function useHidden(hidden: HiddenState, ops: SheetOps) {
     if (hidden.cols.includes(col)) return
     ops.add('/hidden/cols/-' as never, col as never)
   }
+  const showRow = (row: number) => {
+    if (!hidden.rows.includes(row)) return
+    ops.replace('/hidden/rows' as never, hidden.rows.filter((r) => r !== row) as never)
+  }
+  const showCol = (col: string) => {
+    if (!hidden.cols.includes(col)) return
+    ops.replace('/hidden/cols' as never, hidden.cols.filter((c) => c !== col) as never)
+  }
   const showAll = () => {
     const patch: Patch = []
     if (hidden.rows.length) patch.push({ op: 'replace', path: '/hidden/rows', value: [] })
@@ -51,7 +61,7 @@ export function useHidden(hidden: HiddenState, ops: SheetOps) {
     hidden,
     rowSet: new Set(hidden.rows),
     colSet: new Set(hidden.cols),
-    hideRow, hideCol, showAll,
+    hideRow, hideCol, showRow, showCol, showAll,
     hasHidden: hidden.rows.length + hidden.cols.length > 0,
   }
 }

@@ -7,8 +7,11 @@ import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 import { copySingleCell, cutSingleCell, pasteSingleCell } from './clipboard/clipboardActions'
 
-interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>, Pick<HiddenActions, 'hideRow' | 'hideCol'> {
+interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>, Pick<HiddenActions, 'hideRow' | 'hideCol' | 'showRow' | 'showCol'> {
   sheet: { cells: Cells }
+  colLetters: readonly string[]
+  hiddenRows: Set<number>
+  hiddenCols: Set<string>
   setFocusId: (id: string) => void
   writeCell: WriteCell
   noteOf: NoteLookup
@@ -36,11 +39,22 @@ export function useCellMenu(a: Args) {
     const p = parseCellId(cellId)
     if (!p) return []
     const row = p.row; const col = p.col; const k = cellKey(col, row)
+    const prevCol = a.colLetters[colIndex(col) - 1]
+    const nextCol = a.colLetters[colIndex(col) + 1]
+    const rowRevealItems: Array<MenuItem | 'separator'> = [
+      ...(a.hiddenRows.has(row - 1) ? [{ label: `${row}행 숨김 표시`, onClick: () => a.showRow(row - 1) }] : []),
+      ...(a.hiddenRows.has(row + 1) ? [{ label: `${row + 2}행 숨김 표시`, onClick: () => a.showRow(row + 1) }] : []),
+    ]
+    const colRevealItems: Array<MenuItem | 'separator'> = [
+      ...(prevCol && a.hiddenCols.has(prevCol) ? [{ label: `${prevCol}열 숨김 표시`, onClick: () => a.showCol(prevCol) }] : []),
+      ...(nextCol && a.hiddenCols.has(nextCol) ? [{ label: `${nextCol}열 숨김 표시`, onClick: () => a.showCol(nextCol) }] : []),
+    ]
     if (kind === 'row') return [
       { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
       { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
       { label: '행 삭제', onClick: () => a.deleteRow(row) },
       { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
+      ...rowRevealItems,
       { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
       'separator',
       { label: a.freeze.rows === row + 1 ? '행 고정 해제' : `${row + 1}행까지 고정`, onClick: () => a.setFreezeRows(a.freeze.rows === row + 1 ? 0 : row + 1) },
@@ -50,6 +64,7 @@ export function useCellMenu(a: Args) {
       { label: `${col}열 왼쪽에 삽입`, onClick: () => a.insertCol(col) },
       { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
       { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
+      ...colRevealItems,
       { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
       'separator',
       { label: a.freeze.cols === colIndex(col) + 1 ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colIndex(col) + 1 ? 0 : colIndex(col) + 1) },

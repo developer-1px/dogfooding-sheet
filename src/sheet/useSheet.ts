@@ -170,7 +170,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     rowCount, colCount: sheet.colCount, colLetters,
     hiddenRowSet: hiddenRows(filter.filter, rowCount, display),
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
-    hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
+    hideRow: hidden.hideRow, hideCol: hidden.hideCol, showRow: hidden.showRow, showCol: hidden.showCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
     setNote: notes.setNote, noteOf: notes.noteOf, editNote: opts.openNote ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
     setListRule: validation.setListRule, setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
