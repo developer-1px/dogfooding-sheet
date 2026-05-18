@@ -22,7 +22,9 @@ export function StatusBar({ selectedIds, focusId, rowCount, colCount, display, p
     if (!p) continue
     rows.add(p.row); cols.add(p.col)
     const v = display(cellKey(p.col, p.row))
-    if (v.trim() !== '') nonEmpty++
+    const trimmed = v.trim()
+    if (trimmed !== '') nonEmpty++
+    else continue
     const n = numericValue(v)
     if (Number.isFinite(n)) nums.push(n)
   }
