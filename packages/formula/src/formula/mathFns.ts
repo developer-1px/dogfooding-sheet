@@ -8,7 +8,10 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'SQRT') return String(Math.sqrt(argsN[0]))
   if (F === 'CBRT') return String(Math.cbrt(argsN[0]))
   if (F === 'POWER') return String(Math.pow(argsN[0], argsN[1]))
-  if (F === 'MOD') return String(argsN[0] % argsN[1])
+  if (F === 'MOD') {
+    const [n, d] = argsN
+    return d === 0 ? wrap('#DIV/0!') : String(n - d * Math.floor(n / d))
+  }
   if (F === 'INT') return String(Math.floor(argsN[0]))
   if (F === 'LN') return String(Math.log(argsN[0]))
   if (F === 'LOG') return String(argsN.length > 1 ? Math.log(argsN[0]) / Math.log(argsN[1]) : Math.log10(argsN[0]))
