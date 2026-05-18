@@ -6,6 +6,7 @@ const c = { A1: '5', A2: '10', A3: '3', A4: '20', A5: '8', A6: '' }
 describe('COUNTIF', () => {
   it('counts numeric matches', () => {
     expect(evaluateCell(c, '=COUNTIF(A1:A5, ">5")')).toBe('3')
+    expect(evaluateCell(c, '=COUNTIF($A$1:$A$5, ">5")')).toBe('3')
     expect(evaluateCell(c, '=COUNTIF(A1:A5, "<=5")')).toBe('2')
     expect(evaluateCell(c, '=COUNTIF(A1:A5, "10")')).toBe('1')
     expect(evaluateCell(c, '=COUNTIF(A1:A5, "<>10")')).toBe('4')
@@ -27,6 +28,7 @@ describe('SUMIF', () => {
   it('uses separate sumRange when given', () => {
     const cells = { A1: 'x', A2: 'y', A3: 'x', B1: '1', B2: '10', B3: '100' }
     expect(evaluateCell(cells, '=SUMIF(A1:A3, "x", B1:B3)')).toBe('101')
+    expect(evaluateCell(cells, '=SUMIF($A$1:$A$3, "x", $B$1:$B$3)')).toBe('101')
   })
   it('coerces formatted values in sumRange', () => {
     const cells = { A1: 'x', A2: 'x', B1: '$1,200.50', B2: '50%' }
@@ -44,6 +46,7 @@ describe('COUNTIFS / SUMIFS', () => {
   it('multi-criteria count and sum', () => {
     const cells = { A1: 'x', A2: 'x', A3: 'y', A4: 'x', B1: '5', B2: '15', B3: '15', B4: '20', C1: '1', C2: '2', C3: '3', C4: '4' }
     expect(evaluateCell(cells, '=COUNTIFS(A1:A4, "x", B1:B4, ">10")')).toBe('2')
+    expect(evaluateCell(cells, '=COUNTIFS($A$1:$A$4, "x", $B$1:$B$4, ">10")')).toBe('2')
     expect(evaluateCell(cells, '=SUMIFS(C1:C4, A1:A4, "x", B1:B4, ">10")')).toBe('6')
   })
 
