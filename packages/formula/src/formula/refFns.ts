@@ -207,6 +207,12 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     }
     return smartReturn(JSON.stringify(matrix.slice(0, rowCount).map(row => row.slice(0, colCount))))
   }
+  if (F === 'FLATTEN') {
+    const matrices = splitArgs(rawArgs).map(arg => rangeMatrix(arg, c))
+    if (matrices.length === 0 || matrices.some(matrix => matrix === null)) return smartReturn('#REF!')
+    const values = (matrices as string[][][]).flatMap(matrix => flattenMatrix(matrix, false))
+    return smartReturn(JSON.stringify(values.map(value => [value])))
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const p = parseA1(base)

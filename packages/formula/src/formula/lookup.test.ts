@@ -224,6 +224,22 @@ describe('ARRAY_CONSTRAIN', () => {
   })
 })
 
+describe('FLATTEN', () => {
+  const cells = {
+    A1: 'a', B1: 'b',
+    A2: 'c', B2: 'd',
+    D1: 'x', D2: 'y',
+  }
+
+  it('flattens a range into one column', () => {
+    expect(evaluateCell(cells, '=FLATTEN(A1:B2)')).toBe('[["a"],["b"],["c"],["d"]]')
+  })
+
+  it('flattens multiple ranges in argument order', () => {
+    expect(evaluateCell(cells, '=FLATTEN(A1:B1, D1:D2)')).toBe('[["a"],["b"],["x"],["y"]]')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
