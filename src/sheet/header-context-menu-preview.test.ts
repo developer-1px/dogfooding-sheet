@@ -124,9 +124,11 @@ describe('header context menus', () => {
 
     act(() => mouseClick(col!))
     expect(col!.classList.contains('selected-header')).toBe(true)
+    expect(col!.getAttribute('aria-selected')).toBe('true')
 
     act(() => mouseClick(row!))
     expect(row!.classList.contains('selected-header')).toBe(true)
+    expect(row!.getAttribute('aria-selected')).toBe('true')
   })
 
   it('marks headers touched by a selected range', async () => {
@@ -177,6 +179,7 @@ describe('header context menus', () => {
     act(() => mouseClick(corner!))
 
     expect(corner!.classList.contains('selected-header')).toBe(true)
+    expect(corner!.getAttribute('aria-selected')).toBe('true')
     expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
     expect(rowHeader('1')?.classList.contains('selected-header')).toBe(true)
     expect(addressText()).toBe('A:J')

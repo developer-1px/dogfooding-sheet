@@ -55,6 +55,8 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span
         className={`corner-cell${allSelected ? ' selected-header' : ''}`}
+        role="columnheader"
+        aria-selected={allSelected}
         onClick={() => {
           setSelectedIds(idsForAll(rowCount, colLetters))
           setFocusId(cellId('A', 0))
@@ -69,6 +71,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             key={c}
             {...columnHeaderProps(`h-${c}`)}
             className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${c === filterCol ? ' filtered' : ''}`}
+            aria-selected={selectedCols.has(c)}
             onClick={(e) => {
               setSelectedIds(colRangeIds(c, e.shiftKey ? focusCol : null, rowCount, colLetters))
               setFocusId(cellId(c, 0))

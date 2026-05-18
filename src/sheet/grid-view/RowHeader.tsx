@@ -40,6 +40,8 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectedIds, heightOf,
   return (
     <span
       className={`row-header${selected ? ' selected-header' : ''}`}
+      role="rowheader"
+      aria-selected={selected}
       onClick={(e) => {
         setSelectedIds(rowSelectIds(rIdx, e.shiftKey ? focusId : null, colLetters))
         setFocusId(cellId('A', rIdx))
