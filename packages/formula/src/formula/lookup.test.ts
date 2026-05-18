@@ -203,6 +203,27 @@ describe('HSTACK / VSTACK', () => {
   })
 })
 
+describe('ARRAY_CONSTRAIN', () => {
+  const cells = {
+    A1: 'a', B1: 'b', C1: 'c',
+    A2: 'd', B2: 'e', C2: 'f',
+    A3: 'g', B3: 'h', C3: 'i',
+  }
+
+  it('limits a range to requested rows and columns', () => {
+    expect(evaluateCell(cells, '=ARRAY_CONSTRAIN(A1:C3, 2, 2)')).toBe('[["a","b"],["d","e"]]')
+  })
+
+  it('caps oversized limits at the source dimensions', () => {
+    expect(evaluateCell(cells, '=ARRAY_CONSTRAIN(A1:B2, 5, 5)')).toBe('[["a","b"],["d","e"]]')
+  })
+
+  it('rejects invalid limits', () => {
+    expect(evaluateCell(cells, '=ARRAY_CONSTRAIN(A1:C3, 0, 2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=ARRAY_CONSTRAIN(A1:C3, 2, -1)')).toBe('#VALUE!')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }

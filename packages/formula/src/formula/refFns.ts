@@ -196,6 +196,17 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     )
     return smartReturn(JSON.stringify(rows))
   }
+  if (F === 'ARRAY_CONSTRAIN') {
+    const raw = splitArgs(rawArgs)
+    const matrix = rangeMatrix(raw[0] ?? '', c)
+    if (!matrix) return smartReturn('#REF!')
+    const rowCount = Math.trunc(Number(argsT[1]))
+    const colCount = Math.trunc(Number(argsT[2]))
+    if (!Number.isFinite(rowCount) || !Number.isFinite(colCount) || rowCount < 1 || colCount < 1) {
+      return smartReturn('#VALUE!')
+    }
+    return smartReturn(JSON.stringify(matrix.slice(0, rowCount).map(row => row.slice(0, colCount))))
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const p = parseA1(base)
