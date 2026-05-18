@@ -20,6 +20,11 @@ describe('evaluateCell', () => {
     expect(evaluateCell(cells({ A1: '1,234', B1: '50%', C1: '$2.50', D1: '(10)' }), '=A1+B1+C1+D1')).toBe('1227')
   })
 
+  it('coerces checkbox boolean cell values into formulas', () => {
+    expect(evaluateCell(cells({ A1: 'TRUE', A2: 'FALSE' }), '=A1+A2+1')).toBe('2')
+    expect(evaluateCell(cells({ A1: 'TRUE' }), '=IF(A1, "yes", "no")')).toBe('yes')
+  })
+
   it('SUM range', () => {
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM(A1:A3)')).toBe('6')
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM($A$1:$A$3)')).toBe('6')

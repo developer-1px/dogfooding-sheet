@@ -1,6 +1,8 @@
 export function coerceNumber(value: string): number {
   const s = value.trim()
   if (s === '') return NaN
+  if (/^true$/i.test(s)) return 1
+  if (/^false$/i.test(s)) return 0
   const paren = /^\((.*)\)$/.exec(s)
   const body = paren ? paren[1].trim() : s
   const percent = body.endsWith('%')
