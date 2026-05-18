@@ -40,6 +40,18 @@ const chooseIndex = (size: number, index: string): number | null => {
   return n > 0 ? n - 1 : size + n
 }
 
+const flattenMatrix = (matrix: string[][], scanByColumn: boolean): string[] => {
+  const values: string[] = []
+  if (scanByColumn) {
+    for (let col = 0; col < matrix[0].length; col++) {
+      for (let row = 0; row < matrix.length; row++) values.push(matrix[row][col])
+    }
+    return values
+  }
+  for (const row of matrix) values.push(...row)
+  return values
+}
+
 export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx): string | null {
   if (F === 'RANGEDIM') {
     const raw = (rawArgs ?? '').trim()
@@ -116,6 +128,15 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const colIndexes = picks.map(pick => chooseIndex(matrix[0].length, pick))
     if (colIndexes.some(index => index === null)) return smartReturn('#VALUE!')
     return smartReturn(JSON.stringify(matrix.map(row => colIndexes.map(index => row[index as number]))))
+  }
+  if (F === 'TOCOL' || F === 'TOROW') {
+    const raw = splitArgs(rawArgs)
+    const matrix = rangeMatrix(raw[0] ?? '', c)
+    if (!matrix) return smartReturn('#REF!')
+    const scanByColumn = Math.trunc(Number(argsT[2] ?? '0')) === 1
+    const values = flattenMatrix(matrix, scanByColumn)
+    const result = F === 'TOCOL' ? values.map(value => [value]) : [values]
+    return smartReturn(JSON.stringify(result))
   }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()

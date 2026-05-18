@@ -126,6 +126,23 @@ describe('CHOOSEROWS / CHOOSECOLS', () => {
   })
 })
 
+describe('TOCOL / TOROW', () => {
+  const cells = {
+    A1: 'a', B1: 'b',
+    A2: 'c', B2: 'd',
+  }
+
+  it('flattens a range by row by default', () => {
+    expect(evaluateCell(cells, '=TOCOL(A1:B2)')).toBe('[["a"],["b"],["c"],["d"]]')
+    expect(evaluateCell(cells, '=TOROW(A1:B2)')).toBe('[["a","b","c","d"]]')
+  })
+
+  it('can scan by column', () => {
+    expect(evaluateCell(cells, '=TOCOL(A1:B2, 0, 1)')).toBe('[["a"],["c"],["b"],["d"]]')
+    expect(evaluateCell(cells, '=TOROW(A1:B2, 0, 1)')).toBe('[["a","c","b","d"]]')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
