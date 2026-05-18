@@ -19,10 +19,13 @@ const literalNumber = (arg: string, c: Ctx): number => {
   return coerceNumber(c.evalRaw(`=${arg}`))
 }
 
+const collectArgRefs = (args: string[]): string[] => args.flatMap((arg) => collectRefs(arg))
+
 export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
-  const refs = collectRefs(rawArgs)
-  const literalNums = splitArgs(rawArgs)
+  const args = splitArgs(rawArgs)
+  const refs = collectArgRefs(args)
+  const literalNums = args
     .filter((arg) => collectRefs(arg).length === 0)
     .map((arg) => literalNumber(arg, c))
     .filter(Number.isFinite)
