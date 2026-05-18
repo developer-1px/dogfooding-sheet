@@ -1,7 +1,12 @@
 import { smartReturn, wrap } from './marker'
 
+const roundHalfAwayFromZero = (n: number, digits = 0): number => {
+  const m = 10 ** digits
+  return Math.sign(n || 1) * Math.round(Math.abs(n) * m) / m
+}
+
 export function dispatchMath(F: string, argsT: string[], argsN: number[]): string | null {
-  if (F === 'ROUND') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.round(n * m) / m) }
+  if (F === 'ROUND') { const [n, d = 0] = argsN; return String(roundHalfAwayFromZero(n, d)) }
   if (F === 'ABS') return String(Math.abs(argsN[0]))
   if (F === 'FLOOR') { const [n, s = 1] = argsN; return s === 0 ? '0' : String(Math.floor(n / s) * s) }
   if (F === 'CEIL' || F === 'CEILING') { const [n, s = 1] = argsN; return s === 0 ? '0' : String(Math.ceil(n / s) * s) }
