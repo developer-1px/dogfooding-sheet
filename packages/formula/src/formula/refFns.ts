@@ -1,6 +1,6 @@
 import type { Eval } from './args'
 import { COL_LETTERS, parseA1, cellKey, colIndex, type Cells } from '../a1'
-import { parseRange } from './rangeRect'
+import { evalCell as evalRangeCell, parseRange } from './rangeRect'
 import { smartReturn } from './marker'
 
 
@@ -17,6 +17,19 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const r = parseRange((rawArgs ?? '').trim())
     if (!r) return smartReturn('#REF!')
     return smartReturn(String(F === 'ROWS' ? r.rMax - r.rMin + 1 : r.cMax - r.cMin + 1))
+  }
+  if (F === 'TRANSPOSE') {
+    const r = parseRange((rawArgs ?? '').trim())
+    if (!r) return smartReturn('#REF!')
+    const rows: string[][] = []
+    for (let col = r.cMin; col <= r.cMax; col++) {
+      const row: string[] = []
+      for (let rr = r.rMin; rr <= r.rMax; rr++) {
+        row.push(evalRangeCell(c.cells, col, rr, c.evalRaw))
+      }
+      rows.push(row)
+    }
+    return smartReturn(JSON.stringify(rows))
   }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()

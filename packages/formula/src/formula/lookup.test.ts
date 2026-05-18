@@ -46,6 +46,18 @@ describe('ROWS / COLUMNS', () => {
   })
 })
 
+describe('TRANSPOSE', () => {
+  it('returns a transposed JSON matrix', () => {
+    const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
+    expect(evaluateCell(cells, '=TRANSPOSE(A1:B2)')).toBe('[["a","c"],["b","d"]]')
+  })
+
+  it('supports one-dimensional ranges as matrices', () => {
+    const cells = { A1: 'a', A2: 'b', A3: 'c' }
+    expect(evaluateCell(cells, '=TRANSPOSE(A1:A3)')).toBe('[["a","b","c"]]')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
