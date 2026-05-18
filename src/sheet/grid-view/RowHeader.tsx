@@ -1,6 +1,6 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { idsForRow } from '@spredsheet/grid'
-import { parseCellId } from '../schema'
+import { cellId, parseCellId } from '../schema'
 
 const rowSelectIds = (rIdx: number, anchor: string | null, colLetters: readonly string[]): string[] => {
   const p = anchor ? parseCellId(anchor) : null; const from = p ? p.row : rIdx
@@ -12,6 +12,7 @@ const rowSelectIds = (rIdx: number, anchor: string | null, colLetters: readonly 
 interface Props {
   rIdx: number
   focusId: string | null
+  setFocusId: (id: string) => void
   setSelectedIds: (ids: string[]) => void
   heightOf: (row: number) => number
   onResize: (row: number, h: number) => void
@@ -35,11 +36,14 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
   return <span className="row-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }} title="드래그=높이 조정 / 더블클릭=기본값 복원" />
 }
 
-export function RowHeader({ rIdx, focusId, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected }: Props) {
+export function RowHeader({ rIdx, focusId, setFocusId, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected }: Props) {
   return (
     <span
       className={`row-header${selected ? ' selected-header' : ''}`}
-      onClick={(e) => setSelectedIds(rowSelectIds(rIdx, e.shiftKey ? focusId : null, colLetters))}
+      onClick={(e) => {
+        setSelectedIds(rowSelectIds(rIdx, e.shiftKey ? focusId : null, colLetters))
+        setFocusId(cellId('A', rIdx))
+      }}
       onContextMenu={onContextMenu}
       title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정"
     >

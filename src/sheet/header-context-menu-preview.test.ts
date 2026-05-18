@@ -99,4 +99,28 @@ describe('header context menus', () => {
     expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
     expect(header('.row-header', '1')?.classList.contains('selected-header')).toBe(true)
   })
+
+  it('extends column header selection from the previous header click', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(header('.header-cell', 'B')!))
+    act(() => mouseClick(header('.header-cell', 'D')!, { shiftKey: true }))
+
+    expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(false)
+    expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.header-cell', 'C')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.header-cell', 'D')?.classList.contains('selected-header')).toBe(true)
+  })
+
+  it('extends row header selection from the previous header click', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(header('.row-header', '2')!))
+    act(() => mouseClick(header('.row-header', '4')!, { shiftKey: true }))
+
+    expect(header('.row-header', '1')?.classList.contains('selected-header')).toBe(false)
+    expect(header('.row-header', '2')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.row-header', '3')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.row-header', '4')?.classList.contains('selected-header')).toBe(true)
+  })
 })

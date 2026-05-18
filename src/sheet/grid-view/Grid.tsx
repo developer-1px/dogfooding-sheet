@@ -59,6 +59,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         onResizeEnd={onResizeEnd}
         autoFitCol={autoFitCol}
         setSelectedIds={setSelectedIds}
+        setFocusId={setFocusId}
         hiddenCols={hiddenCols}
         showCol={ctx.showCol}
         filterCol={ctx.filter?.col ?? null}
@@ -88,6 +89,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             hiddenRows={hiddenRowsManual}
             showRow={ctx.showRow}
             selectedRows={selectedRows}
+            setFocusId={setFocusId}
             focusId={focusId}
             selectedIds={selectedIds}
             editing={editing}
