@@ -17,6 +17,18 @@ const typeKey = (key: string) => {
 }
 
 describe('spreadsheet preview interactions', () => {
+  it('labels grid cells with address, value, and selection state', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const renderedCells = gridCells()
+    expect(renderedCells[0].getAttribute('aria-label')).toBe('A1 Item 현재 셀')
+
+    const a5 = renderedCells[40]
+    act(() => mouseClick(a5))
+
+    expect(a5.getAttribute('aria-label')).toBe('A5 빈 셀 선택됨 현재 셀')
+  })
+
   it('commits text typed directly after selecting an empty cell with the mouse', async () => {
     await act(async () => dom.root.render(createElement(App)))
 

@@ -6,6 +6,7 @@ Scope:
 
 - A1 keys and DOM cell ids
 - rectangular ranges and id sets
+- goto/address parsing and selection address formatting
 - pure focus/anchor/selection state transitions
 - pure fill and auto-fill write generation
 - pure formula reference picking
@@ -18,7 +19,7 @@ Internal responsibility groups:
 
 - `coordinates`: cell coordinate language and ids
 - `geometry`: rectangles and rectangular id coverage
-- `selection`: row, column, and full-grid id ranges
+- `selection`: row, column, and full-grid id ranges; address parsing and formatting
 - `selection/selectionEngine`: focus, anchor, and selected id state transitions
 - `clipboard`: grid-shaped payload conversion
 - `editing`: focus/editing/draft state transitions, series extension, formula reference picking, and fill write generation

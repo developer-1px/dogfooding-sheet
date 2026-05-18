@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, idsForFormulaPick, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
+import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, idsForFormulaPick, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -90,6 +90,21 @@ describe('@spredsheet/grid', () => {
     expect(replaceTrailingFormulaRef('=SUM(A1)', 'B2')).toBe('=SUM(A1)B2')
     expect(cycleTrailingFormulaRef('=A1')).toBe('=$A$1')
     expect(cycleTrailingFormulaRef('=SUM(A1:B2')).toBe('=SUM($A$1:$B$2')
+  })
+
+  it('resolves goto addresses and formats selections', () => {
+    const bounds = { rowCount: 3, colCount: 3 }
+    expect(resolveCellRef(' B2 ', bounds)).toBe('r1-B')
+    expect(resolveCellRef('D1', bounds)).toBeNull()
+    expect(resolveRange('A1:B2', bounds)).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
+    expect(resolveRange('B:B', bounds)).toEqual(['r0-B', 'r1-B', 'r2-B'])
+    expect(resolveRange('2:2', bounds)).toEqual(['r1-A', 'r1-B', 'r1-C'])
+    expect(resolveGotoTarget('A1:B2', bounds)).toEqual({
+      type: 'range',
+      focusId: 'r0-A',
+      selectedIds: ['r0-A', 'r0-B', 'r1-A', 'r1-B'],
+    })
+    expect(selectionAddress(['r0-A', 'r0-B', 'r1-A', 'r1-B'], null, 3, ['A', 'B', 'C'])).toBe('A1:B2')
   })
 
   it('shifts row data and row references', () => {

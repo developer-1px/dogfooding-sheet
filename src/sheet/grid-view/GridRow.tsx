@@ -80,6 +80,7 @@ export function GridRow(p: Props) {
           <Cell
             key={cell.id}
             cellProps={p.cellPropsFor(cell.id)}
+            address={k}
             label={cell.label}
             selected={cell.selected}
             focused={p.focusId === cell.id}

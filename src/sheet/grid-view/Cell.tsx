@@ -4,6 +4,7 @@ import { numericValue } from '@spredsheet/grid'
 
 interface Props {
   cellProps: ItemProps
+  address: string
   label: string
   selected: boolean
   focused: boolean
@@ -34,6 +35,12 @@ interface Props {
 }
 
 export function Cell(p: Props) {
+  const ariaLabel = [
+    p.address,
+    p.label === '' ? '빈 셀' : p.label,
+    p.selected ? '선택됨' : '',
+    p.focused ? '현재 셀' : '',
+  ].filter(Boolean).join(' ')
   const inputProps = {
     ...p.inputProps,
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -52,6 +59,7 @@ export function Cell(p: Props) {
   return (
     <span
       {...p.cellProps}
+      aria-label={ariaLabel}
       className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.isNum && numericValue(p.label) < 0 ? ' negative' : ''}${/^#[A-Z/]+!?$/.test(p.label) ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
       style={p.styleInline}
       onDoubleClick={p.onStartEdit}
@@ -65,6 +73,7 @@ export function Cell(p: Props) {
         <input
           type="checkbox"
           className="cell-checkbox"
+          aria-label={ariaLabel}
           checked={p.label === 'TRUE'}
           onChange={p.onCheckboxToggle}
           onClick={(e) => e.stopPropagation()}
