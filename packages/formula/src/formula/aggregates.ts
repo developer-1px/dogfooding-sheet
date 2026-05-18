@@ -13,12 +13,18 @@ const numericCellValues = (refs: string[], c: Ctx): number[] =>
     .map((ref) => coerceNumber(c.evalRaw(c.cells[ref] ?? '')))
     .filter(Number.isFinite)
 
+const literalNumber = (arg: string, c: Ctx): number => {
+  const direct = coerceNumber(unquote(arg))
+  if (Number.isFinite(direct)) return direct
+  return coerceNumber(c.evalRaw(`=${arg}`))
+}
+
 export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
   const refs = collectRefs(rawArgs)
   const literalNums = splitArgs(rawArgs)
     .filter((arg) => collectRefs(arg).length === 0)
-    .map((arg) => coerceNumber(unquote(arg)))
+    .map((arg) => literalNumber(arg, c))
     .filter(Number.isFinite)
   const nums = [...numericCellValues(refs, c), ...literalNums]
   if (F === 'PRODUCT') return String(nums.reduce((a, b) => a * b, 1))
