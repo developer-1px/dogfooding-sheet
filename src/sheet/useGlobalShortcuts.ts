@@ -33,6 +33,7 @@ export interface GlobalShortcutCtx {
   writeCells: WriteMany
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
+  setSelectAnchor: (id: string | null) => void
   openFind: () => void
   openReplace: () => void
   openHelp: () => void
@@ -86,7 +87,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+alt+0', () => get().hideColAtFocus?.())
   useShortcut('mod+shift+0', () => get().showAll?.())
   useShortcut('alt+shift+m', () => get().mergeSelection?.())
-  useShortcut('mod+a', () => { const c = get(); c.setSelectedIds(idsForAll(c.rowCount, c.colLetters)); c.setFocusId(cellId(c.colLetters[0], 0)) })
+  useShortcut('mod+a', () => { const c = get(); const first = cellId(c.colLetters[0], 0); c.setSelectedIds(idsForAll(c.rowCount, c.colLetters)); c.setFocusId(first); c.setSelectAnchor(first) })
   useShortcut('mod+pageup', () => get().switchTab?.(-1))
   useShortcut('mod+pagedown', () => get().switchTab?.(1))
   useShortcut('mod+shift+m', () => get().editNote?.())
