@@ -14,11 +14,13 @@ export interface Ctx {
 
 export const splitArgs = (s: string): string[] => {
   const out: string[] = []
-  let buf = '', inQ = false
+  let buf = '', inQ = false, depth = 0
   for (let i = 0; i < s.length; i++) {
     const ch = s[i]
     if (ch === '"') { inQ = !inQ; buf += ch }
-    else if (ch === ',' && !inQ) { out.push(buf); buf = '' }
+    else if (ch === '(' && !inQ) { depth++; buf += ch }
+    else if (ch === ')' && !inQ) { depth = Math.max(0, depth - 1); buf += ch }
+    else if (ch === ',' && !inQ && depth === 0) { out.push(buf); buf = '' }
     else buf += ch
   }
   if (buf) out.push(buf)

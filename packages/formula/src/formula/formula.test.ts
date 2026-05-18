@@ -73,6 +73,8 @@ describe('evaluateCell', () => {
 
   it('nested function', () => {
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=ROUND(SUM(A1:A3)/3, 2)')).toBe('2')
+    expect(evaluateCell({}, '=SUM(ROUND(1.2, 0), ROUND(2.8, 0))')).toBe('4')
+    expect(evaluateCell({}, '=AVERAGE(ROUND(1.2, 0), ROUND(2.8, 0))')).toBe('2')
   })
 
   it('circular reference returns 0 fallback', () => {
