@@ -2,13 +2,17 @@ import { splitArgs, type NumFromCell } from './args'
 import { coerceNumber } from './coerce'
 import { collectRefs } from './parse'
 
+const unquote = (arg: string): string => {
+  const s = arg.trim()
+  return s.startsWith('"') && s.endsWith('"') ? s.slice(1, -1).replace(/""/g, '"') : s
+}
 
 export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
   const refs = collectRefs(rawArgs)
   const literalNums = splitArgs(rawArgs)
     .filter((arg) => collectRefs(arg).length === 0)
-    .map((arg) => coerceNumber(arg))
+    .map((arg) => coerceNumber(unquote(arg)))
     .filter(Number.isFinite)
   const nums = [...refs.map(numFromCell), ...literalNums]
   if (F === 'PRODUCT') return String(nums.reduce((a, b) => a * b, 1))
