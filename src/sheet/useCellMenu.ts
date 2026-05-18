@@ -12,6 +12,8 @@ interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'se
   colLetters: readonly string[]
   hiddenRows: Set<number>
   hiddenCols: Set<string>
+  filterCol: string | null
+  clearFilter: () => void
   setFocusId: (id: string) => void
   writeCell: WriteCell
   noteOf: NoteLookup
@@ -65,6 +67,7 @@ export function useCellMenu(a: Args) {
       { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
       { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
       ...colRevealItems,
+      ...(a.filterCol === col ? [{ label: '필터 해제', onClick: a.clearFilter }] : []),
       { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
       'separator',
       { label: a.freeze.cols === colIndex(col) + 1 ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colIndex(col) + 1 ? 0 : colIndex(col) + 1) },
