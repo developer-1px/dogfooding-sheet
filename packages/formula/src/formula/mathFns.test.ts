@@ -204,6 +204,12 @@ describe('math functions', () => {
     expect(evaluateCell({}, '=NUMBERVALUE("xx")')).toBe('#VALUE!')
   })
 
+  it('NUMBERVALUE handles common spreadsheet number text', () => {
+    expect(evaluateCell({}, '=NUMBERVALUE(" 1 234,5 %", ",", " ")')).toBe('12.345')
+    expect(evaluateCell({}, '=NUMBERVALUE("-1.234,5", ",", ".")')).toBe('-1234.5')
+    expect(evaluateCell({}, '=NUMBERVALUE("$1,234.50")')).toBe('1234.5')
+  })
+
   it('VALUE / N coerce to number', () => {
     expect(evaluateCell({}, '=VALUE("3.14")')).toBe('3.14')
     expect(evaluateCell({}, '=VALUE("1,234.5")')).toBe('1234.5')

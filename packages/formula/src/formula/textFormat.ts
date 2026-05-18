@@ -8,6 +8,24 @@ const currentLanguage = (): string => {
   return g.navigator?.language ?? 'en-US'
 }
 
+const numberValue = (value: string, decimal: string, group: string): number => {
+  const trimmed = value.trim()
+  const paren = /^\((.*)\)$/.exec(trimmed)
+  const body = (paren ? paren[1] : trimmed).replace(/\s+/g, '')
+  const percentMatch = /%+$/.exec(body)
+  const percentCount = percentMatch?.[0].length ?? 0
+  const withoutPercent = percentCount > 0 ? body.slice(0, -percentCount) : body
+  const withoutCurrency = withoutPercent
+    .replace(/^[+$€₩¥£]/, '')
+    .replace(/[€₩¥£]$/, '')
+  const normalized = withoutCurrency.split(group).join('').split(decimal).join('.')
+  if (!/^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(normalized)) return NaN
+  const n = Number(normalized)
+  if (!Number.isFinite(n)) return NaN
+  const signed = paren ? -n : n
+  return signed / (100 ** percentCount)
+}
+
 export function dispatchTextFormat(F: string, argsT: string[]): string | null {
   const col = dispatchColor(F, argsT); if (col !== null) return col
   const human = dispatchHumanFmt(F, argsT); if (human !== null) return human
@@ -32,8 +50,7 @@ export function dispatchTextFormat(F: string, argsT: string[]): string | null {
   }
   if (F === 'NUMBERVALUE') {
     const dec = argsT[1] ?? '.', grp = argsT[2] ?? ','
-    const cleaned = (argsT[0] ?? '').split(grp).join('').replace(dec, '.')
-    const n = Number(cleaned)
+    const n = numberValue(argsT[0] ?? '', dec, grp)
     return Number.isFinite(n) ? String(n) : wrap('#VALUE!')
   }
   if (F === 'VALUE') {
