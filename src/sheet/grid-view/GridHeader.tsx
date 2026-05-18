@@ -12,6 +12,7 @@ interface Props {
   autoFitCol: (col: string) => void
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
+  setSelectAnchor: (id: string | null) => void
   hiddenCols: Set<string>
   showCol: (col: string) => void
   filterCol: string | null
@@ -50,7 +51,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
   return <span className="col-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
+export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, setSelectAnchor, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span
@@ -58,8 +59,10 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         role="columnheader"
         aria-selected={allSelected}
         onClick={() => {
+          const first = cellId('A', 0)
           setSelectedIds(idsForAll(rowCount, colLetters))
-          setFocusId(cellId('A', 0))
+          setFocusId(first)
+          setSelectAnchor(first)
         }}
       />
       {colLetters.map((c) => {
@@ -73,8 +76,10 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${c === filterCol ? ' filtered' : ''}`}
             aria-selected={selectedCols.has(c)}
             onClick={(e) => {
+              const id = cellId(c, 0)
               setSelectedIds(colRangeIds(c, e.shiftKey ? focusCol : null, rowCount, colLetters))
-              setFocusId(cellId(c, 0))
+              setFocusId(id)
+              setSelectAnchor(id)
             }}
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
             title="우클릭으로 열 메뉴"

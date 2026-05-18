@@ -5,6 +5,14 @@ import { cells as gridCells, keyDown, mouseClick, press, setupReactDOM } from '.
 
 const dom = setupReactDOM()
 
+const header = (selector: string, text: string): HTMLElement | undefined =>
+  [...document.querySelectorAll<HTMLElement>(selector)]
+    .find((el) => el.textContent?.trim().startsWith(text))
+
+const rowHeader = (text: string): HTMLElement | undefined =>
+  [...document.querySelectorAll<HTMLElement>('.row-header')]
+    .find((el) => el.childNodes[0]?.textContent?.trim() === text)
+
 describe('keyboard selection anchor', () => {
   it('resets range anchor after plain keyboard navigation', async () => {
     await act(async () => dom.root.render(createElement(App)))
@@ -39,5 +47,33 @@ describe('keyboard selection anchor', () => {
 
     const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
     expect(selected.map((cell) => cell.textContent?.trim())).toEqual(['Item', 'Qty'])
+  })
+
+  it('resets range anchor after selecting a column header', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(gridCells()[0]))
+    act(() => mouseClick(header('.header-cell', 'C')!))
+    const focused = document.querySelector<HTMLElement>('.cell.focused')
+    expect(focused?.textContent).toContain('Price')
+
+    act(() => keyDown(focused!, 'ArrowRight', { shiftKey: true }))
+
+    const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
+    expect(selected.map((cell) => cell.textContent?.trim())).toEqual(['Price', 'Total'])
+  })
+
+  it('resets range anchor after selecting a row header', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(gridCells()[0]))
+    act(() => mouseClick(rowHeader('3')!))
+    const focused = document.querySelector<HTMLElement>('.cell.focused')
+    expect(focused?.textContent).toContain('Bread')
+
+    act(() => keyDown(focused!, 'ArrowDown', { shiftKey: true }))
+
+    const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
+    expect(selected.map((cell) => cell.textContent?.trim())).toEqual(['Bread', 'Milk'])
   })
 })

@@ -25,6 +25,7 @@ interface Props {
   showRow: (row: number) => void
   selectedRows: Set<number>
   setFocusId: (id: string) => void
+  setSelectAnchor: (id: string | null) => void
   focusId: string | null
   selectedIds: string[]
   editing: string | null
@@ -61,7 +62,7 @@ interface Props {
 export function GridRow(p: Props) {
   return (
     <div {...p.rowProps} className={p.rowCls} style={{ gridTemplateColumns: p.gridTemplate, minHeight: p.rowHeight, ...(p.freezeTop !== undefined ? { top: p.freezeTop } : {}) }}>
-      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setFocusId={p.setFocusId} setSelectedIds={p.setSelectedIds} heightOf={p.heightOf} onResize={p.onResize} onResizeEnd={p.onResizeEnd} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} colLetters={p.colLetters} hiddenRows={p.hiddenRows} showRow={p.showRow} selected={p.selectedRows.has(p.rIdx)} />
+      <RowHeader rIdx={p.rIdx} focusId={p.focusId} setFocusId={p.setFocusId} setSelectAnchor={p.setSelectAnchor} setSelectedIds={p.setSelectedIds} heightOf={p.heightOf} onResize={p.onResize} onResizeEnd={p.onResizeEnd} resetRowHeight={p.resetRowHeight} onContextMenu={p.onRowHeaderContextMenu} colLetters={p.colLetters} hiddenRows={p.hiddenRows} showRow={p.showRow} selected={p.selectedRows.has(p.rIdx)} />
       {p.rowItemProps.cells.map((cell, cIdx) => {
         if (p.hiddenCols.has(p.colLetters[cIdx])) return null
         const mergeKey = `${p.rIdx},${cIdx}`
