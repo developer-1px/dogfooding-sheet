@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, keyDown, mouseClick, setupReactDOM } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, press, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -176,6 +176,25 @@ describe('header context menus', () => {
     expect(corner!.classList.contains('selected-header')).toBe(true)
     expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
     expect(rowHeader('1')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('A:J')
+  })
+
+  it('marks headers and address when keyboard shortcuts select rows, columns, and all cells', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const cells = gridCells()
+    act(() => mouseClick(cells[11]))
+
+    act(() => press(' ', { ctrlKey: true }))
+    expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('B:B')
+
+    act(() => press(' ', { shiftKey: true }))
+    expect(rowHeader('2')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('2:2')
+
+    act(() => press('a', { ctrlKey: true }))
+    expect(document.querySelector<HTMLElement>('.corner-cell')?.classList.contains('selected-header')).toBe(true)
     expect(addressText()).toBe('A:J')
   })
 })
