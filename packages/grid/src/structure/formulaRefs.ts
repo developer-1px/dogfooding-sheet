@@ -25,3 +25,13 @@ export function shiftFormulaCols(raw: string, fromCol: number, delta: 1 | -1): s
     return nextCol ? `${nextCol}${rowText}` : '#REF!'
   })
 }
+
+export function offsetFormulaRefs(raw: string, dRows: number, dCols: number, rowCount = Infinity): string {
+  if (!raw.startsWith('=')) return raw
+  return '=' + raw.slice(1).replace(A1_RE, (_match, col: string, rowText: string) => {
+    const nextRow1 = Number(rowText) + dRows
+    const nextCol = idxCol(colIndex(col) + dCols)
+    if (nextRow1 < 1 || nextRow1 > rowCount || !nextCol) return '#REF!'
+    return `${nextCol}${nextRow1}`
+  })
+}

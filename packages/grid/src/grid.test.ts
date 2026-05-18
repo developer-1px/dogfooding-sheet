@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cellId, cellKey, deleteRow, insertRow, rectFromIds, rectToTsv, sortByColumn, writesFromTsv } from './index'
+import { cellId, cellKey, deleteRow, insertRow, offsetFormulaRefs, rectFromIds, rectToTsv, sortByColumn, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -18,6 +18,12 @@ describe('@spredsheet/grid', () => {
       A1: '1',
       A2: '=#REF!',
     })
+  })
+
+  it('offsets copied formula references relatively', () => {
+    expect(offsetFormulaRefs('=A1+B2', 2, 1)).toBe('=B3+C4')
+    expect(offsetFormulaRefs('=A1', -1, 0)).toBe('=#REF!')
+    expect(offsetFormulaRefs('plain', 2, 1)).toBe('plain')
   })
 
   it('converts TSV without touching the system clipboard', () => {

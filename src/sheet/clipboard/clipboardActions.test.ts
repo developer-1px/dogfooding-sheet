@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { cellId, rectToTsv } from '@spredsheet/grid'
-import { pasteTsvAt, pasteTsvIntoSelection } from './clipboardActions'
+import { copyOrCut, pasteAt, pasteTsvAt, pasteTsvIntoSelection } from './clipboardActions'
 
 describe('rectToTsv / pasteTsv roundtrip', () => {
   it('serializes rect to tab-separated rows', () => {
@@ -34,5 +34,45 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       (k, v) => { written[k] = v },
     )
     expect(written).toEqual({ A1: 'x', B1: 'y', A2: 'x', B2: 'y' })
+  })
+
+  it('adjusts formula references when pasting an internal copy', async () => {
+    let clipboardText = ''
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (text: string) => { clipboardText = text; return Promise.resolve() },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    })
+    const written: Record<string, string> = {}
+    copyOrCut([cellId('B', 1)], false, { B2: '=A1' }, (k, v) => { written[k] = v })
+    pasteAt('B3', { col: 'B', row: 2 }, 20, (k, v) => { written[k] = v })
+    await Promise.resolve()
+    expect(written).toEqual({ B3: '=A2' })
+  })
+
+  it('adjusts formula references across a selected paste range', async () => {
+    let clipboardText = ''
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (text: string) => { clipboardText = text; return Promise.resolve() },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    })
+    const written: Record<string, string> = {}
+    copyOrCut([cellId('B', 1)], false, { B2: '=A1' }, (k, v) => { written[k] = v })
+    pasteAt(
+      'B3',
+      { col: 'B', row: 2 },
+      20,
+      (k, v) => { written[k] = v },
+      undefined,
+      undefined,
+      [cellId('B', 2), cellId('C', 2), cellId('B', 3), cellId('C', 3)],
+    )
+    await Promise.resolve()
+    expect(written).toEqual({ B3: '=A2', C3: '=B2', B4: '=A3', C4: '=B3' })
   })
 })
