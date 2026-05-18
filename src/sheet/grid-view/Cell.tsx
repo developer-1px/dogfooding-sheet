@@ -42,9 +42,12 @@ export function Cell(p: Props) {
     isError ? '오류' : '',
     p.selected ? '선택됨' : '',
     p.focused ? '현재 셀' : '',
+    p.editing ? '편집 중' : '',
   ].filter(Boolean).join(' ')
+  const editLabel = `${p.address} 편집`
   const inputProps = {
     ...p.inputProps,
+    'aria-label': editLabel,
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
       p.onFormulaPickKeyDown(e)
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
@@ -52,6 +55,7 @@ export function Cell(p: Props) {
   }
   const textareaProps = {
     ...p.inputProps,
+    'aria-label': editLabel,
     onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       p.onFormulaPickKeyDown(e)
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
@@ -85,7 +89,7 @@ export function Cell(p: Props) {
         />
       ) : p.editing ? (
         p.validationOptions ? (
-          <select className="cell-input" {...p.selectProps}>
+          <select className="cell-input" aria-label={editLabel} {...p.selectProps}>
             <option value="">—</option>
             {p.validationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>

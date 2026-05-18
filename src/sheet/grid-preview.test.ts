@@ -45,6 +45,18 @@ describe('spreadsheet preview interactions', () => {
     expect(a5.getAttribute('aria-label')).toContain('오류')
   })
 
+  it('labels the active cell editor with its cell address', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const a1 = gridCells()[0]
+    act(() => mouseClick(a1))
+    act(() => keyDown(a1, 'F2'))
+
+    const editor = document.querySelector<HTMLInputElement>('input.cell-input')
+    expect(a1.getAttribute('aria-label')).toBe('A1 Item 선택됨 현재 셀 편집 중')
+    expect(editor?.getAttribute('aria-label')).toBe('A1 편집')
+  })
+
   it('commits text typed directly after selecting an empty cell with the mouse', async () => {
     await act(async () => dom.root.render(createElement(App)))
 

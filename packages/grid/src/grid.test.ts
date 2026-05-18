@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, internalClipboardFromTsv, jumpToEdge, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, internalClipboardFromTsv, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -161,6 +161,25 @@ describe('@spredsheet/grid', () => {
       ['A1', ''],
       ['B2', ''],
     ])
+  })
+
+  it('computes merge actions and merge maps', () => {
+    expect(mergeActionForSelection(['r0-A', 'r0-B', 'r0-C'], null)).toEqual({
+      type: 'merge',
+      merge: [0, 0, 0, 2],
+      truncatedRows: false,
+    })
+    expect(mergeActionForSelection([], 'r3-B')).toEqual({ type: 'unmerge', row: 3, col: 1 })
+    expect(mergeActionForSelection(['r1-A', 'r1-B', 'r2-A'], null)).toEqual({
+      type: 'merge',
+      merge: [1, 1, 0, 1],
+      truncatedRows: true,
+    })
+    expect(addMergeToList([[0, 0, 0, 1]], [0, 0, 1, 2])).toEqual([[0, 0, 1, 2]])
+    expect(removeMergeAt([[0, 0, 0, 2]], 0, 1)).toEqual([])
+    const { anchors, hidden } = buildMergeMap([[0, 0, 0, 2]])
+    expect(anchors.get('0,0')).toEqual({ anchorR: 0, anchorC: 0, rows: 1, cols: 3 })
+    expect(hidden.has('0,1')).toBe(true)
   })
 
   it('sorts grid rows by a column while preserving outside rows', () => {
