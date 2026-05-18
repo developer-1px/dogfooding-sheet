@@ -20,6 +20,9 @@ const rowHeader = (text: string): HTMLElement | undefined =>
 const addressText = (): string | undefined =>
   document.querySelector<HTMLButtonElement>('.addr')?.textContent?.trim()
 
+const formulaValue = (): string | undefined =>
+  document.querySelector<HTMLInputElement>('.formula')?.value
+
 describe('header context menus', () => {
   it('shows column-specific actions from a column header', async () => {
     await act(async () => dom.root.render(createElement(App)))
@@ -196,5 +199,6 @@ describe('header context menus', () => {
     act(() => press('a', { ctrlKey: true }))
     expect(document.querySelector<HTMLElement>('.corner-cell')?.classList.contains('selected-header')).toBe(true)
     expect(addressText()).toBe('A:J')
+    expect(formulaValue()).toBe('Item')
   })
 })

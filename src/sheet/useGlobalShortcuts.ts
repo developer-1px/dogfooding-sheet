@@ -1,5 +1,5 @@
 import { useShortcut } from '@interactive-os/aria-kernel/key'
-import { cellKey, parseCellId, type Sheet, type SheetOps, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
+import { cellId, cellKey, parseCellId, type Sheet, type SheetOps, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
 import { copyOrCut, pasteAt } from './clipboard/clipboardActions'
 import { fillDown, fillRight } from './fill/fillDown'
 import { idsForAll, pad2 } from '@spredsheet/grid'
@@ -32,6 +32,7 @@ export interface GlobalShortcutCtx {
   writeCell: WriteCell
   writeCells: WriteMany
   setSelectedIds: (ids: string[]) => void
+  setFocusId: (id: string) => void
   openFind: () => void
   openReplace: () => void
   openHelp: () => void
@@ -85,7 +86,7 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+alt+0', () => get().hideColAtFocus?.())
   useShortcut('mod+shift+0', () => get().showAll?.())
   useShortcut('alt+shift+m', () => get().mergeSelection?.())
-  useShortcut('mod+a', () => { const c = get(); c.setSelectedIds(idsForAll(c.rowCount, c.colLetters)) })
+  useShortcut('mod+a', () => { const c = get(); c.setSelectedIds(idsForAll(c.rowCount, c.colLetters)); c.setFocusId(cellId(c.colLetters[0], 0)) })
   useShortcut('mod+pageup', () => get().switchTab?.(-1))
   useShortcut('mod+pagedown', () => get().switchTab?.(1))
   useShortcut('mod+shift+m', () => get().editNote?.())
