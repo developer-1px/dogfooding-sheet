@@ -37,6 +37,10 @@ export function useCellMenu(a: Args) {
   const openRow = (x: number, y: number, cellId: string) => { a.setFocusId(cellId); setMenu({ x, y, cellId, kind: 'row' }) }
   const openCol = (x: number, y: number, cellId: string) => { a.setFocusId(cellId); setMenu({ x, y, cellId, kind: 'col' }) }
   const close = () => setMenu(null)
+  const label = (kind: 'cell' | 'row' | 'col' = menu?.kind ?? 'cell') =>
+    kind === 'row' ? '행 헤더 컨텍스트 메뉴'
+      : kind === 'col' ? '열 헤더 컨텍스트 메뉴'
+        : '셀 컨텍스트 메뉴'
 
   const items = (cellId: string, kind: 'cell' | 'row' | 'col' = 'cell'): Array<MenuItem | 'separator'> => {
     const p = parseCellId(cellId)
@@ -106,5 +110,5 @@ export function useCellMenu(a: Args) {
     ]
   }
 
-  return { menu, open, openRow, openCol, close, items }
+  return { menu, open, openRow, openCol, close, items, label }
 }

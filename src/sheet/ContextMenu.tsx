@@ -10,11 +10,12 @@ export interface MenuItem {
 interface Props {
   x: number
   y: number
+  label?: string
   items: Array<MenuItem | 'separator'>
   onClose: () => void
 }
 
-export function ContextMenu({ x, y, items, onClose }: Props) {
+export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, onClose }: Props) {
   const itemList = items.flatMap((it, i) =>
     it === 'separator' ? [] : [{ id: `m${i}`, label: it.label, disabled: it.disabled, action: it.onClick }],
   )
@@ -29,7 +30,7 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
   }
 
   const { rootProps, menuitemProps } = useMenuPattern(data, onEvent, {
-    label: '셀 컨텍스트 메뉴',
+    label,
     autoFocus: true,
     defaultOpen: true,
     onEscape: onClose,
