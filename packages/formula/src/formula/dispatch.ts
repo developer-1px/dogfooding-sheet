@@ -14,6 +14,7 @@ import { dispatchMath } from './mathFns'
 import { dispatchNumeric } from './numericFns'
 import { dispatchFinance } from './finance'
 import { dispatchLogic } from './logicFns'
+import { filterRange } from './filter'
 import { dispatchRef } from './refFns'
 import { evalArgs, splitArgs, type Ctx } from './args'
 import { parseA1, colIndex } from '../a1'
@@ -70,6 +71,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'FIRST' || F === 'LAST') return smartReturn(firstLast(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'ARRAYTOTEXT') { const a = splitArgs(rawArgs); return smartReturn(arrayToText(a[0], argsT[1] ?? ', ', c.cells, c.evalRaw)) }
   if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
+  if (F === 'FILTER') { const a = splitArgs(rawArgs); return smartReturn(filterRange(a[0], a[1], c.cells, c.evalRaw)) }
   if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
   const stat = dispatchStat(F, argsT, rawArgs, c.numFromCell); if (stat !== null) return stat
 

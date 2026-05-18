@@ -7,7 +7,7 @@ import { ContextMenu } from '../ContextMenu'
 import { useCellMenu } from '../useCellMenu'
 import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from '../fill/useAutoFill'
-import { rectToIdSet } from '@spredsheet/grid'
+import { idsForCol, idsForRow, rectToIdSet } from '@spredsheet/grid'
 import { freezeOffsets } from './freezeOffsets'; import { buildMergeMap } from '../structure/useMerges'
 import type { SheetCtx } from '../useSheet'
 
@@ -20,8 +20,16 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   // useContextMenuGesture#156 — getHandlers(id) factory: hook 1회 + N개 핸들러.
   // contextmenu(우클릭) + Shift+F10/ContextMenu 키 둘 다 동일 onOpen으로 흡수.
   const cellCtx = useContextMenuGesture<string>({ onOpen: (id, x, y) => cellMenu.open(x, y, id) })
-  const onHeaderContextMenu = (e: React.MouseEvent, col: string) => { e.preventDefault(); cellMenu.open(e.clientX, e.clientY, cellId(col, 0)) }
-  const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => { e.preventDefault(); cellMenu.open(e.clientX, e.clientY, cellId('A', rIdx)) }
+  const onHeaderContextMenu = (e: React.MouseEvent, col: string) => {
+    e.preventDefault()
+    setSelectedIds(idsForCol(col, ctx.rowCount))
+    cellMenu.openCol(e.clientX, e.clientY, cellId(col, 0))
+  }
+  const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => {
+    e.preventDefault()
+    setSelectedIds(idsForRow(rIdx, ctx.colLetters))
+    cellMenu.openRow(e.clientX, e.clientY, cellId('A', rIdx))
+  }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, writeCells: ctx.writeCells, setSelectedIds, rowCount: ctx.rowCount, colLetters: ctx.colLetters }); const previewIds = rectToIdSet(fill.preview)
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({ data, rowCount: ctx.rowCount, colCount: ctx.colLetters.length, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing: () => editing !== null })
   const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
@@ -124,7 +132,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         <ContextMenu
           x={cellMenu.menu.x}
           y={cellMenu.menu.y}
-          items={cellMenu.items(cellMenu.menu.cellId)}
+          items={cellMenu.items(cellMenu.menu.cellId, cellMenu.menu.kind)}
           onClose={cellMenu.close}
         />
       )}

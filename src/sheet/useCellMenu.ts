@@ -22,18 +22,42 @@ interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'se
 }
 
 export function useCellMenu(a: Args) {
-  const [menu, setMenu] = useState<{ x: number; y: number; cellId: string } | null>(null)
+  const [menu, setMenu] = useState<{ x: number; y: number; cellId: string; kind: 'cell' | 'row' | 'col' } | null>(null)
 
   const open = (x: number, y: number, cellId: string) => {
     a.setFocusId(cellId)
-    setMenu({ x, y, cellId })
+    setMenu({ x, y, cellId, kind: 'cell' })
   }
+  const openRow = (x: number, y: number, cellId: string) => { a.setFocusId(cellId); setMenu({ x, y, cellId, kind: 'row' }) }
+  const openCol = (x: number, y: number, cellId: string) => { a.setFocusId(cellId); setMenu({ x, y, cellId, kind: 'col' }) }
   const close = () => setMenu(null)
 
-  const items = (cellId: string): Array<MenuItem | 'separator'> => {
+  const items = (cellId: string, kind: 'cell' | 'row' | 'col' = 'cell'): Array<MenuItem | 'separator'> => {
     const p = parseCellId(cellId)
     if (!p) return []
     const row = p.row; const col = p.col; const k = cellKey(col, row)
+    if (kind === 'row') return [
+      { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
+      { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
+      { label: '행 삭제', onClick: () => a.deleteRow(row) },
+      { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
+      { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
+      'separator',
+      { label: a.freeze.rows === row + 1 ? '행 고정 해제' : `${row + 1}행까지 고정`, onClick: () => a.setFreezeRows(a.freeze.rows === row + 1 ? 0 : row + 1) },
+      { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
+    ]
+    if (kind === 'col') return [
+      { label: `${col}열 왼쪽에 삽입`, onClick: () => a.insertCol(col) },
+      { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
+      { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
+      { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
+      'separator',
+      { label: a.freeze.cols === colIndex(col) + 1 ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colIndex(col) + 1 ? 0 : colIndex(col) + 1) },
+      { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
+      'separator',
+      { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
+      { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },
+    ]
     return [
       { label: '잘라내기', onClick: () => cutSingleCell(a.sheet.cells[k] ?? '', k, a.writeCell) },
       { label: '복사', onClick: () => copySingleCell(a.sheet.cells[k] ?? '') },
@@ -62,5 +86,5 @@ export function useCellMenu(a: Args) {
     ]
   }
 
-  return { menu, open, close, items }
+  return { menu, open, openRow, openCol, close, items }
 }

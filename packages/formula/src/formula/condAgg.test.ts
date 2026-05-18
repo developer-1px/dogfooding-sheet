@@ -185,6 +185,23 @@ describe('RANGEJSON', () => {
   })
 })
 
+describe('FILTER', () => {
+  it('filters rows by a boolean condition range', () => {
+    const cells = { A1: 'Apple', B1: '1', C1: '1', A2: 'Bread', B2: '2', C2: '0', A3: 'Milk', B3: '3', C3: 'TRUE' }
+    expect(evaluateCell(cells, '=FILTER(A1:B3, C1:C3)')).toBe('[["Apple","1"],["Milk","3"]]')
+    expect(evaluateCell(cells, '=FILTER(A1:A3, C1:C3)')).toBe('["Apple","Milk"]')
+  })
+  it('filters columns by a horizontal condition range', () => {
+    const cells = { A1: 'name', B1: 'price', C1: 'qty', A2: 'Apple', B2: '1', C2: '3', A3: '1', B3: '0', C3: '1' }
+    expect(evaluateCell(cells, '=FILTER(A1:C2, A3:C3)')).toBe('[["name","qty"],["Apple","3"]]')
+  })
+  it('returns Sheets-style errors for no matches or incompatible conditions', () => {
+    const cells = { A1: 'Apple', A2: 'Bread', B1: '0', B2: '0' }
+    expect(evaluateCell(cells, '=FILTER(A1:A2, B1:B2)')).toBe('#N/A')
+    expect(evaluateCell(cells, '=FILTER(A1:A2, A1:B2)')).toBe('#VALUE!')
+  })
+})
+
 describe('RANGESORT', () => {
   it('sorts numeric values ascending', () => {
     const cells = { A1: '3', A2: '1', A3: '2' }
