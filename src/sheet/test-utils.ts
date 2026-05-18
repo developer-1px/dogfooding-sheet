@@ -45,7 +45,7 @@ export const mouseClick = (target: Element, mod: { shiftKey?: boolean } = {}): v
  * scratch host div. Returns a holder whose `.root` / `.host` are valid inside each
  * `it()` body.
  */
-export function setupReactDom(): { root: Root; host: HTMLDivElement } {
+export function setupReactDOM(): { root: Root; host: HTMLDivElement } {
   const state = {} as { root: Root; host: HTMLDivElement }
   beforeEach(() => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = true

@@ -16,13 +16,13 @@ export interface LogEntry {
 
 export type Logger = (entry: LogEntry) => void
 
-interface AriaActions {
+interface ARIAActions {
   subscribe(listener: (event: EngineEvent) => void): () => void
 }
 
-const emptyRegistry = new Map<string, AriaActions>()
+const emptyRegistry = new Map<string, ARIAActions>()
 
-export function getAllAriaActions(): Map<string, AriaActions> {
+export function getAllARIAActions(): Map<string, ARIAActions> {
   return emptyRegistry
 }
 

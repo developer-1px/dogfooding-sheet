@@ -1,4 +1,4 @@
-import { numericValue } from '../lib/numeric'
+import { numericValue } from '@spredsheet/grid'
 import { cellKey, type Display, type CellRef } from './schema'
 
 interface Props {

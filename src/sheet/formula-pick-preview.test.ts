@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, keyDown, mouseClick, setInputValue, setupReactDom } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, setInputValue, setupReactDOM } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 const startFormulaEdit = async () => {
   await act(async () => dom.root.render(createElement(App)))

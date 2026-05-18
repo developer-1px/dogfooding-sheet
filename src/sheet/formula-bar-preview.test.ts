@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, mouseClick as click, setupReactDom, press } from './test-utils'
+import { cells as gridCells, mouseClick as click, setupReactDOM, press } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 describe('formula bar preview interactions', () => {
   it('does not let grid typing shortcuts steal keyboard input from the formula bar', async () => {

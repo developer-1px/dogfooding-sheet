@@ -6,7 +6,7 @@ const vals = (r: string, cells: Cells, e: Eval) =>
   collectRefs(r).map((x) => e(cells[x] ?? ''))
 
 /** RANGEJSON(range) — JSON array of evaluated values. */
-export const rangeJson = (r: string, c: Cells, e: Eval) =>
+export const rangeJSON = (r: string, c: Cells, e: Eval) =>
   JSON.stringify(vals(r, c, e))
 
 /** RANGECSV(range) — values comma-separated, double-quote escaped if needed. */

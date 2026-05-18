@@ -1,6 +1,6 @@
 import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
 import { aggregate } from './aggregates'
-import { sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJson, rangeSort, rangeUnique, entropy, jaccard } from './rangeOps'
+import { sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJSON, rangeSort, rangeUnique, entropy, jaccard } from './rangeOps'
 import { dispatchStat } from './statDispatch'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
 import { countifs, sumifs, minMaxIf } from './multiCriteria'
@@ -54,7 +54,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'WEIGHTAVG') { const a = splitArgs(rawArgs); return smartReturn(weightAvg(a[0], a[1], c.numFromCell)) }
   if (F === 'MAX_BY' || F === 'MIN_BY') { const a = splitArgs(rawArgs); return smartReturn(maxMinBy(F, a[0], a[1], c.cells, c.evalRaw, c.numFromCell)) }
   if (F === 'MOSTCOMMON' || F === 'LEASTCOMMON') return smartReturn(freqStat(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'RANGEJSON') return smartReturn(rangeJson(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
+  if (F === 'RANGEJSON') return smartReturn(rangeJSON(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'RANGESORT') return smartReturn(rangeSort(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'RANGEUNIQUE') return smartReturn(rangeUnique(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'ENTROPY') return smartReturn(entropy(splitArgs(rawArgs)[0], c.cells, c.evalRaw))

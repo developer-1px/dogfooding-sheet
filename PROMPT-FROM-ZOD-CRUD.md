@@ -13,7 +13,7 @@ zod-crud 유지보수팀에서 `../spredsheet` 의 zod-crud 사용을 dogfooding
 
 ## 잘 쓰고 있는 부분 (유지)
 
-- `useJsonDocument(SheetSchema, loadInitial(), { history: 100 })` — `src/sheet/useSheet.ts:23`
+- `useJSONDocument(SheetSchema, loadInitial(), { history: 100 })` — `src/sheet/useSheet.ts:23`
 - `ops.undo() / redo() / canUndo() / canRedo()` — facade verb 직접 사용
 - `useSheet.ts:40-44` 의 `writeCell` — dict-record 한 키 쓰기의 **canonical 패턴** (add/remove/replace 3분기, `as never` 없이 통과)
 - `useNotes.ts:27-31` 의 `setNote` — 동일 canonical 패턴
@@ -49,7 +49,7 @@ const writeKey = (k: string, v: V | undefined) => {
 ```ts
 // src/sheet/lib/dictOps.ts
 export function upsertKey<T extends object, K extends string, V>(
-  ops: JsonOps<T>,
+  ops: JSONOps<T>,
   base: `/${string}`,
   current: Record<string, V>,
   key: K,

@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, mouseClick, setupReactDom, press } from './test-utils'
+import { cellByText, mouseClick, setupReactDOM, press } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 describe('SSOT: undo restores ancillary state', () => {
   it('Cmd+B applies bold; Cmd+Z removes it (styles undoable)', async () => {

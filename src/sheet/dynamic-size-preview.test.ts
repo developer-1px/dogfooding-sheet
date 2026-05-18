@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { setupReactDom } from './test-utils'
+import { setupReactDOM } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 const buttonByText = (text: string): HTMLButtonElement => {
   const button = [...document.querySelectorAll<HTMLButtonElement>('button')]

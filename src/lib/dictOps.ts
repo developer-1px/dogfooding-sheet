@@ -1,4 +1,4 @@
-import type { JsonOps } from 'zod-crud'
+import type { JSONOps } from 'zod-crud'
 
 /** JSON-patch ops accepted by `ops.patch()`. Value typed loosely; site narrows as needed. */
 export type Patch = Array<{ op: 'add' | 'replace' | 'remove'; path: string; value?: unknown }>
@@ -9,7 +9,7 @@ export type Patch = Array<{ op: 'add' | 'replace' | 'remove'; path: string; valu
  * that collapses every key into one history entry.
  */
 export function upsertKey<T, V>(
-  ops: JsonOps<T>,
+  ops: JSONOps<T>,
   base: string,
   current: Record<string, V>,
   key: string,
@@ -27,7 +27,7 @@ export function upsertKey<T, V>(
 
 /** Batch multiple key writes into a single ops.patch — atomic undo. */
 export function upsertKeys<T, V>(
-  ops: JsonOps<T>,
+  ops: JSONOps<T>,
   base: string,
   current: Record<string, V>,
   entries: Array<[string, V | undefined]>,

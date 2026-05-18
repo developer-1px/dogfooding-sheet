@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, cells as gridCells, mouseClick as click, press, setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, mouseClick as click, press, setupReactDOM } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 describe('surgical key-path undo (zod-crud audit fix)', () => {
   it('bolding two cells then one undo only un-bolds the second', async () => {

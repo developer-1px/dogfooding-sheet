@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDom } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDOM } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 const typeKey = (key: string) => {
   const inp = document.querySelector<HTMLInputElement>('input.cell-input')

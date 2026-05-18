@@ -15,9 +15,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@aria/engine": ["./src/interactive-os/devtoolsAriaShims.ts"],
-      "@aria/primitives": ["./src/interactive-os/devtoolsAriaShims.ts"],
-      "@spredsheet/formula": ["./packages/formula/src/index.ts"]
+      "@aria/engine": ["./src/interactive-os/devtoolsARIAShims.ts"],
+      "@aria/primitives": ["./src/interactive-os/devtoolsARIAShims.ts"],
+      "@spredsheet/formula": ["./packages/formula/src/index.ts"],
+      "@spredsheet/grid": ["./packages/grid/src/index.ts"]
     },
 
     /* Linting */

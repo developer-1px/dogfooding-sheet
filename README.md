@@ -25,7 +25,7 @@ packages/formula/              ← internal formula package + standardization se
 
 ### SSOT (single source of truth)
 
-Everything persisted lives in **one** `useJsonDocument(SheetSchema)`:
+Everything persisted lives in **one** `useJSONDocument(SheetSchema)`:
 `cells / notes / styles / formats / validation / condFormat / freeze / hidden / colWidths / tabs`.
 
 Consequence: **undo/redo covers every state change** — bold a cell, add a note, drag a column, switch tabs — all reverse via Cmd+Z.

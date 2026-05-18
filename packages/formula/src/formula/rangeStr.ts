@@ -38,7 +38,7 @@ export function rangeHash(rangeStr: string, cells: Cells, evalRaw: Eval): string
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
-export { rangeJson, rangeCsv, rangeUnique, rangeSort } from './rangeSerial'
+export { rangeJSON, rangeCsv, rangeUnique, rangeSort } from './rangeSerial'
 
 export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, cells: Cells, evalRaw: Eval): string {
   const counts = new Map<string, number>()

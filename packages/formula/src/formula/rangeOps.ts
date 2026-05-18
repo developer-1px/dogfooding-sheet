@@ -59,4 +59,4 @@ export function rank(value: number, rangeStr: string, order: number, numFromCell
   return String(nums.filter((n) => desc ? n > value : n < value).length + 1)
 }
 
-export { sample, arrayToText, firstLast, strStat, lenStat, rangeHash, countNumeric, mostCommon, freqStat, rangeCsv, rangeJson, rangeSort, rangeUnique, entropy } from './rangeStr'
+export { sample, arrayToText, firstLast, strStat, lenStat, rangeHash, countNumeric, mostCommon, freqStat, rangeCsv, rangeJSON, rangeSort, rangeUnique, entropy } from './rangeStr'

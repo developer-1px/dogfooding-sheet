@@ -1,14 +1,14 @@
 import { wrap } from './marker'
 
-type UrlLike = {
+type URLLike = {
   hostname: string
   pathname: string
   searchParams: { get(name: string): string | null }
 }
-type UrlCtor = new (input: string) => UrlLike
+type URLCtor = new (input: string) => URLLike
 
-const parseUrl = (input: string): UrlLike => {
-  const Ctor = (globalThis as { URL?: UrlCtor }).URL
+const parseURL = (input: string): URLLike => {
+  const Ctor = (globalThis as { URL?: URLCtor }).URL
   if (!Ctor) throw new Error('URL unavailable')
   return new Ctor(input)
 }
@@ -72,10 +72,10 @@ const base64Decode = (encoded: string): string => {
 }
 
 export function dispatchTextCodec(F: string, argsT: string[]): string | null {
-  if (F === 'URLHOST') { try { return wrap(parseUrl(argsT[0]).hostname) } catch { return wrap('#VALUE!') } }
-  if (F === 'URLPATH') { try { return wrap(parseUrl(argsT[0]).pathname) } catch { return wrap('#VALUE!') } }
+  if (F === 'URLHOST') { try { return wrap(parseURL(argsT[0]).hostname) } catch { return wrap('#VALUE!') } }
+  if (F === 'URLPATH') { try { return wrap(parseURL(argsT[0]).pathname) } catch { return wrap('#VALUE!') } }
   if (F === 'URLQUERY') {
-    try { const url = parseUrl(argsT[0]); return wrap(url.searchParams.get(argsT[1] ?? '') ?? '') } catch { return wrap('#VALUE!') }
+    try { const url = parseURL(argsT[0]); return wrap(url.searchParams.get(argsT[1] ?? '') ?? '') } catch { return wrap('#VALUE!') }
   }
   if (F === 'ENCODEURL') return wrap(encodeURIComponent(argsT[0] ?? ''))
   if (F === 'DECODEURL') { try { return wrap(decodeURIComponent(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }

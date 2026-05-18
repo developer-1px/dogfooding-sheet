@@ -1,4 +1,4 @@
-@import './sheet/grid.css';
+@import './sheet/grid-view/grid.css';
 @import './sheet/overlays.css';
 
 * { box-sizing: border-box; }

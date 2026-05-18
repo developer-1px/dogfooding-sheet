@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDom } from './test-utils'
+import { cellByText, cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDOM } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 describe('cell edit: Backspace deletes character inside the input', () => {
   it('regression aria-kernel#140: Backspace inside cell-input is not preventDefault()-d by grid root', async () => {

@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, type Writes, type WriteCell, type WriteMany, type Display } from './a1'
+import { COL_LETTERS, cellKey, type Writes, type WriteCell, type WriteMany, type Display } from '@spredsheet/grid'
 
 const CSV_NEEDS_QUOTE = /[",\n\r]/
 

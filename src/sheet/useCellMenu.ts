@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { cellKey, colIndex, parseCellId, type Cells, type WriteCell } from './schema'
-import type { SheetMutations } from './sheetMutations'
-import type { FreezeState, FreezeActions } from './useFreeze'
-import type { HiddenActions } from './useHidden'
+import type { SheetMutations } from './structure/sheetMutations'
+import type { FreezeState, FreezeActions } from './visibility/useFreeze'
+import type { HiddenActions } from './visibility/useHidden'
 import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
+import { copySingleCell, cutSingleCell, pasteSingleCell } from './clipboard/clipboardActions'
 
 interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>, Pick<HiddenActions, 'hideRow' | 'hideCol'> {
   sheet: { cells: Cells }
@@ -34,9 +35,9 @@ export function useCellMenu(a: Args) {
     if (!p) return []
     const row = p.row; const col = p.col; const k = cellKey(col, row)
     return [
-      { label: '잘라내기', onClick: () => { navigator.clipboard?.writeText(a.sheet.cells[k] ?? ''); a.writeCell(k, '') } },
-      { label: '복사', onClick: () => { navigator.clipboard?.writeText(a.sheet.cells[k] ?? '') } },
-      { label: '붙여넣기', onClick: () => { navigator.clipboard?.readText().then((t) => a.writeCell(k, t)) } },
+      { label: '잘라내기', onClick: () => cutSingleCell(a.sheet.cells[k] ?? '', k, a.writeCell) },
+      { label: '복사', onClick: () => copySingleCell(a.sheet.cells[k] ?? '') },
+      { label: '붙여넣기', onClick: () => pasteSingleCell(k, a.writeCell) },
       { label: '지우기', onClick: () => a.writeCell(k, '') },
       'separator',
       { label: a.noteOf(k) ? '노트 편집' : '노트 추가', onClick: () => a.editNote(k) },

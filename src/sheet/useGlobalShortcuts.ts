@@ -1,9 +1,8 @@
 import { useShortcut } from '@interactive-os/aria-kernel/key'
 import { cellKey, parseCellId, type Sheet, type SheetOps, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
-import { copyOrCut, pasteAt } from '../lib/clipboard'
-import { fillDown, fillRight } from '../lib/fillDown'
-import { idsForAll } from '../lib/range'
-import { pad2 } from '../lib/numeric'
+import { copyOrCut, pasteAt } from './clipboard/clipboardActions'
+import { fillDown, fillRight } from './fill/fillDown'
+import { idsForAll, pad2 } from '@spredsheet/grid'
 
 const freezeFormulas = (ids: string[], cells: Sheet['cells'], display: Display, writeCells: WriteMany) => {
   const writes: Writes = []

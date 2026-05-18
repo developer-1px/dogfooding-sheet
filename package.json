@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm --dir packages/formula build && tsc -b && vite build",
+    "build": "pnpm --dir packages/grid build && pnpm --dir packages/formula build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run && pnpm --dir packages/formula test"
+    "test": "vitest run && pnpm --dir packages/grid test && pnpm --dir packages/formula test"
   },
   "dependencies": {
     "@interactive-os/anyeditable": "file:../editable/packages/anyeditable",
@@ -20,6 +20,7 @@
     "@interactive-os/keyboard-navigation": "file:../keyboard-navigation/packages/keyboard-navigation",
     "@interactive-os/site-generator": "file:../site-generator",
     "@spredsheet/formula": "workspace:*",
+    "@spredsheet/grid": "workspace:*",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zod": "^4.0.0",

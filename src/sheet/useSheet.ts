@@ -1,31 +1,31 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useJsonDocument } from 'zod-crud'
+import { useJSONDocument } from 'zod-crud'
 import { SheetSchema, colLettersFor, cellIdToKey, type Writes } from './schema'
 import { evaluateCell } from '@spredsheet/formula'
 import { loadInitial, saveSheet, buildData, moveCellId } from './storage'
 import { useShortcuts } from './useShortcuts'
-import { useFormats, applyFormat } from './useFormats'
-import { CLEAR_STYLE } from './useStyles'
-import { useStyles } from './useStyles'
-import { useFreeze } from './useFreeze'
-import { useFilter, hiddenRows } from './useFilter'
-import { useHidden } from './useHidden'
+import { useFormats, applyFormat } from './formatting/useFormats'
+import { CLEAR_STYLE } from './formatting/useStyles'
+import { useStyles } from './formatting/useStyles'
+import { useFreeze } from './visibility/useFreeze'
+import { useFilter, hiddenRows } from './visibility/useFilter'
+import { useHidden } from './visibility/useHidden'
 import { useNotes } from './useNotes'
-import { useValidation } from './useValidation'
-import { useCondFormat } from './useCondFormat'
+import { useValidation } from './validation/useValidation'
+import { useCondFormat } from './formatting/useCondFormat'
 import { exportCsv, downloadFile } from '../lib/csv'
-import { sheetMutations } from './sheetMutations'
-import { useFindState, highlightedIdsFor } from './useFindState'
-import { useTabs, tabActions } from './useTabs'
+import { sheetMutations } from './structure/sheetMutations'
+import { useFindState, highlightedIdsFor } from './find/useFindState'
+import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
-import { idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './formulaPick'
-import { rowColAtFocus } from '../lib/rowColAtFocus'
-import { useRowHeights } from './useRowHeights'; import { DEFAULT_WIDTH } from './useColWidths'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './useMerges'; import { mergeSelection } from '../lib/mergeSelection'; import { writeCellsBatch } from './writeCells'
+import { idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './selection/formulaPick'
+import { rowColAtFocus } from './structure/rowColAtFocus'
+import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
 export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string) => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
-  const doc = useJsonDocument(SheetSchema, loadInitial(), { history: 100 })
+  const doc = useJSONDocument(SheetSchema, loadInitial(), { history: 100 })
   const { value: sheet } = doc
   const rowCount = sheet.rowCount
   const colLetters = colLettersFor(sheet.colCount)

@@ -1,8 +1,8 @@
 import * as z from 'zod'
-import type { JsonOps } from 'zod-crud'
-import { COL_LETTERS as COLS } from '../lib/a1'
+import type { JSONOps } from 'zod-crud'
+import { COL_LETTERS as COLS } from '@spredsheet/grid'
 
-export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '../lib/a1'
+export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
 
 export const DEFAULT_ROW_COUNT = 20
 export const DEFAULT_COL_COUNT = 10
@@ -65,7 +65,7 @@ export const SheetSchema = TabBundleSchema.extend({
   }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
 })
 export type Sheet = z.infer<typeof SheetSchema>
-export type SheetOps = JsonOps<Sheet> & {
+export type SheetOps = JSONOps<Sheet> & {
   undo(): boolean
   redo(): boolean
   canUndo(): boolean

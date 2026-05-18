@@ -1,9 +1,9 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, keyDown, mouseClick, setupReactDom } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, setupReactDOM } from './test-utils'
 
-const dom = setupReactDom()
+const dom = setupReactDOM()
 
 describe('keyboard selection anchor', () => {
   it('resets range anchor after plain keyboard navigation', async () => {

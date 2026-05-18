@@ -1,4 +1,4 @@
-import type { JsonOps } from 'zod-crud'
+import type { JSONOps } from 'zod-crud'
 
 /**
  * One-shot migration: read a legacy localStorage key into the SSOT doc and remove it.
@@ -11,9 +11,9 @@ import type { JsonOps } from 'zod-crud'
 export function migrateLegacyKey<T, V>(
   legacyKey: string,
   isEmpty: boolean,
-  ops: JsonOps<T>,
+  ops: JSONOps<T>,
   coerce: (raw: unknown) => V | undefined,
-  load: (ops: JsonOps<T>, value: V) => void,
+  load: (ops: JSONOps<T>, value: V) => void,
 ): void {
   if (!isEmpty) return
   try {
