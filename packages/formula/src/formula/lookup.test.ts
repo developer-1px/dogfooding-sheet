@@ -73,6 +73,32 @@ describe('SEQUENCE', () => {
   })
 })
 
+describe('TAKE / DROP', () => {
+  const cells = {
+    A1: 'a', B1: 'b', C1: 'c',
+    A2: 'd', B2: 'e', C2: 'f',
+    A3: 'g', B3: 'h', C3: 'i',
+  }
+
+  it('takes rows and columns from the start of a range', () => {
+    expect(evaluateCell(cells, '=TAKE(A1:C3, 2, 2)')).toBe('[["a","b"],["d","e"]]')
+  })
+
+  it('takes rows and columns from the end with negative counts', () => {
+    expect(evaluateCell(cells, '=TAKE(A1:C3, -2, -2)')).toBe('[["e","f"],["h","i"]]')
+  })
+
+  it('drops rows and columns from either edge', () => {
+    expect(evaluateCell(cells, '=DROP(A1:C3, 1, 1)')).toBe('[["e","f"],["h","i"]]')
+    expect(evaluateCell(cells, '=DROP(A1:C3, -1, -1)')).toBe('[["a","b"],["d","e"]]')
+  })
+
+  it('rejects zero row or column counts', () => {
+    expect(evaluateCell(cells, '=TAKE(A1:C3, 0)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=DROP(A1:C3, 1, 0)')).toBe('#VALUE!')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
