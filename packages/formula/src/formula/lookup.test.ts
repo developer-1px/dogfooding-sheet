@@ -165,6 +165,26 @@ describe('WRAPROWS / WRAPCOLS', () => {
   })
 })
 
+describe('EXPAND', () => {
+  const cells = {
+    A1: 'a', B1: 'b',
+    A2: 'c', B2: 'd',
+  }
+
+  it('pads a range to requested rows and columns', () => {
+    expect(evaluateCell(cells, '=EXPAND(A1:B2, 3, 4)')).toBe('[["a","b","#N/A","#N/A"],["c","d","#N/A","#N/A"],["#N/A","#N/A","#N/A","#N/A"]]')
+  })
+
+  it('supports custom padding and omitted columns', () => {
+    expect(evaluateCell(cells, '=EXPAND(A1:B2, 3, 2, "-")')).toBe('[["a","b"],["c","d"],["-","-"]]')
+  })
+
+  it('rejects target dimensions smaller than the source', () => {
+    expect(evaluateCell(cells, '=EXPAND(A1:B2, 1, 2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=EXPAND(A1:B2, 2, 1)')).toBe('#VALUE!')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }

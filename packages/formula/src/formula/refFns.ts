@@ -163,6 +163,22 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     })
     return smartReturn(JSON.stringify(rows))
   }
+  if (F === 'EXPAND') {
+    const raw = splitArgs(rawArgs)
+    const matrix = rangeMatrix(raw[0] ?? '', c)
+    if (!matrix) return smartReturn('#REF!')
+    const rowCount = Math.trunc(Number(argsT[1]))
+    const colCount = Math.trunc(Number(argsT[2] ?? String(matrix[0].length)))
+    if (
+      !Number.isFinite(rowCount) || !Number.isFinite(colCount) ||
+      rowCount < matrix.length || colCount < matrix[0].length
+    ) return smartReturn('#VALUE!')
+    const pad = argsT[3] ?? '#N/A'
+    const rows = Array.from({ length: rowCount }, (_unused, row) =>
+      Array.from({ length: colCount }, (_unused2, col) => matrix[row]?.[col] ?? pad)
+    )
+    return smartReturn(JSON.stringify(rows))
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const p = parseA1(base)
