@@ -47,4 +47,20 @@ describe('@spredsheet/grid', () => {
       B3: '2',
     })
   })
+
+  it('sorts common formatted numeric values numerically', () => {
+    expect(sortByColumn({
+      A1: 'item', B1: 'amount',
+      A2: 'fee', B2: '$9.50',
+      A3: 'total', B3: '1,234',
+      A4: 'discount', B4: '(10)',
+      A5: 'rate', B5: '50%',
+    }, { col: 'B', dir: 'asc', rowCount: 5 })).toEqual({
+      A1: 'item', B1: 'amount',
+      A2: 'discount', B2: '(10)',
+      A3: 'rate', B3: '50%',
+      A4: 'fee', B4: '$9.50',
+      A5: 'total', B5: '1,234',
+    })
+  })
 })
