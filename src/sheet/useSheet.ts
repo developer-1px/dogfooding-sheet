@@ -11,7 +11,7 @@ import { useFreeze } from './visibility/useFreeze'
 import { useFilter, hiddenRows } from './visibility/useFilter'
 import { useHidden } from './visibility/useHidden'
 import { useNotes } from './useNotes'
-import { useValidation } from './validation/useValidation'
+import { normalizeCheckboxValue, useValidation } from './validation/useValidation'
 import { useCondFormat } from './formatting/useCondFormat'
 import { exportCsv, downloadFile } from '../lib/csv'
 import { sheetMutations } from './structure/sheetMutations'
@@ -20,7 +20,7 @@ import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
 import { cycleTrailingFormulaRef, idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './selection/formulaPick'
 import { rowColAtFocus } from './structure/rowColAtFocus'
-import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
+import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey, type Patch } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
@@ -123,6 +123,19 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
     return ids.map(cellIdToKey)
   }
+  const setCheckboxRule = (keys: string[]) => {
+    const patch: Patch = []
+    for (const k of keys) {
+      const rulePath = `/validation/${k}`
+      const value = normalizeCheckboxValue(sheet.cells[k])
+      if (sheet.validation[k] === undefined) patch.push({ op: 'add', path: rulePath, value: { type: 'checkbox' } })
+      else if (sheet.validation[k]?.type !== 'checkbox') patch.push({ op: 'replace', path: rulePath, value: { type: 'checkbox' } })
+      const cellPath = `/cells/${k}`
+      if (sheet.cells[k] === undefined) patch.push({ op: 'add', path: cellPath, value })
+      else if (sheet.cells[k] !== value) patch.push({ op: 'replace', path: cellPath, value })
+    }
+    if (patch.length) ops.patch(patch as never)
+  }
   const toggle = (k: 'b' | 'i' | 'u' | 's') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
   const toggleShowFormulas = () => setShowFormulas((v) => !v)
 
@@ -159,7 +172,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
     setNote: notes.setNote, noteOf: notes.noteOf, editNote: opts.openNote ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
-    setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
+    setListRule: validation.setListRule, setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol,
     rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, onRowResize: rowH.onResize, onRowResizeEnd: rowH.onResizeEnd, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === DEFAULT_WIDTH ? undefined : Math.max(40, Math.round(w))), merges: sheet.merges, addMerge: merges.addMerge, unmergeAt: merges.unmergeAt, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),

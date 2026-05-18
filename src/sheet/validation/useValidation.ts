@@ -14,6 +14,12 @@ export interface ValidationActions {
   clearRule: (keys: string[]) => void
 }
 
+export const normalizeCheckboxValue = (value: string | undefined): 'TRUE' | 'FALSE' => {
+  const s = (value ?? '').trim().toLowerCase()
+  if (s === 'true' || s === '1' || s === 'yes' || s === 'y' || s === 'on' || s === 'checked') return 'TRUE'
+  return 'FALSE'
+}
+
 const LEGACY_KEY = 'spreadsheet:validation:v1'
 
 const migrateLegacy = (rules: Record<string, Rule>, ops: SheetOps) =>
