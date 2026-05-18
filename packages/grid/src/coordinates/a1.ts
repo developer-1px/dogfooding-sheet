@@ -38,3 +38,18 @@ export const parseA1 = (key: string): CellRef | null => {
 
 export const colIndex = (col: string): number =>
   (COL_LETTERS as readonly string[]).indexOf(col)
+
+export const moveCellIdByDelta = (
+  id: string,
+  dRow: number,
+  dCol: number,
+  bounds: { rowCount: number; colLetters: readonly string[] },
+): string | null => {
+  const p = parseCellId(id)
+  if (!p) return null
+  const c = bounds.colLetters.indexOf(p.col)
+  if (c < 0) return null
+  const row = Math.max(0, Math.min(bounds.rowCount - 1, p.row + dRow))
+  const col = Math.max(0, Math.min(bounds.colLetters.length - 1, c + dCol))
+  return cellId(bounds.colLetters[col], row)
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { resolveCellRef, resolveRange } from './gotoCell'
+import { resolveCellRef, resolveRange, selectionAddress } from './gotoCell'
 
 const defaultBounds = { rowCount: 20, colCount: 10 }
 
@@ -43,5 +43,17 @@ describe('resolveRange', () => {
     expect(resolveRange('A1:Z5', defaultBounds)).toBeNull()
     expect(resolveRange('K:K', defaultBounds)).toBeNull()
     expect(resolveRange('21:21', defaultBounds)).toBeNull()
+  })
+})
+
+describe('selectionAddress', () => {
+  it('formats focused and rectangular selections', () => {
+    expect(selectionAddress([], 'A1', 20, ['A', 'B', 'C'])).toBe('A1')
+    expect(selectionAddress(['r0-A', 'r0-B', 'r1-A', 'r1-B'], null, 20, ['A', 'B', 'C'])).toBe('A1:B2')
+  })
+  it('formats whole column, row, and sheet selections', () => {
+    expect(selectionAddress(resolveRange('B:B', { rowCount: 3, colCount: 3 })!, null, 3, ['A', 'B', 'C'])).toBe('B:B')
+    expect(selectionAddress(resolveRange('2:2', { rowCount: 3, colCount: 3 })!, null, 3, ['A', 'B', 'C'])).toBe('2:2')
+    expect(selectionAddress(resolveRange('A:C', { rowCount: 3, colCount: 3 })!, null, 3, ['A', 'B', 'C'])).toBe('A:C')
   })
 })

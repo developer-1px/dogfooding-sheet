@@ -6,8 +6,7 @@ import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/grid-view/Grid'
 import { StatusBar } from './sheet/StatusBar'
 import { parseCellId } from './sheet/schema'
-import { rectFromIds, formatRect } from '@spredsheet/grid'
-import { gotoCell } from './sheet/selection/gotoCell'
+import { gotoCell, selectionAddress } from './sheet/selection/gotoCell'
 import { Find } from './sheet/find/Find'
 import { HelpDialog } from './sheet/HelpDialog'
 import { usePrompt } from './sheet/usePrompt'
@@ -19,17 +18,6 @@ import { DevToolsOverlay } from './interactive-os/DevToolsOverlay'
 import './App.css'
 
 const GOTO_PROMPT = { label: '이동할 셀 또는 범위 (예: B5, A1:C3, B:B, 2:2)', placeholder: 'B5 또는 B:B', submitLabel: '이동' }
-
-function selectionAddress(selectedIds: string[], focusKey: string | null, rowCount: number, colLetters: readonly string[]): string | null {
-  const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null
-  if (!rect) return focusKey
-  const fullRows = rect.rMin === 0 && rect.rMax === rowCount - 1
-  const fullCols = rect.cMin === 0 && rect.cMax === colLetters.length - 1
-  if (fullRows && fullCols) return `${colLetters[rect.cMin]}:${colLetters[rect.cMax]}`
-  if (fullRows) return `${colLetters[rect.cMin]}:${colLetters[rect.cMax]}`
-  if (fullCols) return `${rect.rMin + 1}:${rect.rMax + 1}`
-  return formatRect(rect)
-}
 
 export default function App() {
   const { ask, dialog: promptDialog } = usePrompt()

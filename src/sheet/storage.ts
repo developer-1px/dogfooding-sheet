@@ -1,6 +1,5 @@
-import { SheetSchema, initialSheet, colLettersFor, ROW_COUNT, cellKey, cellId, parseCellId, type Sheet } from './schema'
+import { SheetSchema, initialSheet, colLettersFor, ROW_COUNT, cellKey, cellId, moveCellIdByDelta, type Sheet } from './schema'
 import { fromTree, type NormalizedData } from '@interactive-os/aria-kernel'
-import { moveGrid } from '@interactive-os/keyboard-navigation'
 
 const STORAGE_KEY = 'spreadsheet:v1'
 
@@ -18,19 +17,7 @@ export const saveSheet = (sheet: Sheet) => {
 }
 
 export const moveCellId = (id: string, dRow: number, dCol: number, rowCount = ROW_COUNT, colLetters: readonly string[] = colLettersFor(10)): string | null => {
-  const p = parseCellId(id)
-  if (!p) return null
-  const rows = Array.from(
-    { length: rowCount },
-    (_, row) => colLetters.map((col) => cellId(col, row)),
-  )
-  const action =
-    dRow > 0 ? 'down'
-      : dRow < 0 ? 'up'
-        : dCol > 0 ? 'right'
-          : dCol < 0 ? 'left'
-            : null
-  return action ? moveGrid(rows, id, action) ?? id : id
+  return moveCellIdByDelta(id, dRow, dCol, { rowCount, colLetters })
 }
 
 interface Node { id: string; label: string; children?: Node[] }

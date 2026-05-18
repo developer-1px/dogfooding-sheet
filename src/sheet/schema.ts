@@ -3,7 +3,7 @@ import type { JSONOps } from 'zod-crud'
 import { COL_LETTERS as COLS } from '@spredsheet/grid'
 import { FORMAT_KEYS } from './formatting/formatTypes'
 
-export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
+export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, moveCellIdByDelta, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
 
 export const DEFAULT_ROW_COUNT = 20
 export const DEFAULT_COL_COUNT = 10

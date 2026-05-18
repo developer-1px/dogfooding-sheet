@@ -1,11 +1,37 @@
 import { describe, expect, it } from 'vitest'
-import { cellId, cellKey, deleteRow, insertRow, offsetFormulaRefs, rectFromIds, rectToTsv, sortByColumn, writesFromTsv } from './index'
+import { cancelGridEdit, cellId, cellKey, commitGridEdit, createGridEditState, deleteRow, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, sortByColumn, startGridEdit, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
     expect(cellKey('B', 2)).toBe('B3')
     expect(cellId('C', 4)).toBe('r4-C')
     expect(rectFromIds(['r1-B', 'r3-D'])).toEqual({ rMin: 1, rMax: 3, cMin: 1, cMax: 3 })
+  })
+
+  it('moves cell ids within grid bounds', () => {
+    const bounds = { rowCount: 3, colLetters: ['A', 'B', 'C'] }
+    expect(moveCellIdByDelta('r1-B', 1, 1, bounds)).toBe('r2-C')
+    expect(moveCellIdByDelta('r0-A', -1, -1, bounds)).toBe('r0-A')
+    expect(moveCellIdByDelta('x', 1, 0, bounds)).toBeNull()
+  })
+
+  it('runs edit state transitions without React or DOM', () => {
+    let state = createGridEditState('r0-A')
+    const started = startGridEdit(state, 'r0-A', 'old', { caret: 'end' })
+    state = started.state
+
+    expect(started.caret).toBe('end')
+    expect(state).toEqual({ focusId: 'r0-A', editing: 'r0-A', draft: 'old' })
+
+    const committed = commitGridEdit({ ...state, draft: 'new' }, () => 'r1-A')
+    expect(committed.write).toEqual({ id: 'r0-A', value: 'new' })
+    expect(committed.state).toEqual({ focusId: 'r1-A', editing: null, draft: '' })
+
+    expect(cancelGridEdit(startGridEdit(committed.state, 'r1-A', 'draft').state)).toEqual({
+      focusId: 'r1-A',
+      editing: null,
+      draft: '',
+    })
   })
 
   it('shifts row data and row references', () => {
