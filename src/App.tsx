@@ -87,7 +87,7 @@ export default function App() {
         reorderTab={ctx.reorderTab}
         confirm={confirm}
       />
-      <StatusBar selectedIds={ctx.selectedIds} display={ctx.display} parseId={parseCellId} />
+      <StatusBar selectedIds={ctx.selectedIds} focusId={ctx.focusId} display={ctx.display} parseId={parseCellId} />
       <HelpDialog open={ctx.helpOpen} onClose={() => ctx.setHelpOpen(false)} />
       <Find
         open={ctx.findOpen}

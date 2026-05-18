@@ -3,17 +3,19 @@ import { cellKey, type Display, type CellRef } from './schema'
 
 interface Props {
   selectedIds: string[]
+  focusId: string | null
   display: Display
   parseId: (id: string) => CellRef | null
 }
 
-export function StatusBar({ selectedIds, display, parseId }: Props) {
-  if (selectedIds.length < 2) return <footer className="status-bar" role="status" aria-live="polite"><span>{selectedIds.length} 셀</span></footer>
+export function StatusBar({ selectedIds, focusId, display, parseId }: Props) {
+  const ids = selectedIds.length > 0 ? selectedIds : (focusId ? [focusId] : [])
+  if (ids.length < 2) return <footer className="status-bar" role="status" aria-live="polite"><span>{ids.length} 셀</span></footer>
 
   const rows = new Set<number>(), cols = new Set<string>()
   const nums: number[] = []
   let nonEmpty = 0
-  for (const id of selectedIds) {
+  for (const id of ids) {
     const p = parseId(id)
     if (!p) continue
     rows.add(p.row); cols.add(p.col)
@@ -33,7 +35,7 @@ export function StatusBar({ selectedIds, display, parseId }: Props) {
 
   return (
     <footer className="status-bar" role="status" aria-live="polite">
-      <span>{selectedIds.length} 셀 ({rows.size}행 × {cols.size}열)</span>
+      <span>{ids.length} 셀 ({rows.size}행 × {cols.size}열)</span>
       <span>COUNTA: <b>{nonEmpty}</b></span>
       {nums.length > 0 && (
         <>
