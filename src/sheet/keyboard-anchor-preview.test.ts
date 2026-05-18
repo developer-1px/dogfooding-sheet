@@ -13,6 +13,10 @@ const rowHeader = (text: string): HTMLElement | undefined =>
   [...document.querySelectorAll<HTMLElement>('.row-header')]
     .find((el) => el.childNodes[0]?.textContent?.trim() === text)
 
+const contextMenu = (target: Element) => {
+  target.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 30, clientY: 30 }))
+}
+
 describe('keyboard selection anchor', () => {
   it('resets range anchor after plain keyboard navigation', async () => {
     await act(async () => dom.root.render(createElement(App)))
@@ -68,6 +72,38 @@ describe('keyboard selection anchor', () => {
 
     act(() => mouseClick(gridCells()[0]))
     act(() => mouseClick(rowHeader('3')!))
+    const focused = document.querySelector<HTMLElement>('.cell.focused')
+    expect(focused?.textContent).toContain('Bread')
+
+    act(() => keyDown(focused!, 'ArrowDown', { shiftKey: true }))
+
+    const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
+    expect(selected.map((cell) => cell.textContent?.trim())).toEqual(['Bread', 'Milk'])
+  })
+
+  it('resets range anchor after opening a column header menu', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(gridCells()[0]))
+    act(() => contextMenu(header('.header-cell', 'C')!))
+    act(() => press('Escape'))
+
+    const focused = document.querySelector<HTMLElement>('.cell.focused')
+    expect(focused?.textContent).toContain('Price')
+
+    act(() => keyDown(focused!, 'ArrowRight', { shiftKey: true }))
+
+    const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
+    expect(selected.map((cell) => cell.textContent?.trim())).toEqual(['Price', 'Total'])
+  })
+
+  it('resets range anchor after opening a row header menu', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(gridCells()[0]))
+    act(() => contextMenu(rowHeader('3')!))
+    act(() => press('Escape'))
+
     const focused = document.querySelector<HTMLElement>('.cell.focused')
     expect(focused?.textContent).toContain('Bread')
 

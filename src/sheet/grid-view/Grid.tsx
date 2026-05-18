@@ -22,13 +22,17 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const cellCtx = useContextMenuGesture<string>({ onOpen: (id, x, y) => cellMenu.open(x, y, id) })
   const onHeaderContextMenu = (e: React.MouseEvent, col: string) => {
     e.preventDefault()
+    const id = cellId(col, 0)
     setSelectedIds(idsForCol(col, ctx.rowCount))
-    cellMenu.openCol(e.clientX, e.clientY, cellId(col, 0))
+    setSelectAnchor(id)
+    cellMenu.openCol(e.clientX, e.clientY, id)
   }
   const onRowHCtx = (rIdx: number) => (e: React.MouseEvent) => {
     e.preventDefault()
+    const id = cellId('A', rIdx)
     setSelectedIds(idsForRow(rIdx, ctx.colLetters))
-    cellMenu.openRow(e.clientX, e.clientY, cellId('A', rIdx))
+    setSelectAnchor(id)
+    cellMenu.openRow(e.clientX, e.clientY, id)
   }
   const fill = useAutoFill({ selectedIds, focusId, cells: sheet.cells, writeCell, writeCells: ctx.writeCells, setSelectedIds, rowCount: ctx.rowCount, colLetters: ctx.colLetters }); const previewIds = rectToIdSet(fill.preview)
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({ data, rowCount: ctx.rowCount, colCount: ctx.colLetters.length, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing: () => editing !== null })
