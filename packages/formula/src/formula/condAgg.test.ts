@@ -19,6 +19,12 @@ describe('COUNTIF wildcards', () => {
     expect(evaluateCell(cells, '=COUNTIF(A1:A4, "ap*")')).toBe('3')
     expect(evaluateCell(cells, '=COUNTIF(A1:A4, "app??")')).toBe('1')
   })
+  it('supports tilde escaped wildcards', () => {
+    const cells = { A1: 'a*', A2: 'ab', A3: 'a?', A4: 'a~' }
+    expect(evaluateCell(cells, '=COUNTIF(A1:A4, "a~*")')).toBe('1')
+    expect(evaluateCell(cells, '=COUNTIF(A1:A4, "a~?")')).toBe('1')
+    expect(evaluateCell(cells, '=COUNTIF(A1:A4, "a~~")')).toBe('1')
+  })
 })
 
 describe('SUMIF', () => {

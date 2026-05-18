@@ -2,6 +2,7 @@ import type { Eval } from './args'
 import type { Cells } from '../a1'
 import { parseRange, evalCell } from './rangeRect'
 import { coerceNumber } from './coerce'
+import { wildcardToRegex } from './criteriaMatch'
 
 
 export { parseRange }
@@ -82,7 +83,8 @@ export function xlookup(
   if (!L || !R) return '#REF!'
   const len = Math.max(L.rMax - L.rMin, L.cMax - L.cMin) + 1
   const rowMode = L.rMax > L.rMin
-  if (![-1, 0, 1].includes(matchMode) || ![1, -1].includes(searchMode)) return '#VALUE!'
+  if (![-1, 0, 1, 2].includes(matchMode) || ![1, -1].includes(searchMode)) return '#VALUE!'
+  const wildcard = matchMode === 2 ? wildcardToRegex(key) : null
   let approximate = -1
   const start = searchMode === -1 ? len - 1 : 0
   const end = searchMode === -1 ? -1 : len
@@ -90,7 +92,9 @@ export function xlookup(
   for (let i = start; i !== end; i += step) {
     const lc = rowMode ? L.cMin : L.cMin + i
     const lr = rowMode ? L.rMin + i : L.rMin
-    const cmp = compareLookupValues(evalCell(cells, lc, lr, evalRaw), key)
+    const value = evalCell(cells, lc, lr, evalRaw)
+    if (wildcard?.test(value)) return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalRaw)
+    const cmp = compareLookupValues(value, key)
     if (cmp === 0) return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalRaw)
     if (matchMode === -1 && cmp < 0) approximate = i
     if (matchMode === 1 && cmp > 0) approximate = i

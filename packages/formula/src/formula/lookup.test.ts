@@ -90,6 +90,12 @@ describe('XLOOKUP', () => {
     expect(evaluateCell(table, '=XLOOKUP("a", A1:A3, B1:B3)')).toBe('1')
     expect(evaluateCell(table, '=XLOOKUP("a", A1:A3, B1:B3, "n/a", 0, -1)')).toBe('3')
   })
+  it('supports wildcard match mode', () => {
+    const table = { A1: 'apple', B1: '1', A2: 'apricot', B2: '2', A3: 'banana', B3: '3' }
+    expect(evaluateCell(table, '=XLOOKUP("ap*", A1:A3, B1:B3, "n/a", 2)')).toBe('1')
+    expect(evaluateCell(table, '=XLOOKUP("a????ot", A1:A3, B1:B3, "n/a", 2)')).toBe('2')
+    expect(evaluateCell(table, '=XLOOKUP("ap*", A1:A3, B1:B3, "n/a", 2, -1)')).toBe('2')
+  })
 })
 
 describe('INRANGE', () => {
