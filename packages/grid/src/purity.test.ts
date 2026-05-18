@@ -3,7 +3,7 @@ import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const root = new URL('..', import.meta.url).pathname
-const packageRoot = new URL('../..', import.meta.url).pathname
+const packageRoot = new URL('..', import.meta.url).pathname
 
 const sourceFiles = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

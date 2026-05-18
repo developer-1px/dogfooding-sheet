@@ -37,6 +37,15 @@ describe('RANGEDIM', () => {
   })
 })
 
+describe('ROWS / COLUMNS', () => {
+  it('returns range dimensions with Sheets-compatible function names', () => {
+    expect(evaluateCell({}, '=ROWS(B2:D5)')).toBe('4')
+    expect(evaluateCell({}, '=COLUMNS(B2:D5)')).toBe('3')
+    expect(evaluateCell({}, '=ROWS(A1)')).toBe('1')
+    expect(evaluateCell({}, '=COLUMNS(A1)')).toBe('1')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }

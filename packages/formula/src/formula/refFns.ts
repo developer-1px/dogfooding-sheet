@@ -13,6 +13,11 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     if (!r) return smartReturn('#REF!')
     return smartReturn(`${r.rMax - r.rMin + 1}×${r.cMax - r.cMin + 1}`)
   }
+  if (F === 'ROWS' || F === 'COLUMNS') {
+    const r = parseRange((rawArgs ?? '').trim())
+    if (!r) return smartReturn('#REF!')
+    return smartReturn(String(F === 'ROWS' ? r.rMax - r.rMin + 1 : r.cMax - r.cMin + 1))
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const p = parseA1(base)
