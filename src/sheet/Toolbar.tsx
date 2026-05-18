@@ -50,7 +50,7 @@ export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds,
       <button onClick={() => focus && insertCol(focus.col)} disabled={!focus} title={`${focusColLabel} 왼쪽에 열 삽입`} aria-label={`${focusColLabel} 왼쪽에 열 삽입`}>+열</button><button onClick={() => focus && deleteCol(focus.col)} disabled={!focus} title={`${focusColLabel} 삭제`} aria-label={`${focusColLabel} 삭제`}>−열</button>
       <button onClick={() => appendRows(20)} title={`아래에 행 20개 추가 (현재 ${rowCount}행)`}>+20행</button><button onClick={() => appendCols(1)} title={`오른쪽에 열 1개 추가 (현재 ${colCount}열)`}>+끝열</button>
       <button onClick={() => focus && sortByCol(focus.col, 'asc')} title="오름차순 정렬">↑정렬</button><button onClick={() => focus && sortByCol(focus.col, 'desc')} title="내림차순 정렬">↓정렬</button>
-      <button onClick={() => { const f = focus && autoSumFormula(focus.col, focusRow, display); if (f && focus) writeCell(cellKey(focus.col, focusRow), f) }} title="자동 합계 (위쪽 연속 숫자 합)">Σ</button>
+      <button onClick={() => { if (!focus || focusRow === undefined) return; const f = autoSumFormula(focus.col, focusRow, display); if (f) writeCell(cellKey(focus.col, focusRow), f) }} disabled={!focus} title="자동 합계 (위쪽 연속 숫자 합)">Σ</button>
       <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} />
       <button onClick={() => setAlign('left')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'center' : false} title="가운데 정렬">⇔</button>

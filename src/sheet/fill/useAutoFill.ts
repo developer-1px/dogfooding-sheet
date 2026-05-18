@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
-import { parseCellId, colIndex, cellId, type Cells, type WriteCell, type WriteMany } from '../schema'
-import { rectFromIds, rectOfCell, type Rect } from '@spredsheet/grid'
+import { type Cells, type WriteCell, type WriteMany } from '../schema'
+import { fillSourceRect, fillTargetForCell, idsInFillTarget, rectEq, type Rect } from '@spredsheet/grid'
 import { applyFill } from './applyFill'
 
 interface Args {
@@ -13,8 +13,6 @@ interface Args {
   rowCount: number
   colLetters: readonly string[]
 }
-
-const rectEq = (a: Rect, b: Rect) => a.rMin === b.rMin && a.rMax === b.rMax && a.cMin === b.cMin && a.cMax === b.cMax
 
 function useFillHandleGesture(args: {
   equals: (a: Rect, b: Rect) => boolean
@@ -59,25 +57,14 @@ function useFillHandleGesture(args: {
 export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds, rowCount, colLetters }: Args) {
   const sourceRef = useRef<Rect | null>(null)
 
-  const sourceRect = (): Rect | null => {
-    if (selectedIds.length > 1) return rectFromIds(selectedIds)
-    if (focusId) {
-      const p = parseCellId(focusId)
-      if (p) return rectOfCell(p)
-    }
-    return null
-  }
+  const sourceRect = (): Rect | null => fillSourceRect(selectedIds, focusId)
 
   const fill = useFillHandleGesture({
     equals: rectEq,
     onCommit: (src, tgt) => {
       sourceRef.current = null
       applyFill(src, tgt, cells, writeCell, writeCells)
-      const ids: string[] = []
-      for (let r = tgt.rMin; r <= tgt.rMax; r++) {
-        for (let c = tgt.cMin; c <= tgt.cMax; c++) ids.push(cellId(colLetters[c], r))
-      }
-      setSelectedIds(ids)
+      setSelectedIds(idsInFillTarget(tgt, colLetters))
     },
   })
 
@@ -92,14 +79,8 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
   const onCellEnterDuringFill = (id: string) => {
     const src = sourceRef.current
     if (!src) return
-    const p = parseCellId(id)
-    if (!p) return
-    const ci = colIndex(p.col)
-    const dRow = p.row - src.rMax
-    const dCol = ci - src.cMax
-    if (dRow <= 0 && dCol <= 0) { fill.setTarget(src); return }
-    if (dRow >= dCol) fill.setTarget({ ...src, rMax: Math.min(rowCount - 1, p.row) })
-    else fill.setTarget({ ...src, cMax: Math.min(colLetters.length - 1, ci) })
+    const target = fillTargetForCell(src, id, { rowCount, colLetters })
+    if (target) fill.setTarget(target)
   }
 
   return { onHandleMouseDown, onCellEnterDuringFill, preview: fill.preview, dragging: sourceRef.current !== null }

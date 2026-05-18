@@ -10,6 +10,7 @@ Scope:
 - keyboard navigation target calculation
 - pure focus/anchor/selection state transitions
 - pure fill and auto-fill write generation
+- fill handle source/target calculation
 - pure formula reference picking
 - row and column structural transforms
 - merge action and merge map calculation
@@ -26,7 +27,7 @@ Internal responsibility groups:
 - `selection`: row, column, and full-grid id ranges; address parsing, formatting, and navigation targets
 - `selection/selectionEngine`: focus, anchor, and selected id state transitions
 - `clipboard`: grid-shaped payload conversion and internal clipboard write generation
-- `editing`: focus/editing/draft state transitions, series extension, formula reference picking, and fill write generation
+- `editing`: focus/editing/draft state transitions, fill handle calculation, series extension, formula reference picking, and fill write generation
 - `structure`: row/column transforms, focus actions, merge calculations, and formula reference repair
 - `compute`: numeric parsing, sorting, and aggregate helpers
 

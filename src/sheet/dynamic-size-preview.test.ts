@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { setupReactDOM } from './test-utils'
+import { cells as gridCells, mouseClick, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -13,6 +13,22 @@ const buttonByText = (text: string): HTMLButtonElement => {
 }
 
 describe('dynamic sheet size', () => {
+  it('labels row and column toolbar actions with the focused target', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    expect(buttonByText('+행').getAttribute('aria-label')).toBe('1행 위에 행 삽입')
+    expect(buttonByText('−행').getAttribute('aria-label')).toBe('1행 삭제')
+    expect(buttonByText('+열').getAttribute('aria-label')).toBe('A열 왼쪽에 열 삽입')
+    expect(buttonByText('−열').getAttribute('aria-label')).toBe('A열 삭제')
+
+    act(() => mouseClick(gridCells()[11]))
+
+    expect(buttonByText('+행').getAttribute('aria-label')).toBe('2행 위에 행 삽입')
+    expect(buttonByText('−행').getAttribute('aria-label')).toBe('2행 삭제')
+    expect(buttonByText('+열').getAttribute('aria-label')).toBe('B열 왼쪽에 열 삽입')
+    expect(buttonByText('−열').getAttribute('aria-label')).toBe('B열 삭제')
+  })
+
   it('appends rows and columns from the toolbar', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
@@ -30,4 +46,3 @@ describe('dynamic sheet size', () => {
     ])
   })
 })
-

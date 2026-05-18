@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, internalClipboardFromTsv, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -79,6 +79,17 @@ describe('@spredsheet/grid', () => {
       ['A4', '4'],
       ['A5', '5'],
     ])
+  })
+
+  it('computes fill handle source, corner, target, and target ids', () => {
+    const source = { rMin: 0, rMax: 1, cMin: 0, cMax: 1 }
+    expect(fillSourceRect(['r0-A', 'r0-B', 'r1-A', 'r1-B'], null)).toEqual(source)
+    expect(fillSourceRect([], 'r2-C')).toEqual({ rMin: 2, rMax: 2, cMin: 2, cMax: 2 })
+    expect(isFillCorner('r1-B', null, ['r0-A', 'r0-B', 'r1-A', 'r1-B'])).toBe(true)
+    expect(isFillCorner('r1-A', null, ['r0-A', 'r0-B', 'r1-A', 'r1-B'])).toBe(false)
+    const target = fillTargetForCell(source, 'r4-B', { rowCount: 10, colLetters: ['A', 'B', 'C'] })
+    expect(target).toEqual({ rMin: 0, rMax: 4, cMin: 0, cMax: 1 })
+    expect(idsInFillTarget({ rMin: 0, rMax: 1, cMin: 0, cMax: 1 }, ['A', 'B'])).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
   })
 
   it('builds formula pick references and cycles absolute refs', () => {
