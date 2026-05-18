@@ -1,6 +1,7 @@
 export * from './coordinates/a1'
 export * from './geometry/rect'
 export * from './selection/range'
+export * from './selection/selectionEngine'
 export * from './clipboard/tsv'
 export * from './compute/numeric'
 export * from './structure/rowOps'

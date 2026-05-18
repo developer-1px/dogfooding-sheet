@@ -6,6 +6,7 @@ Scope:
 
 - A1 keys and DOM cell ids
 - rectangular ranges and id sets
+- pure focus/anchor/selection state transitions
 - row and column structural transforms
 - pure TSV read/write conversion
 - pure edit state transitions
@@ -16,6 +17,7 @@ Internal responsibility groups:
 - `coordinates`: cell coordinate language and ids
 - `geometry`: rectangles and rectangular id coverage
 - `selection`: row, column, and full-grid id ranges
+- `selection/selectionEngine`: focus, anchor, and selected id state transitions
 - `clipboard`: grid-shaped payload conversion
 - `editing`: focus/editing/draft state transitions
 - `structure`: row/column transforms and formula reference repair

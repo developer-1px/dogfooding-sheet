@@ -21,6 +21,7 @@ import { useEditState } from './useEditState'
 import { cycleTrailingFormulaRef, idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './selection/formulaPick'
 import { rowColAtFocus } from './structure/rowColAtFocus'
 import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey, type Patch } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
+import { createGridSelectionState, setGridSelectedIds, setGridSelectionAnchor, setGridSelectionFocus, targetGridIds, type GridSelectionUpdate } from '@spredsheet/grid'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
@@ -36,8 +37,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     canUndo: () => doc.history.canUndo,
     canRedo: () => doc.history.canRedo,
   }), [doc.commands, doc.history, doc.ops])
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [selectAnchor, setSelectAnchor] = useState<string | null>(null)
+  const [selection, setSelection] = useState(() => createGridSelectionState<string>('r0-A'))
   const fmt = useFormats(sheet.formats, ops)
   const styles = useStyles(sheet.styles, ops)
   const freeze = useFreeze(sheet.freeze, ops)
@@ -58,6 +58,14 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes)
 
   const edit = useEditState({ cells: sheet.cells, writeCell, rowCount, colLetters })
+  const selectedIds = selection.selectedIds
+  const selectAnchor = selection.anchorId
+  const setSelectedIds = useCallback((ids: GridSelectionUpdate<string>) => setSelection((s) => setGridSelectedIds(s, ids)), [])
+  const setSelectAnchor = useCallback((id: string | null) => setSelection((s) => setGridSelectionAnchor(s, id)), [])
+  const setFocusId = useCallback((id: string | null) => {
+    edit.setFocusId(id)
+    setSelection((s) => setGridSelectionFocus(s, id))
+  }, [edit])
   const formulaPickActive = edit.editing !== null && edit.draft.startsWith('=')
   const [formulaPickAnchor, setFormulaPickAnchor] = useState<string | null>(null)
   const [formulaPickTarget, setFormulaPickTarget] = useState<string | null>(null)
@@ -120,8 +128,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops)
 
   const targetKeys = (): string[] => {
-    const ids = selectedIds.length > 0 ? selectedIds : (edit.focusKey ? [edit.focusKey] : [])
-    return ids.map(cellIdToKey)
+    return targetGridIds({ focusId: edit.focusId, selectedIds }).map(cellIdToKey)
   }
   const setCheckboxRule = (keys: string[]) => {
     const patch: Patch = []
@@ -147,7 +154,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     toggleBold: () => toggle('b'), toggleItalic: () => toggle('i'), toggleUnderline: () => toggle('u'), toggleStrike: () => toggle('s'),
     clearFormat: () => styles.updateStyle(targetKeys(), CLEAR_STYLE),
     saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount, colLetters })),
-    setSelectedIds, setFocusId: edit.setFocusId, setSelectAnchor, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
+    setSelectedIds, setFocusId, setSelectAnchor, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
     toggleShowFormulas, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
     ...rowColAtFocus(edit.focusKey, { insertRow, deleteRow, insertCol, deleteCol, hideRow: hidden.hideRow, hideCol: hidden.hideCol }), showAll: hidden.showAll,
   })
@@ -157,7 +164,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     ...edit,
     commitEdit, cancelEdit,
     writeCell, writeCells, display,
-    selectedIds, setSelectedIds, setSelectAnchor,
+    selectedIds, setSelectedIds, setFocusId, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     formulaPickActive, pickFormulaRef, moveFormulaPick,
     cycleFormulaRef,

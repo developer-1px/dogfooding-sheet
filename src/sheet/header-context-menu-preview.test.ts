@@ -121,6 +121,8 @@ describe('header context menus', () => {
     const row = rowHeader('2')
     expect(col).toBeTruthy()
     expect(row).toBeTruthy()
+    expect(col!.getAttribute('aria-label')).toBe('B열')
+    expect(row!.getAttribute('aria-label')).toBe('2행')
 
     act(() => mouseClick(col!))
     expect(col!.classList.contains('selected-header')).toBe(true)
@@ -175,6 +177,8 @@ describe('header context menus', () => {
 
     const corner = document.querySelector<HTMLElement>('.corner-cell')
     expect(corner).toBeTruthy()
+    expect(corner!.getAttribute('aria-label')).toBe('전체 시트 선택')
+    expect(corner!.title).toBe('전체 시트 선택')
 
     act(() => mouseClick(corner!))
 

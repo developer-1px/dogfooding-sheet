@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cancelGridEdit, cellId, cellKey, commitGridEdit, createGridEditState, deleteRow, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, sortByColumn, startGridEdit, writesFromTsv } from './index'
+import { cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, deleteRow, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -32,6 +32,18 @@ describe('@spredsheet/grid', () => {
       editing: null,
       draft: '',
     })
+  })
+
+  it('runs selection state transitions without React or DOM', () => {
+    let state = createGridSelectionState('r0-A')
+    state = setGridSelectedIds(state, ['r0-A', 'r0-B'])
+    state = setGridSelectionFocus(state, 'r1-C', { anchor: 'r1-C', clearSelection: true })
+
+    expect(state).toEqual({ focusId: 'r1-C', anchorId: 'r1-C', selectedIds: [] })
+    expect(targetGridIds(state)).toEqual(['r1-C'])
+
+    state = setGridSelectedIds(state, (ids) => [...ids, 'r1-C'])
+    expect(clearGridSelection(state)).toEqual({ focusId: 'r1-C', anchorId: 'r1-C', selectedIds: [] })
   })
 
   it('shifts row data and row references', () => {
