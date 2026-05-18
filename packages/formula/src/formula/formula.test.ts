@@ -48,6 +48,9 @@ describe('evaluateCell', () => {
     expect(evaluateCell(cells({ A1: '4', A2: 'text', A3: '8' }), '=AVERAGE(A1:A3)')).toBe('6')
     expect(evaluateCell(cells({ A1: '4', A2: 'text', A3: '8' }), '=COUNT(A1:A3)')).toBe('2')
     expect(evaluateCell(cells({ A1: '4', A2: 'text', A3: '8' }), '=MIN(A1:A3)')).toBe('4')
+    expect(evaluateCell(cells({ A1: 'text', A2: '' }), '=AVERAGE(A1:A2)')).toBe('#DIV/0!')
+    expect(evaluateCell(cells({ A1: 'text', A2: '' }), '=COUNT(A1:A2)')).toBe('0')
+    expect(evaluateCell(cells({ A1: 'text', A2: '' }), '=MIN(A1:A2)')).toBe('#VALUE!')
   })
 
   it('IF with comparison', () => {

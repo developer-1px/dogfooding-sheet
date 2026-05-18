@@ -1,5 +1,6 @@
 import { splitArgs, type Ctx } from './args'
 import { coerceNumber } from './coerce'
+import { wrap } from './marker'
 import { collectRefs } from './parse'
 
 const unquote = (arg: string): string => {
@@ -37,6 +38,11 @@ export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
     return String(best)
   }
   if (F === 'SUM') return String(nums.reduce((a, b) => a + b, 0))
+  if (nums.length === 0) {
+    if (F === 'COUNT') return '0'
+    if (F === 'AVERAGE' || F === 'MEDIAN' || F === 'STDEV' || F === 'STDEVP' || F === 'VAR' || F === 'VARP') return wrap('#DIV/0!')
+    return wrap('#VALUE!')
+  }
   const mean = nums.reduce((a, b) => a + b, 0) / Math.max(1, nums.length)
   if (F === 'AVERAGE') return String(mean)
   if (F === 'MIN') return String(Math.min(...nums))
