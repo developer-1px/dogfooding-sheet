@@ -39,7 +39,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
     return F === 'ROW' ? String(p.row + 1) : String(colIndex(p.col) + 1)
   }
 
-  const agg = aggregate(F, rawArgs, c.numFromCell)
+  const agg = aggregate(F, rawArgs, c)
   if (agg !== null) return agg
 
   const argsT = evalArgs(rawArgs, c)

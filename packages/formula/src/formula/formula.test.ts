@@ -45,6 +45,9 @@ describe('evaluateCell', () => {
     expect(evaluateCell({}, '=MAX(8, 4, 6)')).toBe('8')
     expect(evaluateCell({}, '=COUNT(8, 4, "x")')).toBe('2')
     expect(evaluateCell({}, '=COUNT("8", TRUE, "x")')).toBe('2')
+    expect(evaluateCell(cells({ A1: '4', A2: 'text', A3: '8' }), '=AVERAGE(A1:A3)')).toBe('6')
+    expect(evaluateCell(cells({ A1: '4', A2: 'text', A3: '8' }), '=COUNT(A1:A3)')).toBe('2')
+    expect(evaluateCell(cells({ A1: '4', A2: 'text', A3: '8' }), '=MIN(A1:A3)')).toBe('4')
   })
 
   it('IF with comparison', () => {

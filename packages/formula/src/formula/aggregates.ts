@@ -1,4 +1,4 @@
-import { splitArgs, type NumFromCell } from './args'
+import { splitArgs, type Ctx } from './args'
 import { coerceNumber } from './coerce'
 import { collectRefs } from './parse'
 
@@ -7,14 +7,19 @@ const unquote = (arg: string): string => {
   return s.startsWith('"') && s.endsWith('"') ? s.slice(1, -1).replace(/""/g, '"') : s
 }
 
-export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell): string | null {
+const numericCellValues = (refs: string[], c: Ctx): number[] =>
+  refs
+    .map((ref) => coerceNumber(c.evalRaw(c.cells[ref] ?? '')))
+    .filter(Number.isFinite)
+
+export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
   const refs = collectRefs(rawArgs)
   const literalNums = splitArgs(rawArgs)
     .filter((arg) => collectRefs(arg).length === 0)
     .map((arg) => coerceNumber(unquote(arg)))
     .filter(Number.isFinite)
-  const nums = [...refs.map(numFromCell), ...literalNums]
+  const nums = [...numericCellValues(refs, c), ...literalNums]
   if (F === 'PRODUCT') return String(nums.reduce((a, b) => a * b, 1))
   if (F === 'SUMSQ') return String(nums.reduce((a, b) => a + b * b, 0))
   if (F === 'AVEDEV') {
@@ -38,7 +43,7 @@ export function aggregate(F: string, rawArgs: string, numFromCell: NumFromCell):
   if (F === 'MAX') return String(Math.max(...nums))
   if (F === 'COUNT') return String(nums.length)
   if (F === 'MAXA' || F === 'MINA' || F === 'AVERAGEA') {
-    const vs = [...refs.map((r) => numFromCell(r)), ...literalNums]
+    const vs = [...refs.map((r) => c.numFromCell(r)), ...literalNums]
     if (vs.length === 0) return '0'
     if (F === 'MAXA') return String(Math.max(...vs))
     if (F === 'MINA') return String(Math.min(...vs))
