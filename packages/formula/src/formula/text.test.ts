@@ -270,10 +270,14 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TIMEVALUE("06:00:00")')).toBe('0.25')
   })
   it('TIME / HOUR / MINUTE / SECOND', () => {
-    expect(evaluateCell({}, '=TIME(13,5,30)')).toBe('13:05:30')
+    expect(Number(evaluateCell({}, '=TIME(13,5,30)'))).toBeCloseTo((13 * 3600 + 5 * 60 + 30) / 86400)
+    expect(Number(evaluateCell({}, '=TIME(25,0,0)'))).toBeCloseTo(1 / 24)
     expect(evaluateCell({}, '=HOUR("13:05:30")')).toBe('13')
     expect(evaluateCell({}, '=MINUTE("13:05:30")')).toBe('5')
     expect(evaluateCell({}, '=SECOND("13:05:30")')).toBe('30')
+    expect(evaluateCell({}, '=HOUR(0.5)')).toBe('12')
+    expect(evaluateCell({}, '=MINUTE(TIME(1, 65, 30))')).toBe('5')
+    expect(evaluateCell({}, '=SECOND(TIME(1, 65, 30))')).toBe('30')
   })
   it('WORKDAY skips weekends', () => {
     // 2026-05-08 is Fri → +1 workday = Mon 2026-05-11
