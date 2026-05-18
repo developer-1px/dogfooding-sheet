@@ -34,6 +34,11 @@ describe('applyFormat', () => {
     expect(applyFormat('2', 'date')).toBe('1900-01-01')
     expect(applyFormat(evaluateCell({}, '=DATEVALUE("2026-01-01")'), 'date')).toBe('2026-01-01')
   })
+  it('time format displays spreadsheet time serials', () => {
+    expect(applyFormat('0.5', 'time')).toBe('12:00:00')
+    expect(applyFormat(evaluateCell({}, '=TIME(13,5,30)'), 'time')).toBe('13:05:30')
+    expect(applyFormat(evaluateCell({}, '=TIME(25,0,0)'), 'time')).toBe('01:00:00')
+  })
   it('non-numeric values pass through', () => {
     expect(applyFormat('hello', 'currency')).toBe('hello')
     expect(applyFormat('', 'percent')).toBe('')

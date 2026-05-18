@@ -3,7 +3,7 @@ import type { SheetOps } from '../schema'
 import { upsertKeys } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
-export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date'
+export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date' | 'time'
 export type FormatLookup = (k: string) => Format
 const LEGACY_KEY = 'spreadsheet:formats:v1'
 
@@ -28,11 +28,22 @@ const EUR = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' 
 const KRW = new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' })
 const SHEET_EPOCH_UTC = Date.UTC(1899, 11, 30)
 const DAY_MS = 24 * 60 * 60 * 1000
+const DAY_SECONDS = 24 * 60 * 60
 
 function dateFromNumber(n: number): Date {
   if (n > 1e10) return new Date(n)
   if (n > 1e8) return new Date(n * 1000)
   return new Date(SHEET_EPOCH_UTC + n * DAY_MS)
+}
+
+function timeFromNumber(n: number): string {
+  const total = Math.round((((n % 1) + 1) % 1) * DAY_SECONDS)
+  const wrapped = total % DAY_SECONDS
+  const h = Math.floor(wrapped / 3600)
+  const m = Math.floor(wrapped / 60) % 60
+  const s = wrapped % 60
+  const pad = (x: number) => String(x).padStart(2, '0')
+  return `${pad(h)}:${pad(m)}:${pad(s)}`
 }
 
 export function applyFormat(value: string, fmt: Format): string {
@@ -46,6 +57,7 @@ export function applyFormat(value: string, fmt: Format): string {
   if (fmt === 'integer') return String(Math.round(n))
   if (fmt === 'thousand') return n.toLocaleString('en-US')
   if (fmt === 'scientific') return n.toExponential(2)
+  if (fmt === 'time') return timeFromNumber(n)
   if (fmt === 'date') {
     const d = dateFromNumber(n)
     if (isNaN(d.getTime())) return value

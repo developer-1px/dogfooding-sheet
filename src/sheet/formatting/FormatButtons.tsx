@@ -9,6 +9,7 @@ const FORMATS: Array<[Format, string, string]> = [
   ['thousand', '1,K', '1,000 천단위'],
   ['scientific', '1E', '과학 표기'],
   ['date', '📅', 'epoch → 날짜'],
+  ['time', '⏱', '시간'],
   ['plain', '123', '일반'],
 ]
 
