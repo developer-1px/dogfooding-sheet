@@ -17,6 +17,7 @@ interface Props {
   filterCol: string | null
   focusCol: string | null
   selectedCols: Set<string>
+  allSelected: boolean
   onHeaderContextMenu: (e: React.MouseEvent, col: string) => void
   rowCount: number
   colLetters: readonly string[]
@@ -49,10 +50,16 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
   return <span className="col-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, hiddenCols, showCol, filterCol, focusCol, selectedCols, onHeaderContextMenu, rowCount, colLetters }: Props) {
+export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
-      <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(rowCount, colLetters))} />
+      <span
+        className={`corner-cell${allSelected ? ' selected-header' : ''}`}
+        onClick={() => {
+          setSelectedIds(idsForAll(rowCount, colLetters))
+          setFocusId(cellId('A', 0))
+        }}
+      />
       {colLetters.map((c) => {
         if (hiddenCols.has(c)) return null
         const prev = colLetters[colIndex(c) - 1]

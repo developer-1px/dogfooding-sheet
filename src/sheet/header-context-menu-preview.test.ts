@@ -123,4 +123,17 @@ describe('header context menus', () => {
     expect(header('.row-header', '3')?.classList.contains('selected-header')).toBe(true)
     expect(header('.row-header', '4')?.classList.contains('selected-header')).toBe(true)
   })
+
+  it('marks the corner header when the whole sheet is selected', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const corner = document.querySelector<HTMLElement>('.corner-cell')
+    expect(corner).toBeTruthy()
+
+    act(() => mouseClick(corner!))
+
+    expect(corner!.classList.contains('selected-header')).toBe(true)
+    expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.row-header', '1')?.classList.contains('selected-header')).toBe(true)
+  })
 })

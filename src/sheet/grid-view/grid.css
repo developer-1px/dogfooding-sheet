@@ -79,7 +79,7 @@
 }
 
 .header-cell.active, .grid-row.active-row > .row-header { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
-.header-cell.selected-header, .row-header.selected-header { background: #d2e3fc; color: #174ea6; font-weight: 600; }
+.corner-cell.selected-header, .header-cell.selected-header, .row-header.selected-header { background: #d2e3fc; color: #174ea6; font-weight: 600; }
 
 .cell.underline { text-decoration: underline; }
 .cell.strike { text-decoration: line-through; }

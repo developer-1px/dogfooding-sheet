@@ -46,6 +46,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   }
   const selectedCols = new Set(selectedColCounts.keys())
   const selectedRows = new Set(selectedRowCounts.keys())
+  const allSelected = selectedIds.length >= ctx.rowCount * ctx.colLetters.length
   const { tops: freezeTops, lefts: freezeLefts } = freezeOffsets(freeze.rows, freeze.cols, ctx.rowHeightOf, widthOf); const mergeMap = buildMergeMap(ctx.merges)
   const gridTemplate = gridTemplateFor(visibleCols); const dataRows = rows
 
@@ -65,6 +66,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         filterCol={ctx.filter?.col ?? null}
         focusCol={focusCol}
         selectedCols={selectedCols}
+        allSelected={allSelected}
         onHeaderContextMenu={onHeaderContextMenu}
         rowCount={ctx.rowCount}
         colLetters={ctx.colLetters}
