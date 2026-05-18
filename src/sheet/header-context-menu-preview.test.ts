@@ -13,6 +13,10 @@ const header = (selector: string, text: string): HTMLElement | undefined =>
   [...document.querySelectorAll<HTMLElement>(selector)]
     .find((el) => el.textContent?.trim().startsWith(text))
 
+const rowHeader = (text: string): HTMLElement | undefined =>
+  [...document.querySelectorAll<HTMLElement>('.row-header')]
+    .find((el) => el.childNodes[0]?.textContent?.trim() === text)
+
 describe('header context menus', () => {
   it('shows column-specific actions from a column header', async () => {
     await act(async () => dom.root.render(createElement(App)))
@@ -30,7 +34,7 @@ describe('header context menus', () => {
   it('shows row-specific actions from a row header', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const row = header('.row-header', '2')
+    const row = rowHeader('2')
     expect(row).toBeTruthy()
 
     act(() => contextMenu(row!))
@@ -72,11 +76,43 @@ describe('header context menus', () => {
     expect(header('.header-cell', 'B')).toBeTruthy()
   })
 
+  it('can restore a hidden adjacent row from a header menu', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => contextMenu(rowHeader('2')!))
+    act(() => document.querySelectorAll<HTMLButtonElement>('.ctx-item')
+      .forEach((button) => { if (button.textContent === '2행 숨기기') button.click() }))
+    expect(rowHeader('2')).toBeUndefined()
+
+    act(() => contextMenu(rowHeader('1')!))
+    const restore = [...document.querySelectorAll<HTMLButtonElement>('.ctx-item')]
+      .find((button) => button.textContent === '2행 숨김 표시')
+    expect(restore).toBeTruthy()
+
+    act(() => restore!.click())
+    expect(rowHeader('2')).toBeTruthy()
+  })
+
+  it('shows an inline unhide control beside hidden rows', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => contextMenu(rowHeader('2')!))
+    act(() => document.querySelectorAll<HTMLButtonElement>('.ctx-item')
+      .forEach((button) => { if (button.textContent === '2행 숨기기') button.click() }))
+    expect(rowHeader('2')).toBeUndefined()
+
+    const restore = document.querySelector<HTMLButtonElement>('.unhide-row[aria-label="2행 숨김 표시"]')
+    expect(restore).toBeTruthy()
+
+    act(() => restore!.click())
+    expect(rowHeader('2')).toBeTruthy()
+  })
+
   it('marks selected row and column headers', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
     const col = header('.header-cell', 'B')
-    const row = header('.row-header', '2')
+    const row = rowHeader('2')
     expect(col).toBeTruthy()
     expect(row).toBeTruthy()
 
@@ -97,7 +133,7 @@ describe('header context menus', () => {
 
     expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
     expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
-    expect(header('.row-header', '1')?.classList.contains('selected-header')).toBe(true)
+    expect(rowHeader('1')?.classList.contains('selected-header')).toBe(true)
   })
 
   it('extends column header selection from the previous header click', async () => {
@@ -115,13 +151,13 @@ describe('header context menus', () => {
   it('extends row header selection from the previous header click', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    act(() => mouseClick(header('.row-header', '2')!))
-    act(() => mouseClick(header('.row-header', '4')!, { shiftKey: true }))
+    act(() => mouseClick(rowHeader('2')!))
+    act(() => mouseClick(rowHeader('4')!, { shiftKey: true }))
 
-    expect(header('.row-header', '1')?.classList.contains('selected-header')).toBe(false)
-    expect(header('.row-header', '2')?.classList.contains('selected-header')).toBe(true)
-    expect(header('.row-header', '3')?.classList.contains('selected-header')).toBe(true)
-    expect(header('.row-header', '4')?.classList.contains('selected-header')).toBe(true)
+    expect(rowHeader('1')?.classList.contains('selected-header')).toBe(false)
+    expect(rowHeader('2')?.classList.contains('selected-header')).toBe(true)
+    expect(rowHeader('3')?.classList.contains('selected-header')).toBe(true)
+    expect(rowHeader('4')?.classList.contains('selected-header')).toBe(true)
   })
 
   it('marks the corner header when the whole sheet is selected', async () => {
@@ -134,6 +170,6 @@ describe('header context menus', () => {
 
     expect(corner!.classList.contains('selected-header')).toBe(true)
     expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
-    expect(header('.row-header', '1')?.classList.contains('selected-header')).toBe(true)
+    expect(rowHeader('1')?.classList.contains('selected-header')).toBe(true)
   })
 })
