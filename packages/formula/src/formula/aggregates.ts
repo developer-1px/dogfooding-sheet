@@ -19,14 +19,17 @@ const literalNumber = (arg: string, c: Ctx): number => {
   return coerceNumber(c.evalRaw(`=${arg}`))
 }
 
-const collectArgRefs = (args: string[]): string[] => args.flatMap((arg) => collectRefs(arg))
+const isPureRefArg = (arg: string): boolean =>
+  /^\s*\$?[A-Z]\$?\d+(?::\$?[A-Z]\$?\d+)?\s*$/.test(arg)
+
+const collectArgRefs = (args: string[]): string[] => args.filter(isPureRefArg).flatMap((arg) => collectRefs(arg))
 
 export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
   const args = splitArgs(rawArgs)
   const refs = collectArgRefs(args)
   const literalNums = args
-    .filter((arg) => collectRefs(arg).length === 0)
+    .filter((arg) => !isPureRefArg(arg))
     .map((arg) => literalNumber(arg, c))
     .filter(Number.isFinite)
   const nums = [...numericCellValues(refs, c), ...literalNums]
