@@ -1,7 +1,6 @@
 import { smartReturn } from './marker'
 import { coerceNumber } from './coerce'
-
-const isErrorValue = (value: string): boolean => /^#[A-Z0-9/]+!?$/.test(value)
+import { isErrorValue } from './errorValue'
 
 export function dispatchLogic(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'AND') return argsN.every((n) => !!n) ? '1' : '0'

@@ -1,5 +1,6 @@
 import { splitArgs, type Ctx } from './args'
 import { coerceNumber } from './coerce'
+import { isErrorValue } from './errorValue'
 import { wrap } from './marker'
 import { collectRefs } from './parse'
 
@@ -13,19 +14,17 @@ const numericCellValues = (refs: string[], c: Ctx): number[] =>
     .map((ref) => coerceNumber(c.evalRaw(c.cells[ref] ?? '')))
     .filter(Number.isFinite)
 
-const isError = (value: string): boolean => /^#[A-Z0-9/]+!?$/.test(value)
-
 const firstError = (refs: string[], args: string[], c: Ctx): string | undefined => {
   for (const ref of refs) {
     const value = c.evalRaw(c.cells[ref] ?? '')
-    if (isError(value)) return value
+    if (isErrorValue(value)) return value
   }
   for (const arg of args.filter((a) => !isPureRefArg(a))) {
     const s = arg.trim()
     if (s.startsWith('"') && s.endsWith('"')) continue
     if (Number.isFinite(coerceNumber(unquote(arg)))) continue
     const value = c.evalRaw(`=${arg}`)
-    if (isError(value)) return value
+    if (isErrorValue(value)) return value
   }
   return undefined
 }
