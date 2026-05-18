@@ -64,7 +64,12 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const g = (a: number, b: number): number => b === 0 ? a : g(b, a % b)
     return String(argsN.map((n) => Math.abs(Math.floor(n))).reduce((a, b) => (a * b) / g(a, b)))
   }
-  if (F === 'MROUND') { const [n, m] = argsN; return m === 0 ? '0' : String(Math.round(n / m) * m) }
+  if (F === 'MROUND') {
+    const [n, m] = argsN
+    if (m === 0) return '0'
+    if (Math.sign(n) !== 0 && Math.sign(m) !== 0 && Math.sign(n) !== Math.sign(m)) return wrap('#NUM!')
+    return String(Math.sign(n || 1) * Math.round(Math.abs(n) / Math.abs(m)) * Math.abs(m))
+  }
   if (F === 'QUOTIENT') { const [n, d] = argsN; return d === 0 ? wrap('#DIV/0!') : String(Math.trunc(n / d)) }
   if (F === 'SQRTPI') return String(Math.sqrt(argsN[0] * Math.PI))
   if (F === 'SIN') return String(Math.sin(argsN[0]))
