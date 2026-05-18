@@ -144,6 +144,29 @@ describe('header context menus', () => {
     expect(rowHeader('1')?.getAttribute('aria-current')).toBeNull()
   })
 
+  it('moves header aria-current with keyboard focus navigation', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const cells = gridCells()
+    act(() => mouseClick(cells[0]))
+    expect(header('.header-cell', 'A')?.getAttribute('aria-current')).toBe('true')
+    expect(rowHeader('1')?.getAttribute('aria-current')).toBe('true')
+
+    act(() => keyDown(cells[0], 'ArrowRight'))
+    await act(async () => {})
+
+    expect(header('.header-cell', 'A')?.getAttribute('aria-current')).toBeNull()
+    expect(header('.header-cell', 'B')?.getAttribute('aria-current')).toBe('true')
+    expect(rowHeader('1')?.getAttribute('aria-current')).toBe('true')
+
+    const focused = document.querySelector<HTMLElement>('.cell.focused')!
+    act(() => keyDown(focused, 'ArrowDown'))
+    await act(async () => {})
+
+    expect(rowHeader('1')?.getAttribute('aria-current')).toBeNull()
+    expect(rowHeader('2')?.getAttribute('aria-current')).toBe('true')
+  })
+
   it('marks headers touched by a selected range', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
