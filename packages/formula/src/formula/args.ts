@@ -24,12 +24,13 @@ export const splitArgs = (s: string): string[] => {
     else if (ch === ',' && !inQ && depth === 0) { out.push(buf); buf = '' }
     else buf += ch
   }
-  if (buf) out.push(buf)
+  if (buf || s.length > 0) out.push(buf)
   return out
 }
 
 export const argString = (raw: string, c: Ctx): string => {
   const a = raw.trim()
+  if (a === '') return ''
   if (a.startsWith('"') && a.endsWith('"')) return a.slice(1, -1).replace(/""/g, '"')
   if (/^\$?[A-Z]\$?\d+:\$?[A-Z]\$?\d+$/.test(a)) return a
   if (/^\$?[A-Z]\$?\d+$/.test(a)) {

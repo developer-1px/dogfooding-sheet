@@ -20,6 +20,7 @@ describe('logic functions', () => {
     expect(evaluateCell({ A1: '' }, '=IFEMPTY(A1, "fallback")')).toBe('fallback')
     expect(evaluateCell({ A1: 'x' }, '=IFEMPTY(A1, "fallback")')).toBe('x')
     expect(evaluateCell({ A1: '', A2: '', A3: 'ok' }, '=COALESCE(A1, A2, A3)')).toBe('ok')
+    expect(evaluateCell({}, '=COALESCE(, "fallback")')).toBe('fallback')
   })
 
   it('TYPE classifies values', () => {

@@ -147,6 +147,7 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
     expect(evaluateCell({}, '=TEXTJOIN(",",1,"a""b,c","d")')).toBe('a"b,c,d')
+    expect(evaluateCell({}, '=TEXTJOIN("-",0,"a",)')).toBe('a-')
   })
   it('LIKE wildcard match', () => {
     expect(evaluateCell({}, '=LIKE("apple", "ap*")')).toBe('1')
