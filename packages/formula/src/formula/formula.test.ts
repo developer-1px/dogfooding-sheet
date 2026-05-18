@@ -28,6 +28,8 @@ describe('evaluateCell', () => {
   it('SUM range', () => {
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM(A1:A3)')).toBe('6')
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM($A$1:$A$3)')).toBe('6')
+    expect(evaluateCell({}, '=SUM(1,2,3)')).toBe('6')
+    expect(evaluateCell(cells({ A1: '4' }), '=SUM(A1,2,3)')).toBe('9')
   })
 
   it('AVERAGE / MIN / MAX / COUNT', () => {
@@ -36,6 +38,10 @@ describe('evaluateCell', () => {
     expect(evaluateCell(c, '=MIN(A1:A3)')).toBe('4')
     expect(evaluateCell(c, '=MAX(A1:A3)')).toBe('8')
     expect(evaluateCell(c, '=COUNT(A1:A3)')).toBe('3')
+    expect(evaluateCell(c, '=AVERAGE(A1:A3, 12)')).toBe('7.5')
+    expect(evaluateCell({}, '=MIN(8, 4, 6)')).toBe('4')
+    expect(evaluateCell({}, '=MAX(8, 4, 6)')).toBe('8')
+    expect(evaluateCell({}, '=COUNT(8, 4, "x")')).toBe('2')
   })
 
   it('IF with comparison', () => {
