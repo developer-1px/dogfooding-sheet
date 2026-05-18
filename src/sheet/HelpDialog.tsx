@@ -17,7 +17,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + ;', '오늘 날짜 입력'],
   ['Ctrl/⌘ + Shift + ;', '현재 시각 입력'],
   ['Ctrl/⌘ + F', '찾기'],
-  ['Ctrl/⌘ + G', '셀로 이동 (예: B5)'],
+  ['Ctrl/⌘ + G', '셀/범위로 이동 (예: B5, A1:C3, B:B, 2:2)'],
   ['Ctrl/⌘ + A', '시트 전체 선택'],
   ['Ctrl/⌘ + H', '찾기 및 바꾸기'],
   ['Ctrl/⌘ + K', '하이퍼링크 삽입'],

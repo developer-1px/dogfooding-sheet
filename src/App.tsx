@@ -18,7 +18,7 @@ import { SheetToolbar } from './sheet/SheetToolbar'
 import { DevToolsOverlay } from './interactive-os/DevToolsOverlay'
 import './App.css'
 
-const GOTO_PROMPT = { label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' }
+const GOTO_PROMPT = { label: '이동할 셀 또는 범위 (예: B5, A1:C3, B:B, 2:2)', placeholder: 'B5 또는 B:B', submitLabel: '이동' }
 
 function selectionAddress(selectedIds: string[], focusKey: string | null, rowCount: number, colLetters: readonly string[]): string | null {
   const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null

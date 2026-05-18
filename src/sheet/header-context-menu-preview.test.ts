@@ -247,7 +247,9 @@ describe('header context menus', () => {
     await act(async () => dom.root.render(createElement(App)))
 
     act(() => mouseClick(document.querySelector<HTMLButtonElement>('.addr')!))
+    expect(document.body.textContent).toContain('이동할 셀 또는 범위 (예: B5, A1:C3, B:B, 2:2)')
     const prompt = document.querySelector<HTMLInputElement>('.prompt-dialog input')!
+    expect(prompt.placeholder).toBe('B5 또는 B:B')
     act(() => {
       setInputValue(prompt, 'B:B')
       keyDown(prompt, 'Enter')
