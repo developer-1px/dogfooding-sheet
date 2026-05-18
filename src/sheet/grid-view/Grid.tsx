@@ -84,6 +84,12 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             hiSet={hiSet}
             previewIds={previewIds}
             onFormulaPickKeyDown={(e) => {
+              if (e.key === 'F4' && ctx.formulaPickActive) {
+                e.preventDefault()
+                e.stopPropagation()
+                ctx.cycleFormulaRef()
+                return
+              }
               const delta =
                 e.key === 'ArrowUp' ? { dRow: -1, dCol: 0 }
                   : e.key === 'ArrowDown' ? { dRow: 1, dCol: 0 }

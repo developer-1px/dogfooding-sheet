@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, mouseClick as click, setupReactDOM, press } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick as click, setupReactDOM, press, setInputValue } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -23,5 +23,19 @@ describe('formula bar preview interactions', () => {
     })
 
     expect(firstCell?.textContent).toContain('Item')
+  })
+
+  it('cycles the trailing formula reference with F4', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const formula = document.querySelector<HTMLInputElement>('input[placeholder="값 또는 =A1+B1"]')!
+
+    act(() => {
+      click(formula)
+      setInputValue(formula, '=A1')
+      keyDown(formula, 'F4')
+    })
+
+    expect(formula.value).toBe('=$A$1')
   })
 })

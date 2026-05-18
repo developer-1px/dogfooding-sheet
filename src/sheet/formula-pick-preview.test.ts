@@ -1,6 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
+import { cycleTrailingFormulaRef } from './selection/formulaPick'
 import { cells as gridCells, keyDown, mouseClick, setInputValue, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
@@ -18,6 +19,14 @@ const startFormulaEdit = async () => {
 }
 
 describe('formula reference picking', () => {
+  it('cycles trailing references through absolute and mixed forms', () => {
+    expect(cycleTrailingFormulaRef('=A1')).toBe('=$A$1')
+    expect(cycleTrailingFormulaRef('=$A$1')).toBe('=A$1')
+    expect(cycleTrailingFormulaRef('=A$1')).toBe('=$A1')
+    expect(cycleTrailingFormulaRef('=$A1')).toBe('=A1')
+    expect(cycleTrailingFormulaRef('=SUM(A1:B2')).toBe('=SUM($A$1:$B$2')
+  })
+
   it('inserts a cell reference with arrow keys while editing a formula', async () => {
     const input = await startFormulaEdit()
 
@@ -45,5 +54,15 @@ describe('formula reference picking', () => {
 
     expect(document.querySelector<HTMLInputElement>('input.cell-input')).toBe(input)
     expect(input.value).toBe('=B2')
+  })
+
+  it('cycles the picked reference with F4 while editing a formula', async () => {
+    const input = await startFormulaEdit()
+
+    act(() => keyDown(input, 'ArrowRight'))
+    act(() => keyDown(input, 'F4'))
+    act(() => keyDown(input, 'F4'))
+
+    expect(input.value).toBe('=B$1')
   })
 })

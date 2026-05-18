@@ -18,7 +18,7 @@ import { sheetMutations } from './structure/sheetMutations'
 import { useFindState, highlightedIdsFor } from './find/useFindState'
 import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
-import { idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './selection/formulaPick'
+import { cycleTrailingFormulaRef, idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './selection/formulaPick'
 import { rowColAtFocus } from './structure/rowColAtFocus'
 import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
 
@@ -81,6 +81,11 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     if (next) pickFormulaRef(next, { extend })
   }, [colLetters, edit.editing, formulaPickActive, formulaPickAnchor, formulaPickTarget, pickFormulaRef, rowCount])
 
+  const cycleFormulaRef = useCallback(() => {
+    if (!formulaPickActive) return
+    edit.setDraft(cycleTrailingFormulaRef(edit.draft))
+  }, [edit, formulaPickActive])
+
   useEffect(() => {
     if (formulaPickActive) return
     setFormulaPickAnchor(null)
@@ -142,6 +147,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     selectedIds, setSelectedIds, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     formulaPickActive, pickFormulaRef, moveFormulaPick,
+    cycleFormulaRef,
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     helpOpen, setHelpOpen,
     showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines: () => setShowGridlines((v) => !v),
