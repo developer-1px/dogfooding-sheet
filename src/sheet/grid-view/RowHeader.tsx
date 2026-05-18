@@ -42,6 +42,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
     <span
       className={`row-header${selected ? ' selected-header' : ''}`}
       role="rowheader"
+      aria-label={`${rIdx + 1}행`}
       aria-selected={selected}
       onClick={(e) => {
         const id = cellId('A', rIdx)

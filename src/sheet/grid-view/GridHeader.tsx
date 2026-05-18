@@ -57,7 +57,9 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
       <span
         className={`corner-cell${allSelected ? ' selected-header' : ''}`}
         role="columnheader"
+        aria-label="전체 시트 선택"
         aria-selected={allSelected}
+        title="전체 시트 선택"
         onClick={() => {
           const first = cellId('A', 0)
           setSelectedIds(idsForAll(rowCount, colLetters))
@@ -74,6 +76,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             key={c}
             {...columnHeaderProps(`h-${c}`)}
             className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${c === filterCol ? ' filtered' : ''}`}
+            aria-label={`${c}열`}
             aria-selected={selectedCols.has(c)}
             onClick={(e) => {
               const id = cellId(c, 0)

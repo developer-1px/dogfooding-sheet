@@ -8,6 +8,7 @@ Scope:
 - rectangular ranges and id sets
 - row and column structural transforms
 - pure TSV read/write conversion
+- pure edit state transitions
 - pure sorting and aggregate helpers
 
 Internal responsibility groups:
@@ -16,6 +17,7 @@ Internal responsibility groups:
 - `geometry`: rectangles and rectangular id coverage
 - `selection`: row, column, and full-grid id ranges
 - `clipboard`: grid-shaped payload conversion
+- `editing`: focus/editing/draft state transitions
 - `structure`: row/column transforms and formula reference repair
 - `compute`: numeric parsing, sorting, and aggregate helpers
 
