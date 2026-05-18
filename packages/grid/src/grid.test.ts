@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, deleteRow, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
+import { cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, deleteRow, fillDownWrites, fillRightWrites, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -44,6 +44,27 @@ describe('@spredsheet/grid', () => {
 
     state = setGridSelectedIds(state, (ids) => [...ids, 'r1-C'])
     expect(clearGridSelection(state)).toEqual({ focusId: 'r1-C', anchorId: 'r1-C', selectedIds: [] })
+  })
+
+  it('computes fill writes without applying them', () => {
+    expect(fillDownWrites(
+      ['r0-A', 'r1-A', 'r2-A', 'r0-B', 'r1-B', 'r2-B'],
+      { A1: 'x', B1: 'y' },
+    )).toEqual([
+      ['A2', 'x'],
+      ['A3', 'x'],
+      ['B2', 'y'],
+      ['B3', 'y'],
+    ])
+    expect(fillRightWrites(
+      ['r0-A', 'r0-B', 'r0-C', 'r1-A', 'r1-B', 'r1-C'],
+      { A1: 'x', A2: 'y' },
+    )).toEqual([
+      ['B1', 'x'],
+      ['C1', 'x'],
+      ['B2', 'y'],
+      ['C2', 'y'],
+    ])
   })
 
   it('shifts row data and row references', () => {

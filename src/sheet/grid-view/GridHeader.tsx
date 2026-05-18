@@ -77,6 +77,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             {...columnHeaderProps(`h-${c}`)}
             className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${c === filterCol ? ' filtered' : ''}`}
             aria-label={`${c}열`}
+            aria-current={c === focusCol ? 'true' : undefined}
             aria-selected={selectedCols.has(c)}
             onClick={(e) => {
               const id = cellId(c, 0)

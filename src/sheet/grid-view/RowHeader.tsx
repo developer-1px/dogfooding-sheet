@@ -24,6 +24,7 @@ interface Props {
   hiddenRows: Set<number>
   showRow: (row: number) => void
   selected: boolean
+  active: boolean
 }
 
 function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: Pick<Props, 'rIdx' | 'heightOf' | 'onResize' | 'onResizeEnd' | 'resetRowHeight'>) {
@@ -37,12 +38,13 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
   return <span className="row-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }} title="드래그=높이 조정 / 더블클릭=기본값 복원" />
 }
 
-export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected }: Props) {
+export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected, active }: Props) {
   return (
     <span
       className={`row-header${selected ? ' selected-header' : ''}`}
       role="rowheader"
       aria-label={`${rIdx + 1}행`}
+      aria-current={active ? 'true' : undefined}
       aria-selected={selected}
       onClick={(e) => {
         const id = cellId('A', rIdx)

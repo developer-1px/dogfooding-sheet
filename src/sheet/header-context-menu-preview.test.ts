@@ -133,6 +133,17 @@ describe('header context menus', () => {
     expect(row!.getAttribute('aria-selected')).toBe('true')
   })
 
+  it('marks current row and column headers for the focused cell', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => mouseClick(gridCells()[11]))
+
+    expect(header('.header-cell', 'B')?.getAttribute('aria-current')).toBe('true')
+    expect(rowHeader('2')?.getAttribute('aria-current')).toBe('true')
+    expect(header('.header-cell', 'A')?.getAttribute('aria-current')).toBeNull()
+    expect(rowHeader('1')?.getAttribute('aria-current')).toBeNull()
+  })
+
   it('marks headers touched by a selected range', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
