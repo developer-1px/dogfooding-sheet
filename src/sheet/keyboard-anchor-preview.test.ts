@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, keyDown, mouseClick, press, setupReactDOM } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -15,6 +15,16 @@ const rowHeader = (text: string): HTMLElement | undefined =>
 
 const contextMenu = (target: Element) => {
   target.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 30, clientY: 30 }))
+}
+
+const gotoAddress = async (value: string) => {
+  act(() => mouseClick(document.querySelector<HTMLButtonElement>('.addr')!))
+  const prompt = document.querySelector<HTMLInputElement>('.prompt-dialog input')!
+  act(() => {
+    setInputValue(prompt, value)
+    keyDown(prompt, 'Enter')
+  })
+  await act(async () => {})
 }
 
 describe('keyboard selection anchor', () => {
@@ -103,6 +113,34 @@ describe('keyboard selection anchor', () => {
     act(() => mouseClick(gridCells()[0]))
     act(() => contextMenu(rowHeader('3')!))
     act(() => press('Escape'))
+
+    const focused = document.querySelector<HTMLElement>('.cell.focused')
+    expect(focused?.textContent).toContain('Bread')
+
+    act(() => keyDown(focused!, 'ArrowDown', { shiftKey: true }))
+
+    const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
+    expect(selected.map((cell) => cell.textContent?.trim())).toEqual(['Bread', 'Milk'])
+  })
+
+  it('resets range anchor after going to a whole-column address', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    await gotoAddress('C:C')
+
+    const focused = document.querySelector<HTMLElement>('.cell.focused')
+    expect(focused?.textContent).toContain('Price')
+
+    act(() => keyDown(focused!, 'ArrowRight', { shiftKey: true }))
+
+    const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
+    expect(selected.map((cell) => cell.textContent?.trim())).toEqual(['Price', 'Total'])
+  })
+
+  it('resets range anchor after going to a whole-row address', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    await gotoAddress('3:3')
 
     const focused = document.querySelector<HTMLElement>('.cell.focused')
     expect(focused?.textContent).toContain('Bread')

@@ -46,13 +46,13 @@ export function resolveRange(raw: string, bounds?: { rowCount: number; colCount:
 }
 
 /** Resolve raw input and apply if valid. Accepts "B5" or "A1:B5". */
-export function gotoCell(raw: string | null, setFocusId: (id: string) => void, setSelectedIds?: (ids: string[]) => void, bounds?: { rowCount: number; colCount: number }): boolean {
+export function gotoCell(raw: string | null, setFocusId: (id: string) => void, setSelectedIds?: (ids: string[]) => void, bounds?: { rowCount: number; colCount: number }, setSelectAnchor?: (id: string | null) => void): boolean {
   if (!raw) return false
   if (raw.includes(':')) {
     const ids = resolveRange(raw, bounds); if (!ids || ids.length === 0) return false
-    setFocusId(ids[0]); setSelectedIds?.(ids); return true
+    setFocusId(ids[0]); setSelectedIds?.(ids); setSelectAnchor?.(ids[0]); return true
   }
   const id = resolveCellRef(raw, bounds)
-  if (id) { setFocusId(id); setSelectedIds?.([]); return true }
+  if (id) { setFocusId(id); setSelectedIds?.([]); setSelectAnchor?.(id); return true }
   return false
 }

@@ -39,7 +39,7 @@ export default function App() {
     openGoto: () => ask(GOTO_PROMPT)
       .then((v) => {
         const c = ctxRef.current
-        if (v && c) gotoCell(v, c.setFocusId, c.setSelectedIds, { rowCount: c.rowCount, colCount: c.colCount })
+        if (v && c) gotoCell(v, c.setFocusId, c.setSelectedIds, { rowCount: c.rowCount, colCount: c.colCount }, c.setSelectAnchor)
       }),
     openNote: (key?: string) => {
       const c = ctxRef.current; const k = key ?? c?.focusKey; if (!c || !k) return
@@ -76,7 +76,7 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
-        onAddrClick={() => ask(GOTO_PROMPT).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds, { rowCount: ctx.rowCount, colCount: ctx.colCount }) })}
+        onAddrClick={() => ask(GOTO_PROMPT).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds, { rowCount: ctx.rowCount, colCount: ctx.colCount }, ctx.setSelectAnchor) })}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}
