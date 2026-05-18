@@ -1,5 +1,16 @@
 import { parseCellId, parseA1, colIndex, cellId, colLettersFor } from '../schema'
-import { idsForCol, idsForRow, idsInRect, rectFromRefs } from '@spredsheet/grid'
+import { formatRect, idsForCol, idsForRow, idsInRect, rectFromRefs, rectFromIds } from '@spredsheet/grid'
+
+export function selectionAddress(selectedIds: string[], focusKey: string | null, rowCount: number, colLetters: readonly string[]): string | null {
+  const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null
+  if (!rect) return focusKey
+  const fullRows = rect.rMin === 0 && rect.rMax === rowCount - 1
+  const fullCols = rect.cMin === 0 && rect.cMax === colLetters.length - 1
+  if (fullRows && fullCols) return `${colLetters[rect.cMin]}:${colLetters[rect.cMax]}`
+  if (fullRows) return `${colLetters[rect.cMin]}:${colLetters[rect.cMax]}`
+  if (fullCols) return `${rect.rMin + 1}:${rect.rMax + 1}`
+  return formatRect(rect)
+}
 
 /** Resolve a cell address (e.g. "B5") to a focus id. Returns null on bad input. */
 export function resolveCellRef(raw: string, bounds?: { rowCount: number; colCount: number }): string | null {
