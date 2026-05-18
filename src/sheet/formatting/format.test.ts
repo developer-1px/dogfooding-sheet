@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { evaluateCell } from '@spredsheet/formula'
 import { applyFormat } from './useFormats'
 
 describe('applyFormat', () => {
@@ -27,6 +28,11 @@ describe('applyFormat', () => {
   it('date format converts epoch seconds and ms', () => {
     expect(applyFormat('1746576000', 'date')).toBe('2025-05-07')
     expect(applyFormat('1746576000000', 'date')).toBe('2025-05-07')
+  })
+  it('date format uses spreadsheet serial dates for formula results', () => {
+    expect(evaluateCell({}, '=DATEVALUE("1900-01-01")')).toBe('2')
+    expect(applyFormat('2', 'date')).toBe('1900-01-01')
+    expect(applyFormat(evaluateCell({}, '=DATEVALUE("2026-01-01")'), 'date')).toBe('2026-01-01')
   })
   it('non-numeric values pass through', () => {
     expect(applyFormat('hello', 'currency')).toBe('hello')

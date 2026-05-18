@@ -26,6 +26,14 @@ export function useFormats(formats: Record<string, Format>, ops: SheetOps) {
 const CURRENCY = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 const EUR = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
 const KRW = new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' })
+const SHEET_EPOCH_UTC = Date.UTC(1899, 11, 30)
+const DAY_MS = 24 * 60 * 60 * 1000
+
+function dateFromNumber(n: number): Date {
+  if (n > 1e10) return new Date(n)
+  if (n > 1e8) return new Date(n * 1000)
+  return new Date(SHEET_EPOCH_UTC + n * DAY_MS)
+}
 
 export function applyFormat(value: string, fmt: Format): string {
   if (fmt === 'plain' || value === '') return value
@@ -39,11 +47,10 @@ export function applyFormat(value: string, fmt: Format): string {
   if (fmt === 'thousand') return n.toLocaleString('en-US')
   if (fmt === 'scientific') return n.toExponential(2)
   if (fmt === 'date') {
-    const ms = n > 1e10 ? n : n * 1000
-    const d = new Date(ms)
+    const d = dateFromNumber(n)
     if (isNaN(d.getTime())) return value
     const pad = (x: number) => String(x).padStart(2, '0')
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`
   }
   return value
 }
