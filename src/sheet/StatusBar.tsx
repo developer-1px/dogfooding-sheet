@@ -4,11 +4,13 @@ import { cellKey, type Display, type CellRef } from './schema'
 interface Props {
   selectedIds: string[]
   focusId: string | null
+  rowCount: number
+  colCount: number
   display: Display
   parseId: (id: string) => CellRef | null
 }
 
-export function StatusBar({ selectedIds, focusId, display, parseId }: Props) {
+export function StatusBar({ selectedIds, focusId, rowCount, colCount, display, parseId }: Props) {
   const ids = selectedIds.length > 0 ? selectedIds : (focusId ? [focusId] : [])
   if (ids.length < 2) return <footer className="status-bar" role="status" aria-live="polite"><span>{ids.length} 셀</span></footer>
 
@@ -32,10 +34,19 @@ export function StatusBar({ selectedIds, focusId, display, parseId }: Props) {
     ? (() => { const s = [...nums].sort((a, b) => a - b); const m = s.length; return m % 2 ? s[(m - 1) / 2] : (s[m / 2 - 1] + s[m / 2]) / 2 })()
     : 0
   const fmt = (n: number) => Math.round(n * 1e6) / 1e6
+  const fullRows = rows.size === rowCount
+  const fullCols = cols.size === colCount
+  const summary = fullRows && fullCols
+    ? `전체 시트 (${ids.length} 셀)`
+    : fullRows
+      ? `${cols.size}열 선택 (${ids.length} 셀)`
+      : fullCols
+        ? `${rows.size}행 선택 (${ids.length} 셀)`
+        : `${ids.length} 셀 (${rows.size}행 × ${cols.size}열)`
 
   return (
     <footer className="status-bar" role="status" aria-live="polite">
-      <span>{ids.length} 셀 ({rows.size}행 × {cols.size}열)</span>
+      <span>{summary}</span>
       <span>COUNTA: <b>{nonEmpty}</b></span>
       {nums.length > 0 && (
         <>
