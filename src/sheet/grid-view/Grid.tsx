@@ -44,8 +44,8 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
     selectedColCounts.set(p.col, (selectedColCounts.get(p.col) ?? 0) + 1)
     selectedRowCounts.set(p.row, (selectedRowCounts.get(p.row) ?? 0) + 1)
   }
-  const selectedCols = new Set(ctx.colLetters.filter((c) => (selectedColCounts.get(c) ?? 0) >= ctx.rowCount))
-  const selectedRows = new Set(Array.from(selectedRowCounts.keys()).filter((row) => (selectedRowCounts.get(row) ?? 0) >= ctx.colLetters.length))
+  const selectedCols = new Set(selectedColCounts.keys())
+  const selectedRows = new Set(selectedRowCounts.keys())
   const { tops: freezeTops, lefts: freezeLefts } = freezeOffsets(freeze.rows, freeze.cols, ctx.rowHeightOf, widthOf); const mergeMap = buildMergeMap(ctx.merges)
   const gridTemplate = gridTemplateFor(visibleCols); const dataRows = rows
 

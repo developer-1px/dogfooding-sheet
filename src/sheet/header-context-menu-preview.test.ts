@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { mouseClick, setupReactDOM } from './test-utils'
+import { cells as gridCells, keyDown, mouseClick, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -85,5 +85,18 @@ describe('header context menus', () => {
 
     act(() => mouseClick(row!))
     expect(row!.classList.contains('selected-header')).toBe(true)
+  })
+
+  it('marks headers touched by a selected range', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const cells = gridCells()
+    act(() => mouseClick(cells[0]))
+    act(() => keyDown(cells[0], 'ArrowRight', { shiftKey: true }))
+    await act(async () => {})
+
+    expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
+    expect(header('.row-header', '1')?.classList.contains('selected-header')).toBe(true)
   })
 })
