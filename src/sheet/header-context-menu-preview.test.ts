@@ -228,4 +228,18 @@ describe('header context menus', () => {
     expect(rowHeader('2')?.classList.contains('selected-header')).toBe(true)
     expect(addressText()).toBe('1:2')
   })
+
+  it('clears header selected state and aria state with Escape', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const col = header('.header-cell', 'B')!
+    act(() => mouseClick(col))
+    expect(col.classList.contains('selected-header')).toBe(true)
+    expect(col.getAttribute('aria-selected')).toBe('true')
+
+    act(() => press('Escape'))
+
+    expect(col.classList.contains('selected-header')).toBe(false)
+    expect(col.getAttribute('aria-selected')).toBe('false')
+  })
 })
