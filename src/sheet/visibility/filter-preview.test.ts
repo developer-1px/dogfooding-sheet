@@ -62,4 +62,26 @@ describe('filter preview interactions', () => {
     act(() => clear!.click())
     expect(document.querySelector('[aria-label="B열 필터 적용"]')).toBeNull()
   })
+
+  it('applies a filter from the column header menu', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const header = [...document.querySelectorAll<HTMLElement>('.header-cell')]
+      .find((el) => el.textContent?.trim().startsWith('B'))
+    expect(header).toBeTruthy()
+
+    act(() => contextMenu(header!))
+    const apply = [...document.querySelectorAll<HTMLButtonElement>('.ctx-item')]
+      .find((button) => button.textContent === '필터 적용…')
+    expect(apply).toBeTruthy()
+
+    await act(async () => apply!.click())
+    const input = document.querySelector<HTMLInputElement>('.prompt-dialog input')
+    expect(input).not.toBeNull()
+    await act(async () => setInputValue(input!, '>1'))
+    await act(async () => [...document.querySelectorAll<HTMLButtonElement>('.prompt-dialog button')]
+      .find((button) => button.textContent === '필터')!.click())
+
+    expect(document.querySelector('[aria-label="B열 필터 적용"]')).not.toBeNull()
+  })
 })

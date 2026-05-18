@@ -51,6 +51,11 @@ export default function App() {
       ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' })
         .then((v) => { if (v === null) return; const n = Number(v); c.setColWidth(col, (v === '' || !Number.isFinite(n)) ? DEFAULT_WIDTH : n) })
     },
+    promptFilter: (col: string) => {
+      const c = ctxRef.current; if (!c) return
+      ask({ label: `${col}열 필터 조건`, initial: c.filter?.col === col ? c.filter.text : '', submitLabel: '필터' })
+        .then((v) => { if (v === null) return; if (v === '') c.clearFilter(); else c.applyFilter(col, v) })
+    },
   })
   ctxRef.current = ctx
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''

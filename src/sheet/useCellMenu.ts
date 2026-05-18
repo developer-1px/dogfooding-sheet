@@ -22,6 +22,7 @@ interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'se
   insertLink: () => void
   promptRowHeight: (row: number) => void
   promptColWidth: (col: string) => void
+  promptFilter: (col: string) => void
   freeze: FreezeState
   mergeSelection: () => void
 }
@@ -67,6 +68,7 @@ export function useCellMenu(a: Args) {
       { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
       { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
       ...colRevealItems,
+      { label: a.filterCol === col ? '필터 수정…' : '필터 적용…', onClick: () => a.promptFilter(col) },
       ...(a.filterCol === col ? [{ label: '필터 해제', onClick: a.clearFilter }] : []),
       { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
       'separator',

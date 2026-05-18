@@ -24,7 +24,7 @@ import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDT
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
-export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string) => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void } = {}) {
+export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string) => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void; promptFilter?: (col: string) => void } = {}) {
   const doc = useJSONDocument(SheetSchema, loadInitial(), { history: 100 })
   const { value: sheet } = doc
   const rowCount = sheet.rowCount
@@ -175,7 +175,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     setListRule: validation.setListRule, setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol,
-    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, onRowResize: rowH.onResize, onRowResizeEnd: rowH.onResizeEnd, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === DEFAULT_WIDTH ? undefined : Math.max(40, Math.round(w))), merges: sheet.merges, addMerge: merges.addMerge, unmergeAt: merges.unmergeAt, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
+    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, onRowResize: rowH.onResize, onRowResizeEnd: rowH.onResizeEnd, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), promptFilter: opts.promptFilter ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === DEFAULT_WIDTH ? undefined : Math.max(40, Math.round(w))), merges: sheet.merges, addMerge: merges.addMerge, unmergeAt: merges.unmergeAt, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
     tabs: tabs.state, ...tabFns,
   }
 }
