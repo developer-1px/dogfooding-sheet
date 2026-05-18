@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, deleteRow, extendSeries, fillDownWrites, fillRightWrites, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
+import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, idsForFormulaPick, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -79,6 +79,17 @@ describe('@spredsheet/grid', () => {
       ['A4', '4'],
       ['A5', '5'],
     ])
+  })
+
+  it('builds formula pick references and cycles absolute refs', () => {
+    expect(refForFormulaPick('r0-A', 'r0-A')).toBe('A1')
+    expect(refForFormulaPick('r0-A', 'r1-B')).toBe('A1:B2')
+    expect(idsForFormulaPick('r0-A', 'r1-B')).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
+    expect(replaceTrailingFormulaRef('=SUM(', 'A1:B2')).toBe('=SUM(A1:B2')
+    expect(replaceTrailingFormulaRef('=SUM(A1', 'B2')).toBe('=SUM(B2')
+    expect(replaceTrailingFormulaRef('=SUM(A1)', 'B2')).toBe('=SUM(A1)B2')
+    expect(cycleTrailingFormulaRef('=A1')).toBe('=$A$1')
+    expect(cycleTrailingFormulaRef('=SUM(A1:B2')).toBe('=SUM($A$1:$B$2')
   })
 
   it('shifts row data and row references', () => {

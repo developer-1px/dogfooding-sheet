@@ -157,6 +157,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         <ContextMenu
           x={cellMenu.menu.x}
           y={cellMenu.menu.y}
+          label={cellMenu.label(cellMenu.menu.kind)}
           items={cellMenu.items(cellMenu.menu.cellId, cellMenu.menu.kind)}
           onClose={cellMenu.close}
         />

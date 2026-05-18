@@ -32,6 +32,7 @@ describe('header context menus', () => {
 
     act(() => contextMenu(col!))
 
+    expect(document.querySelector('.ctx-menu')?.getAttribute('aria-label')).toBe('열 헤더 컨텍스트 메뉴')
     expect(document.body.textContent).toContain('B열 왼쪽에 삽입')
     expect(document.body.textContent).toContain('B 오름차순 정렬')
     expect(document.body.textContent).not.toContain('잘라내기')
@@ -45,6 +46,7 @@ describe('header context menus', () => {
 
     act(() => contextMenu(row!))
 
+    expect(document.querySelector('.ctx-menu')?.getAttribute('aria-label')).toBe('행 헤더 컨텍스트 메뉴')
     expect(document.body.textContent).toContain('위에 행 삽입')
     expect(document.body.textContent).toContain('2행 높이')
     expect(document.body.textContent).not.toContain('하이퍼링크 삽입')
