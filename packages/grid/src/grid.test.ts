@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, idsForFormulaPick, insertRow, moveCellIdByDelta, offsetFormulaRefs, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, targetGridIds, writesFromTsv } from './index'
+import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, jumpToEdge, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -105,6 +105,15 @@ describe('@spredsheet/grid', () => {
       selectedIds: ['r0-A', 'r0-B', 'r1-A', 'r1-B'],
     })
     expect(selectionAddress(['r0-A', 'r0-B', 'r1-A', 'r1-B'], null, 3, ['A', 'B', 'C'])).toBe('A1:B2')
+  })
+
+  it('computes keyboard navigation targets', () => {
+    expect(jumpToEdge('r0-A', { A1: 'a', A2: 'b', A3: 'c', A5: 'd' }, 10, 'ArrowDown')).toBe('r2-A')
+    expect(tabTarget('r0-A', false)).toBe('r0-B')
+    expect(tabTarget('r0-A', true)).toBeNull()
+    expect(homeEndTarget('r3-E', 20, 'Home', true)).toBe('r0-A')
+    expect(pageTarget('r3-E', 20, 'PageDown')).toBe('r13-E')
+    expect(idsBetween('r0-A', 'r1-B')).toEqual(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
   })
 
   it('shifts row data and row references', () => {

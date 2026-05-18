@@ -1,6 +1,6 @@
 import { matchesShortcut } from '@interactive-os/keyboard'
-import { parseCellId, cellId, type Cells } from '../schema'
-import { jumpToEdge, idsBetween, homeEndTarget, tabTarget } from './jumpEdge'
+import { parseCellId, type Cells } from '../schema'
+import { jumpToEdge, idsBetween, homeEndTarget, pageTarget, tabTarget } from './jumpEdge'
 import { idsForCol, idsForRow, rectFromIds } from '@spredsheet/grid'
 
 interface NavArgs {
@@ -29,8 +29,7 @@ export function handleNavigation(e: KeyboardEvent, mod: boolean, a: NavArgs): bo
     const t = tabTarget(focusId, e.shiftKey, colLetters); if (t) { moveFocus(t); e.preventDefault() }; return true
   }
   if (e.key === 'PageUp' || e.key === 'PageDown') {
-    const p = parseCellId(focusId); if (!p) return true
-    const next = cellId(p.col, Math.max(0, Math.min(rowCount - 1, p.row + (e.key === 'PageUp' ? -10 : 10))))
+    const next = pageTarget(focusId, rowCount, e.key); if (!next) return true
     e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : moveFocus(next); return true
   }
   if (e.key === 'Home' || e.key === 'End') {

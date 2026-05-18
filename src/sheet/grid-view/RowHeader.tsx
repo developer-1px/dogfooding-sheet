@@ -28,6 +28,7 @@ interface Props {
 }
 
 function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: Pick<Props, 'rIdx' | 'heightOf' | 'onResize' | 'onResizeEnd' | 'resetRowHeight'>) {
+  const height = heightOf(rIdx)
   const { handleProps } = useResizeGesture({
     axis: 'y',
     initial: () => heightOf(rIdx),
@@ -35,7 +36,27 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
     onEnd: (h) => onResizeEnd(rIdx, h),
     min: 18,
   })
-  return <span className="row-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }} title="드래그=높이 조정 / 더블클릭=기본값 복원" />
+  const resizeBy = (delta: number) => {
+    onResizeEnd(rIdx, Math.max(18, heightOf(rIdx) + delta))
+  }
+  return (
+    <span
+      className="row-resizer row-resize"
+      {...handleProps}
+      role="separator"
+      tabIndex={0}
+      aria-label={`${rIdx + 1}행 높이 조정`}
+      aria-orientation="horizontal"
+      aria-valuemin={18}
+      aria-valuenow={Math.round(height)}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowUp') { e.preventDefault(); resizeBy(e.shiftKey ? -50 : -10) }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); resizeBy(e.shiftKey ? 50 : 10) }
+      }}
+      onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }}
+      title="드래그=높이 조정 / ↑ ↓ 키로 조정 / 더블클릭=기본값 복원"
+    />
+  )
 }
 
 export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected, active }: Props) {

@@ -40,6 +40,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
   onResizeEnd: (col: string, w: number) => void
   autoFitCol: (col: string) => void
 }) {
+  const width = widthOf(col)
   const { handleProps } = useResizeGesture({
     axis: 'x',
     initial: () => widthOf(col),
@@ -48,7 +49,28 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
     min: 40,
     max: 400,
   })
-  return <span className="col-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
+  const resizeBy = (delta: number) => {
+    onResizeEnd(col, Math.max(40, Math.min(400, widthOf(col) + delta)))
+  }
+  return (
+    <span
+      className="col-resizer col-resize"
+      {...handleProps}
+      role="separator"
+      tabIndex={0}
+      aria-label={`${col}열 너비 조정`}
+      aria-orientation="vertical"
+      aria-valuemin={40}
+      aria-valuemax={400}
+      aria-valuenow={Math.round(width)}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); resizeBy(e.shiftKey ? -50 : -10) }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); resizeBy(e.shiftKey ? 50 : 10) }
+      }}
+      onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }}
+      title="드래그로 너비 조정 / ← → 키로 조정 / 더블클릭 자동 맞춤"
+    />
+  )
 }
 
 export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, setSelectAnchor, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
