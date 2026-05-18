@@ -35,7 +35,9 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions, CondAc
 
 export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, resetCells, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats, mergeSelection, rowCount, colCount }: Props) {
   const focus = focusKey ? parseA1(focusKey) : null
-  const focusRow = focus ? focus.row : 0
+  const focusRow = focus?.row
+  const focusRowLabel = focusRow !== undefined ? `${focusRow + 1}행` : '현재 행'
+  const focusColLabel = focus ? `${focus.col}열` : '현재 열'
   const targetKeys = (): string[] => (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map(cellIdToKey)
   const applyF = (f: Format) => setFormat(targetKeys(), f)
   const toggle = (k: 'b' | 'i' | 'u' | 's' | 'w' | 'bd') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
@@ -44,8 +46,8 @@ export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds,
   return (
     <>
       <button onClick={undo} disabled={!canUndo} title="실행 취소 (Ctrl/⌘+Z)" aria-keyshortcuts="Control+Z Meta+Z" aria-label="실행 취소">↶</button><button onClick={redo} disabled={!canRedo} title="다시 실행 (Ctrl/⌘+Shift+Z)" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label="다시 실행">↷</button>
-      <button onClick={() => insertRow(focusRow)} title="위에 행 삽입">+행</button><button onClick={() => deleteRow(focusRow)} title="현재 행 삭제">−행</button>
-      <button onClick={() => focus && insertCol(focus.col)} title="왼쪽에 열 삽입">+열</button><button onClick={() => focus && deleteCol(focus.col)} title="현재 열 삭제">−열</button>
+      <button onClick={() => focusRow !== undefined && insertRow(focusRow)} disabled={focusRow === undefined} title={`${focusRowLabel} 위에 행 삽입`} aria-label={`${focusRowLabel} 위에 행 삽입`}>+행</button><button onClick={() => focusRow !== undefined && deleteRow(focusRow)} disabled={focusRow === undefined} title={`${focusRowLabel} 삭제`} aria-label={`${focusRowLabel} 삭제`}>−행</button>
+      <button onClick={() => focus && insertCol(focus.col)} disabled={!focus} title={`${focusColLabel} 왼쪽에 열 삽입`} aria-label={`${focusColLabel} 왼쪽에 열 삽입`}>+열</button><button onClick={() => focus && deleteCol(focus.col)} disabled={!focus} title={`${focusColLabel} 삭제`} aria-label={`${focusColLabel} 삭제`}>−열</button>
       <button onClick={() => appendRows(20)} title={`아래에 행 20개 추가 (현재 ${rowCount}행)`}>+20행</button><button onClick={() => appendCols(1)} title={`오른쪽에 열 1개 추가 (현재 ${colCount}열)`}>+끝열</button>
       <button onClick={() => focus && sortByCol(focus.col, 'asc')} title="오름차순 정렬">↑정렬</button><button onClick={() => focus && sortByCol(focus.col, 'desc')} title="내림차순 정렬">↓정렬</button>
       <button onClick={() => { const f = focus && autoSumFormula(focus.col, focusRow, display); if (f && focus) writeCell(cellKey(focus.col, focusRow), f) }} title="자동 합계 (위쪽 연속 숫자 합)">Σ</button>
