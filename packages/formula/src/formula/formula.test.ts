@@ -35,6 +35,9 @@ describe('evaluateCell', () => {
     expect(evaluateCell({}, '=SUM("$1,200.50", "50%")')).toBe('1201')
     expect(evaluateCell({}, '=SUM(1+2, 3*4)')).toBe('15')
     expect(evaluateCell(cells({ A1: '4' }), '=SUM(A1+1, A1*2)')).toBe('13')
+    expect(evaluateCell({}, '=SUM("x", 2)')).toBe('2')
+    expect(evaluateCell({}, '=SUM(1/0, 2)')).toBe('#DIV/0!')
+    expect(evaluateCell(cells({ A1: '=1/0' }), '=SUM(A1, 2)')).toBe('#DIV/0!')
   })
 
   it('AVERAGE / MIN / MAX / COUNT', () => {

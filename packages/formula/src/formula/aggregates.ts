@@ -13,6 +13,23 @@ const numericCellValues = (refs: string[], c: Ctx): number[] =>
     .map((ref) => coerceNumber(c.evalRaw(c.cells[ref] ?? '')))
     .filter(Number.isFinite)
 
+const isError = (value: string): boolean => /^#[A-Z0-9/]+!?$/.test(value)
+
+const firstError = (refs: string[], args: string[], c: Ctx): string | undefined => {
+  for (const ref of refs) {
+    const value = c.evalRaw(c.cells[ref] ?? '')
+    if (isError(value)) return value
+  }
+  for (const arg of args.filter((a) => !isPureRefArg(a))) {
+    const s = arg.trim()
+    if (s.startsWith('"') && s.endsWith('"')) continue
+    if (Number.isFinite(coerceNumber(unquote(arg)))) continue
+    const value = c.evalRaw(`=${arg}`)
+    if (isError(value)) return value
+  }
+  return undefined
+}
+
 const literalNumber = (arg: string, c: Ctx): number => {
   const direct = coerceNumber(unquote(arg))
   if (Number.isFinite(direct)) return direct
@@ -28,6 +45,8 @@ export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
   const args = splitArgs(rawArgs)
   const refs = collectArgRefs(args)
+  const error = firstError(refs, args, c)
+  if (error) return wrap(error)
   const literalNums = args
     .filter((arg) => !isPureRefArg(arg))
     .map((arg) => literalNumber(arg, c))

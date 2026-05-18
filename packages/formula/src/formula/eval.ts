@@ -43,7 +43,7 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
     const result = evalArith(expr)
     if (typeof result === 'boolean') return result ? '1' : '0'
     if (typeof result === 'number') {
-      return Number.isFinite(result) ? String(Math.round(result * 1e10) / 1e10) : '#ERR'
+      return Number.isFinite(result) ? String(Math.round(result * 1e10) / 1e10) : '#DIV/0!'
     }
     return String(result)
   } catch {
