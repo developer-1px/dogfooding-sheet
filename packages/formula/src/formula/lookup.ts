@@ -101,15 +101,20 @@ export function index(rangeStr: string, row: number, col: number, cells: Cells, 
   return evalCell(cells, tc, tr, evalRaw)
 }
 
-export function match(key: string, rangeStr: string, cells: Cells, evalRaw: Eval): string {
+export function match(key: string, rangeStr: string, cells: Cells, evalRaw: Eval, matchType = 1): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   let pos = 0
+  let approximate = '#N/A'
+  if (![1, 0, -1].includes(matchType)) return '#VALUE!'
   for (let row = r.rMin; row <= r.rMax; row++) {
     for (let col = r.cMin; col <= r.cMax; col++) {
       pos++
-      if (evalCell(cells, col, row, evalRaw) === key) return String(pos)
+      const cmp = compareLookupValues(evalCell(cells, col, row, evalRaw), key)
+      if (cmp === 0) return String(pos)
+      if (matchType === 1 && cmp < 0) approximate = String(pos)
+      if (matchType === -1 && cmp > 0) approximate = String(pos)
     }
   }
-  return '#N/A'
+  return matchType === 0 ? '#N/A' : approximate
 }

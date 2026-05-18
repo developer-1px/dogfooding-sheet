@@ -118,8 +118,17 @@ describe('INDEX / MATCH', () => {
   it('MATCH returns 1-based position', () => {
     expect(evaluateCell(data, '=MATCH("Milk", A1:A3)')).toBe('3')
   })
+  it('MATCH supports exact and approximate match types', () => {
+    const asc = { A1: '10', A2: '20', A3: '30' }
+    const desc = { A1: '30', A2: '20', A3: '10' }
+    const horizontal = { A1: '10', B1: '20', C1: '30' }
+    expect(evaluateCell(asc, '=MATCH(25, A1:A3)')).toBe('2')
+    expect(evaluateCell(asc, '=MATCH(25, A1:A3, 0)')).toBe('#N/A')
+    expect(evaluateCell(desc, '=MATCH(25, A1:A3, -1)')).toBe('1')
+    expect(evaluateCell(horizontal, '=MATCH(25, A1:C1)')).toBe('2')
+  })
   it('INDEX+MATCH composes like VLOOKUP', () => {
-    expect(evaluateCell(data, '=INDEX(B1:B3, MATCH("Bread", A1:A3))')).toBe('2.25')
+    expect(evaluateCell(data, '=INDEX(B1:B3, MATCH("Bread", A1:A3, 0))')).toBe('2.25')
   })
 })
 
