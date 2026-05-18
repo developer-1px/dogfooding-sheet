@@ -206,6 +206,7 @@ describe('RANGESORT', () => {
   it('sorts numeric values ascending', () => {
     const cells = { A1: '3', A2: '1', A3: '2' }
     expect(evaluateCell(cells, '=RANGESORT(A1:A3)')).toBe('["1","2","3"]')
+    expect(evaluateCell(cells, '=SORT(A1:A3)')).toBe('["1","2","3"]')
   })
   it('sorts text values lexically', () => {
     const cells = { A1: 'c', A2: 'a', A3: 'b' }
@@ -312,6 +313,7 @@ describe('RANGEUNIQUE', () => {
   it('returns unique values in first-occurrence order', () => {
     const cells = { A1: 'b', A2: 'a', A3: 'b', A4: 'c', A5: 'a' }
     expect(evaluateCell(cells, '=RANGEUNIQUE(A1:A5)')).toBe('["b","a","c"]')
+    expect(evaluateCell(cells, '=UNIQUE(A1:A5)')).toBe('["b","a","c"]')
   })
 })
 

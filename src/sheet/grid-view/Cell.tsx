@@ -44,7 +44,6 @@ export function Cell(p: Props) {
     p.label === '' ? '빈 셀' : p.label,
     isError ? '오류' : '',
     p.mergeRange ? `병합 셀 ${p.mergeRange}` : '',
-    p.previewing ? '자동 채우기 미리보기' : '',
     p.selected ? '선택됨' : '',
     p.focused ? '현재 셀' : '',
     p.editing ? '편집 중' : '',
@@ -117,13 +116,7 @@ export function Cell(p: Props) {
           {p.note && <span className="note-mark" aria-hidden />}
           {p.validationOptions && !p.editing && <span className="dropdown-mark" aria-hidden>▾</span>}
           {p.isFillCorner && !p.editing && (
-            <span
-              className="fill-handle"
-              role="button"
-              aria-label={`${p.address} 자동 채우기 핸들`}
-              title="자동 채우기"
-              onMouseDown={p.onFillHandleMouseDown}
-            />
+            <span className="fill-handle" onMouseDown={p.onFillHandleMouseDown} />
           )}
         </>
       )}

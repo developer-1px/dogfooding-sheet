@@ -1,18 +1,8 @@
 import { useShortcut } from '@interactive-os/aria-kernel/key'
-import { cellId, cellKey, parseCellId, type Sheet, type SheetOps, type Writes, type WriteCell, type WriteMany, type Display } from './schema'
+import { cellId, cellKey, parseCellId, type Sheet, type SheetOps, type WriteCell, type WriteMany, type Display } from './schema'
 import { copyOrCut, pasteAt } from './clipboard/clipboardActions'
 import { fillDown, fillRight } from './fill/fillDown'
-import { idsForAll, pad2 } from '@spredsheet/grid'
-
-const freezeFormulas = (ids: string[], cells: Sheet['cells'], display: Display, writeCells: WriteMany) => {
-  const writes: Writes = []
-  for (const id of ids) {
-    const p = parseCellId(id); if (!p) continue
-    const k = cellKey(p.col, p.row)
-    if ((cells[k] ?? '').startsWith('=')) writes.push([k, display(k)])
-  }
-  if (writes.length) writeCells(writes)
-}
+import { clearWritesForIds, freezeFormulaWrites, idsForAll, pad2, targetGridIds } from '@spredsheet/grid'
 
 const insertNowOrToday = (focusId: string | null, withTime: boolean, writeCell: WriteCell) => {
   const p = focusId ? parseCellId(focusId) : null; if (!p) return
@@ -60,8 +50,7 @@ export interface GlobalShortcutCtx {
   mergeSelection?: () => void
 }
 
-const targetIds = (c: GlobalShortcutCtx) =>
-  c.selectedIds.length > 0 ? c.selectedIds : (c.focusId ? [c.focusId] : [])
+const targetIds = (c: GlobalShortcutCtx) => targetGridIds({ focusId: c.focusId, selectedIds: c.selectedIds })
 
 /** All modifier-bearing global shortcuts. Editable-guard handled per-call by aria-kernel. */
 export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
@@ -100,12 +89,11 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('mod+z', () => get().ops.undo())
   useShortcut('mod+shift+z', () => get().ops.redo())
   useShortcut('mod+y', () => get().ops.redo())
-  useShortcut('F9', () => { const c = get(); if (c.display) freezeFormulas(targetIds(c), c.sheet.cells, c.display, c.writeCells) })
+  useShortcut('F9', () => { const c = get(); if (c.display) { const writes = freezeFormulaWrites(targetIds(c), c.sheet.cells, c.display); if (writes.length) c.writeCells(writes) } })
 
   const clearFocused = () => {
     const c = get()
-    const writes: Writes = []
-    for (const id of targetIds(c)) { const pp = parseCellId(id); if (pp) writes.push([cellKey(pp.col, pp.row), '']) }
+    const writes = clearWritesForIds(targetIds(c))
     if (writes.length) c.writeCells(writes)
   }
   useShortcut('Backspace', clearFocused)

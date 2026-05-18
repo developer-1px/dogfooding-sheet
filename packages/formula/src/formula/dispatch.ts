@@ -59,8 +59,8 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'MAX_BY' || F === 'MIN_BY') { const a = splitArgs(rawArgs); return smartReturn(maxMinBy(F, a[0], a[1], c.cells, c.evalRaw, c.numFromCell)) }
   if (F === 'MOSTCOMMON' || F === 'LEASTCOMMON') return smartReturn(freqStat(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'RANGEJSON') return smartReturn(rangeJSON(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'RANGESORT') return smartReturn(rangeSort(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'RANGEUNIQUE') return smartReturn(rangeUnique(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
+  if (F === 'RANGESORT' || F === 'SORT') return smartReturn(rangeSort(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
+  if (F === 'RANGEUNIQUE' || F === 'UNIQUE') return smartReturn(rangeUnique(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'ENTROPY') return smartReturn(entropy(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
   if (F === 'JACCARD') { const a = splitArgs(rawArgs); return smartReturn(jaccard(a[0], a[1], c.cells, c.evalRaw)) }
   if (F === 'RANGECSV') return smartReturn(rangeCsv(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
