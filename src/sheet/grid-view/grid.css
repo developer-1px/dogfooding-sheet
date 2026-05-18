@@ -13,6 +13,8 @@
 .row-header { position: sticky; left: 0; z-index: 1; }
 .header-cell { position: relative; cursor: pointer; }
 .header-cell:hover { background: #e8f0fe; }
+.header-cell.filtered { color: #1a73e8; background: #e8f0fe; font-weight: 600; }
+.filter-mark { margin-left: 4px; font-size: 10px; color: #1a73e8; }
 .unhide-col, .unhide-row {
   position: absolute; border: 1px solid #dadce0; background: #fff; color: #1a73e8;
   width: 16px; height: 16px; padding: 0; border-radius: 8px; font-size: 11px; line-height: 14px;

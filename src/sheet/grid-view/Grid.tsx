@@ -52,6 +52,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         setSelectedIds={setSelectedIds}
         hiddenCols={hiddenCols}
         showCol={ctx.showCol}
+        filterCol={ctx.filter?.col ?? null}
         focusCol={focusCol}
         onHeaderContextMenu={onHeaderContextMenu}
         rowCount={ctx.rowCount}
