@@ -4,6 +4,9 @@ import { dispatchTextCase } from './textCase'
 import { dispatchTextAlgo } from './textAlgo'
 import { dispatchTextOps } from './textOps'
 
+const splitLiteral = (text: string, delimiter: string): string[] =>
+  delimiter === '' ? [text] : text.split(delimiter)
+
 export function dispatchText(F: string, argsT: string[]): string | null {
   const codec = dispatchTextCodec(F, argsT); if (codec !== null) return codec
   const cas = dispatchTextCase(F, argsT); if (cas !== null) return cas
@@ -51,6 +54,19 @@ export function dispatchText(F: string, argsT: string[]): string | null {
       ? text.split(new RegExp(`[${delimiter.replace(/[\\^$.*+?()[\]{}|/-]/g, '\\$&')}]`))
       : text.split(delimiter)
     return wrap(JSON.stringify([removeEmpty ? parts.filter(part => part !== '') : parts]))
+  }
+  if (F === 'TEXTSPLIT') {
+    const text = argsT[0] ?? ''
+    const colDelimiter = argsT[1] ?? ''
+    const rowDelimiter = argsT[2] ?? ''
+    const ignoreEmpty = (argsT[3] ?? '0') !== '0'
+    const pad = argsT[5] ?? '#N/A'
+    if (colDelimiter === '' && rowDelimiter === '') return wrap('#VALUE!')
+    const rawRows = splitLiteral(text, rowDelimiter)
+    const rows = rawRows.map(row => splitLiteral(row, colDelimiter))
+    const filtered = ignoreEmpty ? rows.map(row => row.filter(cell => cell !== '')).filter(row => row.length > 0) : rows
+    const width = Math.max(0, ...filtered.map(row => row.length))
+    return wrap(JSON.stringify(filtered.map(row => row.concat(Array.from({ length: width - row.length }, () => pad)))))
   }
   if (F === 'TEXTBEFORE') {
     const i = argsT[0].indexOf(argsT[1] ?? '')

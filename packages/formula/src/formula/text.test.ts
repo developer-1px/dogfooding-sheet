@@ -122,6 +122,15 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SPLIT("a<>b<>c", "<>", 0)')).toBe('[["a","b","c"]]')
     expect(evaluateCell({}, '=SPLIT("a<>b.c", "<>.", 1)')).toBe('[["a","b","c"]]')
   })
+
+  it('TEXTSPLIT returns a 2D array', () => {
+    expect(evaluateCell({}, '=TEXTSPLIT("a,b;c,d", ",", ";")')).toBe('[["a","b"],["c","d"]]')
+    expect(evaluateCell({}, '=TEXTSPLIT("a,b;c", ",", ";", 0, 0, "-")')).toBe('[["a","b"],["c","-"]]')
+  })
+
+  it('TEXTSPLIT can ignore empty cells', () => {
+    expect(evaluateCell({}, '=TEXTSPLIT("a,,b", ",",, 1)')).toBe('[["a","b"]]')
+  })
   it('TEXTBEFORE / TEXTAFTER split by delimiter', () => {
     expect(evaluateCell({}, '=TEXTBEFORE("hello@example.com","@")')).toBe('hello')
     expect(evaluateCell({}, '=TEXTAFTER("hello@example.com","@")')).toBe('example.com')
