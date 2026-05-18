@@ -1,6 +1,7 @@
 import * as z from 'zod'
 import type { JSONOps } from 'zod-crud'
 import { COL_LETTERS as COLS } from '@spredsheet/grid'
+import { FORMAT_KEYS } from './formatting/formatTypes'
 
 export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
 
@@ -29,7 +30,7 @@ const TabBundleSchema = z.object({
   cells: z.record(z.string(), z.string()).default({}),
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
-  formats: z.record(z.string(), z.enum(['plain', 'currency', 'eur', 'krw', 'percent', 'integer', 'thousand', 'scientific', 'date', 'time'])).default({}),
+  formats: z.record(z.string(), z.enum(FORMAT_KEYS)).default({}),
   validation: z.record(z.string(), z.discriminatedUnion('type', [
     z.object({ type: z.literal('list'), options: z.array(z.string()) }),
     z.object({ type: z.literal('checkbox') }),

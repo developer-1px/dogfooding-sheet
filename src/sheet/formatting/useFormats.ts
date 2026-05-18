@@ -2,8 +2,9 @@ import { useEffect } from 'react'
 import type { SheetOps } from '../schema'
 import { upsertKeys } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
+import type { Format } from './formatTypes'
 
-export type Format = 'plain' | 'currency' | 'eur' | 'krw' | 'percent' | 'integer' | 'thousand' | 'scientific' | 'date' | 'time'
+export type { Format } from './formatTypes'
 export type FormatLookup = (k: string) => Format
 const LEGACY_KEY = 'spreadsheet:formats:v1'
 

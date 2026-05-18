@@ -1,4 +1,4 @@
-import type { Format } from './useFormats'
+import type { Format } from './formatTypes'
 
 const FORMATS: Array<[Format, string, string]> = [
   ['currency', '$', 'USD'],
