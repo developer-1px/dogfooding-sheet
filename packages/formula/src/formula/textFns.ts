@@ -7,6 +7,28 @@ import { dispatchTextOps } from './textOps'
 const splitLiteral = (text: string, delimiter: string): string[] =>
   delimiter === '' ? [text] : text.split(delimiter)
 
+const delimiterIndex = (text: string, delimiter: string, instance: number, caseInsensitive: boolean): number => {
+  if (delimiter === '' || instance === 0) return -1
+  const source = caseInsensitive ? text.toLowerCase() : text
+  const needle = caseInsensitive ? delimiter.toLowerCase() : delimiter
+  if (instance > 0) {
+    let from = 0
+    for (let count = 1; ; count++) {
+      const index = source.indexOf(needle, from)
+      if (index < 0) return -1
+      if (count === instance) return index
+      from = index + needle.length
+    }
+  }
+  let from = source.length
+  for (let count = -1; ; count--) {
+    const index = source.lastIndexOf(needle, from - 1)
+    if (index < 0) return -1
+    if (count === instance) return index
+    from = index
+  }
+}
+
 export function dispatchText(F: string, argsT: string[]): string | null {
   const codec = dispatchTextCodec(F, argsT); if (codec !== null) return codec
   const cas = dispatchTextCase(F, argsT); if (cas !== null) return cas
@@ -69,12 +91,22 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     return wrap(JSON.stringify(filtered.map(row => row.concat(Array.from({ length: width - row.length }, () => pad)))))
   }
   if (F === 'TEXTBEFORE') {
-    const i = argsT[0].indexOf(argsT[1] ?? '')
-    return wrap(i < 0 ? argsT[0] : argsT[0].slice(0, i))
+    const text = argsT[0] ?? ''
+    const delimiter = argsT[1] ?? ''
+    const instance = Math.trunc(Number(argsT[2] ?? '1'))
+    const caseInsensitive = (argsT[3] ?? '0') === '1'
+    const ifNotFound = argsT[5] ?? text
+    const i = delimiterIndex(text, delimiter, instance, caseInsensitive)
+    return wrap(i < 0 ? ifNotFound : text.slice(0, i))
   }
   if (F === 'TEXTAFTER') {
-    const i = argsT[0].indexOf(argsT[1] ?? '')
-    return wrap(i < 0 ? '' : argsT[0].slice(i + (argsT[1] ?? '').length))
+    const text = argsT[0] ?? ''
+    const delimiter = argsT[1] ?? ''
+    const instance = Math.trunc(Number(argsT[2] ?? '1'))
+    const caseInsensitive = (argsT[3] ?? '0') === '1'
+    const ifNotFound = argsT[5] ?? ''
+    const i = delimiterIndex(text, delimiter, instance, caseInsensitive)
+    return wrap(i < 0 ? ifNotFound : text.slice(i + delimiter.length))
   }
   if (F === 'FIND') {
     const pos = argsT[1].indexOf(argsT[0])

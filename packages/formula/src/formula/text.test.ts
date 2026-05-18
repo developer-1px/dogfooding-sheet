@@ -137,6 +137,18 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXTBEFORE("nodelim","@")')).toBe('nodelim')
     expect(evaluateCell({}, '=TEXTAFTER("nodelim","@")')).toBe('')
   })
+  it('TEXTBEFORE / TEXTAFTER support instance and fallback options', () => {
+    expect(evaluateCell({}, '=TEXTBEFORE("a-b-c-d","-", 3)')).toBe('a-b-c')
+    expect(evaluateCell({}, '=TEXTAFTER("a-b-c-d","-", 3)')).toBe('d')
+    expect(evaluateCell({}, '=TEXTBEFORE("a-b-c-d","-", -2)')).toBe('a-b')
+    expect(evaluateCell({}, '=TEXTAFTER("a-b-c-d","-", -2)')).toBe('c-d')
+    expect(evaluateCell({}, '=TEXTBEFORE("abc","-", 1, 0, 0, "missing")')).toBe('missing')
+    expect(evaluateCell({}, '=TEXTAFTER("abc","-", 1, 0, 0, "missing")')).toBe('missing')
+  })
+  it('TEXTBEFORE / TEXTAFTER support case-insensitive matching', () => {
+    expect(evaluateCell({}, '=TEXTBEFORE("AlphaXBeta","x", 1, 1)')).toBe('Alpha')
+    expect(evaluateCell({}, '=TEXTAFTER("AlphaXBeta","x", 1, 1)')).toBe('Beta')
+  })
   it('FIND returns 1-based position (case-sensitive)', () => {
     expect(evaluateCell({}, '=FIND("b", "abc")')).toBe('2')
     expect(evaluateCell({}, '=FIND("X", "abc")')).toBe('#VALUE!')
