@@ -28,6 +28,10 @@ describe('SUMIF', () => {
     const cells = { A1: 'x', A2: 'y', A3: 'x', B1: '1', B2: '10', B3: '100' }
     expect(evaluateCell(cells, '=SUMIF(A1:A3, "x", B1:B3)')).toBe('101')
   })
+  it('coerces formatted values in sumRange', () => {
+    const cells = { A1: 'x', A2: 'x', B1: '$1,200.50', B2: '50%' }
+    expect(evaluateCell(cells, '=SUMIF(A1:A2, "x", B1:B2)')).toBe('1201')
+  })
 })
 
 describe('COUNTA', () => {
@@ -370,6 +374,11 @@ describe('AVERAGEIF', () => {
   it('uses separate avgRange', () => {
     const cells = { A1: 'x', A2: 'y', A3: 'x', B1: '10', B2: '99', B3: '20' }
     expect(evaluateCell(cells, '=AVERAGEIF(A1:A3, "x", B1:B3)')).toBe('15')
+  })
+  it('returns #DIV/0! when no numeric values match', () => {
+    const cells = { A1: 'x', A2: 'y', B1: 'text', B2: '' }
+    expect(evaluateCell(cells, '=AVERAGEIF(A1:A2, "x", B1:B2)')).toBe('#DIV/0!')
+    expect(evaluateCell(cells, '=AVERAGEIF(A1:A2, "z", B1:B2)')).toBe('#DIV/0!')
   })
 })
 

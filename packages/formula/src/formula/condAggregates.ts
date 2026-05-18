@@ -1,5 +1,6 @@
 import type { Eval } from './args'
 import type { Cells } from '../a1'
+import { coerceNumber } from './coerce'
 import { collectRefs } from './parse'
 import { matchCriteria } from './criteriaMatch'
 
@@ -25,7 +26,7 @@ export function sumif(
   let sum = 0
   for (let i = 0; i < refs.length; i++) {
     if (matchCriteria(evalRaw(cells[refs[i]] ?? ''), criteria)) {
-      const v = Number(evalRaw(cells[sumRefs[i] ?? refs[i]] ?? ''))
+      const v = coerceNumber(evalRaw(cells[sumRefs[i] ?? refs[i]] ?? ''))
       if (Number.isFinite(v)) sum += v
     }
   }
@@ -65,15 +66,14 @@ export function averageif(
   avgRangeStr: string | undefined,
   cells: Cells,
   evalRaw: Eval,
-): number {
+): number | string {
   const refs = collectRefs(rangeStr)
   const avgRefs = avgRangeStr ? collectRefs(avgRangeStr) : refs
   let sum = 0, n = 0
   for (let i = 0; i < refs.length; i++) {
     if (!matchCriteria(evalRaw(cells[refs[i]] ?? ''), criteria)) continue
-    const v = Number(evalRaw(cells[avgRefs[i] ?? refs[i]] ?? ''))
+    const v = coerceNumber(evalRaw(cells[avgRefs[i] ?? refs[i]] ?? ''))
     if (Number.isFinite(v)) { sum += v; n++ }
   }
-  return n > 0 ? sum / n : NaN
+  return n > 0 ? sum / n : '#DIV/0!'
 }
-

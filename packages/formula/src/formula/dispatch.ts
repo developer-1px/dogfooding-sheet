@@ -49,7 +49,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'COUNTA') return String(counta(argsT[0], c.cells, c.evalRaw))
   if (F === 'COUNTBLANK') return String(countblank(argsT[0], c.cells, c.evalRaw))
   if (F === 'COUNTUNIQUE') return String(countunique(argsT[0], c.cells, c.evalRaw))
-  if (F === 'AVERAGEIF') return String(averageif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
+  if (F === 'AVERAGEIF') return smartReturn(String(averageif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw)))
   if (F === 'COUNTIFS') return String(countifs(argsT, c.cells, c.evalRaw))
   if (F === 'SUMIFS') return String(sumifs(argsT, c.cells, c.evalRaw))
   if (F === 'AVERAGEIFS') return smartReturn(String(averageifs(argsT, c.cells, c.evalRaw)))
