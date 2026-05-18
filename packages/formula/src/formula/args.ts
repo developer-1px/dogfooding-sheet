@@ -17,7 +17,8 @@ export const splitArgs = (s: string): string[] => {
   let buf = '', inQ = false, depth = 0
   for (let i = 0; i < s.length; i++) {
     const ch = s[i]
-    if (ch === '"') { inQ = !inQ; buf += ch }
+    if (ch === '"' && inQ && s[i + 1] === '"') { buf += '""'; i++ }
+    else if (ch === '"') { inQ = !inQ; buf += ch }
     else if (ch === '(' && !inQ) { depth++; buf += ch }
     else if (ch === ')' && !inQ) { depth = Math.max(0, depth - 1); buf += ch }
     else if (ch === ',' && !inQ && depth === 0) { out.push(buf); buf = '' }

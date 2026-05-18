@@ -146,6 +146,7 @@ describe('text functions', () => {
   it('TEXTJOIN ignores empty by default', () => {
     expect(evaluateCell({}, '=TEXTJOIN("-",1,"a","","b","c")')).toBe('a-b-c')
     expect(evaluateCell({}, '=TEXTJOIN("-",0,"a","","b")')).toBe('a--b')
+    expect(evaluateCell({}, '=TEXTJOIN(",",1,"a""b,c","d")')).toBe('a"b,c,d')
   })
   it('LIKE wildcard match', () => {
     expect(evaluateCell({}, '=LIKE("apple", "ap*")')).toBe('1')
