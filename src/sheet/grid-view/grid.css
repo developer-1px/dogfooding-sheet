@@ -13,6 +13,16 @@
 .row-header { position: sticky; left: 0; z-index: 1; }
 .header-cell { position: relative; cursor: pointer; }
 .header-cell:hover { background: #e8f0fe; }
+.unhide-col, .unhide-row {
+  position: absolute; border: 1px solid #dadce0; background: #fff; color: #1a73e8;
+  width: 16px; height: 16px; padding: 0; border-radius: 8px; font-size: 11px; line-height: 14px;
+  cursor: pointer; z-index: 4;
+}
+.unhide-col:hover, .unhide-row:hover { background: #e8f0fe; border-color: #1a73e8; }
+.unhide-col.left { left: -8px; top: 50%; transform: translateY(-50%); }
+.unhide-col.right { right: -8px; top: 50%; transform: translateY(-50%); }
+.unhide-row.top { top: -8px; left: 50%; transform: translateX(-50%); }
+.unhide-row.bottom { bottom: -8px; left: 50%; transform: translateX(-50%); }
 .col-resizer {
   position: absolute; top: 0; right: -3px; width: 6px; height: 100%;
   cursor: col-resize; user-select: none; z-index: 3;

@@ -51,6 +51,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         autoFitCol={autoFitCol}
         setSelectedIds={setSelectedIds}
         hiddenCols={hiddenCols}
+        showCol={ctx.showCol}
         focusCol={focusCol}
         onHeaderContextMenu={onHeaderContextMenu}
         rowCount={ctx.rowCount}
@@ -73,6 +74,8 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             rowHeight={ctx.rowHeightOf(rIdx)}
             heightOf={ctx.rowHeightOf} onResize={ctx.onRowResize} onResizeEnd={ctx.onRowResizeEnd} resetRowHeight={ctx.resetRowHeight} onRowHeaderContextMenu={onRowHCtx(rIdx)} mergeAnchors={mergeMap.anchors} mergeHidden={mergeMap.hidden}
             hiddenCols={hiddenCols}
+            hiddenRows={hiddenRowsManual}
+            showRow={ctx.showRow}
             focusId={focusId}
             selectedIds={selectedIds}
             editing={editing}

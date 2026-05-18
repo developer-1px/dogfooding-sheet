@@ -12,6 +12,7 @@ interface Props {
   autoFitCol: (col: string) => void
   setSelectedIds: (ids: string[]) => void
   hiddenCols: Set<string>
+  showCol: (col: string) => void
   focusCol: string | null
   onHeaderContextMenu: (e: React.MouseEvent, col: string) => void
   rowCount: number
@@ -45,12 +46,14 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
   return <span className="col-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, hiddenCols, focusCol, onHeaderContextMenu, rowCount, colLetters }: Props) {
+export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, hiddenCols, showCol, focusCol, onHeaderContextMenu, rowCount, colLetters }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(rowCount, colLetters))} />
       {colLetters.map((c) => {
         if (hiddenCols.has(c)) return null
+        const prev = colLetters[colIndex(c) - 1]
+        const next = colLetters[colIndex(c) + 1]
         return (
           <span
             key={c}
@@ -60,7 +63,9 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
             title="우클릭으로 열 메뉴"
           >
+            {prev && hiddenCols.has(prev) && <button className="unhide-col left" onClick={(e) => { e.stopPropagation(); showCol(prev) }} title={`${prev}열 숨김 표시`} aria-label={`${prev}열 숨김 표시`}>‹</button>}
             {c}
+            {next && hiddenCols.has(next) && <button className="unhide-col right" onClick={(e) => { e.stopPropagation(); showCol(next) }} title={`${next}열 숨김 표시`} aria-label={`${next}열 숨김 표시`}>›</button>}
             <ColResizer col={c} widthOf={widthOf} onResize={onResize} onResizeEnd={onResizeEnd} autoFitCol={autoFitCol} />
           </span>
         )

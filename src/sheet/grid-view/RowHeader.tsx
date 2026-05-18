@@ -19,6 +19,8 @@ interface Props {
   resetRowHeight: (row: number) => void
   onContextMenu: (e: React.MouseEvent) => void
   colLetters: readonly string[]
+  hiddenRows: Set<number>
+  showRow: (row: number) => void
 }
 
 function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: Pick<Props, 'rIdx' | 'heightOf' | 'onResize' | 'onResizeEnd' | 'resetRowHeight'>) {
@@ -32,7 +34,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
   return <span className="row-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }} title="드래그=높이 조정 / 더블클릭=기본값 복원" />
 }
 
-export function RowHeader({ rIdx, focusId, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters }: Props) {
+export function RowHeader({ rIdx, focusId, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow }: Props) {
   return (
     <span
       className="row-header"
@@ -40,7 +42,9 @@ export function RowHeader({ rIdx, focusId, setSelectedIds, heightOf, onResize, o
       onContextMenu={onContextMenu}
       title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정"
     >
+      {hiddenRows.has(rIdx - 1) && <button className="unhide-row top" onClick={(e) => { e.stopPropagation(); showRow(rIdx - 1) }} title={`${rIdx}행 숨김 표시`} aria-label={`${rIdx}행 숨김 표시`}>⌃</button>}
       {rIdx + 1}
+      {hiddenRows.has(rIdx + 1) && <button className="unhide-row bottom" onClick={(e) => { e.stopPropagation(); showRow(rIdx + 1) }} title={`${rIdx + 2}행 숨김 표시`} aria-label={`${rIdx + 2}행 숨김 표시`}>⌄</button>}
       <RowResizer rIdx={rIdx} heightOf={heightOf} onResize={onResize} onResizeEnd={onResizeEnd} resetRowHeight={resetRowHeight} />
     </span>
   )

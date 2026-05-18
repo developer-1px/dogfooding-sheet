@@ -56,4 +56,19 @@ describe('header context menus', () => {
     act(() => restore!.click())
     expect(header('.header-cell', 'B')).toBeTruthy()
   })
+
+  it('shows an inline unhide control beside hidden columns', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => contextMenu(header('.header-cell', 'B')!))
+    act(() => document.querySelectorAll<HTMLButtonElement>('.ctx-item')
+      .forEach((button) => { if (button.textContent === 'B열 숨기기') button.click() }))
+    expect(header('.header-cell', 'B')).toBeUndefined()
+
+    const restore = document.querySelector<HTMLButtonElement>('.unhide-col[aria-label="B열 숨김 표시"]')
+    expect(restore).toBeTruthy()
+
+    act(() => restore!.click())
+    expect(header('.header-cell', 'B')).toBeTruthy()
+  })
 })
