@@ -52,6 +52,9 @@ describe('math functions', () => {
 
   it('TRUNC / SIGN / PI / EVEN / ODD', () => {
     expect(evaluateCell({}, '=TRUNC(3.789, 1)')).toBe('3.7')
+    expect(evaluateCell({}, '=INT(3.789)')).toBe('3')
+    expect(evaluateCell({}, '=INT(-3.2)')).toBe('-4')
+    expect(evaluateCell({}, '=TRUNC(-3.789, 1)')).toBe('-3.7')
     expect(evaluateCell({}, '=SIGN(-5)')).toBe('-1')
     expect(evaluateCell({}, '=SIGNCHAR(5)')).toBe('+')
     expect(evaluateCell({}, '=SIGNCHAR(-5)')).toBe('-')

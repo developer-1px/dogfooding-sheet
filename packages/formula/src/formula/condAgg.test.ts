@@ -374,9 +374,9 @@ describe('AVERAGEIF', () => {
 })
 
 describe('extra math', () => {
-  it('INT truncates', () => {
+  it('INT rounds down', () => {
     expect(evaluateCell({}, '=INT(3.7)')).toBe('3')
-    expect(evaluateCell({}, '=INT(-3.7)')).toBe('-3')
+    expect(evaluateCell({}, '=INT(-3.7)')).toBe('-4')
   })
   it('LN / LOG / EXP', () => {
     expect(Number(evaluateCell({}, '=EXP(1)'))).toBeCloseTo(Math.E, 10)
