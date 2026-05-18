@@ -19,6 +19,35 @@ const compareLookupValues = (a: string, b: string): number => {
   return a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true })
 }
 
+const lookupVector = (rangeStr: string, cells: Cells, evalRaw: Eval): { values: string[], rowMode: boolean } | string => {
+  const r = parseRange(rangeStr)
+  if (!r) return '#REF!'
+  const rows = r.rMax - r.rMin + 1
+  const cols = r.cMax - r.cMin + 1
+  if (rows > 1 && cols > 1) return '#VALUE!'
+  const rowMode = rows > 1
+  const len = rowMode ? rows : cols
+  const values = Array.from({ length: len }, (_v, i) => evalCell(cells, rowMode ? r.cMin : r.cMin + i, rowMode ? r.rMin + i : r.rMin, evalRaw))
+  return { values, rowMode }
+}
+
+const lookupIndex = (key: string, values: string[], matchMode: number, searchMode: number): number | string => {
+  if (![-1, 0, 1, 2].includes(matchMode) || ![1, -1, 2, -2].includes(searchMode)) return '#VALUE!'
+  const reverse = searchMode === -1 || searchMode === -2
+  const wildcard = matchMode === 2 ? wildcardToRegex(key) : null
+  const ordered = Array.from({ length: values.length }, (_v, i) => reverse ? values.length - 1 - i : i)
+  let best = -1
+  for (const i of ordered) {
+    const value = values[i]
+    if (wildcard?.test(value)) return i
+    const cmp = compareLookupValues(value, key)
+    if (cmp === 0) return i
+    if (matchMode === -1 && cmp < 0 && (best < 0 || compareLookupValues(value, values[best]) > 0)) best = i
+    if (matchMode === 1 && cmp > 0 && (best < 0 || compareLookupValues(value, values[best]) < 0)) best = i
+  }
+  return best >= 0 ? best : '#N/A'
+}
+
 export function vlookup(
   key: string,
   rangeStr: string,
@@ -79,35 +108,16 @@ export function xlookup(
   matchMode = 0,
   searchMode = 1,
 ): string {
-  const L = parseRange(lookupRangeStr), R = parseRange(resultRangeStr)
-  if (!L || !R) return '#REF!'
-  const lookupRows = L.rMax - L.rMin + 1
-  const lookupCols = L.cMax - L.cMin + 1
-  if (lookupRows > 1 && lookupCols > 1) return '#VALUE!'
-  const rowMode = lookupRows > 1
-  const len = rowMode ? lookupRows : lookupCols
+  const L = lookupVector(lookupRangeStr, cells, evalRaw)
+  const R = parseRange(resultRangeStr)
+  if (typeof L === 'string' || !R) return typeof L === 'string' ? L : '#REF!'
+  const rowMode = L.rowMode
+  const len = L.values.length
   const resultLen = rowMode ? R.rMax - R.rMin + 1 : R.cMax - R.cMin + 1
   if (resultLen !== len) return '#VALUE!'
-  if (![-1, 0, 1, 2].includes(matchMode) || ![1, -1].includes(searchMode)) return '#VALUE!'
-  const wildcard = matchMode === 2 ? wildcardToRegex(key) : null
-  let approximate = -1
-  const start = searchMode === -1 ? len - 1 : 0
-  const end = searchMode === -1 ? -1 : len
-  const step = searchMode === -1 ? -1 : 1
-  for (let i = start; i !== end; i += step) {
-    const lc = rowMode ? L.cMin : L.cMin + i
-    const lr = rowMode ? L.rMin + i : L.rMin
-    const value = evalCell(cells, lc, lr, evalRaw)
-    if (wildcard?.test(value)) return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalRaw)
-    const cmp = compareLookupValues(value, key)
-    if (cmp === 0) return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalRaw)
-    if (matchMode === -1 && cmp < 0) approximate = i
-    if (matchMode === 1 && cmp > 0) approximate = i
-  }
-  if (approximate >= 0) {
-    return evalCell(cells, rowMode ? R.cMin : R.cMin + approximate, rowMode ? R.rMin + approximate : R.rMin, evalRaw)
-  }
-  return ifNotFound ?? '#N/A'
+  const i = lookupIndex(key, L.values, matchMode, searchMode)
+  if (typeof i === 'string') return i === '#N/A' ? (ifNotFound ?? '#N/A') : i
+  return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalRaw)
 }
 
 export function index(rangeStr: string, row: number, col: number, cells: Cells, evalRaw: Eval): string {
@@ -135,4 +145,11 @@ export function match(key: string, rangeStr: string, cells: Cells, evalRaw: Eval
     }
   }
   return matchType === 0 ? '#N/A' : approximate
+}
+
+export function xmatch(key: string, rangeStr: string, cells: Cells, evalRaw: Eval, matchMode = 0, searchMode = 1): string {
+  const vector = lookupVector(rangeStr, cells, evalRaw)
+  if (typeof vector === 'string') return vector
+  const i = lookupIndex(key, vector.values, matchMode, searchMode)
+  return typeof i === 'string' ? i : String(i + 1)
 }

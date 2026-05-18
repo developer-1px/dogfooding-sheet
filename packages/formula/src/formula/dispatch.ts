@@ -1,4 +1,4 @@
-import { vlookup, hlookup, xlookup, index as indexFn, match as matchFn } from './lookup'
+import { vlookup, hlookup, xlookup, xmatch, index as indexFn, match as matchFn } from './lookup'
 import { aggregate } from './aggregates'
 import { sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJSON, rangeSort, rangeUnique, entropy, jaccard } from './rangeOps'
 import { dispatchStat } from './statDispatch'
@@ -90,6 +90,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw, splitArgs(rawArgs)[3]))
   const ref = dispatchRef(F, argsT, rawArgs, c); if (ref !== null) return ref
   if (F === 'XLOOKUP') return smartReturn(xlookup(argsT[0], argsT[1], argsT[2], argsT[3], c.cells, c.evalRaw, Number(argsT[4] ?? '0'), Number(argsT[5] ?? '1')))
+  if (F === 'XMATCH') return smartReturn(xmatch(argsT[0], argsT[1], c.cells, c.evalRaw, Number(argsT[2] ?? '0'), Number(argsT[3] ?? '1')))
   if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalRaw))
   if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalRaw, Number(argsT[2] ?? '1')))
   if (F === 'INRANGE') return matchFn(argsT[0], argsT[1], c.cells, c.evalRaw, 0) === '#N/A' ? '0' : '1'

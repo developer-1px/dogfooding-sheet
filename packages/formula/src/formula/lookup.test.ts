@@ -80,10 +80,10 @@ describe('XLOOKUP', () => {
     expect(evaluateCell(h, '=XLOOKUP("Q3", A1:C1, A2:C2)')).toBe('30')
   })
   it('supports next lesser and next greater match modes', () => {
-    const table = { A1: '10', B1: 'low', A2: '20', B2: 'mid', A3: '30', B3: 'high' }
+    const table = { A1: '10', B1: 'low', A2: '20', B2: 'mid', A3: '30', B3: 'high', A4: '40', B4: 'top' }
     expect(evaluateCell(table, '=XLOOKUP(25, A1:A3, B1:B3, "n/a", -1)')).toBe('mid')
-    expect(evaluateCell(table, '=XLOOKUP(25, A1:A3, B1:B3, "n/a", 1)')).toBe('high')
-    expect(evaluateCell(table, '=XLOOKUP(5, A1:A3, B1:B3, "n/a", -1)')).toBe('n/a')
+    expect(evaluateCell(table, '=XLOOKUP(25, A1:A4, B1:B4, "n/a", 1)')).toBe('high')
+    expect(evaluateCell(table, '=XLOOKUP(5, A1:A4, B1:B4, "n/a", -1)')).toBe('n/a')
   })
   it('supports reverse search mode', () => {
     const table = { A1: 'a', B1: '1', A2: 'b', B2: '2', A3: 'a', B3: '3' }
@@ -100,6 +100,23 @@ describe('XLOOKUP', () => {
     const table = { A1: 'a', A2: 'b', A3: 'c', B1: '1', B2: '2' }
     expect(evaluateCell(table, '=XLOOKUP("b", A1:A3, B1:B2)')).toBe('#VALUE!')
     expect(evaluateCell(table, '=XLOOKUP("b", A1:B2, A1:A2)')).toBe('#VALUE!')
+  })
+})
+
+describe('XMATCH', () => {
+  it('returns exact 1-based position by default', () => {
+    expect(evaluateCell(data, '=XMATCH("Bread", A1:A3)')).toBe('2')
+    expect(evaluateCell(data, '=XMATCH("Cheese", A1:A3)')).toBe('#N/A')
+  })
+  it('supports approximate, wildcard, and reverse search modes', () => {
+    const table = { A1: '10', A2: '20', A3: '30', A4: '40', B1: 'apple', B2: 'apricot', B3: 'banana', B4: 'apricot' }
+    expect(evaluateCell(table, '=XMATCH(25, A1:A4, -1)')).toBe('2')
+    expect(evaluateCell(table, '=XMATCH(25, A1:A4, 1)')).toBe('3')
+    expect(evaluateCell(table, '=XMATCH("ap*", B1:B4, 2)')).toBe('1')
+    expect(evaluateCell(table, '=XMATCH("ap*", B1:B4, 2, -1)')).toBe('4')
+  })
+  it('requires a one-dimensional lookup range', () => {
+    expect(evaluateCell(data, '=XMATCH("Bread", A1:B3)')).toBe('#VALUE!')
   })
 })
 
