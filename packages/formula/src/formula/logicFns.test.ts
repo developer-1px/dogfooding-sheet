@@ -44,7 +44,7 @@ describe('logic functions', () => {
   })
 
   it('ISERROR / ISEVEN / ISODD predicates', () => {
-    expect(evaluateCell({}, '=ISERROR(VLOOKUP("z","A1:B1",2))')).toBe('1')
+    expect(evaluateCell({}, '=ISERROR(VLOOKUP("z","A1:B1",2,FALSE))')).toBe('1')
     expect(evaluateCell({}, '=ISERROR(1/0)')).toBe('1')
     expect(evaluateCell({}, '=ISERROR(5)')).toBe('0')
     expect(evaluateCell({}, '=ISEVEN(4)')).toBe('1')
@@ -52,12 +52,12 @@ describe('logic functions', () => {
   })
 
   it('IFNA only replaces #N/A', () => {
-    expect(evaluateCell({}, '=IFNA(VLOOKUP("z","A1:B1",2),"none")')).toBe('none')
+    expect(evaluateCell({}, '=IFNA(VLOOKUP("z","A1:B1",2,FALSE),"none")')).toBe('none')
     expect(evaluateCell({}, '=IFNA("ok","fallback")')).toBe('ok')
   })
 
   it('IFERROR replaces error values', () => {
-    expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2),"none")')).toBe('none')
+    expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2,FALSE),"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR(1/0,"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')
   })

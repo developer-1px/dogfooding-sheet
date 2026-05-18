@@ -1,9 +1,22 @@
 import type { Eval } from './args'
 import type { Cells } from '../a1'
 import { parseRange, evalCell } from './rangeRect'
+import { coerceNumber } from './coerce'
 
 
 export { parseRange }
+
+const isExactLookup = (rangeLookup: string | undefined): boolean => {
+  const value = (rangeLookup ?? '').trim().replace(/^"|"$/g, '').toLowerCase()
+  return value === '0' || value === 'false'
+}
+
+const compareLookupValues = (a: string, b: string): number => {
+  const an = coerceNumber(a)
+  const bn = coerceNumber(b)
+  if (Number.isFinite(an) && Number.isFinite(bn)) return an - bn
+  return a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true })
+}
 
 export function vlookup(
   key: string,
@@ -11,17 +24,23 @@ export function vlookup(
   colIdx: number,
   cells: Cells,
   evalRaw: Eval,
+  rangeLookup?: string,
 ): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   const targetCol = r.cMin + colIdx - 1
+  if (colIdx < 1) return '#VALUE!'
   if (targetCol > r.cMax) return '#REF!'
+  let approximate = '#N/A'
   for (let row = r.rMin; row <= r.rMax; row++) {
-    if (evalCell(cells, r.cMin, row, evalRaw) === key) {
+    const value = evalCell(cells, r.cMin, row, evalRaw)
+    const cmp = compareLookupValues(value, key)
+    if (cmp === 0) {
       return evalCell(cells, targetCol, row, evalRaw)
     }
+    if (!isExactLookup(rangeLookup) && cmp < 0) approximate = evalCell(cells, targetCol, row, evalRaw)
   }
-  return '#N/A'
+  return isExactLookup(rangeLookup) ? '#N/A' : approximate
 }
 
 export function hlookup(
@@ -30,17 +49,23 @@ export function hlookup(
   rowIdx: number,
   cells: Cells,
   evalRaw: Eval,
+  rangeLookup?: string,
 ): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   const targetRow = r.rMin + rowIdx - 1
+  if (rowIdx < 1) return '#VALUE!'
   if (targetRow > r.rMax) return '#REF!'
+  let approximate = '#N/A'
   for (let col = r.cMin; col <= r.cMax; col++) {
-    if (evalCell(cells, col, r.rMin, evalRaw) === key) {
+    const value = evalCell(cells, col, r.rMin, evalRaw)
+    const cmp = compareLookupValues(value, key)
+    if (cmp === 0) {
       return evalCell(cells, col, targetRow, evalRaw)
     }
+    if (!isExactLookup(rangeLookup) && cmp < 0) approximate = evalCell(cells, col, targetRow, evalRaw)
   }
-  return '#N/A'
+  return isExactLookup(rangeLookup) ? '#N/A' : approximate
 }
 
 export function xlookup(

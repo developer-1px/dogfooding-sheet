@@ -11,7 +11,13 @@ describe('HLOOKUP', () => {
   it('finds and returns row value', () => {
     const h = { A1: 'Q1', B1: 'Q2', C1: 'Q3', A2: '10', B2: '20', C2: '30' }
     expect(evaluateCell(h, '=HLOOKUP("Q2", A1:C2, 2)')).toBe('20')
-    expect(evaluateCell(h, '=HLOOKUP("Q9", A1:C2, 2)')).toBe('#N/A')
+    expect(evaluateCell(h, '=HLOOKUP("Q9", A1:C2, 2, FALSE)')).toBe('#N/A')
+  })
+
+  it('uses approximate match by default', () => {
+    const h = { A1: '10', B1: '20', C1: '30', A2: 'low', B2: 'mid', C2: 'high' }
+    expect(evaluateCell(h, '=HLOOKUP(25, A1:C2, 2)')).toBe('mid')
+    expect(evaluateCell(h, '=HLOOKUP(5, A1:C2, 2)')).toBe('#N/A')
   })
 })
 
@@ -86,11 +92,21 @@ describe('VLOOKUP', () => {
   it('finds and returns column value', () => {
     expect(evaluateCell(data, '=VLOOKUP("Bread", A1:B3, 2)')).toBe('2.25')
   })
-  it('returns #N/A when not found', () => {
-    expect(evaluateCell(data, '=VLOOKUP("Cheese", A1:B3, 2)')).toBe('#N/A')
+  it('returns #N/A on exact lookup when not found', () => {
+    expect(evaluateCell(data, '=VLOOKUP("Cheese", A1:B3, 2, FALSE)')).toBe('#N/A')
   })
   it('returns #REF! when col out of range', () => {
     expect(evaluateCell(data, '=VLOOKUP("Apple", A1:B3, 5)')).toBe('#REF!')
+  })
+  it('uses approximate match by default', () => {
+    const table = { A1: '10', B1: 'low', A2: '20', B2: 'mid', A3: '30', B3: 'high' }
+    expect(evaluateCell(table, '=VLOOKUP(25, A1:B3, 2)')).toBe('mid')
+    expect(evaluateCell(table, '=VLOOKUP(5, A1:B3, 2)')).toBe('#N/A')
+  })
+  it('accepts FALSE/0 for exact match', () => {
+    const table = { A1: '10', B1: 'low', A2: '20', B2: 'mid', A3: '30', B3: 'high' }
+    expect(evaluateCell(table, '=VLOOKUP(25, A1:B3, 2, FALSE)')).toBe('#N/A')
+    expect(evaluateCell(table, '=VLOOKUP(25, A1:B3, 2, 0)')).toBe('#N/A')
   })
 })
 
