@@ -75,19 +75,28 @@ export function xlookup(
   ifNotFound: string | undefined,
   cells: Cells,
   evalRaw: Eval,
+  matchMode = 0,
+  searchMode = 1,
 ): string {
   const L = parseRange(lookupRangeStr), R = parseRange(resultRangeStr)
   if (!L || !R) return '#REF!'
   const len = Math.max(L.rMax - L.rMin, L.cMax - L.cMin) + 1
   const rowMode = L.rMax > L.rMin
-  for (let i = 0; i < len; i++) {
+  if (![-1, 0, 1].includes(matchMode) || ![1, -1].includes(searchMode)) return '#VALUE!'
+  let approximate = -1
+  const start = searchMode === -1 ? len - 1 : 0
+  const end = searchMode === -1 ? -1 : len
+  const step = searchMode === -1 ? -1 : 1
+  for (let i = start; i !== end; i += step) {
     const lc = rowMode ? L.cMin : L.cMin + i
     const lr = rowMode ? L.rMin + i : L.rMin
-    if (evalCell(cells, lc, lr, evalRaw) === key) {
-      const rc = rowMode ? R.cMin : R.cMin + i
-      const rr = rowMode ? R.rMin + i : R.rMin
-      return evalCell(cells, rc, rr, evalRaw)
-    }
+    const cmp = compareLookupValues(evalCell(cells, lc, lr, evalRaw), key)
+    if (cmp === 0) return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalRaw)
+    if (matchMode === -1 && cmp < 0) approximate = i
+    if (matchMode === 1 && cmp > 0) approximate = i
+  }
+  if (approximate >= 0) {
+    return evalCell(cells, rowMode ? R.cMin : R.cMin + approximate, rowMode ? R.rMin + approximate : R.rMin, evalRaw)
   }
   return ifNotFound ?? '#N/A'
 }

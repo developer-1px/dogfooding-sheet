@@ -79,6 +79,17 @@ describe('XLOOKUP', () => {
     const h = { A1: 'Q1', B1: 'Q2', C1: 'Q3', A2: '10', B2: '20', C2: '30' }
     expect(evaluateCell(h, '=XLOOKUP("Q3", A1:C1, A2:C2)')).toBe('30')
   })
+  it('supports next lesser and next greater match modes', () => {
+    const table = { A1: '10', B1: 'low', A2: '20', B2: 'mid', A3: '30', B3: 'high' }
+    expect(evaluateCell(table, '=XLOOKUP(25, A1:A3, B1:B3, "n/a", -1)')).toBe('mid')
+    expect(evaluateCell(table, '=XLOOKUP(25, A1:A3, B1:B3, "n/a", 1)')).toBe('high')
+    expect(evaluateCell(table, '=XLOOKUP(5, A1:A3, B1:B3, "n/a", -1)')).toBe('n/a')
+  })
+  it('supports reverse search mode', () => {
+    const table = { A1: 'a', B1: '1', A2: 'b', B2: '2', A3: 'a', B3: '3' }
+    expect(evaluateCell(table, '=XLOOKUP("a", A1:A3, B1:B3)')).toBe('1')
+    expect(evaluateCell(table, '=XLOOKUP("a", A1:A3, B1:B3, "n/a", 0, -1)')).toBe('3')
+  })
 })
 
 describe('INRANGE', () => {
