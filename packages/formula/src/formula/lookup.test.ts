@@ -96,6 +96,11 @@ describe('XLOOKUP', () => {
     expect(evaluateCell(table, '=XLOOKUP("a????ot", A1:A3, B1:B3, "n/a", 2)')).toBe('2')
     expect(evaluateCell(table, '=XLOOKUP("ap*", A1:A3, B1:B3, "n/a", 2, -1)')).toBe('2')
   })
+  it('requires compatible lookup and result ranges', () => {
+    const table = { A1: 'a', A2: 'b', A3: 'c', B1: '1', B2: '2' }
+    expect(evaluateCell(table, '=XLOOKUP("b", A1:A3, B1:B2)')).toBe('#VALUE!')
+    expect(evaluateCell(table, '=XLOOKUP("b", A1:B2, A1:A2)')).toBe('#VALUE!')
+  })
 })
 
 describe('INRANGE', () => {

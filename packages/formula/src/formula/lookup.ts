@@ -81,8 +81,13 @@ export function xlookup(
 ): string {
   const L = parseRange(lookupRangeStr), R = parseRange(resultRangeStr)
   if (!L || !R) return '#REF!'
-  const len = Math.max(L.rMax - L.rMin, L.cMax - L.cMin) + 1
-  const rowMode = L.rMax > L.rMin
+  const lookupRows = L.rMax - L.rMin + 1
+  const lookupCols = L.cMax - L.cMin + 1
+  if (lookupRows > 1 && lookupCols > 1) return '#VALUE!'
+  const rowMode = lookupRows > 1
+  const len = rowMode ? lookupRows : lookupCols
+  const resultLen = rowMode ? R.rMax - R.rMin + 1 : R.cMax - R.cMin + 1
+  if (resultLen !== len) return '#VALUE!'
   if (![-1, 0, 1, 2].includes(matchMode) || ![1, -1].includes(searchMode)) return '#VALUE!'
   const wildcard = matchMode === 2 ? wildcardToRegex(key) : null
   let approximate = -1
