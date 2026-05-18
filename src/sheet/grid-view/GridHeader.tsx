@@ -15,6 +15,7 @@ interface Props {
   showCol: (col: string) => void
   filterCol: string | null
   focusCol: string | null
+  selectedCols: Set<string>
   onHeaderContextMenu: (e: React.MouseEvent, col: string) => void
   rowCount: number
   colLetters: readonly string[]
@@ -47,7 +48,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
   return <span className="col-resizer" {...handleProps} onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }} title="드래그로 너비 조정 / 더블클릭 자동 맞춤" />
 }
 
-export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, hiddenCols, showCol, filterCol, focusCol, onHeaderContextMenu, rowCount, colLetters }: Props) {
+export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, hiddenCols, showCol, filterCol, focusCol, selectedCols, onHeaderContextMenu, rowCount, colLetters }: Props) {
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span className="corner-cell" onClick={() => setSelectedIds(idsForAll(rowCount, colLetters))} />
@@ -59,7 +60,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
           <span
             key={c}
             {...columnHeaderProps(`h-${c}`)}
-            className={`header-cell${c === focusCol ? ' active' : ''}${c === filterCol ? ' filtered' : ''}`}
+            className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${c === filterCol ? ' filtered' : ''}`}
             onClick={(e) => setSelectedIds(colRangeIds(c, e.shiftKey ? focusCol : null, rowCount, colLetters))}
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
             title="우클릭으로 열 메뉴"

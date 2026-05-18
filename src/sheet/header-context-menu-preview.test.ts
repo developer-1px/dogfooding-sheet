@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { setupReactDOM } from './test-utils'
+import { mouseClick, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -70,5 +70,20 @@ describe('header context menus', () => {
 
     act(() => restore!.click())
     expect(header('.header-cell', 'B')).toBeTruthy()
+  })
+
+  it('marks selected row and column headers', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const col = header('.header-cell', 'B')
+    const row = header('.row-header', '2')
+    expect(col).toBeTruthy()
+    expect(row).toBeTruthy()
+
+    act(() => mouseClick(col!))
+    expect(col!.classList.contains('selected-header')).toBe(true)
+
+    act(() => mouseClick(row!))
+    expect(row!.classList.contains('selected-header')).toBe(true)
   })
 })

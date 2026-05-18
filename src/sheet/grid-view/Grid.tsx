@@ -37,6 +37,15 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
   const focusP = focusId ? parseCellId(focusId) : null
   const focusCol = focusP ? focusP.col : null; const focusRow = focusP ? focusP.row : null
   const visibleCols = ctx.colLetters.filter((c) => !hiddenCols.has(c))
+  const selectedColCounts = new Map<string, number>(); const selectedRowCounts = new Map<number, number>()
+  for (const id of selectedIds) {
+    const p = parseCellId(id)
+    if (!p) continue
+    selectedColCounts.set(p.col, (selectedColCounts.get(p.col) ?? 0) + 1)
+    selectedRowCounts.set(p.row, (selectedRowCounts.get(p.row) ?? 0) + 1)
+  }
+  const selectedCols = new Set(ctx.colLetters.filter((c) => (selectedColCounts.get(c) ?? 0) >= ctx.rowCount))
+  const selectedRows = new Set(Array.from(selectedRowCounts.keys()).filter((row) => (selectedRowCounts.get(row) ?? 0) >= ctx.colLetters.length))
   const { tops: freezeTops, lefts: freezeLefts } = freezeOffsets(freeze.rows, freeze.cols, ctx.rowHeightOf, widthOf); const mergeMap = buildMergeMap(ctx.merges)
   const gridTemplate = gridTemplateFor(visibleCols); const dataRows = rows
 
@@ -54,6 +63,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
         showCol={ctx.showCol}
         filterCol={ctx.filter?.col ?? null}
         focusCol={focusCol}
+        selectedCols={selectedCols}
         onHeaderContextMenu={onHeaderContextMenu}
         rowCount={ctx.rowCount}
         colLetters={ctx.colLetters}
@@ -77,6 +87,7 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             hiddenCols={hiddenCols}
             hiddenRows={hiddenRowsManual}
             showRow={ctx.showRow}
+            selectedRows={selectedRows}
             focusId={focusId}
             selectedIds={selectedIds}
             editing={editing}
