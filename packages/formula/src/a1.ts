@@ -34,6 +34,7 @@ export type Display = (k: string) => string
 
 /** Global A1 reference regex — match all `[Letter][Digits]` occurrences. */
 export const A1_RE = /([A-Z])(\d+)/g
+export const ABS_A1_RE = /(\$?)([A-Z])(\$?)(\d+)/g
 
 /** Format a DOM cell id: `cellId('A', 0) === 'r0-A'` (inverse of `parseCellId`). */
 export const cellId = (col: string, row: number): string => `r${row}-${col}`
@@ -52,7 +53,7 @@ export const cellIdToKey = (id: string): string => {
 
 /** Parse an A1 key like "B3" into `{ col: 'B', row: 2 }`. Returns `null` on mismatch. */
 export const parseA1 = (key: string): CellRef | null => {
-  const m = /^([A-Z])(\d+)$/.exec(key)
+  const m = /^\$?([A-Z])\$?(\d+)$/.exec(key)
   return m && COL_LETTERS.includes(m[1]) ? { col: m[1], row: Number(m[2]) - 1 } : null
 }
 

@@ -1,5 +1,5 @@
 import type { Cells } from '../a1'
-import { A1_RE, FUNC_RE } from './parse'
+import { ABS_A1_RE, FUNC_RE } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 
 
@@ -29,7 +29,7 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
 
   if (expr.startsWith(TM) && expr.endsWith(TM)) return stripText(expr)
 
-  expr = expr.replace(A1_RE, (_m, c, r) => {
+  expr = expr.replace(ABS_A1_RE, (_m, _absCol, c, _absRow, r) => {
     const ref = `${c}${r}`
     if (seen.has(ref)) return '0'
     seen.add(ref)

@@ -52,6 +52,22 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
     expect(written).toEqual({ B3: '=A2' })
   })
 
+  it('preserves absolute row and column markers when offsetting pasted formulas', async () => {
+    let clipboardText = ''
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (text: string) => { clipboardText = text; return Promise.resolve() },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    })
+    const written: Record<string, string> = {}
+    copyOrCut([cellId('B', 1)], false, { B2: '=$A$1+A$1+$A1+A1' }, (k, v) => { written[k] = v })
+    pasteAt('C3', { col: 'C', row: 2 }, 20, (k, v) => { written[k] = v })
+    await Promise.resolve()
+    expect(written).toEqual({ C3: '=$A$1+B$1+$A2+B2' })
+  })
+
   it('adjusts formula references across a selected paste range', async () => {
     let clipboardText = ''
     Object.defineProperty(navigator, 'clipboard', {

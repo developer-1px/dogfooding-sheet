@@ -17,6 +17,7 @@ export type WriteMany = (writes: Writes) => void
 export type Display = (k: string) => string
 
 export const A1_RE = /([A-Z])(\d+)/g
+export const ABS_A1_RE = /(\$?)([A-Z])(\$?)(\d+)/g
 
 export const cellId = (col: string, row: number): string => `r${row}-${col}`
 
@@ -31,7 +32,7 @@ export const cellIdToKey = (id: string): string => {
 }
 
 export const parseA1 = (key: string): CellRef | null => {
-  const m = /^([A-Z])(\d+)$/.exec(key)
+  const m = /^\$?([A-Z])\$?(\d+)$/.exec(key)
   return m && COL_LETTERS.includes(m[1]) ? { col: m[1], row: Number(m[2]) - 1 } : null
 }
 

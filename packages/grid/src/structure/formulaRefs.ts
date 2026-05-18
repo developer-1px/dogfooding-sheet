@@ -1,4 +1,4 @@
-import { A1_RE, COL_LETTERS, colIndex } from '../coordinates/a1'
+import { A1_RE, ABS_A1_RE, COL_LETTERS, colIndex } from '../coordinates/a1'
 
 const idxCol = (i: number) => COL_LETTERS[i]
 
@@ -28,10 +28,10 @@ export function shiftFormulaCols(raw: string, fromCol: number, delta: 1 | -1): s
 
 export function offsetFormulaRefs(raw: string, dRows: number, dCols: number, rowCount = Infinity): string {
   if (!raw.startsWith('=')) return raw
-  return '=' + raw.slice(1).replace(A1_RE, (_match, col: string, rowText: string) => {
-    const nextRow1 = Number(rowText) + dRows
-    const nextCol = idxCol(colIndex(col) + dCols)
+  return '=' + raw.slice(1).replace(ABS_A1_RE, (_match, absCol: string, col: string, absRow: string, rowText: string) => {
+    const nextRow1 = Number(rowText) + (absRow ? 0 : dRows)
+    const nextCol = idxCol(colIndex(col) + (absCol ? 0 : dCols))
     if (nextRow1 < 1 || nextRow1 > rowCount || !nextCol) return '#REF!'
-    return `${nextCol}${nextRow1}`
+    return `${absCol}${nextCol}${absRow}${nextRow1}`
   })
 }

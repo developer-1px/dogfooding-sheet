@@ -25,8 +25,9 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
   }
   if (F === 'INDIRECT') {
     const ref = (argsT[0] ?? '').trim()
-    if (!/^[A-Z]\d+$/.test(ref)) return smartReturn('#REF!')
-    return smartReturn(c.evalRaw(c.cells[ref] ?? ''))
+    const p = parseA1(ref)
+    if (!p) return smartReturn('#REF!')
+    return smartReturn(c.evalRaw(c.cells[cellKey(p.col, p.row)] ?? ''))
   }
   if (F === 'ADDRESS') {
     const r = Number(argsT[0]), col = Number(argsT[1])

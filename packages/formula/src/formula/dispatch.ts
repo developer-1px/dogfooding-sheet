@@ -27,9 +27,10 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   if (F === 'ISFORMULA' || F === 'ISREF') {
     const ref = (rawArgs ?? '').trim()
-    if (!/^[A-Z]\d+$/.test(ref)) return F === 'ISREF' ? '0' : '#REF!'
+    const p = parseA1(ref)
+    if (!p) return F === 'ISREF' ? '0' : '#REF!'
     if (F === 'ISREF') return '1'
-    return (c.cells[ref] ?? '').startsWith('=') ? '1' : '0'
+    return (c.cells[`${p.col}${p.row + 1}`] ?? '').startsWith('=') ? '1' : '0'
   }
   if (F === 'ROW' || F === 'COLUMN') {
     const p = parseA1((rawArgs ?? '').trim())

@@ -13,10 +13,12 @@ describe('evaluateCell', () => {
   it('arithmetic with refs', () => {
     expect(evaluateCell(cells({ A1: '2', B1: '3' }), '=A1+B1')).toBe('5')
     expect(evaluateCell(cells({ A1: '10', B1: '4' }), '=A1-B1*2')).toBe('2')
+    expect(evaluateCell(cells({ A1: '2', B1: '3' }), '=$A$1+B$1')).toBe('5')
   })
 
   it('SUM range', () => {
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM(A1:A3)')).toBe('6')
+    expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM($A$1:$A$3)')).toBe('6')
   })
 
   it('AVERAGE / MIN / MAX / COUNT', () => {
@@ -72,9 +74,11 @@ describe('statistical functions', () => {
 describe('refsInFormula', () => {
   it('extracts single refs', () => {
     expect(refsInFormula('=A1+B2')).toEqual(['A1', 'B2'])
+    expect(refsInFormula('=$A$1+B$2')).toEqual(['A1', 'B2'])
   })
   it('expands ranges', () => {
     expect(refsInFormula('=SUM(A1:A3)')).toEqual(['A1', 'A2', 'A3'])
+    expect(refsInFormula('=SUM($A$1:$A$3)')).toEqual(['A1', 'A2', 'A3'])
   })
   it('returns empty for non-formulas', () => {
     expect(refsInFormula('hello')).toEqual([])

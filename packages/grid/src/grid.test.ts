@@ -22,6 +22,7 @@ describe('@spredsheet/grid', () => {
 
   it('offsets copied formula references relatively', () => {
     expect(offsetFormulaRefs('=A1+B2', 2, 1)).toBe('=B3+C4')
+    expect(offsetFormulaRefs('=$A$1+A$1+$A1+A1', 2, 1)).toBe('=$A$1+B$1+$A3+B3')
     expect(offsetFormulaRefs('=A1', -1, 0)).toBe('=#REF!')
     expect(offsetFormulaRefs('plain', 2, 1)).toBe('plain')
   })
