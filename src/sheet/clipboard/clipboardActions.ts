@@ -1,5 +1,5 @@
 import { cellKey, parseCellId, type Cells, type Writes, type WriteCell, type WriteMany, type CellRef } from '../schema'
-import { rectFromIds, rectToTsv, writesFromTsv } from '@spredsheet/grid'
+import { rectFromIds, rectToTsv, writesFromTsv, writesFromTsvToRect } from '@spredsheet/grid'
 
 const flush = (writes: Writes, write: WriteCell, writeMany?: WriteMany) => {
   if (writes.length === 0) return
@@ -30,14 +30,32 @@ export function pasteTsvAt(
   flush(writesFromTsv(tsv, anchor, bounds), writeCell, bounds.writeMany)
 }
 
+export function pasteTsvIntoSelection(
+  tsv: string,
+  selectedIds: string[],
+  anchor: CellRef,
+  writeCell: WriteCell,
+  bounds: { maxRow?: number; maxCol?: number; writeMany?: WriteMany } = {},
+): void {
+  const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null
+  if (!rect) {
+    pasteTsvAt(tsv, anchor, writeCell, bounds)
+    return
+  }
+  flush(writesFromTsvToRect(tsv, rect, bounds), writeCell, bounds.writeMany)
+}
+
 export function pasteAt(
   focusKey: string, p: CellRef, maxRow: number,
   writeCell: WriteCell,
   writeCells?: WriteMany,
   maxCol?: number,
+  selectedIds: string[] = [],
 ): void {
   navigator.clipboard?.readText()
-    .then((t) => t.includes('\t') || t.includes('\n') ? pasteTsvAt(t, p, writeCell, { maxRow, maxCol, writeMany: writeCells }) : writeCell(focusKey, t))
+    .then((t) => selectedIds.length > 1
+      ? pasteTsvIntoSelection(t, selectedIds, p, writeCell, { maxRow, maxCol, writeMany: writeCells })
+      : t.includes('\t') || t.includes('\n') ? pasteTsvAt(t, p, writeCell, { maxRow, maxCol, writeMany: writeCells }) : writeCell(focusKey, t))
     .catch(() => {})
 }
 

@@ -35,3 +35,25 @@ export function writesFromTsv(
   }
   return writes
 }
+
+export function writesFromTsvToRect(
+  tsv: string,
+  target: Rect,
+  bounds: { maxRow?: number; maxCol?: number } = {},
+): Writes {
+  const maxRow = bounds.maxRow ?? Infinity
+  const maxCol = bounds.maxCol ?? COL_LETTERS.length
+  const rows = tsv.replace(/\r\n?/g, '\n').replace(/\n$/, '').split('\n')
+  const source = rows.map((row) => row.split('\t'))
+  const writes: Writes = []
+  for (let r = target.rMin; r <= target.rMax; r++) {
+    const sourceRow = source[(r - target.rMin) % source.length] ?? ['']
+    for (let c = target.cMin; c <= target.cMax; c++) {
+      const col = COL_LETTERS[c]
+      if (r >= maxRow || c >= maxCol || !col) continue
+      const value = sourceRow[(c - target.cMin) % sourceRow.length] ?? ''
+      writes.push([cellKey(col, r), value])
+    }
+  }
+  return writes
+}
