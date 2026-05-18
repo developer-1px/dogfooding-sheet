@@ -2,6 +2,7 @@ import type { Eval } from './args'
 import type { Cells } from '../a1'
 import { collectRefs } from './parse'
 import { matchCriteria } from './criteriaMatch'
+import { coerceNumber } from './coerce'
 
 
 /** Build a predicate from interleaved (range, criteria) pairs. */
@@ -28,10 +29,25 @@ export function sumifs(args: string[], cells: Cells, evalRaw: Eval): number {
   let sum = 0
   for (let i = 0; i < sumRefs.length; i++) {
     if (!pred(i)) continue
-    const v = Number(evalRaw(cells[sumRefs[i]] ?? ''))
+    const v = coerceNumber(evalRaw(cells[sumRefs[i]] ?? ''))
     if (Number.isFinite(v)) sum += v
   }
   return sum
+}
+
+export function averageifs(args: string[], cells: Cells, evalRaw: Eval): number | string {
+  const avgRefs = collectRefs(args[0])
+  const pred = matchAll(args.slice(1), cells, evalRaw)
+  let sum = 0
+  let count = 0
+  for (let i = 0; i < avgRefs.length; i++) {
+    if (!pred(i)) continue
+    const v = coerceNumber(evalRaw(cells[avgRefs[i]] ?? ''))
+    if (!Number.isFinite(v)) continue
+    sum += v
+    count++
+  }
+  return count ? sum / count : '#DIV/0!'
 }
 
 export function minMaxIf(
@@ -47,7 +63,7 @@ export function minMaxIf(
   const picked: number[] = []
   for (let i = 0; i < values.length; i++) {
     if (!matchCriteria(evalRaw(cells[crits[i] ?? values[i]] ?? ''), criteria)) continue
-    const v = Number(evalRaw(cells[values[i]] ?? ''))
+    const v = coerceNumber(evalRaw(cells[values[i]] ?? ''))
     if (Number.isFinite(v)) picked.push(v)
   }
   if (picked.length === 0) return 0

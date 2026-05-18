@@ -3,7 +3,7 @@ import { aggregate } from './aggregates'
 import { sumproduct, sample, weightAvg, arrayToText, firstLast, maxMinBy, lenStat, rangeHash, strStat, countNumeric, freqStat, rangeCsv, rangeJSON, rangeSort, rangeUnique, entropy, jaccard } from './rangeOps'
 import { dispatchStat } from './statDispatch'
 import { countif, sumif, counta, countblank, averageif, countunique } from './condAggregates'
-import { countifs, sumifs, minMaxIf } from './multiCriteria'
+import { averageifs, countifs, sumifs, minMaxIf } from './multiCriteria'
 import { dispatchDate } from './dateFns'
 import { dispatchTime } from './timeFns'
 import { dispatchCalendar } from './calendar'
@@ -52,6 +52,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'AVERAGEIF') return String(averageif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
   if (F === 'COUNTIFS') return String(countifs(argsT, c.cells, c.evalRaw))
   if (F === 'SUMIFS') return String(sumifs(argsT, c.cells, c.evalRaw))
+  if (F === 'AVERAGEIFS') return smartReturn(String(averageifs(argsT, c.cells, c.evalRaw)))
   if (F === 'MINIFS' || F === 'MAXIFS') return String(minMaxIf(F === 'MINIFS' ? 'MIN' : 'MAX', argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
   if (F === 'WEIGHTAVG') { const a = splitArgs(rawArgs); return smartReturn(weightAvg(a[0], a[1], c.numFromCell)) }
   if (F === 'MAX_BY' || F === 'MIN_BY') { const a = splitArgs(rawArgs); return smartReturn(maxMinBy(F, a[0], a[1], c.cells, c.evalRaw, c.numFromCell)) }

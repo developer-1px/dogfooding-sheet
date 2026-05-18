@@ -42,6 +42,19 @@ describe('COUNTIFS / SUMIFS', () => {
     expect(evaluateCell(cells, '=COUNTIFS(A1:A4, "x", B1:B4, ">10")')).toBe('2')
     expect(evaluateCell(cells, '=SUMIFS(C1:C4, A1:A4, "x", B1:B4, ">10")')).toBe('6')
   })
+
+  it('AVERAGEIFS averages matching numeric values', () => {
+    const cells = { A1: 'x', A2: 'x', A3: 'y', A4: 'x', B1: '5', B2: '15', B3: '15', B4: '20', C1: '10', C2: '20', C3: '30', C4: '40' }
+    expect(evaluateCell(cells, '=AVERAGEIFS(C1:C4, A1:A4, "x", B1:B4, ">10")')).toBe('30')
+    expect(evaluateCell(cells, '=AVERAGEIFS(C1:C4, A1:A4, "z")')).toBe('#DIV/0!')
+  })
+
+  it('multi-criteria aggregates coerce formatted numbers', () => {
+    const cells = { A1: 'x', A2: 'x', A3: 'y', B1: '$1,200.50', B2: '$299.50', B3: '$100.00' }
+    expect(evaluateCell(cells, '=SUMIFS(B1:B3, A1:A3, "x")')).toBe('1500')
+    expect(evaluateCell(cells, '=AVERAGEIFS(B1:B3, A1:A3, "x")')).toBe('750')
+    expect(evaluateCell(cells, '=MAXIFS(B1:B3, A1:A3, "x")')).toBe('1200.5')
+  })
 })
 
 describe('MINIFS / MAXIFS', () => {
