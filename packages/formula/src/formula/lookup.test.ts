@@ -99,6 +99,33 @@ describe('TAKE / DROP', () => {
   })
 })
 
+describe('CHOOSEROWS / CHOOSECOLS', () => {
+  const cells = {
+    A1: 'a', B1: 'b', C1: 'c',
+    A2: 'd', B2: 'e', C2: 'f',
+    A3: 'g', B3: 'h', C3: 'i',
+  }
+
+  it('returns selected rows in requested order', () => {
+    expect(evaluateCell(cells, '=CHOOSEROWS(A1:C3, 3, 1)')).toBe('[["g","h","i"],["a","b","c"]]')
+  })
+
+  it('returns selected columns in requested order', () => {
+    expect(evaluateCell(cells, '=CHOOSECOLS(A1:C3, 3, 1)')).toBe('[["c","a"],["f","d"],["i","g"]]')
+  })
+
+  it('supports negative indexes from the end', () => {
+    expect(evaluateCell(cells, '=CHOOSEROWS(A1:C3, -1, -3)')).toBe('[["g","h","i"],["a","b","c"]]')
+    expect(evaluateCell(cells, '=CHOOSECOLS(A1:C3, -1, -3)')).toBe('[["c","a"],["f","d"],["i","g"]]')
+  })
+
+  it('rejects missing, zero, or out-of-range indexes', () => {
+    expect(evaluateCell(cells, '=CHOOSEROWS(A1:C3)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=CHOOSECOLS(A1:C3, 0)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=CHOOSECOLS(A1:C3, 4)')).toBe('#VALUE!')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }

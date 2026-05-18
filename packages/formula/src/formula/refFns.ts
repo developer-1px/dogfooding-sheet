@@ -34,6 +34,12 @@ const dropCount = (size: number, count: number): [number, number] | null => {
   return n > 0 ? [dropped, size] : [0, size - dropped]
 }
 
+const chooseIndex = (size: number, index: string): number | null => {
+  const n = Math.trunc(Number(index))
+  if (!Number.isFinite(n) || n === 0 || Math.abs(n) > size) return null
+  return n > 0 ? n - 1 : size + n
+}
+
 export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx): string | null {
   if (F === 'RANGEDIM') {
     const raw = (rawArgs ?? '').trim()
@@ -95,6 +101,21 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
       .slice(rows[0], rows[1])
       .map(row => row.slice(cols[0], cols[1]))
     return smartReturn(JSON.stringify(sliced))
+  }
+  if (F === 'CHOOSEROWS' || F === 'CHOOSECOLS') {
+    const raw = splitArgs(rawArgs)
+    const matrix = rangeMatrix(raw[0] ?? '', c)
+    if (!matrix) return smartReturn('#REF!')
+    const picks = argsT.slice(1)
+    if (picks.length === 0) return smartReturn('#VALUE!')
+    if (F === 'CHOOSEROWS') {
+      const rowIndexes = picks.map(pick => chooseIndex(matrix.length, pick))
+      if (rowIndexes.some(index => index === null)) return smartReturn('#VALUE!')
+      return smartReturn(JSON.stringify(rowIndexes.map(index => matrix[index as number])))
+    }
+    const colIndexes = picks.map(pick => chooseIndex(matrix[0].length, pick))
+    if (colIndexes.some(index => index === null)) return smartReturn('#VALUE!')
+    return smartReturn(JSON.stringify(matrix.map(row => colIndexes.map(index => row[index as number]))))
   }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
