@@ -179,6 +179,23 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     )
     return smartReturn(JSON.stringify(rows))
   }
+  if (F === 'HSTACK' || F === 'VSTACK') {
+    const matrices = splitArgs(rawArgs).map(arg => rangeMatrix(arg, c))
+    if (matrices.length === 0 || matrices.some(matrix => matrix === null)) return smartReturn('#REF!')
+    const resolved = matrices as string[][][]
+    if (F === 'HSTACK') {
+      const rowCount = Math.max(...resolved.map(matrix => matrix.length))
+      const rows = Array.from({ length: rowCount }, (_unused, row) =>
+        resolved.flatMap(matrix => matrix[row] ?? Array.from({ length: matrix[0].length }, () => '#N/A'))
+      )
+      return smartReturn(JSON.stringify(rows))
+    }
+    const colCount = Math.max(...resolved.map(matrix => matrix[0].length))
+    const rows = resolved.flatMap(matrix =>
+      matrix.map(row => row.concat(Array.from({ length: colCount - row.length }, () => '#N/A')))
+    )
+    return smartReturn(JSON.stringify(rows))
+  }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
     const p = parseA1(base)

@@ -185,6 +185,24 @@ describe('EXPAND', () => {
   })
 })
 
+describe('HSTACK / VSTACK', () => {
+  const cells = {
+    A1: 'a', B1: 'b',
+    A2: 'c', B2: 'd',
+    D1: 'x',
+    D2: 'y',
+    D3: 'z',
+  }
+
+  it('combines ranges horizontally and pads shorter inputs', () => {
+    expect(evaluateCell(cells, '=HSTACK(A1:B2, D1:D3)')).toBe('[["a","b","x"],["c","d","y"],["#N/A","#N/A","z"]]')
+  })
+
+  it('combines ranges vertically and pads narrower inputs', () => {
+    expect(evaluateCell(cells, '=VSTACK(A1:B2, D1:D3)')).toBe('[["a","b"],["c","d"],["x","#N/A"],["y","#N/A"],["z","#N/A"]]')
+  })
+})
+
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
     const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
