@@ -112,6 +112,16 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SPLITN("a-b-c-d", "-", 3)')).toBe('c')
     expect(evaluateCell({}, '=SPLITN("a-b", "-", 5)')).toBe('#N/A')
   })
+
+  it('SPLIT returns a row array', () => {
+    expect(evaluateCell({}, '=SPLIT("a,b,c", ",")')).toBe('[["a","b","c"]]')
+    expect(evaluateCell({}, '=SPLIT("a,,b", ",", 1, 0)')).toBe('[["a","","b"]]')
+  })
+
+  it('SPLIT can split by the full delimiter', () => {
+    expect(evaluateCell({}, '=SPLIT("a<>b<>c", "<>", 0)')).toBe('[["a","b","c"]]')
+    expect(evaluateCell({}, '=SPLIT("a<>b.c", "<>.", 1)')).toBe('[["a","b","c"]]')
+  })
   it('TEXTBEFORE / TEXTAFTER split by delimiter', () => {
     expect(evaluateCell({}, '=TEXTBEFORE("hello@example.com","@")')).toBe('hello')
     expect(evaluateCell({}, '=TEXTAFTER("hello@example.com","@")')).toBe('example.com')

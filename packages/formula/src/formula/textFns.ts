@@ -41,6 +41,17 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const n = Math.floor(Number(argsT[2] ?? '1'))
     return wrap(n >= 1 && n <= parts.length ? parts[n - 1] : '#N/A')
   }
+  if (F === 'SPLIT') {
+    const text = argsT[0] ?? ''
+    const delimiter = argsT[1] ?? ''
+    if (delimiter === '') return wrap('#VALUE!')
+    const splitByEach = (argsT[2] ?? '1') !== '0'
+    const removeEmpty = (argsT[3] ?? '1') !== '0'
+    const parts = splitByEach
+      ? text.split(new RegExp(`[${delimiter.replace(/[\\^$.*+?()[\]{}|/-]/g, '\\$&')}]`))
+      : text.split(delimiter)
+    return wrap(JSON.stringify([removeEmpty ? parts.filter(part => part !== '') : parts]))
+  }
   if (F === 'TEXTBEFORE') {
     const i = argsT[0].indexOf(argsT[1] ?? '')
     return wrap(i < 0 ? argsT[0] : argsT[0].slice(0, i))
