@@ -1,10 +1,38 @@
-import type { Eval } from './args'
+import { splitArgs, type Eval } from './args'
 import { COL_LETTERS, parseA1, cellKey, colIndex, type Cells } from '../a1'
 import { evalCell as evalRangeCell, parseRange } from './rangeRect'
 import { smartReturn } from './marker'
 
 
 interface Ctx { cells: Cells; evalRaw: Eval }
+
+const rangeMatrix = (range: string, c: Ctx): string[][] | null => {
+  const r = parseRange(range)
+  if (!r) return null
+  const rows: string[][] = []
+  for (let rr = r.rMin; rr <= r.rMax; rr++) {
+    const row: string[] = []
+    for (let col = r.cMin; col <= r.cMax; col++) {
+      row.push(evalRangeCell(c.cells, col, rr, c.evalRaw))
+    }
+    rows.push(row)
+  }
+  return rows
+}
+
+const takeCount = (size: number, count: number): [number, number] | null => {
+  const n = Math.trunc(count)
+  if (!Number.isFinite(n) || n === 0) return null
+  const kept = Math.min(Math.abs(n), size)
+  return n > 0 ? [0, kept] : [size - kept, size]
+}
+
+const dropCount = (size: number, count: number): [number, number] | null => {
+  const n = Math.trunc(count)
+  if (!Number.isFinite(n) || n === 0) return null
+  const dropped = Math.min(Math.abs(n), size)
+  return n > 0 ? [dropped, size] : [0, size - dropped]
+}
 
 export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx): string | null {
   if (F === 'RANGEDIM') {
@@ -19,13 +47,13 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     return smartReturn(String(F === 'ROWS' ? r.rMax - r.rMin + 1 : r.cMax - r.cMin + 1))
   }
   if (F === 'TRANSPOSE') {
-    const r = parseRange((rawArgs ?? '').trim())
-    if (!r) return smartReturn('#REF!')
+    const matrix = rangeMatrix((rawArgs ?? '').trim(), c)
+    if (!matrix) return smartReturn('#REF!')
     const rows: string[][] = []
-    for (let col = r.cMin; col <= r.cMax; col++) {
+    for (let col = 0; col < matrix[0].length; col++) {
       const row: string[] = []
-      for (let rr = r.rMin; rr <= r.rMax; rr++) {
-        row.push(evalRangeCell(c.cells, col, rr, c.evalRaw))
+      for (let rr = 0; rr < matrix.length; rr++) {
+        row.push(matrix[rr][col])
       }
       rows.push(row)
     }
@@ -50,6 +78,23 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
       rows.push(values)
     }
     return smartReturn(JSON.stringify(rows))
+  }
+  if (F === 'TAKE' || F === 'DROP') {
+    const raw = splitArgs(rawArgs)
+    const matrix = rangeMatrix(raw[0] ?? '', c)
+    if (!matrix) return smartReturn('#REF!')
+    const rows = F === 'TAKE' ? takeCount(matrix.length, Number(argsT[1])) : dropCount(matrix.length, Number(argsT[1]))
+    if (!rows) return smartReturn('#VALUE!')
+    const cols = argsT[2] === undefined
+      ? [0, matrix[0].length] as [number, number]
+      : F === 'TAKE'
+        ? takeCount(matrix[0].length, Number(argsT[2]))
+        : dropCount(matrix[0].length, Number(argsT[2]))
+    if (!cols) return smartReturn('#VALUE!')
+    const sliced = matrix
+      .slice(rows[0], rows[1])
+      .map(row => row.slice(cols[0], cols[1]))
+    return smartReturn(JSON.stringify(sliced))
   }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()
