@@ -23,6 +23,12 @@ describe('logic functions', () => {
     expect(evaluateCell({}, '=COALESCE(, "fallback")')).toBe('fallback')
   })
 
+  it('IF treats blank or omitted branches as blank', () => {
+    expect(evaluateCell({}, '=IF(0,, "fallback")')).toBe('fallback')
+    expect(evaluateCell({}, '=IF(0, "yes",)')).toBe('')
+    expect(evaluateCell({}, '=IF(0, "yes")')).toBe('')
+  })
+
   it('TYPE classifies values', () => {
     expect(evaluateCell({}, '=TYPE(42)')).toBe('1')
     expect(evaluateCell({}, '=TYPE("hi")')).toBe('2')

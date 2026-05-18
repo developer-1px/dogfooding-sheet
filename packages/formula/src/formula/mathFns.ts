@@ -30,7 +30,10 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
   if (F === 'LOG1P') return String(Math.log1p(argsN[0]))
   if (F === 'ROUNDUP') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.ceil(Math.abs(n) * m) / m * Math.sign(n || 1)) }
   if (F === 'ROUNDDOWN') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.trunc(n * m) / m) }
-  if (F === 'IF') return smartReturn(String(argsN[0] ? argsT[1] : argsT[2]))
+  if (F === 'IF') {
+    const value = argsN[0] ? (argsT[1] ?? '') : (argsT[2] ?? '')
+    return value === '' ? wrap('') : smartReturn(value)
+  }
   if (F === 'TRUNC') { const [n, d = 0] = argsN; const m = 10 ** d; return String(Math.trunc(n * m) / m) }
   if (F === 'SIGN') return String(Math.sign(argsN[0]))
   if (F === 'SIGNCHAR') { const s = Math.sign(argsN[0]); return wrap(s > 0 ? '+' : s < 0 ? '-' : '0') }
