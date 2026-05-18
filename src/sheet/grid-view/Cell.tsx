@@ -35,9 +35,11 @@ interface Props {
 }
 
 export function Cell(p: Props) {
+  const isError = /^#[A-Z/]+!?$/.test(p.label)
   const ariaLabel = [
     p.address,
     p.label === '' ? '빈 셀' : p.label,
+    isError ? '오류' : '',
     p.selected ? '선택됨' : '',
     p.focused ? '현재 셀' : '',
   ].filter(Boolean).join(' ')
@@ -60,7 +62,10 @@ export function Cell(p: Props) {
     <span
       {...p.cellProps}
       aria-label={ariaLabel}
-      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.isNum && numericValue(p.label) < 0 ? ' negative' : ''}${/^#[A-Z/]+!?$/.test(p.label) ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
+      aria-current={p.focused ? 'true' : undefined}
+      aria-selected={p.selected}
+      aria-invalid={isError || undefined}
+      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.isNum ? ' numeric' : ''}${p.isNum && numericValue(p.label) < 0 ? ' negative' : ''}${isError ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
       style={p.styleInline}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}

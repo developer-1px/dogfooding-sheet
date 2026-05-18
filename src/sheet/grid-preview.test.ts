@@ -22,11 +22,27 @@ describe('spreadsheet preview interactions', () => {
 
     const renderedCells = gridCells()
     expect(renderedCells[0].getAttribute('aria-label')).toBe('A1 Item 현재 셀')
+    expect(renderedCells[0].getAttribute('aria-current')).toBe('true')
+    expect(renderedCells[0].getAttribute('aria-selected')).toBe('false')
 
     const a5 = renderedCells[40]
     act(() => mouseClick(a5))
 
     expect(a5.getAttribute('aria-label')).toBe('A5 빈 셀 선택됨 현재 셀')
+    expect(a5.getAttribute('aria-current')).toBe('true')
+    expect(a5.getAttribute('aria-selected')).toBe('true')
+  })
+
+  it('marks error cells as invalid', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const a5 = gridCells()[40]
+    act(() => mouseClick(a5))
+    for (const key of '#N/A') act(() => typeKey(key))
+    act(() => typeKey('Enter'))
+
+    expect(a5.getAttribute('aria-invalid')).toBe('true')
+    expect(a5.getAttribute('aria-label')).toContain('오류')
   })
 
   it('commits text typed directly after selecting an empty cell with the mouse', async () => {

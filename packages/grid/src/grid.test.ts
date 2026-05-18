@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, jumpToEdge, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromTsv } from './index'
+import { applyFillWrites, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, homeEndTarget, idsBetween, idsForFormulaPick, insertRow, internalClipboardFromTsv, jumpToEdge, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -143,6 +143,23 @@ describe('@spredsheet/grid', () => {
       ['C2', 'B'],
       ['B3', 'C'],
       ['C3', 'D'],
+    ])
+  })
+
+  it('computes internal clipboard writes with formula offsets', () => {
+    const clip = internalClipboardFromTsv(false, { rMin: 1, rMax: 1, cMin: 1, cMax: 1 }, '=A1')
+    expect(writesFromInternalClipboard(clip, { col: 'B', row: 2 }, { maxRow: 20 })).toEqual([
+      ['B3', '=A2'],
+    ])
+    expect(writesFromInternalClipboardToRect(clip, { rMin: 2, rMax: 3, cMin: 1, cMax: 2 }, { maxRow: 20 })).toEqual([
+      ['B3', '=A2'],
+      ['C3', '=B2'],
+      ['B4', '=A3'],
+      ['C4', '=B3'],
+    ])
+    expect(clearWritesForIds(['r0-A', 'bad', 'r1-B'])).toEqual([
+      ['A1', ''],
+      ['B2', ''],
     ])
   })
 

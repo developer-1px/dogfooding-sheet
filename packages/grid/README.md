@@ -13,6 +13,7 @@ Scope:
 - pure formula reference picking
 - row and column structural transforms
 - pure TSV read/write conversion
+- internal clipboard paste write generation
 - pure edit state transitions
 - pure sorting and aggregate helpers
 
@@ -22,7 +23,7 @@ Internal responsibility groups:
 - `geometry`: rectangles and rectangular id coverage
 - `selection`: row, column, and full-grid id ranges; address parsing, formatting, and navigation targets
 - `selection/selectionEngine`: focus, anchor, and selected id state transitions
-- `clipboard`: grid-shaped payload conversion
+- `clipboard`: grid-shaped payload conversion and internal clipboard write generation
 - `editing`: focus/editing/draft state transitions, series extension, formula reference picking, and fill write generation
 - `structure`: row/column transforms and formula reference repair
 - `compute`: numeric parsing, sorting, and aggregate helpers
