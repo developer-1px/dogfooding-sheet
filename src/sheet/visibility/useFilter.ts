@@ -16,6 +16,42 @@ export function useFilter() {
   return { filter, apply, clear }
 }
 
+const coerceNumber = (value: string): number => {
+  const s = value.trim()
+  if (s === '') return NaN
+  const percent = s.endsWith('%')
+  const raw = (percent ? s.slice(0, -1) : s)
+    .replace(/^[+$€₩¥£]\s*/, '')
+    .replace(/\s*[€₩¥£]$/, '')
+    .replace(/,/g, '')
+  const n = Number(raw)
+  return Number.isFinite(n) ? (percent ? n / 100 : n) : NaN
+}
+
+const wildcardToRegex = (s: string): RegExp =>
+  new RegExp('^' + s.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.') + '$', 'i')
+
+export function matchesFilter(value: string, query: string): boolean {
+  const v = value.trim()
+  const q = query.trim()
+  if (q === '') return true
+  for (const op of ['>=', '<=', '<>', '>', '<', '='] as const) {
+    if (!q.startsWith(op)) continue
+    const rhs = q.slice(op.length).trim()
+    if (op === '<>') return v.toLowerCase() !== rhs.toLowerCase()
+    if (op === '=') return v.toLowerCase() === rhs.toLowerCase()
+    const a = coerceNumber(v)
+    const b = coerceNumber(rhs)
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return false
+    if (op === '>=') return a >= b
+    if (op === '<=') return a <= b
+    if (op === '>') return a > b
+    if (op === '<') return a < b
+  }
+  if (/[*?]/.test(q)) return wildcardToRegex(q).test(v)
+  return v.toLowerCase().includes(q.toLowerCase())
+}
+
 /**
  * Returns the set of row indices (0-based) that should be hidden by `filter`.
  * Header row (index 0) is never hidden.
@@ -28,8 +64,8 @@ export function hiddenRows(
   const out = new Set<number>()
   if (!filter) return out
   for (let r = 1; r < rowCount; r++) {
-    const v = display(cellKey(filter.col, r)).toLowerCase()
-    if (!v.includes(filter.text)) out.add(r)
+    const v = display(cellKey(filter.col, r))
+    if (!matchesFilter(v, filter.text)) out.add(r)
   }
   return out
 }

@@ -21,4 +21,18 @@ describe('hiddenRows', () => {
     const hidden = hiddenRows({ col: 'A', text: 'apple' }, 4, display)
     expect(hidden.has(1)).toBe(false)
   })
+
+  it('supports numeric comparison criteria with formatted values', () => {
+    const values: Record<string, string> = { A1: 'Amount', A2: '$9.50', A3: '1,234', A4: '50%' }
+    const hidden = hiddenRows({ col: 'A', text: '>10' }, 4, (k) => values[k] ?? '')
+    expect(hidden.has(1)).toBe(true)
+    expect(hidden.has(2)).toBe(false)
+    expect(hidden.has(3)).toBe(true)
+  })
+
+  it('supports equality, inequality, and wildcard criteria', () => {
+    expect(hiddenRows({ col: 'A', text: '=Bread' }, 4, display).has(2)).toBe(false)
+    expect(hiddenRows({ col: 'A', text: '<>Bread' }, 4, display).has(2)).toBe(true)
+    expect(hiddenRows({ col: 'A', text: 'B*' }, 4, display).has(2)).toBe(false)
+  })
 })

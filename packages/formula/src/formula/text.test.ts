@@ -22,7 +22,7 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=FALSE()')).toBe('0')
   })
   it('JSONESCAPE escapes quotes/newlines', () => {
-    expect(evaluateCell({}, '=JSONESCAPE("hi \\"a\\"")')).toBe('hi \\"a\\"')
+    expect(evaluateCell({}, '=JSONESCAPE("hi "a"")')).toBe('hi \\"a\\"')
   })
   it('BASE64 round-trip', () => {
     expect(evaluateCell({}, '=BASE64ENCODE("hi!")')).toBe('aGkh')
