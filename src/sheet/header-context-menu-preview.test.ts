@@ -17,6 +17,9 @@ const rowHeader = (text: string): HTMLElement | undefined =>
   [...document.querySelectorAll<HTMLElement>('.row-header')]
     .find((el) => el.childNodes[0]?.textContent?.trim() === text)
 
+const addressText = (): string | undefined =>
+  document.querySelector<HTMLButtonElement>('.addr')?.textContent?.trim()
+
 describe('header context menus', () => {
   it('shows column-specific actions from a column header', async () => {
     await act(async () => dom.root.render(createElement(App)))
@@ -146,6 +149,7 @@ describe('header context menus', () => {
     expect(header('.header-cell', 'B')?.classList.contains('selected-header')).toBe(true)
     expect(header('.header-cell', 'C')?.classList.contains('selected-header')).toBe(true)
     expect(header('.header-cell', 'D')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('B:D')
   })
 
   it('extends row header selection from the previous header click', async () => {
@@ -158,6 +162,7 @@ describe('header context menus', () => {
     expect(rowHeader('2')?.classList.contains('selected-header')).toBe(true)
     expect(rowHeader('3')?.classList.contains('selected-header')).toBe(true)
     expect(rowHeader('4')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('2:4')
   })
 
   it('marks the corner header when the whole sheet is selected', async () => {
@@ -171,5 +176,6 @@ describe('header context menus', () => {
     expect(corner!.classList.contains('selected-header')).toBe(true)
     expect(header('.header-cell', 'A')?.classList.contains('selected-header')).toBe(true)
     expect(rowHeader('1')?.classList.contains('selected-header')).toBe(true)
+    expect(addressText()).toBe('A:J')
   })
 })

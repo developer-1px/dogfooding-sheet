@@ -20,6 +20,17 @@ import './App.css'
 
 const GOTO_PROMPT = { label: '이동할 셀 또는 범위 (예: B5, A1:C3)', placeholder: 'B5', submitLabel: '이동' }
 
+function selectionAddress(selectedIds: string[], focusKey: string | null, rowCount: number, colLetters: readonly string[]): string | null {
+  const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null
+  if (!rect) return focusKey
+  const fullRows = rect.rMin === 0 && rect.rMax === rowCount - 1
+  const fullCols = rect.cMin === 0 && rect.cMax === colLetters.length - 1
+  if (fullRows && fullCols) return `${colLetters[rect.cMin]}:${colLetters[rect.cMax]}`
+  if (fullRows) return `${colLetters[rect.cMin]}:${colLetters[rect.cMax]}`
+  if (fullCols) return `${rect.rMin + 1}:${rect.rMax + 1}`
+  return formatRect(rect)
+}
+
 export default function App() {
   const { ask, dialog: promptDialog } = usePrompt()
   const { confirm, dialog: confirmDialog } = useConfirm()
@@ -59,8 +70,7 @@ export default function App() {
   })
   ctxRef.current = ctx
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
-  const rect = ctx.selectedIds.length > 1 ? rectFromIds(ctx.selectedIds) : null
-  const addr = rect ? formatRect(rect) : ctx.focusKey
+  const addr = selectionAddress(ctx.selectedIds, ctx.focusKey, ctx.rowCount, ctx.colLetters)
 
   return (
     <div className="sheet-app">
