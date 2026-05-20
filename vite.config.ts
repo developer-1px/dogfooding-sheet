@@ -7,6 +7,21 @@ const local = (path: string) => fileURLToPath(new URL(path, import.meta.url))
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          minSize: 20_000,
+          groups: [
+            {
+              name: 'vendor',
+              test: /node_modules/,
+            },
+          ],
+        },
+      },
+    },
+  },
   resolve: {
     alias: [
       { find: /^@spredsheet\/formula$/, replacement: local('./packages/formula/src/index.ts') },
