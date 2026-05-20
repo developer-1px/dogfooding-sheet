@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { tabActions } from './useTabs'
+import { tabActions, type TabActionOps } from './useTabs'
 import { blankBundle, initialSheet, type Sheet } from '../schema'
 
 const make = (): Sheet => ({
@@ -19,8 +19,8 @@ const make = (): Sheet => ({
 interface Stub { reset?: Sheet; replace?: { path: string; value: unknown } }
 const stubOps = (s: Stub) => ({
   reset: (v: Sheet) => { s.reset = v },
-  replace: (path: string, value: unknown) => { s.replace = { path, value } },
-}) as never
+  replace: (path: '/tabs', value: Sheet['tabs']) => { s.replace = { path, value } },
+}) satisfies TabActionOps
 
 describe('tabActions', () => {
   it('switchTab swaps active, snapshots current bundle, hydrates target', () => {
