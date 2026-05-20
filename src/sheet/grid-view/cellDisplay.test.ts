@@ -9,9 +9,17 @@ describe('cell display classification', () => {
     })
     expect(classifyCellContent('https://example.com')).toEqual({
       kind: 'link',
-      href: 'https://example.com',
+      href: 'https://example.com/',
       label: 'https://example.com',
     })
+  })
+
+  it('does not auto-link malformed or non-http URLs', () => {
+    expect(classifyCellContent('https://example.com/a png')).toEqual({ kind: 'text', text: 'https://example.com/a png' })
+    expect(classifyCellContent('https://example.com/\nnext')).toEqual({ kind: 'text', text: 'https://example.com/\nnext' })
+    expect(classifyCellContent('https:\\\\example.com\\path')).toEqual({ kind: 'text', text: 'https:\\\\example.com\\path' })
+    expect(classifyCellContent('javascript:alert(1)')).toEqual({ kind: 'text', text: 'javascript:alert(1)' })
+    expect(classifyCellContent('data:text/html,hi')).toEqual({ kind: 'text', text: 'data:text/html,hi' })
   })
 
   it('classifies email and text values', () => {

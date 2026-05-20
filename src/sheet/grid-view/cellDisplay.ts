@@ -1,8 +1,7 @@
 import { numericValue } from '@spredsheet/grid'
 
 const ERROR_RE = /^#[A-Z0-9/?]+!?$/
-const IMAGE_URL_RE = /^https?:\/\/.+\.(png|jpe?g|gif|svg|webp)(\?.*)?$/i
-const HTTP_URL_RE = /^https?:\/\//
+const IMAGE_EXTENSIONS = new Set(['gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
 const EMAIL_RE = /^[\w.+-]+@[\w.-]+\.\w{2,}$/
 
 export type CellContent =
@@ -37,9 +36,31 @@ export interface CellDisplayModel {
 
 export const isErrorLabel = (label: string): boolean => ERROR_RE.test(label)
 
+const hasUnsafeUrlChar = (value: string): boolean => {
+  for (let index = 0; index < value.length; index++) {
+    const code = value.charCodeAt(index)
+    if (code <= 0x20 || code === 0x7f || value[index] === '\\') return true
+  }
+  return false
+}
+
+const httpUrl = (label: string): URL | null => {
+  if (hasUnsafeUrlChar(label)) return null
+  try {
+    const url = new URL(label)
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url : null
+  } catch {
+    return null
+  }
+}
+
 export function classifyCellContent(label: string): CellContent {
-  if (IMAGE_URL_RE.test(label)) return { kind: 'image', src: label }
-  if (HTTP_URL_RE.test(label)) return { kind: 'link', href: label, label }
+  const url = httpUrl(label)
+  if (url) {
+    const extension = url.pathname.match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase()
+    if (extension && IMAGE_EXTENSIONS.has(extension)) return { kind: 'image', src: url.href }
+    return { kind: 'link', href: url.href, label }
+  }
   if (EMAIL_RE.test(label)) return { kind: 'email', href: `mailto:${label}`, label }
   return { kind: 'text', text: label }
 }
