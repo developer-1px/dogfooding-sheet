@@ -1,4 +1,5 @@
-import { exportCsv, downloadFile } from '../lib/csv'
+import { exportCsv } from '../lib/csv'
+import { downloadFile } from '../lib/downloadFile'
 import type { Sheet, SheetOps, WriteCell, WriteMany, Display } from './schema'
 import { CLEAR_STYLE, type CellStyle } from './formatting/useStyles'
 import { rowColAtFocus } from './structure/rowColAtFocus'

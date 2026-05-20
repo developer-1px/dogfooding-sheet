@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuButtonPattern } from '@interactive-os/aria-kernel/patterns'
-import { downloadFile } from '../lib/csv'
+import { downloadFile } from '../lib/downloadFile'
 import type { Confirm } from './useConfirm'
 import type { Cells, Display, Sheet, WriteCell, WriteMany } from './schema'
 import {

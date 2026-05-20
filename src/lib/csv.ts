@@ -76,11 +76,3 @@ export function importCsvRowsInto(rows: readonly (readonly string[])[], write: W
 export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
   importCsvRowsInto(parseCsv(text), write, opts)
 }
-
-export function downloadFile(name: string, content: string) {
-  const blob = new Blob([content], { type: 'text/csv' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url; a.download = name; a.click()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
-}
