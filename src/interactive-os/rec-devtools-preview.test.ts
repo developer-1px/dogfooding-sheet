@@ -1,6 +1,7 @@
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { DevToolsOverlay } from './DevToolsOverlay'
 import { DevToolsOverlayDev } from './DevToolsOverlayDev'
 
 describe('REC devtools overlay', () => {
@@ -23,5 +24,12 @@ describe('REC devtools overlay', () => {
     act(() => root.render(createElement(DevToolsOverlayDev)))
 
     expect(document.querySelector<HTMLButtonElement>('.rec-devtools')?.textContent).toBe('REC')
+  })
+
+  it('does not render the dev overlay outside development mode', () => {
+    act(() => root.render(createElement(DevToolsOverlay)))
+
+    expect(document.querySelector('.rec-devtools')).toBeNull()
+    expect(document.querySelector('[data-interactive-os-devtools]')).toBeNull()
   })
 })
