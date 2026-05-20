@@ -1,5 +1,6 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { selectRowHeader } from './headerSelection'
+import { rowRestoreControls } from './hiddenRestoreControls'
 import { ROW_HEIGHT_BOUNDS, resizeValueForKey } from './resizeRules'
 
 interface Props {
@@ -52,6 +53,21 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
 }
 
 export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected, active }: Props) {
+  const restoreControls = rowRestoreControls(rIdx, hiddenRows)
+  const topRestore = restoreControls.find((control) => control.className === 'unhide-row top')
+  const bottomRestore = restoreControls.find((control) => control.className === 'unhide-row bottom')
+  const restoreButton = (control: typeof restoreControls[number]) => (
+    <button
+      key={control.row}
+      className={control.className}
+      onClick={(e) => { e.stopPropagation(); showRow(control.row) }}
+      title={control.label}
+      aria-label={control.label}
+    >
+      {control.marker}
+    </button>
+  )
+
   return (
     <span
       className={`row-header${selected ? ' selected-header' : ''}`}
@@ -68,9 +84,9 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
       onContextMenu={onContextMenu}
       title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정"
     >
-      {hiddenRows.has(rIdx - 1) && <button className="unhide-row top" onClick={(e) => { e.stopPropagation(); showRow(rIdx - 1) }} title={`${rIdx}행 숨김 표시`} aria-label={`${rIdx}행 숨김 표시`}>⌃</button>}
+      {topRestore && restoreButton(topRestore)}
       {rIdx + 1}
-      {hiddenRows.has(rIdx + 1) && <button className="unhide-row bottom" onClick={(e) => { e.stopPropagation(); showRow(rIdx + 1) }} title={`${rIdx + 2}행 숨김 표시`} aria-label={`${rIdx + 2}행 숨김 표시`}>⌄</button>}
+      {bottomRestore && restoreButton(bottomRestore)}
       <RowResizer rIdx={rIdx} heightOf={heightOf} onResize={onResize} onResizeEnd={onResizeEnd} resetRowHeight={resetRowHeight} />
     </span>
   )

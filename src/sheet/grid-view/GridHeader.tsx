@@ -1,6 +1,6 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
-import { colIndex } from '../schema'
 import { selectAllHeaders, selectColumnHeader } from './headerSelection'
+import { columnRestoreControls } from './hiddenRestoreControls'
 import { COLUMN_WIDTH_BOUNDS, resizeValueForKey } from './resizeRules'
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 
@@ -82,8 +82,20 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
       />
       {colLetters.map((c) => {
         if (hiddenCols.has(c)) return null
-        const prev = colLetters[colIndex(c) - 1]
-        const next = colLetters[colIndex(c) + 1]
+        const restoreControls = columnRestoreControls(c, colLetters, hiddenCols)
+        const leftRestore = restoreControls.find((control) => control.className === 'unhide-col left')
+        const rightRestore = restoreControls.find((control) => control.className === 'unhide-col right')
+        const restoreButton = (control: typeof restoreControls[number]) => (
+          <button
+            key={control.col}
+            className={control.className}
+            onClick={(e) => { e.stopPropagation(); showCol(control.col) }}
+            title={control.label}
+            aria-label={control.label}
+          >
+            {control.marker}
+          </button>
+        )
         return (
           <span
             key={c}
@@ -101,10 +113,10 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
             title="우클릭으로 열 메뉴"
           >
-            {prev && hiddenCols.has(prev) && <button className="unhide-col left" onClick={(e) => { e.stopPropagation(); showCol(prev) }} title={`${prev}열 숨김 표시`} aria-label={`${prev}열 숨김 표시`}>‹</button>}
+            {leftRestore && restoreButton(leftRestore)}
             {c}
             {c === filterCol && <span className="filter-mark" aria-label={`${c}열 필터 적용`}>▾</span>}
-            {next && hiddenCols.has(next) && <button className="unhide-col right" onClick={(e) => { e.stopPropagation(); showCol(next) }} title={`${next}열 숨김 표시`} aria-label={`${next}열 숨김 표시`}>›</button>}
+            {rightRestore && restoreButton(rightRestore)}
             <ColResizer col={c} widthOf={widthOf} onResize={onResize} onResizeEnd={onResizeEnd} autoFitCol={autoFitCol} />
           </span>
         )
