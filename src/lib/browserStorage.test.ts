@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { readStoredJson, removeStoredKey, writeStoredJson, type KeyValueStorage } from './browserStorage'
+import { MAX_STORED_JSON_LENGTH, readStoredJson, removeStoredKey, writeStoredJson, type KeyValueStorage } from './browserStorage'
 
 const memoryStorage = (initial: Record<string, string> = {}) => {
   const values = new Map(Object.entries(initial))
@@ -59,5 +59,14 @@ describe('browserStorage', () => {
     writeStoredJson('sheet', { cells: { A1: 'too large' } }, storage, { maxLength: 10 })
 
     expect(values.get('sheet')).toBe('{"cells":{}}')
+  })
+
+  it('uses the bounded JSON limit for storage writes', () => {
+    expect(MAX_STORED_JSON_LENGTH).toBeGreaterThan(0)
+    const { storage, values } = memoryStorage()
+
+    writeStoredJson('sheet', { A1: 'abcdef' }, storage, { maxLength: 12 })
+
+    expect(values.has('sheet')).toBe(false)
   })
 })

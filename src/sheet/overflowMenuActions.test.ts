@@ -10,6 +10,7 @@ import {
   runOverflowMenuCommand,
 } from './overflowMenuActions'
 import { MAX_CSV_EXPORT_LENGTH } from '../lib/csv'
+import { MAX_JSON_STRINGIFY_LENGTH } from '../lib/jsonStringify'
 import { initialSheet, type Sheet } from './schema'
 import type { Confirm, ConfirmOptions } from './useConfirm'
 
@@ -212,6 +213,17 @@ describe('overflowMenuActions', () => {
     })).resolves.toBe(true)
 
     expect(resets[0].cells.A1).toBe('Item')
+  })
+
+  it('does not build a download when JSON export exceeds the export limit', () => {
+    const downloads: string[] = []
+
+    expect(exportOverflowJson({
+      sheet: { ...initialSheet, cells: { A1: 'x'.repeat(MAX_JSON_STRINGIFY_LENGTH + 1) } },
+      downloadFile: (name) => { downloads.push(name); return true },
+    })).toBe(false)
+
+    expect(downloads).toEqual([])
   })
 
   it('imports JSON by preserving valid cells and dropping malformed ancillary state', async () => {

@@ -1,10 +1,12 @@
+import { MAX_JSON_STRINGIFY_LENGTH, stringifyJsonBounded } from './jsonStringify'
+
 export interface KeyValueStorage {
   getItem(key: string): string | null
   setItem(key: string, value: string): void
   removeItem(key: string): void
 }
 
-export const MAX_STORED_JSON_LENGTH = 5_000_000
+export const MAX_STORED_JSON_LENGTH = MAX_JSON_STRINGIFY_LENGTH
 
 export interface StoredJsonOptions {
   maxLength?: number
@@ -46,9 +48,8 @@ export function writeStoredJson(
 ): void {
   if (!storage) return
   try {
-    const json = JSON.stringify(value)
-    if (typeof json !== 'string') return
-    if (json.length > storageLimit(opts)) return
+    const json = stringifyJsonBounded(value, { maxLength: storageLimit(opts) })
+    if (json === null) return
     storage.setItem(key, json)
   } catch {
     // Storage can be unavailable or over quota; persistence must not break editing.

@@ -1,4 +1,5 @@
 import { exportCsvBounded, importCsvRowsInto, MAX_CSV_EXPORT_LENGTH, parseCsv } from '../lib/csv'
+import { MAX_JSON_STRINGIFY_LENGTH, stringifyJsonBounded } from '../lib/jsonStringify'
 import type { Confirm } from './useConfirm'
 import { SheetSchema, colLettersFor, type Cells, type Display, type Sheet, type WriteCell, type WriteMany } from './schema'
 
@@ -127,7 +128,8 @@ export function exportOverflowJson({
   downloadFile: DownloadFile
 }): boolean {
   try {
-    return downloadFile('sheet.json', JSON.stringify(sheet, null, 2))
+    const json = stringifyJsonBounded(sheet, { maxLength: MAX_JSON_STRINGIFY_LENGTH, space: 2 })
+    return json !== null && downloadFile('sheet.json', json)
   } catch {
     return false
   }
