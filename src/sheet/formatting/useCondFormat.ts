@@ -45,18 +45,28 @@ const migrateLegacy = (rules: CondRule[], ops: SheetOps, bounds?: CondBounds) =>
     (o, v) => o.replace('/condFormat', v),
   )
 
+const sameCondRule = (a: CondRule, b: CondRule): boolean =>
+  a.col === b.col && a.op === b.op && a.value === b.value && a.color === b.color
+
+export const setCondRule = (rules: readonly CondRule[], ops: SheetOps, rule: CondRule, bounds?: CondBounds): boolean => {
+  const normalized = normalizeCondRule(rule, { colCount: bounds?.colCount ?? MAX_COL_COUNT })
+  if (!normalized) return false
+  const idx = rules.findIndex((x) => x.col === normalized.col)
+  if (idx >= 0) {
+    if (sameCondRule(rules[idx], normalized)) return false
+    replaceValue(ops, `/condFormat/${idx}`, normalized)
+  } else {
+    addValue(ops, '/condFormat/-', normalized)
+  }
+  return true
+}
+
 export function useCondFormat(rules: CondRule[], ops: SheetOps, bounds?: CondBounds) {
   const colCount = bounds?.colCount ?? MAX_COL_COUNT
 
   useEffect(() => { migrateLegacy(rules, ops, { colCount }) }, [rules, ops, colCount])
 
-  const addRule = (r: CondRule) => {
-    const normalized = normalizeCondRule(r, { colCount })
-    if (!normalized) return
-    const idx = rules.findIndex((x) => x.col === normalized.col)
-    if (idx >= 0) replaceValue(ops, `/condFormat/${idx}`, normalized)
-    else addValue(ops, '/condFormat/-', normalized)
-  }
+  const addRule = (r: CondRule) => { setCondRule(rules, ops, r, { colCount }) }
   const clearRule = (col: string) => {
     const idx = rules.findIndex((x) => x.col === col)
     if (idx >= 0) removeValue(ops, `/condFormat/${idx}`)

@@ -164,6 +164,8 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
   }
   const setTabColor = (name: string, color: string) => {
     if (!state.order.includes(name)) return
+    const current = state.colors[name]
+    if ((!color && current === undefined) || color === current) return
     const colors = { ...state.colors }
     if (color) {
       if (!isSafeTabColor(color)) return

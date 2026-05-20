@@ -125,6 +125,17 @@ describe('tabActions', () => {
     tabActions(sheet, stubOps(c)).setTabColor('Sheet1', '#ff0000')
     expect((c.replace!.value as Sheet['tabs']).colors.Sheet1).toBe('#ff0000')
   })
+
+  it('skips tab color writes when the color state is unchanged', () => {
+    const base = make()
+    const sheet: Sheet = { ...base, tabs: { ...base.tabs, colors: { Sheet1: '#ff0000' } } }
+    const s: Stub = {}
+
+    tabActions(sheet, stubOps(s)).setTabColor('Sheet1', '#ff0000')
+    tabActions(sheet, stubOps(s)).setTabColor('Sheet2', '')
+
+    expect(s.replace).toBeUndefined()
+  })
 })
 
 describe('coerceLegacyTabsState', () => {
