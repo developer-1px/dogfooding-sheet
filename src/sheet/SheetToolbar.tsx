@@ -10,6 +10,7 @@ import type { Filter } from './visibility/useFilter'
 import type { HiddenActions } from './visibility/useHidden'
 import type { ValidationActions } from './validation/useValidation'
 import type { CondActions } from './formatting/useCondFormat'
+import { applyPatch } from '../lib/dictOps'
 
 interface SheetToolbarController
   extends SheetMutations,
@@ -91,7 +92,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       toggleShowFormulas={ctx.toggleShowFormulas}
       showGridlines={ctx.showGridlines}
       toggleShowGridlines={ctx.toggleShowGridlines}
-      clearAllFormats={() => ctx.ops.patch([
+      clearAllFormats={() => applyPatch(ctx.ops, [
         { op: 'replace', path: '/styles', value: {} },
         { op: 'replace', path: '/formats', value: {} },
         { op: 'replace', path: '/condFormat', value: [] },

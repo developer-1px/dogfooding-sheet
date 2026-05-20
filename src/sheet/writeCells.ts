@@ -1,5 +1,5 @@
 import type { SheetOps, Cells, Writes } from './schema'
-import type { Patch } from '../lib/dictOps'
+import { applyPatch, type Patch } from '../lib/dictOps'
 
 /** Batch multiple cell writes into a single ops.patch — atomic undo for fillDown/Right etc. */
 export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes): void {
@@ -10,5 +10,5 @@ export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes): vo
     else if (v !== '' && cur === undefined) patch.push({ op: 'add', path, value: v })
     else if (v !== '' && cur !== v) patch.push({ op: 'replace', path, value: v })
   }
-  if (patch.length) ops.patch(patch as never)
+  applyPatch(ops, patch)
 }

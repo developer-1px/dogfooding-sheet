@@ -1,13 +1,13 @@
 import { MAX_COL_COUNT, MAX_ROW_COUNT, colIndex, type Sheet, type SheetOps } from '../schema'
 import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp, sortByColumn } from '@spredsheet/grid'
-import type { Patch } from '../../lib/dictOps'
+import { applyPatch, type Patch } from '../../lib/dictOps'
 
 // Row/col mutations invalidate merge row/col indices. Clear merges defensively
 // (preferable to silently mis-aligned merges) and batch with the cells write so undo is atomic.
 const apply = (sheet: Sheet, ops: SheetOps, nextCells: Record<string, string>) => {
   const patch: Patch = [{ op: 'replace', path: '/cells', value: nextCells }]
   if (sheet.merges.length > 0) patch.push({ op: 'replace', path: '/merges', value: [] })
-  ops.patch(patch as never)
+  applyPatch(ops, patch)
 }
 
 export interface SheetMutations {

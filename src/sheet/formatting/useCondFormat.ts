@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import type { SheetOps } from '../schema'
+import { addValue, removeValue, replaceValue } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:condfmt:v1'
@@ -32,12 +33,12 @@ export function useCondFormat(rules: CondRule[], ops: SheetOps) {
 
   const addRule = (r: CondRule) => {
     const idx = rules.findIndex((x) => x.col === r.col)
-    if (idx >= 0) ops.replace(`/condFormat/${idx}` as never, r as never)
-    else ops.add('/condFormat/-' as never, r as never)
+    if (idx >= 0) replaceValue(ops, `/condFormat/${idx}`, r)
+    else addValue(ops, '/condFormat/-', r)
   }
   const clearRule = (col: string) => {
     const idx = rules.findIndex((x) => x.col === col)
-    if (idx >= 0) ops.remove(`/condFormat/${idx}` as never)
+    if (idx >= 0) removeValue(ops, `/condFormat/${idx}`)
   }
   const clearAll = () => { if (rules.length) ops.replace('/condFormat', []) }
 

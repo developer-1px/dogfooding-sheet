@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import type { Cells, SheetOps } from '../schema'
-import { upsertKeys } from '../../lib/dictOps'
-import type { Patch } from '../../lib/dictOps'
+import { applyPatch, upsertKeys, type Patch } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 export interface ListRule { type: 'list'; options: string[] }
@@ -63,7 +62,7 @@ export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: Sh
   const clearRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, keys.map((k) => [k, undefined]))
   const setCheckboxRule = (keys: string[]) => {
     const patch = checkboxConversionPatch(rules, cells, keys)
-    if (patch.length) ops.patch(patch as never)
+    applyPatch(ops, patch)
   }
 
   return { setListRule, setCheckboxRule, clearRule, ruleOf: (k: string): Rule | undefined => rules[k] }

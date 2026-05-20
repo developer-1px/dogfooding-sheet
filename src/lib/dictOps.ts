@@ -3,6 +3,27 @@ import type { JSONOps } from 'zod-crud'
 /** JSON-patch ops accepted by `ops.patch()`. Value typed loosely; site narrows as needed. */
 export type Patch = Array<{ op: 'add' | 'replace' | 'remove'; path: string; value?: unknown }>
 
+interface PatchOps { patch(patch: never): unknown }
+interface AddOps { add(path: never, value: never): unknown }
+interface ReplaceOps { replace(path: never, value: never): unknown }
+interface RemoveOps { remove(path: never): unknown }
+
+export function applyPatch(ops: PatchOps, patch: Patch): void {
+  if (patch.length > 0) ops.patch(patch as never)
+}
+
+export function addValue<V>(ops: AddOps, path: string, value: V): void {
+  ops.add(path as never, value as never)
+}
+
+export function replaceValue<V>(ops: ReplaceOps, path: string, value: V): void {
+  ops.replace(path as never, value as never)
+}
+
+export function removeValue(ops: RemoveOps, path: string): void {
+  ops.remove(path as never)
+}
+
 /**
  * Surgical add/replace/remove for one key inside a dict-record stored in the SSOT doc.
  * Per zod-crud guidance — avoids `ops.replace('/path', { ...all, [k]: v })` anti-pattern
@@ -15,13 +36,13 @@ export function upsertKey<T, V>(
   key: string,
   value: V | undefined,
 ): void {
-  const path = `${base}/${key}` as never
+  const path = `${base}/${key}`
   if (value === undefined) {
-    if (current[key] !== undefined) ops.remove(path)
+    if (current[key] !== undefined) removeValue(ops, path)
   } else if (current[key] === undefined) {
-    ops.add(path, value as never)
+    addValue(ops, path, value)
   } else if (current[key] !== value) {
-    ops.replace(path, value as never)
+    replaceValue(ops, path, value)
   }
 }
 
@@ -39,5 +60,5 @@ export function upsertKeys<T, V>(
     else if (current[key] === undefined) patch.push({ op: 'add', path, value })
     else if (current[key] !== value) patch.push({ op: 'replace', path, value })
   }
-  if (patch.length > 0) ops.patch(patch as never)
+  applyPatch(ops, patch)
 }
