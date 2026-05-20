@@ -208,6 +208,14 @@ describe('WEIGHTAVG', () => {
     // (80 + 180 + 100) / 4 = 90
     expect(evaluateCell(cells, '=WEIGHTAVG(A1:A3, B1:B3)')).toBe('90')
   })
+
+  it('handles max-size weighted ranges without numeric side arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const lastWeight = `B${MAX_EXPANDED_REFS}`
+    const cells = { A1: '10', B1: '1', [last]: '20', [lastWeight]: '3' }
+
+    expect(evaluateCell(cells, `=WEIGHTAVG(A1:${last}, B1:${lastWeight})`)).toBe('17.5')
+  })
 })
 
 describe('MAX_BY / MIN_BY', () => {
@@ -215,6 +223,14 @@ describe('MAX_BY / MIN_BY', () => {
     const cells = { A1: 'red', A2: 'green', A3: 'blue', B1: '5', B2: '10', B3: '3' }
     expect(evaluateCell(cells, '=MAX_BY(A1:A3, B1:B3)')).toBe('green')
     expect(evaluateCell(cells, '=MIN_BY(A1:A3, B1:B3)')).toBe('blue')
+  })
+
+  it('handles max-size key ranges without numeric side arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const lastKey = `B${MAX_EXPANDED_REFS}`
+    const cells = { A1: 'first', B1: '1', [last]: 'last', [lastKey]: '7' }
+
+    expect(evaluateCell(cells, `=MAX_BY(A1:${last}, B1:${lastKey})`)).toBe('last')
   })
 })
 
@@ -498,6 +514,14 @@ describe('SUMPRODUCT', () => {
     expect(evaluateCell(cells, '=SUMPRODUCT(A1:A3, B1:B3)')).toBe('200')
   })
 
+  it('handles max-size product ranges without numeric side arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const lastFactor = `B${MAX_EXPANDED_REFS}`
+    const cells = { A1: '2', B1: '3', [last]: '4', [lastFactor]: '5' }
+
+    expect(evaluateCell(cells, `=SUMPRODUCT(A1:${last}, B1:${lastFactor})`)).toBe('26')
+  })
+
   it('returns explicit errors for invalid range operation inputs', () => {
     const cells = { A1: '5', A2: '1', A3: '8', B1: '1', B2: '0', B3: '-1', C1: '0', C2: '0', C3: '0' }
     const huge = { A1: '1e308', B1: '1e308' }
@@ -564,6 +588,13 @@ describe('extra math', () => {
     expect(evaluateCell(cells, '=RANK(8, A1:A5)')).toBe('2')
     expect(evaluateCell(cells, '=RANK(8, A1:A5, 1)')).toBe('4')
     expect(evaluateCell(cells, '=RANK(99, A1:A5)')).toBe('#N/A')
+  })
+  it('handles max-size rank ranges without numeric side arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const cells = { A1: '1', [last]: '2' }
+
+    expect(evaluateCell(cells, `=RANK(2, A1:${last})`)).toBe('1')
+    expect(evaluateCell(cells, `=RANK(1, A1:${last})`)).toBe('2')
   })
   it('LARGE / SMALL pick Nth largest / smallest', () => {
     const cells = { A1: '5', A2: '1', A3: '8', A4: '3', A5: '9' }
