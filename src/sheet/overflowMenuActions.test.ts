@@ -25,6 +25,7 @@ describe('overflowMenuActions', () => {
   it('builds stateful menu labels and validates menu ids', () => {
     expect(overflowMenuItems({ showFormulas: true, showGridlines: false }).map((item) => item.label)).toContain('✓ 수식 표시 (Ctrl/⌘+`)')
     expect(overflowMenuItems({ showFormulas: false, showGridlines: true }).map((item) => item.label)).toContain('✓ 격자선 표시')
+    expect(overflowMenuItems({ showFormulas: false, showGridlines: false }).map((item) => item.label)).toContain('전체 값 지우기')
     expect(overflowMenuItemId('csv-export')).toBe('csv-export')
     expect(overflowMenuItemId('unknown')).toBeNull()
   })
@@ -169,7 +170,7 @@ describe('overflowMenuActions', () => {
       exportJson: () => calls.push('json-export'),
       openJsonImport: () => calls.push('json-import'),
       confirm: confirmValue(true),
-      resetCells: () => calls.push('reset-cells'),
+      clearCellValues: () => calls.push('clear-values'),
       clearAllFormats: () => calls.push('clear-formats'),
     }
 
@@ -190,7 +191,7 @@ describe('overflowMenuActions', () => {
     const calls: string[] = []
     const prompts: ConfirmOptions[] = []
 
-    await expect(runOverflowMenuCommand('clear-all', {
+    await expect(runOverflowMenuCommand('clear-values', {
       openHelp: () => {},
       toggleShowFormulas: () => {},
       toggleShowGridlines: () => {},
@@ -201,7 +202,7 @@ describe('overflowMenuActions', () => {
       exportJson: () => {},
       openJsonImport: () => {},
       confirm: confirmValue(true, prompts),
-      resetCells: (cells) => calls.push(`reset:${Object.keys(cells).length}`),
+      clearCellValues: (cells) => calls.push(`clear-values:${Object.keys(cells).length}`),
       clearAllFormats: () => calls.push('clear-formats'),
     })).resolves.toBe(true)
 
@@ -216,11 +217,12 @@ describe('overflowMenuActions', () => {
       exportJson: () => {},
       openJsonImport: () => {},
       confirm: confirmValue(false, prompts),
-      resetCells: (cells) => calls.push(`reset:${Object.keys(cells).length}`),
+      clearCellValues: (cells) => calls.push(`clear-values:${Object.keys(cells).length}`),
       clearAllFormats: () => calls.push('clear-formats'),
     })).resolves.toBe(false)
 
     expect(prompts.map((prompt) => prompt.confirmLabel)).toEqual(['지우기', '지우기'])
-    expect(calls).toEqual(['reset:0'])
+    expect(prompts[0].message).toContain('셀 값')
+    expect(calls).toEqual(['clear-values:0'])
   })
 })

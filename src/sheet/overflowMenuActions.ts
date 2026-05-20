@@ -12,7 +12,7 @@ export type OverflowMenuItemId =
   | 'csv-import'
   | 'json-export'
   | 'json-import'
-  | 'clear-all'
+  | 'clear-values'
   | 'clear-formats'
 
 export interface OverflowMenuItem {
@@ -42,7 +42,7 @@ export const overflowMenuItems = (state: { showFormulas: boolean; showGridlines:
   { id: 'csv-import', label: 'CSV 가져오기' },
   { id: 'json-export', label: 'JSON 내보내기' },
   { id: 'json-import', label: 'JSON 가져오기' },
-  { id: 'clear-all', label: '전체 셀 지우기' },
+  { id: 'clear-values', label: '전체 값 지우기' },
   { id: 'clear-formats', label: '전체 서식 지우기' },
 ]
 
@@ -148,7 +148,7 @@ export interface OverflowMenuCommands {
   exportJson: () => void
   openJsonImport: () => void
   confirm: Confirm
-  resetCells: (cells: Cells) => void
+  clearCellValues: (cells: Cells) => void
   clearAllFormats: () => void
 }
 
@@ -162,13 +162,13 @@ export async function runOverflowMenuCommand(id: OverflowMenuItemId, commands: O
   else if (id === 'csv-import') commands.openCsvImport()
   else if (id === 'json-export') commands.exportJson()
   else if (id === 'json-import') commands.openJsonImport()
-  else if (id === 'clear-all') {
+  else if (id === 'clear-values') {
     const ok = await commands.confirm({
-      message: '모든 셀을 지우시겠습니까? (실행 취소 가능)',
+      message: '모든 셀 값을 지우시겠습니까? (실행 취소 가능)',
       confirmLabel: '지우기',
     })
     if (!ok) return false
-    commands.resetCells({})
+    commands.clearCellValues({})
   } else if (id === 'clear-formats') {
     const ok = await commands.confirm({
       message: '모든 셀 서식·스타일·조건부 서식을 지우시겠습니까? (실행 취소 가능)',

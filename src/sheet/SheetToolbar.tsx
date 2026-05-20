@@ -83,7 +83,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       clearCondRules={ctx.clearCondRules}
       sheet={ctx.sheet}
       resetSheet={(s) => ctx.ops.replace('', s)}
-      resetCells={(c) => ctx.ops.replace('/cells', c)}
+      clearCellValues={(c) => ctx.ops.replace('/cells', c)}
       undo={() => ctx.ops.undo()}
       redo={() => ctx.ops.redo()}
       canUndo={ctx.ops.canUndo()}

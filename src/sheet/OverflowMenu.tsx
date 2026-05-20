@@ -22,7 +22,7 @@ export interface OverflowProps {
   insertLink: () => void
   sheet: Sheet
   resetSheet: (s: Sheet) => void
-  resetCells: (cells: Cells) => void
+  clearCellValues: (cells: Cells) => void
   confirm: Confirm
   showFormulas: boolean
   toggleShowFormulas: () => void
@@ -31,7 +31,7 @@ export interface OverflowProps {
   clearAllFormats: () => void
 }
 
-export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, resetCells, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
+export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => exportOverflowCsv({ display, sheet, downloadFile })
@@ -57,7 +57,7 @@ export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertL
         exportJson,
         openJsonImport: () => jsonRef.current?.click(),
         confirm,
-        resetCells,
+        clearCellValues,
         clearAllFormats,
       })
     }
