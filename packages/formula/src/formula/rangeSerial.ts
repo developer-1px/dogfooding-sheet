@@ -14,6 +14,9 @@ const vals = (r: string, e: EvalCell): string[] => {
   return values
 }
 
+const jsonValueLength = (value: string): number =>
+  (JSON.stringify(value) ?? 'null').length
+
 /** RANGEJSON(range) — JSON array of evaluated values. */
 export const rangeJSON = (r: string | undefined, _c: Cells, e: EvalCell) => {
   if (!hasRangeArg(r)) return valueError()
@@ -47,9 +50,14 @@ export const rangeCsv = (r: string | undefined, _c: Cells, e: EvalCell) => {
 export function rangeUnique(r: string | undefined, _c: Cells, e: EvalCell): string {
   if (!hasRangeArg(r)) return valueError()
   const seen = new Set<string>(), out: string[] = []
+  let length = 2
   for (const ref of collectRefs(r)) {
     const v = e(ref)
-    if (v !== '' && !seen.has(v)) { seen.add(v); out.push(v) }
+    if (v === '' || seen.has(v)) continue
+    length += jsonValueLength(v) + (out.length > 0 ? 1 : 0)
+    if (length > MAX_GENERATED_TEXT_LENGTH) return valueError()
+    seen.add(v)
+    out.push(v)
   }
   return stringifyFormulaArray(out)
 }

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
 import { MAX_EXPANDED_REFS } from './parse'
-import { rangeJSON } from './rangeSerial'
+import { rangeJSON, rangeUnique } from './rangeSerial'
 import { MAX_GENERATED_TEXT_LENGTH } from './textLimit'
 
 const c = { A1: '5', A2: '10', A3: '3', A4: '20', A5: '8', A6: '' }
@@ -476,6 +476,17 @@ describe('RANGEUNIQUE', () => {
     const cells = { A1: 'b', A2: 'a', A3: 'b', A4: 'c', A5: 'a' }
     expect(evaluateCell(cells, '=RANGEUNIQUE(A1:A5)')).toBe('["b","a","c"]')
     expect(evaluateCell(cells, '=UNIQUE(A1:A5)')).toBe('["b","a","c"]')
+  })
+
+  it('rejects oversized JSON output before evaluating the rest of the range', () => {
+    let calls = 0
+    const value = rangeUnique('A1:A3', {}, () => {
+      calls++
+      if (calls > 1) throw new Error('should not evaluate after output cap is exceeded')
+      return 'x'.repeat(MAX_GENERATED_TEXT_LENGTH)
+    })
+    expect(value).toBe('#VALUE!')
+    expect(calls).toBe(1)
   })
 })
 
