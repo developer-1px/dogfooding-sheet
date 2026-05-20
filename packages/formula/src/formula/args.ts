@@ -34,8 +34,8 @@ export const argString = (raw: string, c: Ctx): string => {
   const a = raw.trim()
   if (a === '') return ''
   if (a.startsWith('"') && a.endsWith('"')) return a.slice(1, -1).replace(/""/g, '"')
-  if (/^\$?[A-Z]\$?\d+:\$?[A-Z]\$?\d+$/.test(a)) return a
-  if (/^\$?[A-Z]\$?\d+$/.test(a)) {
+  if (/^\$?[A-Z]+\$?\d+:\$?[A-Z]+\$?\d+$/.test(a)) return a
+  if (/^\$?[A-Z]+\$?\d+$/.test(a)) {
     const ref = parseA1(a)
     return ref ? c.evalCell(cellKey(ref.col, ref.row)) : ''
   }

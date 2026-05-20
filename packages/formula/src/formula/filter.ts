@@ -1,5 +1,5 @@
 import type { Cells } from '../a1'
-import { COL_LETTERS, cellKey } from '../a1'
+import { cellKey, columnLabel } from '../a1'
 import type { EvalCell } from './args'
 import { coerceNumber } from './coerce'
 import { parseRange } from './rangeRect'
@@ -30,10 +30,10 @@ export function filterRange(rangeStr: string, conditionStr: string, _cells: Cell
   if (rowFilter) {
     const out: string[][] = []
     for (let r = 0; r < rows; r++) {
-      const keep = isTruthy(evalCell(cellKey(COL_LETTERS[condition.cMin], condition.rMin + r)))
+      const keep = isTruthy(evalCell(cellKey(columnLabel(condition.cMin), condition.rMin + r)))
       if (!keep) continue
       const row: string[] = []
-      for (let c = 0; c < cols; c++) row.push(evalCell(cellKey(COL_LETTERS[range.cMin + c], range.rMin + r)))
+      for (let c = 0; c < cols; c++) row.push(evalCell(cellKey(columnLabel(range.cMin + c), range.rMin + r)))
       out.push(row)
     }
     if (out.length === 0) return '#N/A'
@@ -44,8 +44,8 @@ export function filterRange(rangeStr: string, conditionStr: string, _cells: Cell
   for (let r = 0; r < rows; r++) {
     const row: string[] = []
     for (let c = 0; c < cols; c++) {
-      const keep = isTruthy(evalCell(cellKey(COL_LETTERS[condition.cMin + c], condition.rMin)))
-      if (keep) row.push(evalCell(cellKey(COL_LETTERS[range.cMin + c], range.rMin + r)))
+      const keep = isTruthy(evalCell(cellKey(columnLabel(condition.cMin + c), condition.rMin)))
+      if (keep) row.push(evalCell(cellKey(columnLabel(range.cMin + c), range.rMin + r)))
     }
     out.push(row)
   }

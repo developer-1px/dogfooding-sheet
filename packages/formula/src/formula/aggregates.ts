@@ -36,7 +36,7 @@ const literalNumber = (arg: string, c: Ctx): number => {
 }
 
 const isPureRefArg = (arg: string): boolean =>
-  /^\s*\$?[A-Z]\$?\d+(?::\$?[A-Z]\$?\d+)?\s*$/.test(arg)
+  /^\s*\$?[A-Z]+\$?\d+(?::\$?[A-Z]+\$?\d+)?\s*$/.test(arg)
 
 const collectArgRefs = (args: string[]): string[] => args.filter(isPureRefArg).flatMap((arg) => collectRefs(arg))
 

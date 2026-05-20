@@ -47,6 +47,7 @@ describe('ROWS / COLUMNS', () => {
   it('returns range dimensions with Sheets-compatible function names', () => {
     expect(evaluateCell({}, '=ROWS(B2:D5)')).toBe('4')
     expect(evaluateCell({}, '=COLUMNS(B2:D5)')).toBe('3')
+    expect(evaluateCell({}, '=COLUMNS(Z1:AA1)')).toBe('2')
     expect(evaluateCell({}, '=ROWS(A1)')).toBe('1')
     expect(evaluateCell({}, '=COLUMNS(A1)')).toBe('1')
   })
@@ -266,9 +267,10 @@ describe('FLATTEN', () => {
 
 describe('OFFSET', () => {
   it('returns value at base + (rows, cols)', () => {
-    const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd' }
+    const cells = { A1: 'a', B1: 'b', A2: 'c', B2: 'd', AB1: 'wide' }
     expect(evaluateCell(cells, '=OFFSET(A1, 1, 1)')).toBe('d')
     expect(evaluateCell(cells, '=OFFSET(A1, 0, 1)')).toBe('b')
+    expect(evaluateCell(cells, '=OFFSET(AA1, 0, 1)')).toBe('wide')
     expect(evaluateCell(cells, '=OFFSET(A1, -1, 0)')).toBe('#REF!')
   })
 })
@@ -276,6 +278,7 @@ describe('OFFSET', () => {
 describe('INDIRECT', () => {
   it('resolves ref string to cell value', () => {
     expect(evaluateCell({ B5: 'hi' }, '=INDIRECT("B5")')).toBe('hi')
+    expect(evaluateCell({ AA1: 'wide' }, '=INDIRECT("AA1")')).toBe('wide')
     expect(evaluateCell({ A1: '7' }, '=INDIRECT(ADDRESS(1,1))')).toBe('7')
     expect(evaluateCell({}, '=INDIRECT("nope")')).toBe('#REF!')
   })
@@ -284,7 +287,10 @@ describe('INDIRECT', () => {
 describe('ADDRESS', () => {
   it('builds A1 ref from row/col', () => {
     expect(evaluateCell({}, '=ADDRESS(5, 2)')).toBe('B5')
-    expect(evaluateCell({}, '=ADDRESS(1, 27)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ADDRESS(1, 27)')).toBe('AA1')
+    expect(evaluateCell({}, '=ADDRESS(1, 28)')).toBe('AB1')
+    expect(evaluateCell({}, '=ADDRESS(0, 1)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ADDRESS(1, 0)')).toBe('#VALUE!')
   })
 })
 

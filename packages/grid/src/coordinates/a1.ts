@@ -31,8 +31,8 @@ export type WriteMany = (writes: Writes) => void
 
 export type Display = (k: string) => string
 
-export const A1_RE = /([A-Z]+)(\d+)/g
-export const ABS_A1_RE = /(\$?)([A-Z]+)(\$?)(\d+)/g
+export const A1_RE = /(?<![A-Z0-9_])([A-Z]+)(\d+)(?![A-Z0-9_]|\s*\()/g
+export const ABS_A1_RE = /(?<![A-Z0-9_])(\$?)([A-Z]+)(\$?)(\d+)(?![A-Z0-9_]|\s*\()/g
 
 export const cellId = (col: string, row: number): string => `r${row}-${col}`
 

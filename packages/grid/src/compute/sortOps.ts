@@ -1,4 +1,5 @@
 import { COL_LETTERS, cellKey, colIndex, columnLabels, parseA1, type Cells } from '../coordinates/a1'
+import { offsetFormulaRefs } from '../structure/formulaRefs'
 
 const coerceNumber = (value: string): number => {
   const s = value.trim()
@@ -72,7 +73,7 @@ export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
     const targetRow = fromRow + i
     for (const c of cols) {
       const v = rows[i].cells[c]
-      if (v !== '') next[cellKey(c, targetRow)] = v
+      if (v !== '') next[cellKey(c, targetRow)] = offsetFormulaRefs(v, targetRow - rows[i].sourceRow, 0, rowCount)
     }
   }
   return next

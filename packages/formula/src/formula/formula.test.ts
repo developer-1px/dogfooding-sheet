@@ -13,6 +13,7 @@ describe('evaluateCell', () => {
 
   it('arithmetic with refs', () => {
     expect(evaluateCell(cells({ A1: '2', B1: '3' }), '=A1+B1')).toBe('5')
+    expect(evaluateCell(cells({ AA1: '2', AB1: '3' }), '=AA1+AB1')).toBe('5')
     expect(evaluateCell(cells({ A1: '10', B1: '4' }), '=A1-B1*2')).toBe('2')
     expect(evaluateCell(cells({ A1: '2', B1: '3' }), '=$A$1+B$1')).toBe('5')
     expect(evaluateCell({}, '=-(1+2)*3')).toBe('-9')
@@ -30,6 +31,7 @@ describe('evaluateCell', () => {
 
   it('SUM range', () => {
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM(A1:A3)')).toBe('6')
+    expect(evaluateCell(cells({ AA1: '1', AA2: '2', AB1: '3', AB2: '4' }), '=SUM(AA1:AB2)')).toBe('10')
     expect(evaluateCell(cells({ A1: '1', A2: '2', A3: '3' }), '=SUM($A$1:$A$3)')).toBe('6')
     expect(evaluateCell({}, '=SUM(1,2,3)')).toBe('6')
     expect(evaluateCell(cells({ A1: '4' }), '=SUM(A1,2,3)')).toBe('9')
@@ -143,10 +145,13 @@ describe('statistical functions', () => {
 describe('refsInFormula', () => {
   it('extracts single refs', () => {
     expect(refsInFormula('=A1+B2')).toEqual(['A1', 'B2'])
+    expect(refsInFormula('=AA1+AB2')).toEqual(['AA1', 'AB2'])
     expect(refsInFormula('=$A$1+B$2')).toEqual(['A1', 'B2'])
+    expect(refsInFormula('=LOG10(100)+A1')).toEqual(['A1'])
   })
   it('expands ranges', () => {
     expect(refsInFormula('=SUM(A1:A3)')).toEqual(['A1', 'A2', 'A3'])
+    expect(refsInFormula('=SUM(Z1:AA2)+AB3')).toEqual(['Z1', 'Z2', 'AA1', 'AA2', 'AB3'])
     expect(refsInFormula('=SUM($A$1:$A$3)')).toEqual(['A1', 'A2', 'A3'])
   })
   it('returns no highlights for oversized ranges', () => {

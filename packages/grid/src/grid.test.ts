@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, MAX_TSV_TEXT_LENGTH, mergeActionForSelection, moveCellIdByDelta, normalizeMergeList, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, rectToTsvBounded, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, sortRowOrder, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, MAX_TSV_TEXT_LENGTH, mergeActionForSelection, moveCellIdByDelta, normalizeMergeList, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, rectToTsvBounded, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, shiftFormulaCols, shiftFormulaRows, sortByColumn, sortRowOrder, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -160,12 +160,20 @@ describe('@spredsheet/grid', () => {
       A1: '1',
       A2: '=#REF!',
     })
+    expect(shiftFormulaRows('=$A$1+A$1+$A1+A1+LOG10(100)', 0, 1, 10)).toBe('=$A$2+A$2+$A2+A2+LOG10(100)')
+    expect(shiftFormulaRows('=A1+LOG10(100)', 0, -1)).toBe('=#REF!+LOG10(100)')
+  })
+
+  it('shifts column references without rewriting function names', () => {
+    expect(shiftFormulaCols('=$A$1+A$1+$A1+A1+LOG10(100)', 0, 1)).toBe('=$B$1+B$1+$B1+B1+LOG10(100)')
+    expect(shiftFormulaCols('=A1+LOG10(100)', 0, -1)).toBe('=#REF!+LOG10(100)')
   })
 
   it('offsets copied formula references relatively', () => {
     expect(offsetFormulaRefs('=A1+B2', 2, 1)).toBe('=B3+C4')
     expect(offsetFormulaRefs('=$A$1+A$1+$A1+A1', 2, 1)).toBe('=$A$1+B$1+$A3+B3')
     expect(offsetFormulaRefs('=A1', -1, 0)).toBe('=#REF!')
+    expect(offsetFormulaRefs('=A1+LOG10(100)', 0, 1)).toBe('=B1+LOG10(100)')
     expect(offsetFormulaRefs('plain', 2, 1)).toBe('plain')
   })
 
@@ -295,6 +303,18 @@ describe('@spredsheet/grid', () => {
       B3: '2',
     })
     expect(sortRowOrder({ A1: 'name', A2: 'B', B2: '2', A3: 'A', B3: '1' }, { col: 'B', dir: 'asc', rowCount: 3 })).toEqual([2, 1])
+  })
+
+  it('keeps row-local formulas aligned when sorting rows', () => {
+    expect(sortByColumn({
+      A1: 'name', B1: 'rank', C1: 'double',
+      A2: 'B', B2: '2', C2: '=B2*2',
+      A3: 'A', B3: '1', C3: '=B3*2',
+    }, { col: 'B', dir: 'asc', rowCount: 3, colCount: 3 })).toEqual({
+      A1: 'name', B1: 'rank', C1: 'double',
+      A2: 'A', B2: '1', C2: '=B2*2',
+      A3: 'B', B3: '2', C3: '=B3*2',
+    })
   })
 
   it('sorts common formatted numeric values numerically', () => {
