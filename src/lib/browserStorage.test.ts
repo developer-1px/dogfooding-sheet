@@ -31,6 +31,12 @@ describe('browserStorage', () => {
     expect(readStoredJson('sheet', failing)).toBeUndefined()
   })
 
+  it('treats oversized JSON as unavailable data', () => {
+    const { storage } = memoryStorage({ sheet: '{"cells":{"A1":"large"}}' })
+
+    expect(readStoredJson('sheet', storage, { maxLength: 10 })).toBeUndefined()
+  })
+
   it('writes and removes best effort without surfacing quota failures', () => {
     const { storage, values } = memoryStorage()
     writeStoredJson('sheet', { cells: { A1: 'saved' } }, storage)
@@ -45,5 +51,13 @@ describe('browserStorage', () => {
     }
     expect(() => writeStoredJson('sheet', {}, failing)).not.toThrow()
     expect(() => removeStoredKey('sheet', failing)).not.toThrow()
+  })
+
+  it('skips oversized JSON writes', () => {
+    const { storage, values } = memoryStorage({ sheet: '{"cells":{}}' })
+
+    writeStoredJson('sheet', { cells: { A1: 'too large' } }, storage, { maxLength: 10 })
+
+    expect(values.get('sheet')).toBe('{"cells":{}}')
   })
 })
