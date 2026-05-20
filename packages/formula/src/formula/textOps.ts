@@ -51,9 +51,9 @@ export function dispatchTextOps(F: string, argsT: string[]): string | null {
     while ((i = h.indexOf(n, i)) >= 0) { c++; i += n.length }
     return String(c)
   }
-  if (F === 'LPAD') return wrap(boundedPadStart(argsT[0], Number(argsT[1] ?? '0'), argsT[2] || ' ') ?? '#VALUE!')
-  if (F === 'RPAD') return wrap(boundedPadEnd(argsT[0], Number(argsT[1] ?? '0'), argsT[2] || ' ') ?? '#VALUE!')
-  if (F === 'REVERSE') return wrap([...argsT[0]].reverse().join(''))
-  if (F === 'REPT') return wrap(boundedRepeat(argsT[0], Number(argsT[1] ?? '0')) ?? '#VALUE!')
+  if (F === 'LPAD') return argsT[0] === undefined ? wrap('#VALUE!') : wrap(boundedPadStart(argsT[0], Number(argsT[1] ?? '0'), argsT[2] || ' ') ?? '#VALUE!')
+  if (F === 'RPAD') return argsT[0] === undefined ? wrap('#VALUE!') : wrap(boundedPadEnd(argsT[0], Number(argsT[1] ?? '0'), argsT[2] || ' ') ?? '#VALUE!')
+  if (F === 'REVERSE') return argsT[0] === undefined ? wrap('#VALUE!') : wrap([...argsT[0]].reverse().join(''))
+  if (F === 'REPT') return argsT[0] === undefined ? wrap('#VALUE!') : wrap(boundedRepeat(argsT[0], Number(argsT[1] ?? '0')) ?? '#VALUE!')
   return null
 }
