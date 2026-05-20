@@ -303,6 +303,23 @@ describe('PERCENTRANK', () => {
   })
 })
 
+describe('statistical function errors', () => {
+  it('rejects invalid scalar inputs and missing ranges', () => {
+    const cells = { A1: '1', A2: '2', B1: '2', B2: '4', C1: '0', C2: '0' }
+
+    expect(evaluateCell(cells, '=FORECAST("x", A1:A2, B1:B2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=FORECAST(1, A1:A2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=ZSCORE("x", A1:A2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=PERCENTRANK(A1:A2, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=PERCENTILE(A1:A2, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=TRIMMEAN(A1:A2, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=QUARTILE(A1:A2, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=COVAR(A1:A2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=SUMXMY2(A1:A2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=COSINE(A1:A2, C1:C2)')).toBe('#DIV/0!')
+  })
+})
+
 describe('JACCARD', () => {
   it('returns set similarity ratio', () => {
     const cells = { A1: 'a', A2: 'b', A3: 'c', B1: 'b', B2: 'c', B3: 'd' }
