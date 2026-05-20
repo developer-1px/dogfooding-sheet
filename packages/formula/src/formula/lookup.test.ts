@@ -356,6 +356,12 @@ describe('XLOOKUP', () => {
     expect(evaluateCell(table, '=XLOOKUP("a", A1:A3, B1:B3)')).toBe('1')
     expect(evaluateCell(table, '=XLOOKUP("a", A1:A3, B1:B3, "n/a", 0, -1)')).toBe('3')
   })
+  it('handles larger lookup vectors without ordered index arrays', () => {
+    const table = { A1: 'first', B1: '1', A1000: 'target', B1000: '1000' }
+
+    expect(evaluateCell(table, '=XLOOKUP("target", A1:A1000, B1:B1000)')).toBe('1000')
+    expect(evaluateCell(table, '=XLOOKUP("first", A1:A1000, B1:B1000, "n/a", 0, -1)')).toBe('1')
+  })
   it('supports wildcard match mode', () => {
     const table = { A1: 'apple', B1: '1', A2: 'apricot', B2: '2', A3: 'banana', B3: '3' }
     expect(evaluateCell(table, '=XLOOKUP("ap*", A1:A3, B1:B3, "n/a", 2)')).toBe('1')
@@ -393,6 +399,12 @@ describe('XMATCH', () => {
     expect(evaluateCell(table, '=XMATCH("ap*", B1:B4, 2)')).toBe('1')
     expect(evaluateCell(table, '=XMATCH("ap*", B1:B4, 2, -1)')).toBe('4')
     expect(evaluateCell({ A1: 'a*', A2: 'ab' }, '=XMATCH("a~*", A1:A2, 2)')).toBe('1')
+  })
+  it('handles larger match vectors without ordered index arrays', () => {
+    const table = { A1: 'first', A1000: 'target' }
+
+    expect(evaluateCell(table, '=XMATCH("target", A1:A1000)')).toBe('1000')
+    expect(evaluateCell(table, '=XMATCH("first", A1:A1000, 0, -1)')).toBe('1')
   })
   it('requires a one-dimensional lookup range', () => {
     expect(evaluateCell(data, '=XMATCH("Bread", A1:B3)')).toBe('#VALUE!')

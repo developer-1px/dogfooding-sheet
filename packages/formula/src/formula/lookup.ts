@@ -35,7 +35,10 @@ const lookupVector = (rangeStr: string | undefined, cells: Cells, evalCellRef: E
   if (rows > 1 && cols > 1) return '#VALUE!'
   const rowMode = rows > 1
   const len = rowMode ? rows : cols
-  const values = Array.from({ length: len }, (_v, i) => evalCell(cells, rowMode ? r.cMin : r.cMin + i, rowMode ? r.rMin + i : r.rMin, evalCellRef))
+  const values: string[] = []
+  for (let i = 0; i < len; i++) {
+    values.push(evalCell(cells, rowMode ? r.cMin : r.cMin + i, rowMode ? r.rMin + i : r.rMin, evalCellRef))
+  }
   return { values, rowMode }
 }
 
@@ -43,9 +46,8 @@ const lookupIndex = (key: string, values: string[], matchMode: number, searchMod
   if (![-1, 0, 1, 2].includes(matchMode) || ![1, -1, 2, -2].includes(searchMode)) return '#VALUE!'
   const reverse = searchMode === -1 || searchMode === -2
   const wildcard = matchMode === 2 ? compileWildcardMatcher(key) : null
-  const ordered = Array.from({ length: values.length }, (_v, i) => reverse ? values.length - 1 - i : i)
   let best = -1
-  for (const i of ordered) {
+  for (let i = reverse ? values.length - 1 : 0; reverse ? i >= 0 : i < values.length; i += reverse ? -1 : 1) {
     const value = values[i]
     if (wildcard?.(value)) return i
     const cmp = compareLookupValues(value, key)
