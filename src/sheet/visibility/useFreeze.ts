@@ -35,6 +35,16 @@ const migrateLegacy = (freeze: FreezeState, ops: SheetOps, bounds?: FreezeBounds
     (o, v) => o.replace('/freeze', v),
   )
 
+const sameFreeze = (a: FreezeState, b: FreezeState): boolean =>
+  a.rows === b.rows && a.cols === b.cols
+
+export const setFreezeState = (ops: SheetOps, freeze: FreezeState, next: FreezeState, bounds?: FreezeBounds): boolean => {
+  const nextFreeze = normalizeFreeze(next, defaultFreezeBounds(bounds))
+  if (sameFreeze(normalizeFreeze(freeze, defaultFreezeBounds(bounds)), nextFreeze)) return false
+  ops.replace('/freeze', nextFreeze)
+  return true
+}
+
 export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBounds) {
   const rowCount = bounds?.rowCount ?? MAX_ROW_COUNT
   const colCount = bounds?.colCount ?? MAX_COL_COUNT
@@ -42,7 +52,7 @@ export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBou
 
   useEffect(() => { migrateLegacy(current, ops, { rowCount, colCount }) }, [current, ops, rowCount, colCount])
 
-  const replaceFreeze = (next: FreezeState) => ops.replace('/freeze', normalizeFreeze(next, { rowCount, colCount }))
+  const replaceFreeze = (next: FreezeState) => setFreezeState(ops, current, next, { rowCount, colCount })
   const toggleRows = () => replaceFreeze({ ...current, rows: current.rows ? 0 : 1 })
   const toggleCols = () => replaceFreeze({ ...current, cols: current.cols ? 0 : 1 })
   const setFreezeRows = (n: number) => replaceFreeze({ ...current, rows: n })
