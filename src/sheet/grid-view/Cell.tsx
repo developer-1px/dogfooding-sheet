@@ -1,6 +1,6 @@
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
-import { numericValue } from '@spredsheet/grid'
+import { createCellDisplayModel, type CellContent } from './cellDisplay'
 
 interface Props {
   cellProps: ItemProps
@@ -37,21 +37,37 @@ interface Props {
   selectProps: SelectProps
 }
 
+function CellContentView({ content }: { content: CellContent }) {
+  if (content.kind === 'image') {
+    return <img className="cell-img" src={content.src} alt="" onClick={(e) => e.stopPropagation()} />
+  }
+  if (content.kind === 'link') {
+    return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()}>{content.label}</a>
+  }
+  if (content.kind === 'email') {
+    return <a className="cell-link" href={content.href} onClick={(e) => e.stopPropagation()}>{content.label}</a>
+  }
+  return content.text
+}
+
 export function Cell(p: Props) {
-  const isError = /^#[A-Z/]+!?$/.test(p.label)
-  const ariaLabel = [
-    p.address,
-    p.label === '' ? '빈 셀' : p.label,
-    isError ? '오류' : '',
-    p.mergeRange ? `병합 셀 ${p.mergeRange}` : '',
-    p.selected ? '선택됨' : '',
-    p.focused ? '현재 셀' : '',
-    p.editing ? '편집 중' : '',
-  ].filter(Boolean).join(' ')
-  const editLabel = `${p.address} 편집`
+  const display = createCellDisplayModel({
+    address: p.address,
+    label: p.label,
+    selected: p.selected,
+    focused: p.focused,
+    editing: p.editing,
+    mergeRange: p.mergeRange,
+    numeric: p.isNum,
+    highlighted: p.highlighted,
+    previewing: p.previewing,
+    styleClass: p.styleClass,
+    note: p.note,
+    tooltip: p.tooltip,
+  })
   const inputProps = {
     ...p.inputProps,
-    'aria-label': editLabel,
+    'aria-label': display.editLabel,
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
       p.onFormulaPickKeyDown(e)
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
@@ -59,7 +75,7 @@ export function Cell(p: Props) {
   }
   const textareaProps = {
     ...p.inputProps,
-    'aria-label': editLabel,
+    'aria-label': display.editLabel,
     onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       p.onFormulaPickKeyDown(e)
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
@@ -69,33 +85,33 @@ export function Cell(p: Props) {
   return (
     <span
       {...p.cellProps}
-      aria-label={ariaLabel}
+      aria-label={display.ariaLabel}
       aria-current={p.focused ? 'true' : undefined}
       aria-selected={p.selected}
-      aria-invalid={isError || undefined}
+      aria-invalid={display.error || undefined}
       aria-colspan={p.mergeCols && p.mergeCols > 1 ? p.mergeCols : undefined}
       aria-rowspan={p.mergeRows && p.mergeRows > 1 ? p.mergeRows : undefined}
-      className={`cell${p.selected ? ' selected' : ''}${p.focused ? ' focused' : ''}${p.mergeRange ? ' merged' : ''}${p.isNum ? ' numeric' : ''}${p.isNum && numericValue(p.label) < 0 ? ' negative' : ''}${isError ? ' errcell' : ''}${p.highlighted ? ' ref-hi' : ''}${p.previewing ? ' preview' : ''}${p.styleClass ? ' ' + p.styleClass : ''}`}
+      className={display.className}
       style={p.styleInline}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}
       onContextMenu={p.ctxHandlers.onContextMenu}
       onKeyDown={(e) => { p.ctxHandlers.onKeyDown(e); if (!e.defaultPrevented) p.cellProps.onKeyDown?.(e) }}
-      title={p.note ?? p.tooltip ?? (p.label.length > 20 ? p.label : undefined)}
+      title={display.title}
     >
       {p.isCheckbox ? (
         <input
           type="checkbox"
           className="cell-checkbox"
-          aria-label={ariaLabel}
+          aria-label={display.ariaLabel}
           checked={p.label === 'TRUE'}
           onChange={p.onCheckboxToggle}
           onClick={(e) => e.stopPropagation()}
         />
       ) : p.editing ? (
         p.validationOptions ? (
-          <select className="cell-input" aria-label={editLabel} {...p.selectProps}>
+          <select className="cell-input" aria-label={display.editLabel} {...p.selectProps}>
             <option value="">—</option>
             {p.validationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -106,13 +122,7 @@ export function Cell(p: Props) {
         )
       ) : (
         <>
-          {/^https?:\/\/.+\.(png|jpe?g|gif|svg|webp)(\?.*)?$/i.test(p.label)
-            ? <img className="cell-img" src={p.label} alt="" onClick={(e) => e.stopPropagation()} />
-            : /^https?:\/\//.test(p.label)
-              ? <a className="cell-link" href={p.label} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()}>{p.label}</a>
-              : /^[\w.+-]+@[\w.-]+\.\w{2,}$/.test(p.label)
-                ? <a className="cell-link" href={`mailto:${p.label}`} onClick={(e) => e.stopPropagation()}>{p.label}</a>
-                : p.label}
+          <CellContentView content={display.content} />
           {p.note && <span className="note-mark" aria-hidden />}
           {p.validationOptions && !p.editing && <span className="dropdown-mark" aria-hidden>▾</span>}
           {p.isFillCorner && !p.editing && (
