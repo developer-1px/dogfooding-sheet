@@ -1,6 +1,10 @@
 import { cellKey, colIndex, columnLabel, type CellRef, type Display, type Writes } from '../coordinates/a1'
 import type { Rect } from '../geometry/rect'
 
+export const MAX_TSV_TEXT_LENGTH = 5_000_000
+
+const isSafeTsvText = (tsv: string): boolean => tsv.length <= MAX_TSV_TEXT_LENGTH
+
 const splitLimited = (value: string, separator: string, limit: number): string[] => {
   if (limit <= 0) return []
   return Number.isFinite(limit) ? value.split(separator, limit) : value.split(separator)
@@ -41,6 +45,7 @@ export function writesFromTsv(
   anchor: CellRef,
   bounds: { maxRow?: number; maxCol?: number } = {},
 ): Writes {
+  if (!isSafeTsvText(tsv)) return []
   const c0 = colIndex(anchor.col)
   const rowLimit = boundedCount(bounds.maxRow, anchor.row)
   const colLimit = boundedCount(bounds.maxCol, c0)
@@ -64,6 +69,7 @@ export function writesFromTsvToRect(
   target: Rect,
   bounds: { maxRow?: number; maxCol?: number } = {},
 ): Writes {
+  if (!isSafeTsvText(tsv)) return []
   const targetRMax = boundedEnd(target.rMax, bounds.maxRow)
   const targetCMax = boundedEnd(target.cMax, bounds.maxCol)
   if (targetRMax < target.rMin || targetCMax < target.cMin) return []

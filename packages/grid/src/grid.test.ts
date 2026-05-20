@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, MAX_TSV_TEXT_LENGTH, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -204,6 +204,12 @@ describe('@spredsheet/grid', () => {
       ['B3', 'D'],
       ['C3', 'E'],
     ])
+  })
+
+  it('rejects oversized external TSV before parsing', () => {
+    const oversized = `${'x'.repeat(MAX_TSV_TEXT_LENGTH)}x`
+    expect(writesFromTsv(oversized, { col: 'A', row: 0 }, { maxRow: 20, maxCol: 10 })).toEqual([])
+    expect(writesFromTsvToRect(oversized, { rMin: 0, rMax: 1, cMin: 0, cMax: 1 }, { maxRow: 20, maxCol: 10 })).toEqual([])
   })
 
   it('computes internal clipboard writes with formula offsets', () => {
