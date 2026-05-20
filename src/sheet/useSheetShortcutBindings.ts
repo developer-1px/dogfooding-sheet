@@ -1,4 +1,4 @@
-import { exportCsv } from '../lib/csv'
+import { exportCsvBounded, MAX_CSV_EXPORT_LENGTH } from '../lib/csv'
 import { downloadFile } from '../lib/downloadFile'
 import type { Sheet, SheetOps, WriteCell, WriteMany, Display } from './schema'
 import { CLEAR_STYLE, type CellStyle } from './formatting/useStyles'
@@ -71,7 +71,10 @@ export function useSheetShortcutBindings(args: Args) {
     toggleUnderline: () => toggleStyle('u'),
     toggleStrike: () => toggleStyle('s'),
     clearFormat: () => args.updateStyle(args.targetKeys(), CLEAR_STYLE),
-    saveCsv: () => downloadFile('sheet.csv', exportCsv(args.display, { rowCount: args.rowCount, colLetters: args.colLetters })),
+    saveCsv: () => {
+      const csv = exportCsvBounded(args.display, { rowCount: args.rowCount, colLetters: args.colLetters, maxLength: MAX_CSV_EXPORT_LENGTH })
+      if (csv !== null) downloadFile('sheet.csv', csv)
+    },
     setSelectedIds: args.setSelectedIds,
     setFocusId: args.setFocusId,
     setSelectAnchor: args.setSelectAnchor,

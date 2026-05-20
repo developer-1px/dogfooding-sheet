@@ -1,13 +1,15 @@
 import { COL_LETTERS, cellKey, type Writes, type WriteCell, type WriteMany, type Display } from '@spredsheet/grid'
 
 const CSV_NEEDS_QUOTE = /[",\n\r]/
+export const MAX_CSV_EXPORT_LENGTH = 5_000_000
 
 const quote = (s: string) => CSV_NEEDS_QUOTE.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 
-interface ExportOpts { rowCount: number; colLetters?: readonly string[] }
+interface ExportOpts { rowCount: number; colLetters?: readonly string[]; maxLength?: number }
 
-export function exportCsv(get: Display, opts: ExportOpts): string {
+export function exportCsvBounded(get: Display, opts: ExportOpts): string | null {
   const { rowCount, colLetters = COL_LETTERS } = opts
+  const maxLength = opts.maxLength ?? Infinity
   let lastRow = -1
   let lastCol = -1
   for (let r = 0; r < rowCount; r++) {
@@ -20,14 +22,28 @@ export function exportCsv(get: Display, opts: ExportOpts): string {
   }
   if (lastRow < 0) return ''
   const lines: string[] = []
+  let length = 0
+  const pushPart = (part: string): boolean => {
+    length += part.length
+    if (length > maxLength) return false
+    return true
+  }
   for (let r = 0; r <= lastRow; r++) {
     const cols: string[] = []
+    if (r > 0 && !pushPart('\n')) return null
     for (let c = 0; c <= lastCol; c++) {
-      cols.push(quote(get(cellKey(colLetters[c], r))))
+      if (c > 0 && !pushPart(',')) return null
+      const value = quote(get(cellKey(colLetters[c], r)))
+      if (!pushPart(value)) return null
+      cols.push(value)
     }
     lines.push(cols.join(','))
   }
   return lines.join('\n')
+}
+
+export function exportCsv(get: Display, opts: ExportOpts): string {
+  return exportCsvBounded(get, opts) ?? ''
 }
 
 export interface ParseCsvOptions {

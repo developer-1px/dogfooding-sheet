@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { exportCsv, importCsvInto, importCsvRowsInto, parseCsv } from './csv'
+import { exportCsv, exportCsvBounded, importCsvInto, importCsvRowsInto, parseCsv } from './csv'
 
 describe('parseCsv', () => {
   it('parses simple rows', () => {
@@ -60,6 +60,13 @@ describe('exportCsv', () => {
 
   it('returns empty string when sheet is empty', () => {
     expect(exportCsv(() => '', { rowCount: 20 })).toBe('')
+  })
+
+  it('returns null when bounded export would exceed the limit', () => {
+    const data: Record<string, string> = { A1: 'abc', B1: 'def' }
+
+    expect(exportCsvBounded((k) => data[k] ?? '', { rowCount: 1, colLetters: ['A', 'B'], maxLength: 6 })).toBeNull()
+    expect(exportCsvBounded((k) => data[k] ?? '', { rowCount: 1, colLetters: ['A', 'B'], maxLength: 7 })).toBe('abc,def')
   })
 })
 

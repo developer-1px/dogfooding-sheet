@@ -9,6 +9,7 @@ import {
   overflowMenuItems,
   runOverflowMenuCommand,
 } from './overflowMenuActions'
+import { MAX_CSV_EXPORT_LENGTH } from '../lib/csv'
 import { initialSheet, type Sheet } from './schema'
 import type { Confirm, ConfirmOptions } from './useConfirm'
 
@@ -56,6 +57,18 @@ describe('overflowMenuActions', () => {
       sheet: initialSheet,
       downloadFile: () => { throw new Error('blocked') },
     })).toBe(false)
+  })
+
+  it('does not build a download when CSV export exceeds the export limit', () => {
+    const downloads: string[] = []
+
+    expect(exportOverflowCsv({
+      display: () => 'x'.repeat(MAX_CSV_EXPORT_LENGTH + 1),
+      sheet: { rowCount: 1, colCount: 1 },
+      downloadFile: (name) => { downloads.push(name); return true },
+    })).toBe(false)
+
+    expect(downloads).toEqual([])
   })
 
   it('imports CSV after confirmation through batched writes', async () => {

@@ -1,4 +1,4 @@
-import { exportCsv, importCsvRowsInto, parseCsv } from '../lib/csv'
+import { exportCsvBounded, importCsvRowsInto, MAX_CSV_EXPORT_LENGTH, parseCsv } from '../lib/csv'
 import type { Confirm } from './useConfirm'
 import { SheetSchema, colLettersFor, type Cells, type Display, type Sheet, type WriteCell, type WriteMany } from './schema'
 
@@ -65,10 +65,12 @@ export function exportOverflowCsv({
   downloadFile: DownloadFile
 }): boolean {
   try {
-    return downloadFile('sheet.csv', exportCsv((key) => display(key), {
+    const csv = exportCsvBounded((key) => display(key), {
       rowCount: sheet.rowCount,
       colLetters: colLettersFor(sheet.colCount),
-    }))
+      maxLength: MAX_CSV_EXPORT_LENGTH,
+    })
+    return csv !== null && downloadFile('sheet.csv', csv)
   } catch {
     return false
   }
