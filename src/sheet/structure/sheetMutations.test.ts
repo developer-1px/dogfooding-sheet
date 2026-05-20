@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SheetSchema, initialSheet, type SheetOps } from '../schema'
+import { COL_LETTERS, SheetSchema, initialSheet, type SheetOps } from '../schema'
 import { sheetMutations } from './sheetMutations'
 
 const recordingOps = () => {
@@ -15,6 +15,11 @@ const recordingOps = () => {
 
 const sheet = (overrides: Partial<typeof initialSheet> = {}) =>
   SheetSchema.parse({ ...initialSheet, rowCount: 4, colCount: 4, cells: {}, ...overrides })
+
+const hiddenPatchValue = (calls: unknown[]) => {
+  const patch = (calls[0] as ['patch', Array<{ path: string; value: unknown }>])[1]
+  return patch.find((entry) => entry.path === '/hidden')?.value
+}
 
 describe('sheetMutations', () => {
   it('moves row-scoped cell metadata with inserted rows', () => {
@@ -142,5 +147,23 @@ describe('sheetMutations', () => {
       { op: 'replace', path: '/rowHeights', value: { '1': 32, '2': 33, '3': 31 } },
       { op: 'replace', path: '/merges', value: [] },
     ]]])
+  })
+
+  it('shifts larger hidden row and column lists without expanding intermediate arrays', () => {
+    const hiddenRows = Array.from({ length: 1000 }, (_unused, row) => row)
+
+    const rowRun = recordingOps()
+    sheetMutations(sheet({ rowCount: 1000, hidden: { rows: hiddenRows, cols: [] } }), rowRun.ops).insertRow(0)
+    expect(hiddenPatchValue(rowRun.calls)).toEqual({
+      rows: hiddenRows.slice(1),
+      cols: [],
+    })
+
+    const colRun = recordingOps()
+    sheetMutations(sheet({ colCount: COL_LETTERS.length, hidden: { rows: [], cols: [...COL_LETTERS] } }), colRun.ops).deleteCol('A')
+    expect(hiddenPatchValue(colRun.calls)).toEqual({
+      rows: [],
+      cols: COL_LETTERS.slice(0, -1),
+    })
   })
 })

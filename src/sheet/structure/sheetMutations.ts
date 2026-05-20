@@ -67,17 +67,23 @@ const shiftColRecord = <V>(
   return next
 }
 
-const shiftHiddenRows = (rows: number[], shift: (row: number) => number | null): number[] =>
-  [...new Set(rows.flatMap((row) => {
+const shiftHiddenRows = (rows: number[], shift: (row: number) => number | null): number[] => {
+  const shiftedRows = new Set<number>()
+  for (const row of rows) {
     const shifted = shift(row)
-    return shifted === null ? [] : [shifted]
-  }))].sort((a, b) => a - b)
+    if (shifted !== null) shiftedRows.add(shifted)
+  }
+  return [...shiftedRows].sort((a, b) => a - b)
+}
 
-const shiftHiddenCols = (cols: string[], shift: (col: string) => string | null): string[] =>
-  [...new Set(cols.flatMap((col) => {
+const shiftHiddenCols = (cols: string[], shift: (col: string) => string | null): string[] => {
+  const shiftedCols = new Set<string>()
+  for (const col of cols) {
     const shifted = shift(col)
-    return shifted === null ? [] : [shifted]
-  }))]
+    if (shifted !== null) shiftedCols.add(shifted)
+  }
+  return [...shiftedCols]
+}
 
 const shiftCondFormat = (
   rules: Sheet['condFormat'],
