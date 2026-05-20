@@ -1,12 +1,18 @@
 import { useEffect } from 'react'
 import type { SheetOps } from '../schema'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
-import type { Patch } from '../../lib/dictOps'
 
 export interface HiddenState {
   rows: number[]
   cols: string[]
 }
+
+type HiddenChange =
+  | { type: 'hideRow'; row: number }
+  | { type: 'hideCol'; col: string }
+  | { type: 'showRow'; row: number }
+  | { type: 'showCol'; col: string }
+  | { type: 'showAll' }
 
 export interface HiddenActions {
   hideRow: (row: number) => void
@@ -31,31 +37,39 @@ const migrateLegacy = (hidden: HiddenState, ops: SheetOps) =>
     (o, v) => o.replace('/hidden', v),
   )
 
+export function nextHiddenState(hidden: HiddenState, change: HiddenChange): HiddenState | null {
+  if (change.type === 'hideRow') {
+    if (hidden.rows.includes(change.row)) return null
+    return { ...hidden, rows: [...hidden.rows, change.row] }
+  }
+  if (change.type === 'hideCol') {
+    if (hidden.cols.includes(change.col)) return null
+    return { ...hidden, cols: [...hidden.cols, change.col] }
+  }
+  if (change.type === 'showRow') {
+    if (!hidden.rows.includes(change.row)) return null
+    return { ...hidden, rows: hidden.rows.filter((row) => row !== change.row) }
+  }
+  if (change.type === 'showCol') {
+    if (!hidden.cols.includes(change.col)) return null
+    return { ...hidden, cols: hidden.cols.filter((col) => col !== change.col) }
+  }
+  if (!hidden.rows.length && !hidden.cols.length) return null
+  return { rows: [], cols: [] }
+}
+
 export function useHidden(hidden: HiddenState, ops: SheetOps) {
   useEffect(() => { migrateLegacy(hidden, ops) }, [hidden, ops])
 
-  const hideRow = (row: number) => {
-    if (hidden.rows.includes(row)) return
-    ops.add('/hidden/rows/-' as never, row as never)
+  const applyHiddenChange = (change: HiddenChange) => {
+    const next = nextHiddenState(hidden, change)
+    if (next) ops.replace('/hidden', next)
   }
-  const hideCol = (col: string) => {
-    if (hidden.cols.includes(col)) return
-    ops.add('/hidden/cols/-' as never, col as never)
-  }
-  const showRow = (row: number) => {
-    if (!hidden.rows.includes(row)) return
-    ops.replace('/hidden/rows' as never, hidden.rows.filter((r) => r !== row) as never)
-  }
-  const showCol = (col: string) => {
-    if (!hidden.cols.includes(col)) return
-    ops.replace('/hidden/cols' as never, hidden.cols.filter((c) => c !== col) as never)
-  }
-  const showAll = () => {
-    const patch: Patch = []
-    if (hidden.rows.length) patch.push({ op: 'replace', path: '/hidden/rows', value: [] })
-    if (hidden.cols.length) patch.push({ op: 'replace', path: '/hidden/cols', value: [] })
-    if (patch.length) ops.patch(patch as never)
-  }
+  const hideRow = (row: number) => applyHiddenChange({ type: 'hideRow', row })
+  const hideCol = (col: string) => applyHiddenChange({ type: 'hideCol', col })
+  const showRow = (row: number) => applyHiddenChange({ type: 'showRow', row })
+  const showCol = (col: string) => applyHiddenChange({ type: 'showCol', col })
+  const showAll = () => applyHiddenChange({ type: 'showAll' })
 
   return {
     hidden,
