@@ -111,7 +111,8 @@ const cellsInBounds = (cells: Sheet['cells'], sheet: Pick<Sheet, 'rowCount' | 'c
 // Row/col mutations invalidate merge row/col indices. Clear merges defensively
 // and batch every moved sheet slice with the cells write so undo is atomic.
 const apply = (sheet: Sheet, ops: SheetOps, next: Partial<Sheet> & Pick<Sheet, 'cells'>) => {
-  const patch: Patch = [{ op: 'replace', path: '/cells', value: next.cells }]
+  const patch: Patch = []
+  replaceIfChanged(patch, '/cells', sheet.cells, next.cells)
   replaceIfChanged(patch, '/notes', sheet.notes, next.notes ?? sheet.notes)
   replaceIfChanged(patch, '/styles', sheet.styles, next.styles ?? sheet.styles)
   replaceIfChanged(patch, '/formats', sheet.formats, next.formats ?? sheet.formats)
