@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { SheetSchema, blankBundle, cloneBundle, initialSheet } from './schema'
+import { MAX_CELL_TEXT_LENGTH } from './cellValue'
 
 describe('SheetSchema', () => {
   it('accepts persisted time formats', () => {
@@ -59,6 +60,15 @@ describe('SheetSchema', () => {
         colors: { Sheet2: '#ff0000' },
       },
     }).success).toBe(true)
+  })
+
+  it('sanitizes empty and oversized persisted cell values without rejecting the sheet', () => {
+    const parsed = SheetSchema.parse({
+      ...initialSheet,
+      cells: { A1: 'ok', B1: '', C1: 'x'.repeat(MAX_CELL_TEXT_LENGTH + 1) },
+    })
+
+    expect(parsed.cells).toEqual({ A1: 'ok' })
   })
 
   it('creates isolated blank bundles', () => {

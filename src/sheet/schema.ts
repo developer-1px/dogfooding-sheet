@@ -2,6 +2,7 @@ import * as z from 'zod'
 import type { JSONOps } from 'zod-crud'
 import { COL_LETTERS as COLS } from '@spredsheet/grid'
 import { FORMAT_KEYS } from './formatting/formatTypes'
+import { sanitizeCellRecord } from './cellValue'
 
 export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, moveCellIdByDelta, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
 
@@ -26,8 +27,10 @@ const CellStyleSchema = z.object({
   fg: z.string().optional(),
 })
 
+const CellsSchema = z.record(z.string(), z.string()).transform(sanitizeCellRecord)
+
 const TabBundleSchema = z.object({
-  cells: z.record(z.string(), z.string()).default({}),
+  cells: CellsSchema.default({}),
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
   formats: z.record(z.string(), z.enum(FORMAT_KEYS)).default({}),

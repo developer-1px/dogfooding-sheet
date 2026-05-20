@@ -1,9 +1,8 @@
 import { useEffect, useMemo } from 'react'
 import { useJSONDocument } from 'zod-crud/react'
-import { upsertKey } from '../lib/dictOps'
 import { SheetSchema, type Writes } from './schema'
 import { loadInitial, saveSheet } from './storage'
-import { writeCellsBatch } from './writeCells'
+import { writeCellsBatch, writeSingleCell } from './writeCells'
 
 export function useSheetDocument() {
   const doc = useJSONDocument(SheetSchema, loadInitial(), { history: 100 })
@@ -18,9 +17,7 @@ export function useSheetDocument() {
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
-  const writeCell = (key: string, value: string) => {
-    upsertKey(ops, '/cells', sheet.cells, key, value === '' ? undefined : value)
-  }
+  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value)
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes)
 
   return { sheet, ops, writeCell, writeCells }

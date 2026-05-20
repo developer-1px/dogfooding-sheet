@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { KeyValueStorage } from '../lib/browserStorage'
 import { initialSheet } from './schema'
 import { loadInitial, saveSheet, SHEET_STORAGE_KEY } from './storage'
+import { MAX_CELL_TEXT_LENGTH } from './cellValue'
 
 const memoryStorage = (initial: Record<string, string> = {}) => {
   const values = new Map(Object.entries(initial))
@@ -21,6 +22,13 @@ describe('sheet storage', () => {
     const { storage } = memoryStorage({ [SHEET_STORAGE_KEY]: JSON.stringify(saved) })
 
     expect(loadInitial(storage).cells.A1).toBe('Saved')
+  })
+
+  it('drops oversized persisted cells while preserving the rest of the sheet', () => {
+    const saved = { ...initialSheet, cells: { A1: 'Saved', B1: 'x'.repeat(MAX_CELL_TEXT_LENGTH + 1) } }
+    const { storage } = memoryStorage({ [SHEET_STORAGE_KEY]: JSON.stringify(saved) })
+
+    expect(loadInitial(storage).cells).toEqual({ A1: 'Saved' })
   })
 
   it('falls back to the initial sheet for missing, malformed, or invalid persisted data', () => {
