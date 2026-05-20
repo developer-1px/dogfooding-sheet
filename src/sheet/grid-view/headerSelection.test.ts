@@ -26,6 +26,19 @@ describe('header selection', () => {
     })
   })
 
+  it('extends larger header selections without nested temporary arrays', () => {
+    const cols = ['A', 'B', 'C', 'D', 'E']
+    const colSelection = selectColumnHeader('D', 'B', 1000, cols)
+    const rowSelection = selectRowHeader(999, 'r997-A', cols)
+
+    expect(colSelection.selectedIds).toHaveLength(3000)
+    expect(colSelection.selectedIds[0]).toBe('r0-B')
+    expect(colSelection.selectedIds.at(-1)).toBe('r999-D')
+    expect(rowSelection.selectedIds).toHaveLength(15)
+    expect(rowSelection.selectedIds[0]).toBe('r997-A')
+    expect(rowSelection.selectedIds.at(-1)).toBe('r999-E')
+  })
+
   it('falls back to the target column when the column anchor is invalid', () => {
     expect(selectColumnHeader('B', 'Z', 2, ['A', 'B', 'C'])).toEqual({
       focusId: 'r0-B',

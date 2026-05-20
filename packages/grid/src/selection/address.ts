@@ -1,6 +1,6 @@
 import { cellId, colIndex, columnLabels, parseA1, parseCellId } from '../coordinates/a1'
 import { formatRect, idsInRect, rectFromIds, rectFromRefs } from '../geometry/rect'
-import { idsForCol, idsForRow } from './range'
+import { appendIdsForCol, appendIdsForRow } from './range'
 
 export interface GridBounds {
   rowCount: number
@@ -51,7 +51,7 @@ export function resolveRange(
     if (a < 0 || b < 0) return null
     if (colCount && (a >= colCount || b >= colCount)) return null
     const ids: string[] = []
-    for (let c = Math.min(a, b); c <= Math.max(a, b); c++) ids.push(...idsForCol(colLetters[c], rowCount))
+    for (let c = Math.min(a, b); c <= Math.max(a, b); c++) appendIdsForCol(ids, colLetters[c], rowCount)
     return ids
   }
   const rowA = /^\d+$/.test(parts[0]) ? Number(parts[0]) - 1 : null
@@ -59,7 +59,7 @@ export function resolveRange(
   if (rowA !== null && rowB !== null) {
     if (!bounds || !colCount || rowA < 0 || rowB < 0 || rowA >= bounds.rowCount || rowB >= bounds.rowCount) return null
     const ids: string[] = []
-    for (let r = Math.min(rowA, rowB); r <= Math.max(rowA, rowB); r++) ids.push(...idsForRow(r, colLetters))
+    for (let r = Math.min(rowA, rowB); r <= Math.max(rowA, rowB); r++) appendIdsForRow(ids, r, colLetters)
     return ids
   }
   const a = resolveCellRef(parts[0], bounds)
@@ -77,7 +77,7 @@ export type GotoGridTarget =
 export function resolveGotoTarget(raw: string | null, bounds?: GridBounds, colLetters?: readonly string[]): GotoGridTarget | null {
   if (!raw) return null
   if (raw.includes(':')) {
-    const ids = resolveRange(raw, bounds, colLetters ? [...colLetters] : defaultColLetters(bounds?.colCount))
+    const ids = resolveRange(raw, bounds, colLetters ?? defaultColLetters(bounds?.colCount))
     return ids && ids.length > 0 ? { type: 'range', focusId: ids[0], selectedIds: ids } : null
   }
   const id = resolveCellRef(raw, bounds)

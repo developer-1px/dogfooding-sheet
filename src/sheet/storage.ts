@@ -1,5 +1,5 @@
 import { SheetSchema, initialSheet, colLettersFor, ROW_COUNT, cellKey, cellId, moveCellIdByDelta, type Sheet } from './schema'
-import { fromTree, type NormalizedData } from '@interactive-os/aria-kernel'
+import { type NormalizedData } from '@interactive-os/aria-kernel'
 import { readStoredJson, writeStoredJson, type KeyValueStorage } from '../lib/browserStorage'
 
 export const SHEET_STORAGE_KEY = 'spreadsheet:v1'
@@ -18,19 +18,28 @@ export const moveCellId = (id: string, dRow: number, dCol: number, rowCount = RO
   return moveCellIdByDelta(id, dRow, dCol, { rowCount, colLetters })
 }
 
-interface Node { id: string; label: string; children?: Node[] }
-
 export function buildData(getCell: (k: string, col: string, row: number) => string, rowCount = ROW_COUNT, colLetters = colLettersFor(10)): NormalizedData {
-  const tree: Node[] = [
-    ...colLetters.map((c): Node => ({ id: `h-${c}`, label: c })),
-    ...Array.from({ length: rowCount }, (_, r): Node => ({
-      id: `r${r}`,
-      label: String(r + 1),
-      children: colLetters.map((c) => ({
-        id: cellId(c, r),
-        label: getCell(cellKey(c, r), c, r),
-      })),
-    })),
-  ]
-  return fromTree(tree)
+  const entities: NormalizedData['entities'] = {}
+  const relationships: NormalizedData['relationships'] = {}
+  const root: string[] = []
+
+  for (const col of colLetters) {
+    const id = `h-${col}`
+    root.push(id)
+    entities[id] = { label: col }
+  }
+  for (let row = 0; row < rowCount; row++) {
+    const rowId = `r${row}`
+    const children: string[] = []
+    root.push(rowId)
+    entities[rowId] = { label: String(row + 1) }
+    relationships[rowId] = children
+    for (const col of colLetters) {
+      const id = cellId(col, row)
+      children.push(id)
+      entities[id] = { label: getCell(cellKey(col, row), col, row) }
+    }
+  }
+
+  return { entities, relationships, meta: { root } }
 }

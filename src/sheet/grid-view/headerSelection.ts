@@ -1,4 +1,4 @@
-import { idsForAll, idsForCol, idsForRow } from '@spredsheet/grid'
+import { appendIdsForCol, appendIdsForRow, idsForAll, idsForCol } from '@spredsheet/grid'
 import { cellId, parseCellId } from '../schema'
 
 export interface HeaderSelection {
@@ -24,11 +24,15 @@ export function selectColumnHeader(
 ): HeaderSelection {
   const anchorIndex = anchorCol ? colLetters.indexOf(anchorCol) : -1
   const targetIndex = colLetters.indexOf(targetCol)
-  const selectedIds = anchorIndex < 0 || targetIndex < 0
-    ? idsForCol(targetCol, rowCount)
-    : colLetters
-      .slice(Math.min(anchorIndex, targetIndex), Math.max(anchorIndex, targetIndex) + 1)
-      .flatMap((col) => idsForCol(col, rowCount))
+  let selectedIds: string[]
+  if (anchorIndex < 0 || targetIndex < 0) {
+    selectedIds = idsForCol(targetCol, rowCount)
+  } else {
+    selectedIds = []
+    for (let col = Math.min(anchorIndex, targetIndex); col <= Math.max(anchorIndex, targetIndex); col++) {
+      appendIdsForCol(selectedIds, colLetters[col], rowCount)
+    }
+  }
   const focusId = cellId(targetCol, 0)
 
   return {
@@ -45,10 +49,10 @@ export function selectRowHeader(
 ): HeaderSelection {
   const parsedAnchor = anchorId ? parseCellId(anchorId) : null
   const anchorRow = parsedAnchor?.row ?? targetRow
-  const selectedIds = Array.from(
-    { length: Math.abs(targetRow - anchorRow) + 1 },
-    (_, offset) => Math.min(targetRow, anchorRow) + offset,
-  ).flatMap((row) => idsForRow(row, colLetters))
+  const selectedIds: string[] = []
+  for (let row = Math.min(targetRow, anchorRow); row <= Math.max(targetRow, anchorRow); row++) {
+    appendIdsForRow(selectedIds, row, colLetters)
+  }
   const focusId = cellId('A', targetRow)
 
   return {

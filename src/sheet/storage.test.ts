@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { KeyValueStorage } from '../lib/browserStorage'
 import { initialSheet } from './schema'
-import { loadInitial, saveSheet, SHEET_STORAGE_KEY } from './storage'
+import { buildData, loadInitial, saveSheet, SHEET_STORAGE_KEY } from './storage'
 import { MAX_CELL_TEXT_LENGTH } from './cellValue'
 
 const memoryStorage = (initial: Record<string, string> = {}) => {
@@ -17,6 +17,19 @@ const memoryStorage = (initial: Record<string, string> = {}) => {
 }
 
 describe('sheet storage', () => {
+  it('builds normalized grid data without an intermediate tree', () => {
+    const data = buildData((key) => `v:${key}`, 1000, ['A', 'B', 'C'])
+
+    expect(data.meta?.root?.slice(0, 4)).toEqual(['h-A', 'h-B', 'h-C', 'r0'])
+    expect(data.meta?.root?.at(-1)).toBe('r999')
+    expect(data.relationships.r0).toEqual(['r0-A', 'r0-B', 'r0-C'])
+    expect(data.relationships.r999).toEqual(['r999-A', 'r999-B', 'r999-C'])
+    expect(data.entities['h-A']).toEqual({ label: 'A' })
+    expect(data.entities.r999).toEqual({ label: '1000' })
+    expect(data.entities['r999-C']).toEqual({ label: 'v:C1000' })
+    expect(Object.keys(data.entities)).toHaveLength(4003)
+  })
+
   it('loads a valid persisted sheet', () => {
     const saved = { ...initialSheet, cells: { A1: 'Saved' } }
     const { storage } = memoryStorage({ [SHEET_STORAGE_KEY]: JSON.stringify(saved) })

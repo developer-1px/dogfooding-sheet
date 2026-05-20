@@ -158,6 +158,19 @@ describe('@spredsheet/grid', () => {
     expect(selectionAddress(['r0-A', 'r0-B', 'r1-A', 'r1-B'], null, 3, ['A', 'B', 'C'])).toBe('A1:B2')
   })
 
+  it('resolves larger row and column ranges without per-segment spread arrays', () => {
+    const cols = columnLabels(10)
+    const fullCols = resolveRange('B:D', { rowCount: 1000, colCount: cols.length }, cols)
+    const fullRows = resolveRange('10:12', { rowCount: 1000, colCount: cols.length }, cols)
+
+    expect(fullCols).toHaveLength(3000)
+    expect(fullCols?.[0]).toBe('r0-B')
+    expect(fullCols?.at(-1)).toBe('r999-D')
+    expect(fullRows).toHaveLength(30)
+    expect(fullRows?.[0]).toBe('r9-A')
+    expect(fullRows?.at(-1)).toBe('r11-J')
+  })
+
   it('computes keyboard navigation targets', () => {
     expect(jumpToEdge('r0-A', { A1: 'a', A2: 'b', A3: 'c', A5: 'd' }, 10, 'ArrowDown')).toBe('r2-A')
     expect(tabTarget('r0-A', false)).toBe('r0-B')
