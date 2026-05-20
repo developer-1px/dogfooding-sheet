@@ -55,4 +55,26 @@ describe('dictOps mutation adapter', () => {
       ['patch', [{ op: 'replace', path: '/records/a~1b~0c', value: 'next' }]],
     ])
   })
+
+  it('coalesces duplicate batch entries with the latest value winning', () => {
+    const calls: unknown[] = []
+    const ops = {
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    }
+    const typedOps = ops as unknown as JSONOps<{ records: Record<string, string> }>
+
+    upsertKeys(typedOps, '/records', { A: 'old', B: 'old' }, [
+      ['A', 'first'],
+      ['A', 'last'],
+      ['B', undefined],
+      ['B', 'kept'],
+    ])
+
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'replace', path: '/records/A', value: 'last' },
+        { op: 'replace', path: '/records/B', value: 'kept' },
+      ]],
+    ])
+  })
 })

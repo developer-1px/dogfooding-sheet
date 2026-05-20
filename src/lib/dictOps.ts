@@ -60,7 +60,8 @@ export function upsertKeys<T, V>(
   entries: Array<[string, V | undefined]>,
 ): void {
   const patch: Patch = []
-  for (const [key, value] of entries) {
+  const latest = new Map(entries)
+  for (const [key, value] of latest) {
     const path = childPath(base, key)
     if (value === undefined) { if (current[key] !== undefined) patch.push({ op: 'remove', path }) }
     else if (current[key] === undefined) patch.push({ op: 'add', path, value })

@@ -68,4 +68,25 @@ describe('cell write adapters', () => {
       ['patch', [{ op: 'add', path: '/cells/A1', value: 'ok' }]],
     ])
   })
+
+  it('coalesces duplicate batch writes before building the patch', () => {
+    const { ops, calls } = recordingOps()
+
+    writeCellsBatch(ops, { B1: 'old', C1: 'old' }, [
+      ['A1', 'first'],
+      ['A1', 'last'],
+      ['B1', ''],
+      ['B1', 'kept'],
+      ['C1', 'new'],
+      ['C1', ''],
+    ])
+
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'add', path: '/cells/A1', value: 'last' },
+        { op: 'replace', path: '/cells/B1', value: 'kept' },
+        { op: 'remove', path: '/cells/C1' },
+      ]],
+    ])
+  })
 })
