@@ -40,11 +40,14 @@ export function useSheet(opts: SheetOptions = {}) {
   const validation = useValidation(sheet.validation, sheet.cells, ops, { rowCount, colCount: sheet.colCount })
   const cond = useCondFormat(sheet.condFormat, ops, { colCount: sheet.colCount })
   const layout = useSheetLayout(sheet, ops, opts)
-  const merges = useMerges(sheet.merges, ops)
+  const merges = useMerges(sheet.merges, ops, { rowCount, colCount: sheet.colCount })
   const find = useFindState()
   const viewState = useSheetViewState()
   const tabs = useTabs(sheet.tabs, ops)
-  const tabFns = tabActions(sheet, ops)
+  const tabFns = tabActions(sheet, {
+    replace: (path, value) => ops.replace(path, value),
+    replaceSheet: (next) => { ops.replace('', next) },
+  })
 
   const edit = useEditState({ cells: sheet.cells, writeCell, rowCount, colLetters })
   const selection = useSheetSelection(edit)

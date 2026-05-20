@@ -134,6 +134,17 @@ describe('SheetSchema', () => {
     expect(parsed.merges).toEqual([[0, 0, 0, 1]])
   })
 
+  it('normalizes persisted overlapping merges with the latest merge winning', () => {
+    const parsed = SheetSchema.parse({
+      ...initialSheet,
+      rowCount: 2,
+      colCount: 3,
+      merges: [[0, 0, 0, 1], [0, 0, 1, 2]],
+    })
+
+    expect(parsed.merges).toEqual([[0, 0, 1, 2]])
+  })
+
   it('sanitizes inactive saved tab bundles', () => {
     const parsed = SheetSchema.parse({
       ...initialSheet,

@@ -27,7 +27,7 @@ interface TabsStateOps {
 }
 
 export interface TabActionOps extends TabsStateOps {
-  reset(sheet: Sheet): void
+  replaceSheet(sheet: Sheet): void
 }
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
@@ -107,22 +107,22 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     const tabs = safeTabs(next)
     if (tabs) ops.replace('/tabs', tabs)
   }
-  const resetSheet = (next: Sheet) => {
+  const replaceSheet = (next: Sheet) => {
     const parsed = SheetSchema.safeParse(next)
-    if (parsed.success) ops.reset(parsed.data)
+    if (parsed.success) ops.replaceSheet(parsed.data)
   }
 
   const switchTab = (name: string) => {
     if (name === state.active || !state.order.includes(name)) return
     const saved = snapshotSaved()
-    resetSheet(hydrate(setTabs({ ...state, active: name, saved }), name, saved))
+    replaceSheet(hydrate(setTabs({ ...state, active: name, saved }), name, saved))
   }
 
   const addSheet = () => {
     const name = uniqueName(state.order)
     if (!name) return
     const saved = { ...snapshotSaved(), [name]: blankBundle() }
-    resetSheet(hydrate(setTabs({ ...state, order: [...state.order, name], active: name, saved }), name, saved))
+    replaceSheet(hydrate(setTabs({ ...state, order: [...state.order, name], active: name, saved }), name, saved))
   }
 
   const deleteSheet = (name: string) => {
@@ -132,7 +132,7 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     delete saved[name]
     const colors = { ...state.colors }; delete colors[name]
     const newActive = state.active === name ? newOrder[Math.max(0, state.order.indexOf(name) - 1)] : state.active
-    resetSheet(hydrate(setTabs({ ...state, order: newOrder, active: newActive, saved, colors }), newActive, saved))
+    replaceSheet(hydrate(setTabs({ ...state, order: newOrder, active: newActive, saved, colors }), newActive, saved))
   }
 
   const renameSheet = (oldName: string, newName: string) => {
@@ -155,7 +155,7 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     const saved = snapshotSaved()
     saved[newName] = cloneBundle(saved[name] ?? blankBundle())
     const newOrder = [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)]
-    resetSheet(hydrate(setTabs({ ...state, order: newOrder, active: newName, saved }), newName, saved))
+    replaceSheet(hydrate(setTabs({ ...state, order: newOrder, active: newName, saved }), newName, saved))
   }
 
   const cycleTab = (delta: 1 | -1) => {

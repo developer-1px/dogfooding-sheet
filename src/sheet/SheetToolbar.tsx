@@ -35,7 +35,7 @@ interface SheetToolbarController
   setHelpOpen: (open: boolean) => void
   insertLink: () => void
   sheet: Sheet
-  ops: Pick<SheetOps, 'reset' | 'replace' | 'undo' | 'redo' | 'canUndo' | 'canRedo' | 'patch'>
+  ops: Pick<SheetOps, 'replace' | 'undo' | 'redo' | 'canUndo' | 'canRedo' | 'patch'>
   showFormulas: boolean
   toggleShowFormulas: () => void
   showGridlines: boolean
@@ -82,7 +82,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       addCondRule={ctx.addCondRule}
       clearCondRules={ctx.clearCondRules}
       sheet={ctx.sheet}
-      resetSheet={(s) => ctx.ops.reset(s)}
+      resetSheet={(s) => ctx.ops.replace('', s)}
       resetCells={(c) => ctx.ops.replace('/cells', c)}
       undo={() => ctx.ops.undo()}
       redo={() => ctx.ops.redo()}

@@ -1,6 +1,6 @@
 import * as z from 'zod'
 import type { JSONOps } from 'zod-crud'
-import { COL_LETTERS as COLS, colIndex, parseA1 } from '@spredsheet/grid'
+import { COL_LETTERS as COLS, colIndex, normalizeMergeList, parseA1 } from '@spredsheet/grid'
 import { FORMAT_KEYS, normalizeStoredFormat } from './formatting/formatTypes'
 import { isSafeCellText, sanitizeCellRecord } from './cellValue'
 import { normalizeNoteText } from './noteText'
@@ -225,14 +225,7 @@ const sanitizeRowHeights = (heights: RawTabBundle['rowHeights'], bundle: Pick<Ra
   }))
 
 const sanitizeMerges = (merges: RawTabBundle['merges'], bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>): RawTabBundle['merges'] =>
-  merges.filter(([rMin, rMax, cMin, cMax]) =>
-    [rMin, rMax, cMin, cMax].every(Number.isInteger) &&
-    rMin <= rMax && cMin <= cMax &&
-    !(rMin === rMax && cMin === cMax) &&
-    isRowInBounds(rMin, bundle.rowCount) &&
-    isRowInBounds(rMax, bundle.rowCount) &&
-    cMin >= 0 && cMax < bundle.colCount,
-  )
+  normalizeMergeList(merges, bundle)
 
 const sanitizeTabBundle = <T extends RawTabBundle>(bundle: T): T => ({
   ...bundle,

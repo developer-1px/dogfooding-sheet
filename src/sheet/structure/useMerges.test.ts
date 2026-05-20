@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { buildMergeMap } from './useMerges'
+import { describe, it, expect, vi } from 'vitest'
+import type { SheetOps } from '../schema'
+import { buildMergeMap, useMerges } from './useMerges'
+
+const makeOps = () => {
+  const replace = vi.fn()
+  return { replace } as unknown as SheetOps & { replace: typeof replace }
+}
 
 describe('buildMergeMap', () => {
   it('empty merges → empty maps', () => {
@@ -30,5 +36,33 @@ describe('buildMergeMap', () => {
     expect(anchors.size).toBe(2)
     expect(hidden.has('0,1')).toBe(true)
     expect(hidden.has('3,4')).toBe(true)
+  })
+
+  it('adds merges through bounded normalized state', () => {
+    const ops = makeOps()
+    const actions = useMerges([[0, 0, 0, 1], [1, 1, 1, 1]], ops, { rowCount: 2, colCount: 3 })
+
+    actions.addMerge([0, 0, 1, 2])
+
+    expect(ops.replace).toHaveBeenCalledWith('/merges', [[0, 0, 1, 2]])
+  })
+
+  it('ignores add and unmerge requests outside bounds', () => {
+    const ops = makeOps()
+    const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 2 })
+
+    actions.addMerge([0, 0, 1, 2])
+    actions.unmergeAt(2, 0)
+
+    expect(ops.replace).not.toHaveBeenCalled()
+  })
+
+  it('unmerges only when a bounded target hits an existing merge', () => {
+    const ops = makeOps()
+    const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 2 })
+
+    actions.unmergeAt(0, 1)
+
+    expect(ops.replace).toHaveBeenCalledWith('/merges', [])
   })
 })

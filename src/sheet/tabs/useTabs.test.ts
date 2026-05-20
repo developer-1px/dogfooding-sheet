@@ -17,10 +17,10 @@ const make = (): Sheet => ({
   },
 })
 
-interface Stub { reset?: Sheet; replace?: { path: string; value: unknown } }
+interface Stub { root?: Sheet; replace?: { path: string; value: unknown } }
 const stubOps = (s: Stub) => ({
-  reset: (v: Sheet) => { s.reset = v },
   replace: (path: '/tabs', value: Sheet['tabs']) => { s.replace = { path, value } },
+  replaceSheet: (value: Sheet) => { s.root = value },
 }) satisfies TabActionOps
 
 describe('tabActions', () => {
@@ -28,9 +28,9 @@ describe('tabActions', () => {
     const sheet = make()
     const s: Stub = {}
     tabActions(sheet, stubOps(s)).switchTab('Sheet2')
-    expect(s.reset!.tabs.active).toBe('Sheet2')
-    expect(s.reset!.tabs.saved.Sheet1.cells).toEqual({ A1: 'live' })
-    expect(s.reset!.cells).toEqual({ A1: 'b' })
+    expect(s.root!.tabs.active).toBe('Sheet2')
+    expect(s.root!.tabs.saved.Sheet1.cells).toEqual({ A1: 'live' })
+    expect(s.root!.cells).toEqual({ A1: 'b' })
   })
   it('renameSheet preserves bundle under new key (no reset)', () => {
     const sheet = make()
@@ -45,10 +45,10 @@ describe('tabActions', () => {
     const sheet = make()
     const s: Stub = {}
     tabActions(sheet, stubOps(s)).duplicateSheet('Sheet2')
-    expect(s.reset!.tabs.order).toContain('Sheet3')
-    expect(s.reset!.tabs.saved.Sheet3.cells).toEqual({ A1: 'b' })
-    expect(s.reset!.tabs.saved.Sheet3.cells).not.toBe(sheet.tabs.saved.Sheet2.cells)
-    expect(s.reset!.cells).not.toBe(s.reset!.tabs.saved.Sheet3.cells)
+    expect(s.root!.tabs.order).toContain('Sheet3')
+    expect(s.root!.tabs.saved.Sheet3.cells).toEqual({ A1: 'b' })
+    expect(s.root!.tabs.saved.Sheet3.cells).not.toBe(sheet.tabs.saved.Sheet2.cells)
+    expect(s.root!.cells).not.toBe(s.root!.tabs.saved.Sheet3.cells)
   })
   it('switchTab preserves per-tab styles/notes (multi-sheet partition)', () => {
     const sheet: Sheet = {
@@ -59,16 +59,16 @@ describe('tabActions', () => {
     sheet.tabs.saved.Sheet2 = { ...blankBundle(), cells: { A1: 'b' }, styles: { B2: { i: true } }, notes: { B2: 'world' } }
     const s: Stub = {}
     tabActions(sheet, stubOps(s)).switchTab('Sheet2')
-    expect(s.reset!.styles).toEqual({ B2: { i: true } })
-    expect(s.reset!.notes).toEqual({ B2: 'world' })
-    expect(s.reset!.tabs.saved.Sheet1.styles).toEqual({ A1: { b: true } })
-    expect(s.reset!.tabs.saved.Sheet1.notes).toEqual({ A1: 'hello' })
+    expect(s.root!.styles).toEqual({ B2: { i: true } })
+    expect(s.root!.notes).toEqual({ B2: 'world' })
+    expect(s.root!.tabs.saved.Sheet1.styles).toEqual({ A1: { b: true } })
+    expect(s.root!.tabs.saved.Sheet1.notes).toEqual({ A1: 'hello' })
   })
   it('deleteSheet refuses last sheet', () => {
     const sheet: Sheet = { ...initialSheet, tabs: { order: ['Only'], active: 'Only', colors: {}, saved: { Only: blankBundle() } } }
     const s: Stub = {}
     tabActions(sheet, stubOps(s)).deleteSheet('Only')
-    expect(s.reset).toBeUndefined()
+    expect(s.root).toBeUndefined()
   })
 
   it('refuses tab creation past the tab cap', () => {
@@ -87,7 +87,7 @@ describe('tabActions', () => {
     tabActions(sheet, stubOps(s)).addSheet()
     tabActions(sheet, stubOps(s)).duplicateSheet(order[0])
 
-    expect(s.reset).toBeUndefined()
+    expect(s.root).toBeUndefined()
   })
 
   it('refuses unsafe tab names and colors', () => {

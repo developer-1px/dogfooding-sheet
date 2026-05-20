@@ -31,4 +31,18 @@ describe('multi-sheet partition (preview)', () => {
     expect(restored, 'Sheet1 cells should be restored').toBeDefined()
     expect(restored!.className).toContain('bold')
   })
+
+  it('sheet creation is undoable instead of clearing document history', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const addBtn = document.querySelector<HTMLButtonElement>('.tab-add')
+    expect(addBtn).not.toBeNull()
+    act(() => click(addBtn!))
+    expect([...document.querySelectorAll<HTMLElement>('.tab')].some((t) => t.textContent?.includes('Sheet2'))).toBe(true)
+
+    act(() => press('z', { ctrlKey: true }))
+
+    expect([...document.querySelectorAll<HTMLElement>('.tab')].some((t) => t.textContent?.includes('Sheet2'))).toBe(false)
+    expect(cellByText('Apple')).toBeDefined()
+  })
 })

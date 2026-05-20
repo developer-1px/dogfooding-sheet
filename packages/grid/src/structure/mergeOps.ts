@@ -2,6 +2,11 @@ import { colIndex, parseCellId } from '../coordinates/a1'
 
 export type Merge = [number, number, number, number]
 
+export interface MergeBounds {
+  rowCount: number
+  colCount: number
+}
+
 export interface MergeInfo {
   anchorR: number
   anchorC: number
@@ -16,6 +21,24 @@ export type MergeSelectionAction =
 
 export const mergeOverlap = (a: Merge, b: Merge): boolean =>
   a[0] <= b[1] && a[1] >= b[0] && a[2] <= b[3] && a[3] >= b[2]
+
+export function isValidMerge(merge: Merge, bounds: MergeBounds): boolean {
+  const [rMin, rMax, cMin, cMax] = merge
+  return [rMin, rMax, cMin, cMax].every(Number.isInteger) &&
+    rMin <= rMax &&
+    cMin <= cMax &&
+    !(rMin === rMax && cMin === cMax) &&
+    rMin >= 0 &&
+    rMax < bounds.rowCount &&
+    cMin >= 0 &&
+    cMax < bounds.colCount
+}
+
+export function normalizeMergeList(merges: ReadonlyArray<Merge>, bounds: MergeBounds): Merge[] {
+  return merges.reduce<Merge[]>((next, merge) =>
+    isValidMerge(merge, bounds) ? addMergeToList(next, merge) : next,
+  [])
+}
 
 export function mergeActionForSelection(selectedIds: string[], focusId: string | null): MergeSelectionAction {
   const ids = selectedIds.length > 0 ? selectedIds : (focusId ? [focusId] : [])
