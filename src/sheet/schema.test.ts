@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_ROW_COUNT, MAX_SHEET_NAME_LENGTH, MAX_SHEET_TABS, SheetSchema, blankBundle, cloneBundle, initialSheet } from './schema'
+import {
+  MAX_ROW_COUNT,
+  MAX_SHEET_NAME_LENGTH,
+  MAX_SHEET_TABS,
+  MAX_VALIDATION_OPTIONS,
+  SheetSchema,
+  blankBundle,
+  cloneBundle,
+  initialSheet,
+  normalizeValidationOptions,
+} from './schema'
 import { MAX_CELL_TEXT_LENGTH } from './cellValue'
 
 describe('SheetSchema', () => {
@@ -91,6 +101,21 @@ describe('SheetSchema', () => {
     })
 
     expect(parsed.cells).toEqual({ A1: 'ok' })
+  })
+
+  it('normalizes list validation options before persistence rules use them', () => {
+    const extraOptions = Array.from({ length: MAX_VALIDATION_OPTIONS + 5 }, (_unused, index) => `v${index}`)
+
+    expect(normalizeValidationOptions([
+      ' open ',
+      'open',
+      '',
+      'x'.repeat(MAX_CELL_TEXT_LENGTH + 1),
+      ...extraOptions,
+    ])).toEqual([
+      'open',
+      ...Array.from({ length: MAX_VALIDATION_OPTIONS - 1 }, (_unused, index) => `v${index}`),
+    ])
   })
 
   it('sanitizes persisted bundle state to sheet bounds', () => {
