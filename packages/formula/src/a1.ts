@@ -66,14 +66,22 @@ export const cellIdToKey = (id: string): string => {
   return p ? cellKey(p.col, p.row) : id
 }
 
-/** Parse an A1 key like "B3" into `{ col: 'B', row: 2 }`. Returns `null` on mismatch. */
-export const parseA1 = (key: string): CellRef | null => {
-  const m = /^\$?([A-Z]+)\$?(\d+)$/.exec(key)
-  return m ? { col: m[1], row: Number(m[2]) - 1 } : null
-}
-
 /** 0-based column index for a label — `colIndex('AA') === 26`. Returns `-1` if unknown. */
 export const colIndex = (col: string): number =>
   /^[A-Z]+$/.test(col)
     ? [...col].reduce((acc, ch) => acc * 26 + ch.charCodeAt(0) - 64, 0) - 1
     : -1
+
+const parseA1RowIndex = (raw: string): number | null => {
+  const rowNumber = Number(raw)
+  return Number.isSafeInteger(rowNumber) && rowNumber >= 1 ? rowNumber - 1 : null
+}
+
+/** Parse an A1 key like "B3" into `{ col: 'B', row: 2 }`. Returns `null` on mismatch. */
+export const parseA1 = (key: string): CellRef | null => {
+  const m = /^\$?([A-Z]+)\$?(\d+)$/.exec(key)
+  if (!m) return null
+  const row = parseA1RowIndex(m[2])
+  const col = colIndex(m[1])
+  return row !== null && Number.isSafeInteger(col) && col >= 0 ? { col: m[1], row } : null
+}

@@ -100,6 +100,13 @@ describe('evaluateCell', () => {
     expect(evaluateCell({}, '=A1+5')).toBe('5')
   })
 
+  it('rejects invalid A1 references', () => {
+    expect(evaluateCell({}, '=A0+1')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=SUM(A0:A1)')).toBe('#VALUE!')
+    expect(refsInFormula('=SUM(A0:A1)')).toEqual([])
+    expect(refsInFormula(`=A${Number.MAX_SAFE_INTEGER + 1}`)).toEqual([])
+  })
+
   it('bad expression returns #ERR', () => {
     expect(evaluateCell({}, '=alert(1)')).toBe('#ERR')
     expect(evaluateCell({}, '=1;globalThis.__formulaInjected=1')).toBe('#ERR')

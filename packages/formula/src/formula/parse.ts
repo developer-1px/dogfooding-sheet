@@ -1,4 +1,4 @@
-import { A1_RE, ABS_A1_RE, colIndex, columnLabel } from '../a1'
+import { A1_RE, ABS_A1_RE, colIndex, columnLabel, parseA1 } from '../a1'
 export { A1_RE, ABS_A1_RE }
 export const RANGE_RE = /(?<![A-Z0-9_])\$?([A-Z]+)\$?(\d+):\$?([A-Z]+)\$?(\d+)(?![A-Z0-9_])/g
 export const MAX_EXPANDED_REFS = 26_000
@@ -15,6 +15,7 @@ export const expandRange = (a: string, ar: string, b: string, br: string): strin
   if (
     c1 < 0 || c2 < 0 ||
     !Number.isSafeInteger(r1) || !Number.isSafeInteger(r2) ||
+    r1 < 1 || r2 < 1 ||
     !Number.isSafeInteger(refCount) || refCount > MAX_EXPANDED_REFS
   ) throw new RangeLimitError()
   const refs: string[] = []
@@ -34,6 +35,7 @@ export const collectRefs = (args: string): string[] => {
   })
   args.replace(ABS_A1_RE, (_x, _absCol, c, _absRow, r) => {
     const ref = `${c}${r}`
+    if (!parseA1(ref)) throw new RangeLimitError()
     if (!refs.includes(ref)) refs.push(ref)
     return ''
   })

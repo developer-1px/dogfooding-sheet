@@ -1,4 +1,4 @@
-import type { Cells } from '../a1'
+import { parseA1, type Cells } from '../a1'
 import { ABS_A1_RE, FORMULA_FUNCTION_NAMES, RangeLimitError } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 import { coerceNumber } from './coerce'
@@ -247,6 +247,7 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
 
   expr = expr.replace(ABS_A1_RE, (_m, _absCol, c, _absRow, r) => {
     const ref = `${c}${r}`
+    if (!parseA1(ref)) throw new FormulaLimitError()
     return String(ctx.numFromCell(ref))
   })
 
