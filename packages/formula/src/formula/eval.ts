@@ -269,6 +269,6 @@ export const evaluateCell = (cells: Cells, raw: string) => {
   } catch (error) {
     if (error instanceof FormulaCycleError) return CYCLE_ERROR
     if (isFormulaLimitError(error)) return VALUE_ERROR
-    throw error
+    return '#ERR'
   }
 }

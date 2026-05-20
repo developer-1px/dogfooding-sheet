@@ -104,6 +104,11 @@ describe('evaluateCell', () => {
     expect((globalThis as typeof globalThis & { __formulaInjected?: number }).__formulaInjected).toBeUndefined()
   })
 
+  it('contains function dispatch exceptions inside the formula boundary', () => {
+    expect(() => evaluateCell({ A1: '\uD800' }, '=ENCODEURL(A1)')).not.toThrow()
+    expect(evaluateCell({ A1: '\uD800' }, '=ENCODEURL(A1)')).toBe('#ERR')
+  })
+
   it('rejects evaluator resource limit inputs', () => {
     const oversizedFormula = '=' + '1+'.repeat(Math.ceil(MAX_FORMULA_LENGTH / 2)) + '1'
     const tooDeep = '=' + '('.repeat(MAX_ARITHMETIC_DEPTH + 1) + '1' + ')'.repeat(MAX_ARITHMETIC_DEPTH + 1)
