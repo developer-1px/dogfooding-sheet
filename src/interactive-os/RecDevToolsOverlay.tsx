@@ -22,7 +22,6 @@ export function RecDevToolsOverlay() {
       setRecording(false)
       stopTimer()
       navigator.clipboard?.writeText(data.text).catch(() => {})
-      console.log('[REC]', data.text)
       return
     }
 
@@ -65,4 +64,3 @@ export function RecDevToolsOverlay() {
     </button>
   )
 }
-
