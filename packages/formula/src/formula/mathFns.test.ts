@@ -50,6 +50,21 @@ describe('math functions', () => {
     expect(Number.isFinite(x)).toBe(true)
   })
 
+  it('rejects invalid math inputs and domains', () => {
+    expect(evaluateCell({}, '=ROUND("x", 0)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ROUND(1.234, 101)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=SQRT(-1)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=LOG(0)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=POWER(-1, 0.5)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=EXP(10000)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=INVLERP(1, 0, 0)')).toBe('#DIV/0!')
+    expect(evaluateCell({}, '=RANDBETWEEN(10, 5)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=GCD()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=LCM(0, 0)')).toBe('0')
+    expect(evaluateCell({}, '=ACOS(2)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=CSC(0)')).toBe('#DIV/0!')
+  })
+
   it('TRUNC / SIGN / PI / EVEN / ODD', () => {
     expect(evaluateCell({}, '=TRUNC(3.789, 1)')).toBe('3.7')
     expect(evaluateCell({}, '=INT(3.789)')).toBe('3')
