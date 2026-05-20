@@ -29,6 +29,12 @@ describe('logic functions', () => {
     expect(evaluateCell({}, '=IF(0, "yes")')).toBe('')
   })
 
+  it('IF only evaluates the selected branch', () => {
+    expect(evaluateCell({ A1: '=A1+1' }, '=IF(0,A1,"ok")')).toBe('ok')
+    expect(evaluateCell({ A1: '=A1+1' }, '=IF(0,SUM(A1:A1),"ok")')).toBe('ok')
+    expect(evaluateCell({}, '=IF(1,"ok",1/0)')).toBe('ok')
+  })
+
   it('TYPE classifies values', () => {
     expect(evaluateCell({}, '=TYPE(42)')).toBe('1')
     expect(evaluateCell({}, '=TYPE("hi")')).toBe('2')
@@ -60,5 +66,17 @@ describe('logic functions', () => {
     expect(evaluateCell({}, '=IFERROR(VLOOKUP("zz","A1:B3",2,FALSE),"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR(1/0,"none")')).toBe('none')
     expect(evaluateCell({}, '=IFERROR("ok","fallback")')).toBe('ok')
+  })
+
+  it('lazy condition helpers do not evaluate unused fallbacks or branches', () => {
+    const cyclic = { A1: '=A1+1' }
+
+    expect(evaluateCell(cyclic, '=IFERROR("ok",A1)')).toBe('ok')
+    expect(evaluateCell(cyclic, '=IFERROR(A1,"none")')).toBe('none')
+    expect(evaluateCell(cyclic, '=CHOOSE(2,A1,"ok")')).toBe('ok')
+    expect(evaluateCell(cyclic, '=IFEMPTY("ok",A1)')).toBe('ok')
+    expect(evaluateCell(cyclic, '=COALESCE("ok",A1)')).toBe('ok')
+    expect(evaluateCell(cyclic, '=IFS(0,A1,1,"ok")')).toBe('ok')
+    expect(evaluateCell(cyclic, '=SWITCH("b","a",A1,"b","ok")')).toBe('ok')
   })
 })

@@ -2,17 +2,21 @@ import type { Cells } from '../a1'
 import { ABS_A1_RE, FUNC_RE } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 import { coerceNumber } from './coerce'
-import type { EvalCell } from './args'
+import type { Ctx, EvalCell } from './args'
 
 const CYCLE_ERROR = '#CYCLE!'
+const LAZY_FUNCTIONS = new Set(['IF', 'IFERROR', 'IFNA', 'CHOOSE', 'IFEMPTY', 'COALESCE', 'IFS', 'SWITCH'])
 
 class FormulaCycleError extends Error {}
 
 const evalCellFactory = (cells: Cells, seen: Set<string>): EvalCell => (ref: string): string => {
-  if (seen.has(ref)) throw new FormulaCycleError()
+  if (seen.has(ref)) return CYCLE_ERROR
   seen.add(ref)
   try {
     return evaluate(cells, cells[ref] ?? '', seen)
+  } catch (error) {
+    if (error instanceof FormulaCycleError) return CYCLE_ERROR
+    throw error
   } finally {
     seen.delete(ref)
   }
@@ -20,6 +24,7 @@ const evalCellFactory = (cells: Cells, seen: Set<string>): EvalCell => (ref: str
 
 const numFromCellFactory = (evalCell: EvalCell) => (ref: string): number => {
   const v = evalCell(ref)
+  if (v === CYCLE_ERROR) throw new FormulaCycleError()
   const n = coerceNumber(v)
   return Number.isFinite(n) ? n : 0
 }
@@ -130,16 +135,67 @@ const evalArith = (expr: string): number => {
   return new ArithmeticParser(expr).parse()
 }
 
+const matchingParen = (expr: string, open: number): number => {
+  let depth = 0
+  let inQuote = false
+  for (let i = open; i < expr.length; i++) {
+    const ch = expr[i]
+    if (ch === '"' && inQuote && expr[i + 1] === '"') {
+      i++
+    } else if (ch === '"') {
+      inQuote = !inQuote
+    } else if (!inQuote && ch === '(') {
+      depth++
+    } else if (!inQuote && ch === ')') {
+      depth--
+      if (depth === 0) return i
+    }
+  }
+  return -1
+}
+
+const replaceLazyCall = (expr: string, c: Ctx): string => {
+  let inQuote = false
+  for (let i = 0; i < expr.length; i++) {
+    const ch = expr[i]
+    if (ch === '"' && inQuote && expr[i + 1] === '"') {
+      i++
+      continue
+    }
+    if (ch === '"') {
+      inQuote = !inQuote
+      continue
+    }
+    if (inQuote || !/[A-Za-z_]/.test(ch)) continue
+
+    const start = i
+    while (/[A-Za-z_]/.test(expr[i] ?? '')) i++
+    const fn = expr.slice(start, i).toUpperCase()
+    if (!LAZY_FUNCTIONS.has(fn) || expr[i] !== '(') continue
+
+    const close = matchingParen(expr, i)
+    if (close < 0) return expr
+    const args = expr.slice(i + 1, close)
+    return expr.slice(0, start) + dispatch(fn, args, c) + expr.slice(close + 1)
+  }
+  return expr
+}
+
+const createContext = (cells: Cells, seen: Set<string>) => {
+  const evalCell = evalCellFactory(cells, seen)
+  const numFromCell = numFromCellFactory(evalCell)
+  return { cells, seen, numFromCell, evalCell, evalRaw: (r: string) => evaluate(cells, r, seen) }
+}
+
 function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): string {
   if (!raw.startsWith('=')) return raw
   let expr = raw.slice(1)
-  const evalCell = evalCellFactory(cells, seen)
-  const numFromCell = numFromCellFactory(evalCell)
-  const ctx = { cells, seen, numFromCell, evalCell, evalRaw: (r: string) => evaluate(cells, r, seen) }
+  const ctx = createContext(cells, seen)
 
   let prev = ''
   while (prev !== expr) {
     prev = expr
+    expr = replaceLazyCall(expr, ctx)
     expr = expr.replace(FUNC_RE, (_m, fn: string, args: string) => dispatch(fn, args, ctx))
   }
 
@@ -147,7 +203,7 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
 
   expr = expr.replace(ABS_A1_RE, (_m, _absCol, c, _absRow, r) => {
     const ref = `${c}${r}`
-    return String(numFromCell(ref))
+    return String(ctx.numFromCell(ref))
   })
 
   try {

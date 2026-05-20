@@ -16,13 +16,73 @@ import { dispatchFinance } from './finance'
 import { dispatchLogic } from './logicFns'
 import { filterRange } from './filter'
 import { dispatchRef } from './refFns'
-import { evalArgs, splitArgs, type Ctx } from './args'
+import { argString, evalArgs, splitArgs, type Ctx } from './args'
 import { parseA1, colIndex } from '../a1'
-import { smartReturn } from './marker'
+import { smartReturn, wrap } from './marker'
 import { coerceNumber } from './coerce'
+import { isErrorValue } from './errorValue'
 
 export type { Ctx } from './args'
 export { TM, stripText } from './marker'
+
+const lazyArg = (args: string[], index: number, c: Ctx): string =>
+  args[index] === undefined ? '' : argString(args[index], c)
+
+const lazyReturn = (value: string): string => value === '' ? wrap('') : smartReturn(value)
+
+function dispatchLazyLogic(F: string, rawArgs: string, c: Ctx): string | null {
+  const args = splitArgs(rawArgs)
+
+  if (F === 'IF') {
+    const test = coerceNumber(lazyArg(args, 0, c))
+    return lazyReturn(test ? lazyArg(args, 1, c) : lazyArg(args, 2, c))
+  }
+
+  if (F === 'IFERROR') {
+    const value = lazyArg(args, 0, c)
+    return lazyReturn(isErrorValue(value) ? lazyArg(args, 1, c) : value)
+  }
+
+  if (F === 'IFNA') {
+    const value = lazyArg(args, 0, c)
+    return lazyReturn(value === '#N/A' ? lazyArg(args, 1, c) : value)
+  }
+
+  if (F === 'CHOOSE') {
+    const index = Math.floor(Number(lazyArg(args, 0, c)))
+    return lazyReturn(index >= 1 && index < args.length ? lazyArg(args, index, c) : '#VALUE!')
+  }
+
+  if (F === 'IFEMPTY') {
+    const value = lazyArg(args, 0, c)
+    return lazyReturn(value === '' ? lazyArg(args, 1, c) : value)
+  }
+
+  if (F === 'COALESCE') {
+    for (let i = 0; i < args.length; i++) {
+      const value = lazyArg(args, i, c)
+      if (value !== '') return lazyReturn(value)
+    }
+    return lazyReturn('')
+  }
+
+  if (F === 'IFS') {
+    for (let i = 0; i + 1 < args.length; i += 2) {
+      if (coerceNumber(lazyArg(args, i, c))) return lazyReturn(lazyArg(args, i + 1, c))
+    }
+    return lazyReturn('#N/A')
+  }
+
+  if (F === 'SWITCH') {
+    const expr = lazyArg(args, 0, c)
+    for (let i = 1; i + 1 < args.length; i += 2) {
+      if (lazyArg(args, i, c) === expr) return lazyReturn(lazyArg(args, i + 1, c))
+    }
+    return lazyReturn((args.length - 1) % 2 === 1 ? lazyArg(args, args.length - 1, c) : '#N/A')
+  }
+
+  return null
+}
 
 export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const F = fn.toUpperCase()
@@ -42,6 +102,9 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   const agg = aggregate(F, rawArgs, c)
   if (agg !== null) return agg
+
+  const lazy = dispatchLazyLogic(F, rawArgs, c)
+  if (lazy !== null) return lazy
 
   const argsT = evalArgs(rawArgs, c)
 
