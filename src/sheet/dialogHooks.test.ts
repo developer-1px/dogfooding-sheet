@@ -99,4 +99,42 @@ describe('dialog hooks', () => {
     await expect(promptResult).resolves.toBeNull()
     await expect(confirmResult).resolves.toBe(false)
   })
+
+  it('opens new dialogs after a normal close without cancelling them as stale', async () => {
+    let ask!: Ask
+    let confirm!: Confirm
+    function Harness() {
+      const prompt = usePrompt()
+      const confirmation = useConfirm()
+      ask = prompt.ask
+      confirm = confirmation.confirm
+      return createElement('div', null, prompt.dialog, confirmation.dialog)
+    }
+
+    act(() => root!.render(createElement(Harness)))
+    let firstPrompt!: Promise<string | null>
+    act(() => { firstPrompt = ask({ label: '첫 입력' }) })
+    act(() => document.querySelector<HTMLButtonElement>('.prompt-dialog button')!.click())
+    await expect(firstPrompt).resolves.toBeNull()
+
+    let secondPrompt!: Promise<string | null>
+    act(() => { secondPrompt = ask({ label: '다음 입력' }) })
+    expect(document.body.textContent).toContain('다음 입력')
+    const input = document.querySelector<HTMLInputElement>('.prompt-dialog input')
+    expect(input).not.toBeNull()
+    act(() => setInputValue(input!, 'next'))
+    act(() => document.querySelector<HTMLButtonElement>('.prompt-dialog .primary')!.click())
+    await expect(secondPrompt).resolves.toBe('next')
+
+    let firstConfirm!: Promise<boolean>
+    act(() => { firstConfirm = confirm({ message: '첫 확인' }) })
+    act(() => document.querySelector<HTMLButtonElement>('.confirm-dialog button')!.click())
+    await expect(firstConfirm).resolves.toBe(false)
+
+    let secondConfirm!: Promise<boolean>
+    act(() => { secondConfirm = confirm({ message: '다음 확인' }) })
+    expect(document.body.textContent).toContain('다음 확인')
+    act(() => document.querySelector<HTMLButtonElement>('.confirm-dialog .danger')!.click())
+    await expect(secondConfirm).resolves.toBe(true)
+  })
 })

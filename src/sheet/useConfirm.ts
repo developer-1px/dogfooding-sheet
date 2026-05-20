@@ -28,6 +28,9 @@ export function useConfirm(): { confirm: (opts: ConfirmOptions) => Promise<boole
       resolveRef.current = resolve
       setState({ opts, resolve })
     }), [])
+  useEffect(() => {
+    if (state === null) resolveRef.current = null
+  }, [state])
   useEffect(() => () => {
     resolveRef.current?.(false)
     resolveRef.current = null

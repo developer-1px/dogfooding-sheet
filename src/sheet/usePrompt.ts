@@ -31,6 +31,9 @@ export function usePrompt(): { ask: (opts: PromptOptions) => Promise<string | nu
       resolveRef.current = resolve
       setState({ id: nextId.current++, opts, resolve })
     }), [])
+  useEffect(() => {
+    if (state === null) resolveRef.current = null
+  }, [state])
   useEffect(() => () => {
     resolveRef.current?.(null)
     resolveRef.current = null
