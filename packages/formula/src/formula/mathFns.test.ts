@@ -105,12 +105,23 @@ describe('math functions', () => {
     expect(evaluateCell({}, '=RANDID()')).toMatch(/^[A-Za-z0-9]{8}$/)
   })
 
+  it('rejects invalid random id lengths', () => {
+    expect(evaluateCell({}, '=RANDID("x")')).toBe('#VALUE!')
+  })
+
   it('FACT / COMBIN / PERMUT', () => {
     expect(evaluateCell({}, '=FACT(5)')).toBe('120')
     expect(evaluateCell({}, '=FACT(0)')).toBe('1')
     expect(evaluateCell({}, '=COMBIN(5,2)')).toBe('10')
     expect(evaluateCell({}, '=PERMUT(5,2)')).toBe('20')
     expect(evaluateCell({}, '=COMBIN(2,5)')).toBe('#NUM!')
+  })
+
+  it('rejects unsafe numeric iteration inputs', () => {
+    expect(evaluateCell({}, '=ISPRIME(10000000001)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=FACT(171)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=COMBIN(30000,15000)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=PERMUT(20000,10001)')).toBe('#NUM!')
   })
 
   it('BASE / DECIMAL / HEX2DEC / DEC2HEX / BIN2DEC / DEC2BIN', () => {
