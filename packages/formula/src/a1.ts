@@ -19,8 +19,12 @@ export const columnLabel = (index: number): string => {
   return label
 }
 
-export const columnLabels = (count: number): string[] =>
-  Array.from({ length: Math.max(0, count) }, (_, i) => columnLabel(i))
+export const columnLabels = (count: number): string[] => {
+  const length = Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 0
+  const labels: string[] = []
+  for (let i = 0; i < length; i++) labels.push(columnLabel(i))
+  return labels
+}
 
 export const COL_LETTERS = columnLabels(26)
 

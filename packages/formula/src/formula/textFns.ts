@@ -9,6 +9,38 @@ import { MAX_GENERATED_TEXT_LENGTH, boundedJoin, boundedText } from './textLimit
 const splitLiteral = (text: string, delimiter: string): string[] =>
   delimiter === '' ? [text] : text.split(delimiter)
 
+const textSplitRows = (
+  text: string,
+  colDelimiter: string,
+  rowDelimiter: string,
+  ignoreEmpty: boolean,
+  pad: string,
+): string[][] => {
+  const rawRows = splitLiteral(text, rowDelimiter)
+  const rows: string[][] = []
+  let width = 0
+
+  for (const rawRow of rawRows) {
+    const rawCells = splitLiteral(rawRow, colDelimiter)
+    const row: string[] = []
+
+    for (const cell of rawCells) {
+      if (ignoreEmpty && cell === '') continue
+      row.push(cell)
+    }
+
+    if (ignoreEmpty && row.length === 0) continue
+    if (row.length > width) width = row.length
+    rows.push(row)
+  }
+
+  for (const row of rows) {
+    while (row.length < width) row.push(pad)
+  }
+
+  return rows
+}
+
 const splitByAnyChar = (text: string, delimiters: string): string[] => {
   const delimiterChars = new Set<string>()
   for (let i = 0; i < delimiters.length; i++) delimiterChars.add(delimiters[i])
@@ -149,11 +181,7 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const ignoreEmpty = (argsT[3] ?? '0') !== '0'
     const pad = argsT[5] ?? '#N/A'
     if (colDelimiter === '' && rowDelimiter === '') return wrap('#VALUE!')
-    const rawRows = splitLiteral(text, rowDelimiter)
-    const rows = rawRows.map(row => splitLiteral(row, colDelimiter))
-    const filtered = ignoreEmpty ? rows.map(row => row.filter(cell => cell !== '')).filter(row => row.length > 0) : rows
-    const width = Math.max(0, ...filtered.map(row => row.length))
-    return wrap(stringifyFormulaArray(filtered.map(row => row.concat(Array.from({ length: width - row.length }, () => pad)))))
+    return wrap(stringifyFormulaArray(textSplitRows(text, colDelimiter, rowDelimiter, ignoreEmpty, pad)))
   }
   if (F === 'TEXTBEFORE') {
     const text = argsT[0] ?? ''

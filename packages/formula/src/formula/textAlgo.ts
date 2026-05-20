@@ -62,7 +62,8 @@ export function dispatchTextAlgo(F: string, argsT: string[]): string | null {
   if (F === 'LEVENSHTEIN') {
     const a = argsT[0] ?? '', b = argsT[1] ?? ''
     if (!isSafePairWork(a, b)) return wrap('#VALUE!')
-    const dp = Array.from({ length: a.length + 1 }, (_, i) => i)
+    const dp: number[] = []
+    for (let i = 0; i <= a.length; i++) dp.push(i)
     for (let j = 1; j <= b.length; j++) {
       let prev = dp[0]; dp[0] = j
       for (let i = 1; i <= a.length; i++) {

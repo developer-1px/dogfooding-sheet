@@ -67,7 +67,11 @@ export function useStyles(styles: Record<string, CellStyle>, ops: SheetOps, boun
   }, [styles, ops, rowCount, colCount])
 
   const updateStyle = (keys: string[], patch: Partial<CellStyle>) => {
-    upsertKeys(ops, '/styles', styles, keys.filter((key) => validStyleKey(key, bounds)).map((k) => [k, merge(styles[k], patch)]))
+    const entries: Array<[string, CellStyle | undefined]> = []
+    for (const key of keys) {
+      if (validStyleKey(key, bounds)) entries.push([key, merge(styles[key], patch)])
+    }
+    upsertKeys(ops, '/styles', styles, entries)
   }
 
   return { updateStyle, styleOf: (k: string) => styles[k] }

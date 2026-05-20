@@ -50,7 +50,11 @@ export function useFormats(formats: Record<string, Format>, ops: SheetOps, bound
 
   const setFormat = (keys: string[], fmt: Format) => {
     const value = normalizeStoredFormat(fmt)
-    upsertKeys(ops, '/formats', formats, keys.filter((key) => validFormatKey(key, bounds)).map((k) => [k, value]))
+    const entries: Array<[string, Format | undefined]> = []
+    for (const key of keys) {
+      if (validFormatKey(key, bounds)) entries.push([key, value])
+    }
+    upsertKeys(ops, '/formats', formats, entries)
   }
 
   return { setFormat, formatOf: (k: string): Format => formats[k] ?? 'plain' }

@@ -179,6 +179,20 @@ describe('text functions', () => {
   it('TEXTSPLIT can ignore empty cells', () => {
     expect(evaluateCell({}, '=TEXTSPLIT("a,,b", ",",, 1)')).toBe('[["a","b"]]')
   })
+
+  it('TEXTSPLIT pads large ragged rows', () => {
+    const text = Array.from({ length: 200 }, (_unused, row) =>
+      row % 2 === 0 ? `r${row},a,b` : `r${row},a`
+    ).join(';')
+    const value = evaluateCell({}, `=TEXTSPLIT("${text}", ",", ";", 0, 0, "-")`)
+
+    const parsed = JSON.parse(value) as string[][]
+    expect(parsed).toHaveLength(200)
+    expect(parsed[0]).toEqual(['r0', 'a', 'b'])
+    expect(parsed[1]).toEqual(['r1', 'a', '-'])
+    expect(parsed.at(-1)).toEqual(['r199', 'a', '-'])
+  })
+
   it('TEXTBEFORE / TEXTAFTER split by delimiter', () => {
     expect(evaluateCell({}, '=TEXTBEFORE("hello@example.com","@")')).toBe('hello')
     expect(evaluateCell({}, '=TEXTAFTER("hello@example.com","@")')).toBe('example.com')

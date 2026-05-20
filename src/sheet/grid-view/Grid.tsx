@@ -66,8 +66,11 @@ export function Grid({ ctx }: { ctx: GridController }) {
     isEditing: () => editing !== null,
   })
   const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops, { colCount: ctx.colLetters.length })
+  function* columnSamples(c: string): IterableIterator<string> {
+    for (let row = 0; row < ctx.rowCount; row++) yield ctx.display(cellKey(c, row))
+  }
   const autoFitCol = (c: string) => {
-    autoFit(c, Array.from({ length: ctx.rowCount }, (_, r) => ctx.display(cellKey(c, r))))
+    autoFit(c, columnSamples(c))
   }
   const view = createGridViewModel({
     focusId,

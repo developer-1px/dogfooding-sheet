@@ -56,7 +56,9 @@ const flattenMatrix = (matrix: string[][], scanByColumn: boolean): string[] => {
     }
     return values
   }
-  for (const row of matrix) values.push(...row)
+  for (const row of matrix) {
+    for (const value of row) values.push(value)
+  }
   return values
 }
 
@@ -166,7 +168,9 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
       if (!isSafeArrayShape(Math.ceil(values.length / wrapCount), wrapCount)) return smartReturn('#VALUE!')
       const rows: string[][] = []
       for (let index = 0; index < values.length; index += wrapCount) {
-        const row = values.slice(index, index + wrapCount)
+        const row: string[] = []
+        const end = Math.min(index + wrapCount, values.length)
+        for (let valueIndex = index; valueIndex < end; valueIndex++) row.push(values[valueIndex])
         while (row.length < wrapCount) row.push(pad)
         rows.push(row)
       }
@@ -175,10 +179,15 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const rowCount = wrapCount
     const colCount = Math.ceil(values.length / rowCount)
     if (!isSafeArrayShape(rowCount, colCount)) return smartReturn('#VALUE!')
-    const rows = Array.from({ length: rowCount }, () => Array.from({ length: colCount }, () => pad))
-    values.forEach((value, index) => {
-      rows[index % rowCount][Math.floor(index / rowCount)] = value
-    })
+    const rows: string[][] = []
+    for (let row = 0; row < rowCount; row++) {
+      const outputRow: string[] = []
+      for (let col = 0; col < colCount; col++) {
+        const index = col * rowCount + row
+        outputRow.push(index < values.length ? values[index] : pad)
+      }
+      rows.push(outputRow)
+    }
     return smartReturn(stringifyFormulaArray(rows))
   }
   if (F === 'EXPAND') {
@@ -194,9 +203,18 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
       !isSafeArrayShape(rowCount, colCount)
     ) return smartReturn('#VALUE!')
     const pad = argsT[3] ?? '#N/A'
-    const rows = Array.from({ length: rowCount }, (_unused, row) =>
-      Array.from({ length: colCount }, (_unused2, col) => matrix[row]?.[col] ?? pad)
-    )
+    const rows: string[][] = []
+    for (let row = 0; row < rowCount; row++) {
+      const source = matrix[row]
+      const values: string[] = []
+      if (source) {
+        for (let col = 0; col < source.length; col++) values.push(source[col])
+        for (let col = source.length; col < colCount; col++) values.push(pad)
+      } else {
+        for (let col = 0; col < colCount; col++) values.push(pad)
+      }
+      rows.push(values)
+    }
     return smartReturn(stringifyFormulaArray(rows))
   }
   if (F === 'HSTACK' || F === 'VSTACK') {

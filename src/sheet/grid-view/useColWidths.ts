@@ -61,7 +61,7 @@ export function useColWidths(widths: Record<string, number>, ops: SheetOps, boun
   const colCount = bounds?.colCount
   useEffect(() => { migrateLegacy(widths, ops, colCount === undefined ? undefined : { colCount }) }, [widths, ops, colCount])
 
-  const autoFit = (col: string, samples: string[]) => {
+  const autoFit = (col: string, samples: Iterable<string>) => {
     if (!validColumn(col, bounds)) return
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
