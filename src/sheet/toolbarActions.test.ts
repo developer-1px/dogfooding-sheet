@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import {
   applyCheckboxValidation,
+  applyToolbarFormat,
   applyToolbarAutoSum,
+  clearToolbarStyle,
   promptListValidation,
   promptToolbarFilter,
+  setToolbarAlignment,
+  setToolbarColor,
   targetCellKeys,
+  toggleToolbarStyle,
   validationOptionsFromCsv,
 } from './toolbarActions'
 import type { Ask, PromptOptions } from './usePrompt'
@@ -135,5 +140,89 @@ describe('toolbarActions', () => {
     })).toBe(false)
 
     expect(calls).toEqual(['B2'])
+  })
+
+  it('applies number formats to the target keys', () => {
+    const calls: string[] = []
+
+    expect(applyToolbarFormat({
+      selectedIds: ['r0-A', 'r1-A'],
+      focusKey: 'C3',
+      format: 'currency',
+      setFormat: (keys, format) => calls.push(`${keys.join('|')}:${format}`),
+    })).toBe(true)
+    expect(applyToolbarFormat({
+      selectedIds: [],
+      focusKey: null,
+      format: 'plain',
+      setFormat: (keys, format) => calls.push(`${keys.join('|')}:${format}`),
+    })).toBe(false)
+
+    expect(calls).toEqual(['A1|A2:currency'])
+  })
+
+  it('toggles style flags using the focused cell as the pressed state source', () => {
+    const calls: Array<{ keys: string[]; patch: object }> = []
+
+    expect(toggleToolbarStyle({
+      selectedIds: ['r0-A', 'r0-B'],
+      focusKey: 'B1',
+      flag: 'b',
+      styleOf: (key) => key === 'B1' ? { b: true } : undefined,
+      updateStyle: (keys, patch) => calls.push({ keys, patch }),
+    })).toBe(true)
+    expect(toggleToolbarStyle({
+      selectedIds: [],
+      focusKey: 'C3',
+      flag: 'i',
+      styleOf: () => undefined,
+      updateStyle: (keys, patch) => calls.push({ keys, patch }),
+    })).toBe(true)
+
+    expect(calls).toEqual([
+      { keys: ['A1', 'B1'], patch: { b: false } },
+      { keys: ['C3'], patch: { i: true } },
+    ])
+  })
+
+  it('sets alignment, colors, and clear style patches for target keys', () => {
+    const calls: Array<{ keys: string[]; patch: object }> = []
+    const updateStyle = (keys: string[], patch: object) => calls.push({ keys, patch })
+
+    expect(setToolbarAlignment({
+      selectedIds: [],
+      focusKey: 'D4',
+      alignment: 'center',
+      updateStyle,
+    })).toBe(true)
+    expect(setToolbarColor({
+      selectedIds: ['r1-B'],
+      focusKey: 'D4',
+      target: 'bg',
+      color: '#ff0000',
+      updateStyle,
+    })).toBe(true)
+    expect(setToolbarColor({
+      selectedIds: [],
+      focusKey: 'D4',
+      target: 'fg',
+      color: '#0000ff',
+      updateStyle,
+    })).toBe(true)
+    expect(clearToolbarStyle({
+      selectedIds: [],
+      focusKey: 'D4',
+      updateStyle,
+    })).toBe(true)
+
+    expect(calls).toEqual([
+      { keys: ['D4'], patch: { a: 'center' } },
+      { keys: ['B2'], patch: { bg: '#ff0000' } },
+      { keys: ['D4'], patch: { fg: '#0000ff' } },
+      {
+        keys: ['D4'],
+        patch: { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' },
+      },
+    ])
   })
 })

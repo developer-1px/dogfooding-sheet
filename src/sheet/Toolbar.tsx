@@ -1,7 +1,7 @@
 import type { Format, FormatLookup } from './formatting/useFormats'
 import type { SheetMutations } from './structure/sheetMutations'
 import type { FreezeState, FreezeActions } from './visibility/useFreeze'
-import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './formatting/useStyles'
+import type { CellStyle, StyleLookup } from './formatting/useStyles'
 import type { Ask } from './usePrompt'
 import type { CondActions } from './formatting/useCondFormat'
 import type { Filter } from './visibility/useFilter'
@@ -14,10 +14,15 @@ import { StyleToggleButtons } from './formatting/StyleToggleButtons'
 import { parseA1 } from './schema'
 import {
   applyCheckboxValidation,
+  applyToolbarFormat,
   applyToolbarAutoSum,
+  clearToolbarStyle,
   promptListValidation,
   promptToolbarFilter,
-  targetCellKeys,
+  setToolbarAlignment,
+  setToolbarColor,
+  toggleToolbarStyle,
+  type ToolbarStyleFlag,
 } from './toolbarActions'
 
 interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
@@ -44,10 +49,12 @@ export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds,
   const focusRow = focus?.row
   const focusRowLabel = focusRow !== undefined ? `${focusRow + 1}행` : '현재 행'
   const focusColLabel = focus ? `${focus.col}열` : '현재 열'
-  const targetKeys = (): string[] => targetCellKeys(selectedIds, focusKey)
-  const applyF = (f: Format) => setFormat(targetKeys(), f)
-  const toggle = (k: 'b' | 'i' | 'u' | 's' | 'w' | 'bd') => updateStyle(targetKeys(), { [k]: !(focusKey && styleOf(focusKey)?.[k]) })
-  const setAlign = (a: CellStyle['a']) => updateStyle(targetKeys(), { a })
+  const applyF = (format: Format) => applyToolbarFormat({ selectedIds, focusKey, format, setFormat })
+  const toggle = (flag: ToolbarStyleFlag) => toggleToolbarStyle({ selectedIds, focusKey, flag, styleOf, updateStyle })
+  const setAlign = (alignment: CellStyle['a']) => setToolbarAlignment({ selectedIds, focusKey, alignment, updateStyle })
+  const setBg = (color: string) => setToolbarColor({ selectedIds, focusKey, target: 'bg', color, updateStyle })
+  const setFg = (color: string) => setToolbarColor({ selectedIds, focusKey, target: 'fg', color, updateStyle })
+  const clearStyle = () => clearToolbarStyle({ selectedIds, focusKey, updateStyle })
   const runAutoSum = () => applyToolbarAutoSum({ focusKey, display, writeCell })
   const openFilterPrompt = () => { void promptToolbarFilter({ ask, focusKey, filter, applyFilter, clearFilter }) }
   const openListValidationPrompt = () => { void promptListValidation({ ask, selectedIds, focusKey, setListRule, clearRule }) }
@@ -65,9 +72,9 @@ export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds,
       <button onClick={() => setAlign('left')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬">⇤</button>
       <button onClick={() => setAlign('center')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'center' : false} title="가운데 정렬">⇔</button>
       <button onClick={() => setAlign('right')} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'right' : false} title="오른쪽 정렬">⇥</button>
-      <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => updateStyle(targetKeys(), { bg: e.target.value })} /></label>
-      <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => updateStyle(targetKeys(), { fg: e.target.value })} /></label>
-      <button onClick={() => updateStyle(targetKeys(), CLEAR_STYLE)} title="서식 모두 해제">✕서식</button><button onClick={mergeSelection} disabled={selectedIds.length < 2 && !focusKey} title="선택 셀 병합 / 병합 해제 (Alt+Shift+M)">⊞병합</button>
+      <label className="color-pick" title="배경색">🎨<input type="color" onChange={(e) => setBg(e.target.value)} /></label>
+      <label className="color-pick" title="글자색">A<input type="color" onChange={(e) => setFg(e.target.value)} /></label>
+      <button onClick={clearStyle} title="서식 모두 해제">✕서식</button><button onClick={mergeSelection} disabled={selectedIds.length < 2 && !focusKey} title="선택 셀 병합 / 병합 해제 (Alt+Shift+M)">⊞병합</button>
       <button onClick={toggleFreezeRows} title={`첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`} style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button onClick={toggleFreezeCols} title={`첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`} style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button onClick={openFilterPrompt} title="현재 열로 행 필터" style={filter ? { background: '#e8f0fe' } : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button onClick={clearFilter} title="필터 해제">✕</button>}

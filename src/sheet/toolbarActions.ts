@@ -1,10 +1,14 @@
 import { autoSumFormula } from '@spredsheet/grid'
+import type { Format } from './formatting/formatTypes'
+import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './formatting/useStyles'
 import type { Filter } from './visibility/useFilter'
 import type { ValidationActions } from './validation/useValidation'
 import type { Ask } from './usePrompt'
 import { cellIdToKey, cellKey, parseA1, type Display, type WriteCell } from './schema'
 
 export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'no-target'
+export type ToolbarStyleFlag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
+export type ToolbarAlignment = CellStyle['a']
 
 export const targetCellKeys = (selectedIds: readonly string[], focusKey: string | null): string[] =>
   (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map(cellIdToKey)
@@ -95,5 +99,92 @@ export function applyCheckboxValidation({
   const keys = targetCellKeys(selectedIds, focusKey)
   if (keys.length === 0) return false
   setCheckboxRule(keys)
+  return true
+}
+
+export function applyToolbarFormat({
+  selectedIds,
+  focusKey,
+  format,
+  setFormat,
+}: {
+  selectedIds: readonly string[]
+  focusKey: string | null
+  format: Format
+  setFormat: (keys: string[], format: Format) => void
+}): boolean {
+  const keys = targetCellKeys(selectedIds, focusKey)
+  if (keys.length === 0) return false
+  setFormat(keys, format)
+  return true
+}
+
+export function toggleToolbarStyle({
+  selectedIds,
+  focusKey,
+  flag,
+  styleOf,
+  updateStyle,
+}: {
+  selectedIds: readonly string[]
+  focusKey: string | null
+  flag: ToolbarStyleFlag
+  styleOf: StyleLookup
+  updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
+}): boolean {
+  const keys = targetCellKeys(selectedIds, focusKey)
+  if (keys.length === 0) return false
+  updateStyle(keys, { [flag]: !(focusKey && styleOf(focusKey)?.[flag]) })
+  return true
+}
+
+export function setToolbarAlignment({
+  selectedIds,
+  focusKey,
+  alignment,
+  updateStyle,
+}: {
+  selectedIds: readonly string[]
+  focusKey: string | null
+  alignment: ToolbarAlignment
+  updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
+}): boolean {
+  const keys = targetCellKeys(selectedIds, focusKey)
+  if (keys.length === 0) return false
+  updateStyle(keys, { a: alignment })
+  return true
+}
+
+export function setToolbarColor({
+  selectedIds,
+  focusKey,
+  target,
+  color,
+  updateStyle,
+}: {
+  selectedIds: readonly string[]
+  focusKey: string | null
+  target: 'bg' | 'fg'
+  color: string
+  updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
+}): boolean {
+  const keys = targetCellKeys(selectedIds, focusKey)
+  if (keys.length === 0) return false
+  updateStyle(keys, { [target]: color })
+  return true
+}
+
+export function clearToolbarStyle({
+  selectedIds,
+  focusKey,
+  updateStyle,
+}: {
+  selectedIds: readonly string[]
+  focusKey: string | null
+  updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
+}): boolean {
+  const keys = targetCellKeys(selectedIds, focusKey)
+  if (keys.length === 0) return false
+  updateStyle(keys, CLEAR_STYLE)
   return true
 }
