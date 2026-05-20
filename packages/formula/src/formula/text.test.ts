@@ -191,6 +191,23 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=RPAD("x", 1000000000, "0")')).toBe('#VALUE!')
     expect(evaluateCell({}, '=RANDSTRING(1000000000)')).toBe('#VALUE!')
   })
+  it('caps generated text from string assembly functions', () => {
+    const cells = {
+      A1: 'x'.repeat(6_000),
+      A2: 'y'.repeat(5_000),
+      A3: 'a'.repeat(6_000),
+    }
+
+    expect(evaluateCell(cells, '=CONCAT(A1, A2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=JOIN("", A1, A2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=TEXTJOIN("", 0, A1, A2)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=SUBSTITUTE(A3, "a", "bb")')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=REPLACE(A1, 1, 0, A2)')).toBe('#VALUE!')
+  })
+  it('handles out-of-range empty SUBSTITUTE occurrence without looping', () => {
+    expect(evaluateCell({}, '=SUBSTITUTE("abc", "", "x", 99)')).toBe('abc')
+    expect(evaluateCell({}, '=SUBSTITUTE("abc", "", "x", 2)')).toBe('axbc')
+  })
   it('SLUG / CAMELCASE / SNAKECASE', () => {
     expect(evaluateCell({}, '=SLUG("Hello World!")')).toBe('hello-world')
     expect(evaluateCell({}, '=CAMELCASE("hello world")')).toBe('helloWorld')

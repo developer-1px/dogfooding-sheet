@@ -3,6 +3,16 @@ export const MAX_GENERATED_TEXT_LENGTH = 10_000
 export const boundedText = (value: string): string | null =>
   value.length <= MAX_GENERATED_TEXT_LENGTH ? value : null
 
+export const boundedJoin = (parts: readonly string[], separator = ''): string | null => {
+  let length = 0
+  for (let i = 0; i < parts.length; i++) {
+    if (i > 0) length += separator.length
+    length += parts[i].length
+    if (length > MAX_GENERATED_TEXT_LENGTH) return null
+  }
+  return parts.join(separator)
+}
+
 export const boundedLength = (value: number): number | null => {
   const n = Math.floor(value)
   return Number.isFinite(n) && n >= 0 && n <= MAX_GENERATED_TEXT_LENGTH ? n : null
