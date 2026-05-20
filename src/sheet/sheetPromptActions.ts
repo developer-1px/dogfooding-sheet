@@ -2,10 +2,30 @@ import { useMemo } from 'react'
 import { DEFAULT_WIDTH } from './grid-view/useColWidths'
 import { DEFAULT_HEIGHT } from './grid-view/useRowHeights'
 import { gotoCell } from './selection/gotoCell'
-import type { SheetCtx, SheetOptions } from './useSheet'
+import type { WriteCell } from './schema'
 import type { Ask } from './usePrompt'
+import type { Filter } from './visibility/useFilter'
 
-export interface SheetPromptActions extends SheetOptions {
+export interface SheetPromptController {
+  rowCount: number
+  colCount: number
+  focusKey: string | null
+  sheet: { colWidths: Record<string, number> }
+  filter: Filter | null
+  rowHeightOf: (row: number) => number
+  setFocusId: (id: string) => void
+  setSelectedIds: (ids: string[]) => void
+  setSelectAnchor: (id: string | null) => void
+  noteOf: (key: string) => string | undefined
+  setNote: (key: string, text: string) => void
+  writeCell: WriteCell
+  setRowHeight: (row: number, height: number) => void
+  setColWidth: (col: string, width: number) => void
+  clearFilter: () => void
+  applyFilter: (col: string, text: string) => void
+}
+
+export interface SheetPromptActions {
   openGoto: () => void
   openNote: (key?: string) => void
   openLink: () => void
@@ -20,7 +40,7 @@ export const GOTO_PROMPT = {
   submitLabel: '이동',
 }
 
-export function sheetPromptActions(ask: Ask, getCtx: () => SheetCtx | null): SheetPromptActions {
+export function sheetPromptActions(ask: Ask, getCtx: () => SheetPromptController | null): SheetPromptActions {
   return {
     openGoto: () => {
       void ask(GOTO_PROMPT).then((v) => {
@@ -80,6 +100,6 @@ export function sheetPromptActions(ask: Ask, getCtx: () => SheetCtx | null): She
   }
 }
 
-export function useSheetPromptActions(ask: Ask, getCtx: () => SheetCtx | null): SheetPromptActions {
+export function useSheetPromptActions(ask: Ask, getCtx: () => SheetPromptController | null): SheetPromptActions {
   return useMemo(() => sheetPromptActions(ask, getCtx), [ask, getCtx])
 }

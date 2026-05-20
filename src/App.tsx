@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { useSheet, type SheetCtx } from './sheet/useSheet'
+import { useSheet } from './sheet/useSheet'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/grid-view/Grid'
 import { StatusBar } from './sheet/StatusBar'
@@ -12,14 +12,14 @@ import { useConfirm } from './sheet/useConfirm'
 import { Tabs } from './sheet/tabs/Tabs'
 import { buildMergeMap } from './sheet/structure/useMerges'
 import { SheetToolbar } from './sheet/SheetToolbar'
-import { useSheetPromptActions } from './sheet/sheetPromptActions'
+import { useSheetPromptActions, type SheetPromptController } from './sheet/sheetPromptActions'
 import { DevToolsOverlay } from './interactive-os/DevToolsOverlay'
 import './App.css'
 
 export default function App() {
   const { ask, dialog: promptDialog } = usePrompt()
   const { confirm, dialog: confirmDialog } = useConfirm()
-  const ctxRef = useRef<SheetCtx | null>(null)
+  const ctxRef = useRef<SheetPromptController | null>(null)
   const getCtx = useCallback(() => ctxRef.current, [])
   const promptActions = useSheetPromptActions(ask, getCtx)
   const ctx = useSheet(promptActions)

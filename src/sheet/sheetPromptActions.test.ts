@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_WIDTH } from './grid-view/useColWidths'
 import { DEFAULT_HEIGHT } from './grid-view/useRowHeights'
-import { sheetPromptActions } from './sheetPromptActions'
-import type { SheetCtx } from './useSheet'
+import { sheetPromptActions, type SheetPromptController } from './sheetPromptActions'
 import type { Ask, PromptOptions } from './usePrompt'
 
 const flush = () => Promise.resolve()
@@ -15,7 +14,7 @@ function askQueue(values: Array<string | null>, prompts: PromptOptions[] = []): 
   }
 }
 
-function fakeCtx(calls: string[] = [], overrides: Partial<SheetCtx> = {}): SheetCtx {
+function fakeCtx(calls: string[] = [], overrides: Partial<SheetPromptController> = {}): SheetPromptController {
   return {
     rowCount: 10,
     colCount: 5,
@@ -34,7 +33,7 @@ function fakeCtx(calls: string[] = [], overrides: Partial<SheetCtx> = {}): Sheet
     clearFilter: () => calls.push('clearFilter'),
     applyFilter: (col: string, text: string) => calls.push(`applyFilter:${col}:${text}`),
     ...overrides,
-  } as unknown as SheetCtx
+  }
 }
 
 describe('sheetPromptActions', () => {
@@ -102,7 +101,7 @@ describe('sheetPromptActions', () => {
   it('uses width default when a column has no custom width', async () => {
     const calls: string[] = []
     const prompts: PromptOptions[] = []
-    const ctx = fakeCtx(calls, { sheet: { colWidths: {} } as SheetCtx['sheet'] })
+    const ctx = fakeCtx(calls, { sheet: { colWidths: {} } })
     const actions = sheetPromptActions(askQueue([''], prompts), () => ctx)
 
     actions.promptColWidth('C')
