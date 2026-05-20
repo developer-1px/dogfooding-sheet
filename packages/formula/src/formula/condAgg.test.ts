@@ -83,6 +83,15 @@ describe('MINIFS / MAXIFS', () => {
     expect(evaluateCell(cells, '=MINIFS(A1:A4, B1:B4, "x")')).toBe('3')
     expect(evaluateCell(cells, '=MAXIFS(A1:A4, B1:B4, "y")')).toBe('20')
   })
+
+  it('handles max-size MINIFS and MAXIFS ranges without materializing matches', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const lastCrit = `B${MAX_EXPANDED_REFS}`
+    const cells = { A1: '2', B1: 'x', [last]: '7', [lastCrit]: 'x' }
+
+    expect(evaluateCell(cells, `=MINIFS(A1:${last}, B1:${lastCrit}, "x")`)).toBe('2')
+    expect(evaluateCell(cells, `=MAXIFS(A1:${last}, B1:${lastCrit}, "x")`)).toBe('7')
+  })
 })
 
 describe('conditional aggregate errors', () => {

@@ -169,6 +169,9 @@ describe('refsInFormula', () => {
     expect(refsInFormula('=SUM(Z1:AA2)+AB3')).toEqual(['Z1', 'Z2', 'AA1', 'AA2', 'AB3'])
     expect(refsInFormula('=SUM($A$1:$A$3)')).toEqual(['A1', 'A2', 'A3'])
   })
+  it('keeps overlapping range refs but deduplicates direct refs', () => {
+    expect(refsInFormula('=SUM(A1:A2,A2:A3,A1,A3)')).toEqual(['A1', 'A2', 'A2', 'A3'])
+  })
   it('returns no highlights for oversized ranges', () => {
     expect(refsInFormula('=SUM(A1:A26001)')).toEqual([])
   })

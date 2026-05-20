@@ -89,12 +89,14 @@ export function minMaxIf(
   const values = collectRefs(valueRangeStr)
   const crits = collectRefs(critRangeStr)
   const matches = compileCriteria(criteria)
-  const picked: number[] = []
+  let count = 0
+  let best = pick === 'MIN' ? Infinity : -Infinity
   for (let i = 0; i < values.length; i++) {
     if (!matches(evalCell(crits[i] ?? values[i]))) continue
     const v = coerceNumber(evalCell(values[i]))
-    if (Number.isFinite(v)) picked.push(v)
+    if (!Number.isFinite(v)) continue
+    count++
+    if (pick === 'MIN' ? v < best : v > best) best = v
   }
-  if (picked.length === 0) return 0
-  return finiteResult(pick === 'MIN' ? Math.min(...picked) : Math.max(...picked))
+  return count === 0 ? 0 : finiteResult(best)
 }

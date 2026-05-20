@@ -29,14 +29,21 @@ export const expandRange = (a: string, ar: string, b: string, br: string): strin
 
 export const collectRefs = (args: string): string[] => {
   const refs: string[] = []
+  const seen = new Set<string>()
   args.replace(RANGE_RE, (_x, a, ar, b, br) => {
-    refs.push(...expandRange(a, ar, b, br))
+    for (const ref of expandRange(a, ar, b, br)) {
+      refs.push(ref)
+      seen.add(ref)
+    }
     return ''
   })
   args.replace(ABS_A1_RE, (_x, _absCol, c, _absRow, r) => {
     const ref = `${c}${r}`
     if (!parseA1(ref)) throw new RangeLimitError()
-    if (!refs.includes(ref)) refs.push(ref)
+    if (!seen.has(ref)) {
+      refs.push(ref)
+      seen.add(ref)
+    }
     return ''
   })
   return refs
