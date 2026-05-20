@@ -48,6 +48,7 @@ const httpUrl = (label: string): URL | null => {
   if (hasUnsafeUrlChar(label)) return null
   try {
     const url = new URL(label)
+    if (url.username || url.password) return null
     return url.protocol === 'http:' || url.protocol === 'https:' ? url : null
   } catch {
     return null
