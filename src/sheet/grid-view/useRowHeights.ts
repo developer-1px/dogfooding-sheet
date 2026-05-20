@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import type { SheetOps } from '../schema'
 import { upsertKey } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
-import { ROW_HEIGHT_BOUNDS, clampResizeValue, storedResizeValue } from './resizeRules'
+import { DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, clampResizeValue, storedResizeValue } from './resizeRules'
 
 const LEGACY_KEY = 'spreadsheet:rowheights:v1'
-export const DEFAULT_HEIGHT = 28
+export const DEFAULT_HEIGHT = DEFAULT_ROW_HEIGHT
 export const MIN_HEIGHT = ROW_HEIGHT_BOUNDS.min
 
 interface RowHeightBounds {

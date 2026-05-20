@@ -4,7 +4,7 @@ import { COL_LETTERS as COLS, colIndex, normalizeMergeList, parseA1 } from '@spr
 import { FORMAT_KEYS, normalizeStoredFormat } from './formatting/formatTypes'
 import { isSafeCellText, sanitizeCellRecord } from './cellValue'
 import { normalizeNoteText } from './noteText'
-import { COLUMN_WIDTH_BOUNDS, ROW_HEIGHT_BOUNDS, storedResizeValue } from './grid-view/resizeRules'
+import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, storedResizeValue } from './grid-view/resizeRules'
 
 export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, moveCellIdByDelta, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
 
@@ -303,7 +303,8 @@ const sanitizeColWidths = (widths: RawTabBundle['colWidths'], bundle: Pick<RawTa
   const out: RawTabBundle['colWidths'] = {}
   for (const [col, width] of Object.entries(widths)) {
     if (isColInBounds(col, bundle.colCount) && Number.isFinite(width)) {
-      out[col] = storedResizeValue(width, COLUMN_WIDTH_BOUNDS)
+      const stored = storedResizeValue(width, COLUMN_WIDTH_BOUNDS)
+      if (stored !== DEFAULT_COLUMN_WIDTH) out[col] = stored
     }
   }
   return out
@@ -314,7 +315,8 @@ const sanitizeRowHeights = (heights: RawTabBundle['rowHeights'], bundle: Pick<Ra
   for (const [rowKey, height] of Object.entries(heights)) {
     const row = /^\d+$/.test(rowKey) ? Number(rowKey) : NaN
     if (isRowInBounds(row, bundle.rowCount) && Number.isFinite(height)) {
-      out[rowKey] = storedResizeValue(height, ROW_HEIGHT_BOUNDS)
+      const stored = storedResizeValue(height, ROW_HEIGHT_BOUNDS)
+      if (stored !== DEFAULT_ROW_HEIGHT) out[rowKey] = stored
     }
   }
   return out

@@ -141,8 +141,8 @@ describe('SheetSchema', () => {
       ],
       freeze: { rows: 4, cols: 3 },
       hidden: { rows: [1, 1, 2, 0.5], cols: ['A', 'A', 'C'] },
-      colWidths: { A: 20, C: 120 },
-      rowHeights: { '0': 10, '2': 30, bad: 40 },
+      colWidths: { A: 20, B: 100, C: 120 },
+      rowHeights: { '0': 10, '1': 28, '2': 30, bad: 40 },
       merges: [[0, 0, 0, 1], [0, 2, 0, 1], [1, 1, 1, 1]],
     })
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { COLUMN_WIDTH_BOUNDS, ROW_HEIGHT_BOUNDS, clampResizeValue, resizeValueForKey, storedResizeValue } from './resizeRules'
+import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, clampResizeValue, resizeValueForKey, storedResizeValue } from './resizeRules'
 
 describe('resize rules', () => {
   it('clamps live resize values to min and optional max bounds', () => {
@@ -11,6 +11,8 @@ describe('resize rules', () => {
 
   it('rounds values only for storage', () => {
     expect(storedResizeValue(120.6, COLUMN_WIDTH_BOUNDS)).toBe(121)
+    expect(DEFAULT_COLUMN_WIDTH).toBe(100)
+    expect(DEFAULT_ROW_HEIGHT).toBe(28)
   })
 
   it('maps horizontal keyboard resize keys to bounded values', () => {

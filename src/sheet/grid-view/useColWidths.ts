@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { COL_LETTERS, colIndex, type SheetOps } from '../schema'
 import { upsertKey } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
-import { COLUMN_WIDTH_BOUNDS, clampResizeValue, storedResizeValue } from './resizeRules'
+import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, clampResizeValue, storedResizeValue } from './resizeRules'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
-export const DEFAULT_WIDTH = 100
+export const DEFAULT_WIDTH = DEFAULT_COLUMN_WIDTH
 export const MIN_WIDTH = COLUMN_WIDTH_BOUNDS.min
 export const MAX_WIDTH = COLUMN_WIDTH_BOUNDS.max
 
