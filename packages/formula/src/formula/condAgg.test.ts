@@ -106,6 +106,18 @@ describe('SUMSQ / GEOMEAN / HARMEAN', () => {
     expect(evaluateCell(cells, '=GEOMEAN(A1:A3)')).toBe('4')
     expect(Number(evaluateCell(cells, '=HARMEAN(A1:A3)'))).toBeCloseTo(3.4286, 3)
   })
+
+  it('returns explicit errors for invalid aggregate domains and overflow', () => {
+    const huge = { A1: '1e308', A2: '1e308' }
+
+    expect(evaluateCell({}, '=AVEDEV()')).toBe('#NUM!')
+    expect(evaluateCell({}, '=GEOMEAN(-1, 4)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=HARMEAN(0, 4)')).toBe('#NUM!')
+    expect(evaluateCell(huge, '=SUM(A1:A2)')).toBe('#NUM!')
+    expect(evaluateCell(huge, '=PRODUCT(A1:A2)')).toBe('#NUM!')
+    expect(evaluateCell(huge, '=SUMSQ(A1:A2)')).toBe('#NUM!')
+    expect(evaluateCell({ A1: '1e308', A2: '-1e308' }, '=VAR(A1:A2)')).toBe('#NUM!')
+  })
 })
 
 describe('SLOPE / INTERCEPT', () => {
