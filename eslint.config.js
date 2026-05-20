@@ -30,6 +30,14 @@ export default defineConfig([
           name: 'sessionStorage',
           message: 'Use a storage adapter so unavailable or quota-blocked storage cannot break editing.',
         },
+        {
+          name: 'alert',
+          message: 'Use app-owned dialog components instead of browser alert().',
+        },
+        {
+          name: 'prompt',
+          message: 'Use the app prompt flow instead of browser prompt().',
+        },
       ],
       'no-restricted-properties': [
         'error',
@@ -53,12 +61,46 @@ export default defineConfig([
           property: 'sessionStorage',
           message: 'Use a storage adapter for safe storage access.',
         },
+        {
+          object: 'window',
+          property: 'alert',
+          message: 'Use app-owned dialog components instead of browser alert().',
+        },
+        {
+          object: 'window',
+          property: 'confirm',
+          message: 'Use app-owned confirm flow instead of browser confirm().',
+        },
+        {
+          object: 'window',
+          property: 'prompt',
+          message: 'Use the app prompt flow instead of browser prompt().',
+        },
       ],
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-new-func': 'error',
       'no-restricted-syntax': [
         'error',
         {
           selector: "TSAsExpression[typeAnnotation.type='TSNeverKeyword']",
           message: 'Route zod-crud path/value casts through src/lib/dictOps.ts instead of using `as never` at call sites.',
+        },
+        {
+          selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+          message: 'Do not inject raw HTML in spreadsheet UI. Model rich content explicitly.',
+        },
+        {
+          selector: "MemberExpression[property.name=/^(innerHTML|outerHTML)$/]",
+          message: 'Do not write raw HTML in spreadsheet UI. Model rich content explicitly.',
+        },
+        {
+          selector: "CallExpression[callee.property.name='insertAdjacentHTML']",
+          message: 'Do not inject raw HTML in spreadsheet UI. Model rich content explicitly.',
+        },
+        {
+          selector: "CallExpression[callee.object.name='document'][callee.property.name='write']",
+          message: 'Do not use document.write in app code.',
         },
       ],
     },
