@@ -1,4 +1,4 @@
-import type { JSONOps } from 'zod-crud'
+import { readStoredJson, removeStoredKey, type KeyValueStorage } from './browserStorage'
 
 /**
  * One-shot migration: read a legacy localStorage key into the SSOT doc and remove it.
@@ -8,19 +8,20 @@ import type { JSONOps } from 'zod-crud'
  * @param coerce  - parse + validate the raw JSON; return undefined to skip the load
  * @param load    - apply the validated value via ops (typically ops.replace at root path)
  */
-export function migrateLegacyKey<T, V>(
+export function migrateLegacyKey<Ops, V>(
   legacyKey: string,
   isEmpty: boolean,
-  ops: JSONOps<T>,
+  ops: Ops,
   coerce: (raw: unknown) => V | undefined,
-  load: (ops: JSONOps<T>, value: V) => void,
+  load: (ops: Ops, value: V) => void,
+  storage?: KeyValueStorage | null,
 ): void {
   if (!isEmpty) return
   try {
-    const raw = localStorage.getItem(legacyKey)
-    if (!raw) return
-    const value = coerce(JSON.parse(raw))
+    const raw = readStoredJson(legacyKey, storage)
+    if (raw === undefined) return
+    const value = coerce(raw)
     if (value !== undefined) load(ops, value)
-    localStorage.removeItem(legacyKey)
+    removeStoredKey(legacyKey, storage)
   } catch { /* ignore */ }
 }
