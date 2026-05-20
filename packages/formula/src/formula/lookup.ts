@@ -12,6 +12,13 @@ const isExactLookup = (rangeLookup: string | undefined): boolean => {
   return value === '0' || value === 'false'
 }
 
+const valueError = (): string => '#VALUE!'
+const hasArg = (value: string | undefined): value is string => value !== undefined
+const hasRangeArg = (value: string | undefined): value is string =>
+  typeof value === 'string' && value.trim() !== ''
+const integerArg = (value: number): number | null =>
+  Number.isFinite(value) && Number.isInteger(value) ? value : null
+
 const compareLookupValues = (a: string, b: string): number => {
   const an = coerceNumber(a)
   const bn = coerceNumber(b)
@@ -19,7 +26,8 @@ const compareLookupValues = (a: string, b: string): number => {
   return a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true })
 }
 
-const lookupVector = (rangeStr: string, cells: Cells, evalCellRef: EvalCell): { values: string[], rowMode: boolean } | string => {
+const lookupVector = (rangeStr: string | undefined, cells: Cells, evalCellRef: EvalCell): { values: string[], rowMode: boolean } | string => {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   const rows = r.rMax - r.rMin + 1
@@ -49,17 +57,20 @@ const lookupIndex = (key: string, values: string[], matchMode: number, searchMod
 }
 
 export function vlookup(
-  key: string,
-  rangeStr: string,
+  key: string | undefined,
+  rangeStr: string | undefined,
   colIdx: number,
   cells: Cells,
   evalCellRef: EvalCell,
   rangeLookup?: string,
 ): string {
+  if (!hasArg(key) || !hasRangeArg(rangeStr)) return valueError()
+  const colIndexArg = integerArg(colIdx)
+  if (colIndexArg === null) return valueError()
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
-  const targetCol = r.cMin + colIdx - 1
-  if (colIdx < 1) return '#VALUE!'
+  const targetCol = r.cMin + colIndexArg - 1
+  if (colIndexArg < 1) return valueError()
   if (targetCol > r.cMax) return '#REF!'
   let approximate = '#N/A'
   for (let row = r.rMin; row <= r.rMax; row++) {
@@ -74,17 +85,20 @@ export function vlookup(
 }
 
 export function hlookup(
-  key: string,
-  rangeStr: string,
+  key: string | undefined,
+  rangeStr: string | undefined,
   rowIdx: number,
   cells: Cells,
   evalCellRef: EvalCell,
   rangeLookup?: string,
 ): string {
+  if (!hasArg(key) || !hasRangeArg(rangeStr)) return valueError()
+  const rowIndexArg = integerArg(rowIdx)
+  if (rowIndexArg === null) return valueError()
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
-  const targetRow = r.rMin + rowIdx - 1
-  if (rowIdx < 1) return '#VALUE!'
+  const targetRow = r.rMin + rowIndexArg - 1
+  if (rowIndexArg < 1) return valueError()
   if (targetRow > r.rMax) return '#REF!'
   let approximate = '#N/A'
   for (let col = r.cMin; col <= r.cMax; col++) {
@@ -99,15 +113,17 @@ export function hlookup(
 }
 
 export function xlookup(
-  key: string,
-  lookupRangeStr: string,
-  resultRangeStr: string,
+  key: string | undefined,
+  lookupRangeStr: string | undefined,
+  resultRangeStr: string | undefined,
   ifNotFound: string | undefined,
   cells: Cells,
   evalCellRef: EvalCell,
   matchMode = 0,
   searchMode = 1,
 ): string {
+  if (!hasArg(key) || !hasRangeArg(lookupRangeStr) || !hasRangeArg(resultRangeStr)) return valueError()
+  if (!Number.isFinite(matchMode) || !Number.isFinite(searchMode)) return valueError()
   const L = lookupVector(lookupRangeStr, cells, evalCellRef)
   const R = parseRange(resultRangeStr)
   if (typeof L === 'string' || !R) return typeof L === 'string' ? L : '#REF!'
@@ -120,16 +136,22 @@ export function xlookup(
   return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalCellRef)
 }
 
-export function index(rangeStr: string, row: number, col: number, cells: Cells, evalCellRef: EvalCell): string {
+export function index(rangeStr: string | undefined, row: number, col: number, cells: Cells, evalCellRef: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
+  const rowArg = integerArg(row)
+  const colArg = integerArg(col)
+  if (rowArg === null || colArg === null) return valueError()
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
-  const tr = r.rMin + row - 1
-  const tc = r.cMin + col - 1
+  const tr = r.rMin + rowArg - 1
+  const tc = r.cMin + colArg - 1
   if (tr > r.rMax || tc > r.cMax || tr < r.rMin || tc < r.cMin) return '#REF!'
   return evalCell(cells, tc, tr, evalCellRef)
 }
 
-export function match(key: string, rangeStr: string, cells: Cells, evalCellRef: EvalCell, matchType = 1): string {
+export function match(key: string | undefined, rangeStr: string | undefined, cells: Cells, evalCellRef: EvalCell, matchType = 1): string {
+  if (!hasArg(key) || !hasRangeArg(rangeStr)) return valueError()
+  if (!Number.isFinite(matchType) || !Number.isInteger(matchType)) return valueError()
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   let pos = 0
@@ -147,7 +169,9 @@ export function match(key: string, rangeStr: string, cells: Cells, evalCellRef: 
   return matchType === 0 ? '#N/A' : approximate
 }
 
-export function xmatch(key: string, rangeStr: string, cells: Cells, evalCellRef: EvalCell, matchMode = 0, searchMode = 1): string {
+export function xmatch(key: string | undefined, rangeStr: string | undefined, cells: Cells, evalCellRef: EvalCell, matchMode = 0, searchMode = 1): string {
+  if (!hasArg(key) || !hasRangeArg(rangeStr)) return valueError()
+  if (!Number.isFinite(matchMode) || !Number.isFinite(searchMode)) return valueError()
   const vector = lookupVector(rangeStr, cells, evalCellRef)
   if (typeof vector === 'string') return vector
   const i = lookupIndex(key, vector.values, matchMode, searchMode)

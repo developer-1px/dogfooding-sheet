@@ -19,6 +19,12 @@ describe('HLOOKUP', () => {
     expect(evaluateCell(h, '=HLOOKUP(25, A1:C2, 2)')).toBe('mid')
     expect(evaluateCell(h, '=HLOOKUP(5, A1:C2, 2)')).toBe('#N/A')
   })
+
+  it('rejects invalid lookup indices', () => {
+    const h = { A1: 'Q1', B1: 'Q2', C1: 'Q3', A2: '10', B2: '20', C2: '30' }
+    expect(evaluateCell(h, '=HLOOKUP("Q2", A1:C2, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(h, '=HLOOKUP("Q2", A1:C2, 1.5)')).toBe('#VALUE!')
+  })
 })
 
 describe('ISFORMULA / ISREF', () => {
@@ -328,6 +334,12 @@ describe('XLOOKUP', () => {
     expect(evaluateCell(table, '=XLOOKUP("b", A1:A3, B1:B2)')).toBe('#VALUE!')
     expect(evaluateCell(table, '=XLOOKUP("b", A1:B2, A1:A2)')).toBe('#VALUE!')
   })
+
+  it('rejects missing ranges and invalid modes', () => {
+    expect(evaluateCell(data, '=XLOOKUP("Bread", A1:A3)')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=XLOOKUP("Bread", A1:A3, B1:B3, "n/a", "x")')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=XLOOKUP("Bread", A1:A3, B1:B3, "n/a", 0, "x")')).toBe('#VALUE!')
+  })
 })
 
 describe('XMATCH', () => {
@@ -345,6 +357,12 @@ describe('XMATCH', () => {
   })
   it('requires a one-dimensional lookup range', () => {
     expect(evaluateCell(data, '=XMATCH("Bread", A1:B3)')).toBe('#VALUE!')
+  })
+
+  it('rejects missing ranges and invalid modes', () => {
+    expect(evaluateCell(data, '=XMATCH("Bread")')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=XMATCH("Bread", A1:A3, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=XMATCH("Bread", A1:A3, 0, "x")')).toBe('#VALUE!')
   })
 })
 
@@ -375,6 +393,12 @@ describe('VLOOKUP', () => {
     expect(evaluateCell(table, '=VLOOKUP(25, A1:B3, 2, FALSE)')).toBe('#N/A')
     expect(evaluateCell(table, '=VLOOKUP(25, A1:B3, 2, 0)')).toBe('#N/A')
   })
+
+  it('rejects missing ranges and invalid lookup indices', () => {
+    expect(evaluateCell(data, '=VLOOKUP()')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=VLOOKUP("Apple", A1:B3, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=VLOOKUP("Apple", A1:B3, 1.5)')).toBe('#VALUE!')
+  })
 })
 
 describe('INDEX / MATCH', () => {
@@ -396,6 +420,14 @@ describe('INDEX / MATCH', () => {
   })
   it('INDEX+MATCH composes like VLOOKUP', () => {
     expect(evaluateCell(data, '=INDEX(B1:B3, MATCH("Bread", A1:A3, 0))')).toBe('2.25')
+  })
+
+  it('rejects missing ranges and invalid indices', () => {
+    expect(evaluateCell(data, '=INDEX(, 1, 1)')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=INDEX(A1:B3, "x", 1)')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=INDEX(A1:B3, 1.5, 1)')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=MATCH("Bread")')).toBe('#VALUE!')
+    expect(evaluateCell(data, '=MATCH("Bread", A1:A3, "x")')).toBe('#VALUE!')
   })
 })
 
