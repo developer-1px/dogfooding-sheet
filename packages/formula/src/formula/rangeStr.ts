@@ -1,14 +1,20 @@
 import type { Cells } from '../a1'
 import type { EvalCell } from './args'
 import { collectRefs } from './parse'
+import { boundedJoin } from './textLimit'
 
+const valueError = (): string => '#VALUE!'
+const hasRangeArg = (value: string | undefined): value is string =>
+  typeof value === 'string' && value.trim() !== ''
 
 /** ARRAYTOTEXT(range, [sep=", "]) — flatten non-empty values to a separated string. */
-export function arrayToText(rangeStr: string, sep: string, _cells: Cells, evalCell: EvalCell): string {
-  return collectRefs(rangeStr).map(evalCell).filter((v) => v !== '').join(sep)
+export function arrayToText(rangeStr: string | undefined, sep: string, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
+  return boundedJoin(collectRefs(rangeStr).map(evalCell).filter((v) => v !== ''), sep) ?? valueError()
 }
 
-export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const vals = collectRefs(rangeStr).map(evalCell).filter((v) => v !== '')
   if (vals.length === 0) return '#N/A'
   let best = vals[0]
@@ -16,20 +22,23 @@ export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string, _cells: Cells,
   return best
 }
 
-export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const lens = collectRefs(rangeStr).map((r) => evalCell(r).length).filter((n) => n > 0)
   if (lens.length === 0) return '0'
   return String(F === 'MAXLEN' ? Math.max(...lens) : Math.min(...lens))
 }
 
-export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const refs = collectRefs(rangeStr)
   const seq = F === 'FIRST' ? refs : [...refs].reverse()
   for (const r of seq) { const v = evalCell(r); if (v !== '') return v }
   return '#N/A'
 }
 
-export function rangeHash(rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function rangeHash(rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   let h = 2166136261
   for (const r of collectRefs(rangeStr)) {
     const v = evalCell(r) + '|'
@@ -40,7 +49,8 @@ export function rangeHash(rangeStr: string, _cells: Cells, evalCell: EvalCell): 
 
 export { rangeJSON, rangeCsv, rangeUnique, rangeSort } from './rangeSerial'
 
-export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const counts = new Map<string, number>()
   for (const r of collectRefs(rangeStr)) {
     const v = evalCell(r)
@@ -53,7 +63,8 @@ export function freqStat(F: 'MOSTCOMMON' | 'LEASTCOMMON', rangeStr: string, _cel
 }
 
 /** ENTROPY(range) — Shannon entropy (base 2) over value frequencies. */
-export function entropy(rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function entropy(rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const counts = new Map<string, number>()
   let n = 0
   for (const r of collectRefs(rangeStr)) {
@@ -69,7 +80,8 @@ export function entropy(rangeStr: string, _cells: Cells, evalCell: EvalCell): st
 export const mostCommon = (r: string, c: Cells, e: EvalCell) => freqStat('MOSTCOMMON', r, c, e)
 
 /** COUNTNUMERIC(range) — number of cells whose evaluated value is finite. */
-export function countNumeric(rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function countNumeric(rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   let n = 0
   for (const r of collectRefs(rangeStr)) {
     const v = evalCell(r)
@@ -78,7 +90,8 @@ export function countNumeric(rangeStr: string, _cells: Cells, evalCell: EvalCell
   return String(n)
 }
 
-export function sample(rangeStr: string, _cells: Cells, evalCell: EvalCell): string {
+export function sample(rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const vals = collectRefs(rangeStr).map(evalCell).filter((v) => v !== '')
   if (vals.length === 0) return '#N/A'
   return vals[Math.floor(Math.random() * vals.length)]

@@ -127,10 +127,10 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'ENTROPY') return smartReturn(entropy(splitArgs(rawArgs)[0], c.cells, c.evalCell))
   if (F === 'JACCARD') { const a = splitArgs(rawArgs); return smartReturn(jaccard(a[0], a[1], c.cells, c.evalCell)) }
   if (F === 'RANGECSV') return smartReturn(rangeCsv(splitArgs(rawArgs)[0], c.cells, c.evalCell))
-  if (F === 'COUNTNUMERIC') return countNumeric(splitArgs(rawArgs)[0], c.cells, c.evalCell)
+  if (F === 'COUNTNUMERIC') return smartReturn(countNumeric(splitArgs(rawArgs)[0], c.cells, c.evalCell))
   if (F === 'RANGEHASH') return smartReturn(rangeHash(splitArgs(rawArgs)[0], c.cells, c.evalCell))
   if (F === 'MAXSTR' || F === 'MINSTR') return smartReturn(strStat(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
-  if (F === 'MAXLEN' || F === 'MINLEN') return String(lenStat(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'MAXLEN' || F === 'MINLEN') return smartReturn(lenStat(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
   if (F === 'FIRST' || F === 'LAST') return smartReturn(firstLast(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
   if (F === 'ARRAYTOTEXT') { const a = splitArgs(rawArgs); return smartReturn(arrayToText(a[0], argsT[1] ?? ', ', c.cells, c.evalCell)) }
   if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalCell))

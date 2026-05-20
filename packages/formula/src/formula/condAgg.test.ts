@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
+import { MAX_GENERATED_TEXT_LENGTH } from './textLimit'
 
 const c = { A1: '5', A2: '10', A3: '3', A4: '20', A5: '8', A6: '' }
 
@@ -404,6 +405,23 @@ describe('ARRAYTOTEXT', () => {
     const cells = { A1: 'red', A2: '', A3: 'blue', A4: 'green' }
     expect(evaluateCell(cells, '=ARRAYTOTEXT(A1:A4)')).toBe('red, blue, green')
     expect(evaluateCell(cells, '=ARRAYTOTEXT(A1:A4, "|")')).toBe('red|blue|green')
+  })
+
+  it('rejects missing ranges and oversized range text output', () => {
+    const longCells = { A1: 'x'.repeat(MAX_GENERATED_TEXT_LENGTH), A2: 'y' }
+
+    expect(evaluateCell({}, '=ARRAYTOTEXT()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=RANGEJSON()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=RANGECSV()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=RANGESORT()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=RANGEUNIQUE()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=COUNTNUMERIC()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=MAXLEN()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=MAXSTR()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=FIRST()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=SAMPLE()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ENTROPY()')).toBe('#VALUE!')
+    expect(evaluateCell(longCells, '=ARRAYTOTEXT(A1:A2, "")')).toBe('#VALUE!')
   })
 })
 
