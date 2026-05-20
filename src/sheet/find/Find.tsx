@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
-import { cellIdToKey, type WriteCell, type Display, type Cells } from '../schema'
+import { cellIdToKey, type WriteCell, type WriteMany, type Display, type Cells, type Writes } from '../schema'
 import { useFind } from './useFind'
 import { replaceFindText } from './findRegex'
 
@@ -12,18 +12,19 @@ interface Props {
   display: Display
   onJump: (cellId: string) => void
   writeCell: WriteCell
+  writeCells: WriteMany
   skipIds?: Set<string>
   rowCount: number
   colLetters: readonly string[]
 }
 
-export function Find({ open, mode, onClose, cells, display, onJump, writeCell, skipIds, rowCount, colLetters }: Props) {
+export function Find({ open, mode, onClose, cells, display, onJump, writeCell, writeCells, skipIds, rowCount, colLetters }: Props) {
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
   const [caseSensitive, setCS] = useState(false)
   const [regex, setRegex] = useState(false)
 
-  const { matches, jump, resetIdx, current, counter } = useFind({ query: q, cells, display, onJump, caseSensitive, regex, skipIds, rowCount, colLetters })
+  const { matches, jump, resetIdx, current, counter } = useFind({ query: open ? q : '', cells, display, onJump, caseSensitive, regex, skipIds, rowCount, colLetters })
 
   const { rootProps } = useDialogModalPattern({
     open, modal: false,
@@ -43,10 +44,12 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, s
   }
   const replaceAll = () => {
     if (!q) return
+    const writes: Writes = []
     for (const id of matches) {
       const k = cellIdToKey(id)
-      if (k) writeCell(k, sub(cells[k] ?? ''))
+      if (k) writes.push([k, sub(cells[k] ?? '')])
     }
+    if (writes.length > 0) writeCells(writes)
   }
 
   return (

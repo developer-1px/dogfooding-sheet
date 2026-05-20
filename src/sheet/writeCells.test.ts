@@ -50,4 +50,22 @@ describe('cell write adapters', () => {
       ]],
     ])
   })
+
+  it('ignores invalid and out-of-bounds cell keys when bounds are provided', () => {
+    const { ops, calls } = recordingOps()
+
+    writeSingleCell(ops, {}, 'C1', 'outside', { rowCount: 2, colCount: 2 })
+    writeSingleCell(ops, {}, 'bad', 'invalid', { rowCount: 2, colCount: 2 })
+    writeSingleCell(ops, {}, 'B2', 'inside', { rowCount: 2, colCount: 2 })
+    writeCellsBatch(ops, {}, [
+      ['A1', 'ok'],
+      ['A3', 'outside'],
+      ['bad', 'invalid'],
+    ], { rowCount: 2, colCount: 2 })
+
+    expect(calls).toEqual([
+      ['add', '/cells/B2', 'inside'],
+      ['patch', [{ op: 'add', path: '/cells/A1', value: 'ok' }]],
+    ])
+  })
 })

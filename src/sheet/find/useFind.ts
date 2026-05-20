@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { cellKey, cellId, colIndex, type Cells, type Display } from '../schema'
 import { makeFindMatcher } from './findRegex'
 
@@ -16,6 +16,12 @@ interface Args {
 
 export function useFind({ query, cells, display, onJump, caseSensitive = false, regex = false, skipIds, rowCount, colLetters }: Args) {
   const [idx, setIdx] = useState(0)
+  const onJumpRef = useRef(onJump)
+  const lastJumpIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    onJumpRef.current = onJump
+  }, [onJump])
 
   const matches = useMemo(() => {
     if (!query) return []
@@ -32,8 +38,15 @@ export function useFind({ query, cells, display, onJump, caseSensitive = false, 
   }, [query, cells, display, caseSensitive, regex, skipIds, rowCount, colLetters])
 
   useEffect(() => {
-    if (matches.length > 0) onJump(matches[idx % matches.length])
-  }, [matches, idx, onJump])
+    const target = matches.length > 0 ? matches[idx % matches.length] : null
+    if (target === null) {
+      lastJumpIdRef.current = null
+      return
+    }
+    if (target === lastJumpIdRef.current) return
+    lastJumpIdRef.current = target
+    onJumpRef.current(target)
+  }, [matches, idx])
 
   const jump = (delta: number) => {
     if (matches.length === 0) return

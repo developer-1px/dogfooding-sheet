@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useSheet } from './sheet/useSheet'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/grid-view/Grid'
@@ -26,6 +26,7 @@ export default function App() {
   useEffect(() => { ctxRef.current = ctx }, [ctx])
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
   const addr = selectionAddress(ctx.selectedIds, ctx.focusKey, ctx.rowCount, ctx.colLetters)
+  const mergeHidden = useMemo(() => buildMergeMap(ctx.merges).hidden, [ctx.merges])
 
   return (
     <div className="sheet-app">
@@ -62,7 +63,8 @@ export default function App() {
         display={ctx.display}
         onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
         writeCell={ctx.writeCell}
-        skipIds={buildMergeMap(ctx.merges).hidden}
+        writeCells={ctx.writeCells}
+        skipIds={mergeHidden}
         rowCount={ctx.rowCount}
         colLetters={ctx.colLetters}
       />

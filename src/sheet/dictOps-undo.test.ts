@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, cells as gridCells, mouseClick as click, press, setupReactDOM } from './test-utils'
+import { cellByText, cells as gridCells, mouseClick as click, press, setInputValue, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -80,5 +80,30 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
     act(() => press('z', { ctrlKey: true }))
     expect(cellByText('Apple'), 'Apple should restore from single undo').toBeDefined()
     expect(cellByText('Milk'), 'Milk should restore from single undo').toBeDefined()
+  })
+
+  it('replace all across multiple cells is a single undo entry', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    act(() => press('h', { ctrlKey: true }))
+    const inputs = document.querySelectorAll<HTMLInputElement>('.find-bar input')
+    expect(inputs.length).toBeGreaterThanOrEqual(2)
+    act(() => setInputValue(inputs[0], 'e'))
+    act(() => setInputValue(inputs[1], 'X'))
+
+    const replaceAll = [...document.querySelectorAll<HTMLButtonElement>('.find-bar button')]
+      .find((button) => button.textContent === '전체')
+    expect(replaceAll).toBeDefined()
+    act(() => click(replaceAll!))
+
+    expect(cellByText('ApplX')).toBeDefined()
+    expect(cellByText('BrXad')).toBeDefined()
+
+    act(() => press('z', { ctrlKey: true }))
+
+    expect(cellByText('Apple')).toBeDefined()
+    expect(cellByText('Bread')).toBeDefined()
+    expect(cellByText('ApplX')).toBeUndefined()
+    expect(cellByText('BrXad')).toBeUndefined()
   })
 })

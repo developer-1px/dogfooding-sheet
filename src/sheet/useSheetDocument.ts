@@ -17,8 +17,9 @@ export function useSheetDocument() {
 
   useEffect(() => { saveSheet(sheet) }, [sheet])
 
-  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes)
+  const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
+  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds)
 
   return { sheet, ops, writeCell, writeCells }
 }
