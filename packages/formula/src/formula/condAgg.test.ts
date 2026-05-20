@@ -362,6 +362,12 @@ describe('JACCARD', () => {
     const cells = { A1: 'a', A2: 'b', A3: 'c', B1: 'b', B2: 'c', B3: 'd' }
     expect(evaluateCell(cells, '=JACCARD(A1:A3, B1:B3)')).toBe('0.5')
   })
+
+  it('ignores duplicates and empty values', () => {
+    const cells = { A1: 'a', A2: 'a', A3: '', B1: 'a', B2: 'b', B3: '' }
+    expect(evaluateCell(cells, '=JACCARD(A1:A3, B1:B3)')).toBe('0.5')
+    expect(evaluateCell({ A1: '', B1: '' }, '=JACCARD(A1:A1, B1:B1)')).toBe('#N/A')
+  })
 })
 
 describe('ENTROPY', () => {
