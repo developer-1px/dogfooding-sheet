@@ -1,0 +1,99 @@
+import { autoSumFormula } from '@spredsheet/grid'
+import type { Filter } from './visibility/useFilter'
+import type { ValidationActions } from './validation/useValidation'
+import type { Ask } from './usePrompt'
+import { cellIdToKey, cellKey, parseA1, type Display, type WriteCell } from './schema'
+
+export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'no-target'
+
+export const targetCellKeys = (selectedIds: readonly string[], focusKey: string | null): string[] =>
+  (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map(cellIdToKey)
+
+export const validationOptionsFromCsv = (csv: string): string[] =>
+  csv.split(',').map((s) => s.trim()).filter(Boolean)
+
+export function applyToolbarAutoSum({
+  focusKey,
+  display,
+  writeCell,
+}: {
+  focusKey: string | null
+  display: Display
+  writeCell: WriteCell
+}): boolean {
+  const focus = focusKey ? parseA1(focusKey) : null
+  if (!focus) return false
+  const formula = autoSumFormula(focus.col, focus.row, display)
+  if (!formula) return false
+  writeCell(cellKey(focus.col, focus.row), formula)
+  return true
+}
+
+export async function promptToolbarFilter({
+  ask,
+  focusKey,
+  filter,
+  applyFilter,
+  clearFilter,
+}: {
+  ask: Ask
+  focusKey: string | null
+  filter: Filter | null
+  applyFilter: (col: string, text: string) => void
+  clearFilter: () => void
+}): Promise<ToolbarActionResult> {
+  const focus = focusKey ? parseA1(focusKey) : null
+  if (!focus) return 'no-target'
+
+  const text = await ask({ label: `${focus.col}열에서 찾을 값`, initial: filter?.text ?? '', submitLabel: '필터' })
+  if (text === null) return 'cancelled'
+  if (text === '') {
+    clearFilter()
+    return 'cleared'
+  }
+  applyFilter(focus.col, text)
+  return 'applied'
+}
+
+export async function promptListValidation({
+  ask,
+  selectedIds,
+  focusKey,
+  setListRule,
+  clearRule,
+}: {
+  ask: Ask
+  selectedIds: readonly string[]
+  focusKey: string | null
+  setListRule: ValidationActions['setListRule']
+  clearRule: ValidationActions['clearRule']
+}): Promise<ToolbarActionResult> {
+  const keys = targetCellKeys(selectedIds, focusKey)
+  if (keys.length === 0) return 'no-target'
+
+  const csv = await ask({ label: '허용 값 (쉼표 구분, 비우면 해제)', submitLabel: '적용' })
+  if (csv === null) return 'cancelled'
+
+  const options = validationOptionsFromCsv(csv)
+  if (options.length === 0) {
+    clearRule(keys)
+    return 'cleared'
+  }
+  setListRule(keys, options)
+  return 'applied'
+}
+
+export function applyCheckboxValidation({
+  selectedIds,
+  focusKey,
+  setCheckboxRule,
+}: {
+  selectedIds: readonly string[]
+  focusKey: string | null
+  setCheckboxRule: ValidationActions['setCheckboxRule']
+}): boolean {
+  const keys = targetCellKeys(selectedIds, focusKey)
+  if (keys.length === 0) return false
+  setCheckboxRule(keys)
+  return true
+}
