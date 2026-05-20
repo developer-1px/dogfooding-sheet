@@ -3,12 +3,19 @@ import { ABS_A1_RE, FORMULA_FUNCTION_NAMES, RangeLimitError } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 import { coerceNumber } from './coerce'
 import type { Ctx, EvalCell } from './args'
+import { MAX_GENERATED_TEXT_LENGTH } from './textLimit'
 
 const CYCLE_ERROR = '#CYCLE!'
 const VALUE_ERROR = '#VALUE!'
 const LAZY_FUNCTIONS = new Set(['IF', 'IFERROR', 'IFNA', 'CHOOSE', 'IFEMPTY', 'COALESCE', 'IFS', 'SWITCH'])
+export const MAX_FORMULA_LENGTH = MAX_GENERATED_TEXT_LENGTH
+export const MAX_ARITHMETIC_DEPTH = 512
 
 class FormulaCycleError extends Error {}
+class FormulaLimitError extends Error {}
+
+const isFormulaLimitError = (error: unknown): boolean =>
+  error instanceof FormulaLimitError || error instanceof RangeLimitError
 
 const evalCellFactory = (cells: Cells, seen: Set<string>): EvalCell => (ref: string): string => {
   if (seen.has(ref)) return CYCLE_ERROR
@@ -17,7 +24,7 @@ const evalCellFactory = (cells: Cells, seen: Set<string>): EvalCell => (ref: str
     return evaluate(cells, cells[ref] ?? '', seen)
   } catch (error) {
     if (error instanceof FormulaCycleError) return CYCLE_ERROR
-    if (error instanceof RangeLimitError) return VALUE_ERROR
+    if (isFormulaLimitError(error)) return VALUE_ERROR
     throw error
   } finally {
     seen.delete(ref)
@@ -33,6 +40,7 @@ const numFromCellFactory = (evalCell: EvalCell) => (ref: string): number => {
 
 class ArithmeticParser {
   private i = 0
+  private depth = 0
   private readonly input: string
 
   constructor(input: string) {
@@ -80,18 +88,30 @@ class ArithmeticParser {
   }
 
   private unary(): number {
-    if (this.match('+')) return this.unary()
-    if (this.match('-')) return -this.unary()
+    if (this.match('+')) return this.withDepth(() => this.unary())
+    if (this.match('-')) return this.withDepth(() => -this.unary())
     return this.primary()
   }
 
   private primary(): number {
     if (this.match('(')) {
-      const value = this.comparison()
-      if (!this.match(')')) throw new Error('bad')
-      return value
+      return this.withDepth(() => {
+        const value = this.comparison()
+        if (!this.match(')')) throw new Error('bad')
+        return value
+      })
     }
     return this.number()
+  }
+
+  private withDepth<T>(fn: () => T): T {
+    if (this.depth >= MAX_ARITHMETIC_DEPTH) throw new FormulaLimitError()
+    this.depth++
+    try {
+      return fn()
+    } finally {
+      this.depth--
+    }
   }
 
   private number(): number {
@@ -203,7 +223,7 @@ const createContext = (cells: Cells, seen: Set<string>) => {
         return evaluate(cells, r, seen)
       } catch (error) {
         if (error instanceof FormulaCycleError) return CYCLE_ERROR
-        if (error instanceof RangeLimitError) return VALUE_ERROR
+        if (isFormulaLimitError(error)) return VALUE_ERROR
         throw error
       }
     },
@@ -212,6 +232,7 @@ const createContext = (cells: Cells, seen: Set<string>) => {
 
 function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): string {
   if (!raw.startsWith('=')) return raw
+  if (raw.length > MAX_FORMULA_LENGTH) return VALUE_ERROR
   let expr = raw.slice(1)
   const ctx = createContext(cells, seen)
 
@@ -236,7 +257,8 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
       return Number.isFinite(result) ? String(Math.round(result * 1e10) / 1e10) : '#DIV/0!'
     }
     return String(result)
-  } catch {
+  } catch (error) {
+    if (isFormulaLimitError(error)) return VALUE_ERROR
     return '#ERR'
   }
 }
@@ -246,7 +268,7 @@ export const evaluateCell = (cells: Cells, raw: string) => {
     return evaluate(cells, raw)
   } catch (error) {
     if (error instanceof FormulaCycleError) return CYCLE_ERROR
-    if (error instanceof RangeLimitError) return VALUE_ERROR
+    if (isFormulaLimitError(error)) return VALUE_ERROR
     throw error
   }
 }

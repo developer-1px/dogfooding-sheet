@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
-import { evaluateCell } from './eval'
+import { evaluateCell, MAX_ARITHMETIC_DEPTH, MAX_FORMULA_LENGTH } from './eval'
 import { refsInFormula } from './parse'
 
 const cells = (m: Record<string, string>) => m
@@ -102,6 +102,14 @@ describe('evaluateCell', () => {
     expect(evaluateCell({}, '=alert(1)')).toBe('#ERR')
     expect(evaluateCell({}, '=1;globalThis.__formulaInjected=1')).toBe('#ERR')
     expect((globalThis as typeof globalThis & { __formulaInjected?: number }).__formulaInjected).toBeUndefined()
+  })
+
+  it('rejects evaluator resource limit inputs', () => {
+    const oversizedFormula = '=' + '1+'.repeat(Math.ceil(MAX_FORMULA_LENGTH / 2)) + '1'
+    const tooDeep = '=' + '('.repeat(MAX_ARITHMETIC_DEPTH + 1) + '1' + ')'.repeat(MAX_ARITHMETIC_DEPTH + 1)
+
+    expect(evaluateCell({}, oversizedFormula)).toBe('#VALUE!')
+    expect(evaluateCell({}, tooDeep)).toBe('#VALUE!')
   })
 
   it('does not use runtime code generation for arithmetic fallback', () => {
