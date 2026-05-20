@@ -12,7 +12,7 @@ export interface MergeInfo {
 export type MergeSelectionAction =
   | { type: 'none' }
   | { type: 'unmerge'; row: number; col: number }
-  | { type: 'merge'; merge: Merge; truncatedRows: boolean }
+  | { type: 'merge'; merge: Merge }
 
 export const mergeOverlap = (a: Merge, b: Merge): boolean =>
   a[0] <= b[1] && a[1] >= b[0] && a[2] <= b[3] && a[3] >= b[2]
@@ -38,8 +38,8 @@ export function mergeActionForSelection(selectedIds: string[], focusId: string |
 
   if (!Number.isFinite(rMin) || cMin < 0) return { type: 'none' }
   if (rMin === rMax && cMin === cMax) return { type: 'unmerge', row: rMin, col: cMin }
-  if (rMin === rMax) return { type: 'merge', merge: [rMin, rMax, cMin, cMax], truncatedRows: false }
-  return { type: 'merge', merge: [rMin, rMin, cMin, cMax], truncatedRows: true }
+  if (rMin === rMax) return { type: 'merge', merge: [rMin, rMax, cMin, cMax] }
+  return { type: 'none' }
 }
 
 export function addMergeToList(merges: ReadonlyArray<Merge>, merge: Merge): Merge[] {
@@ -67,4 +67,3 @@ export function buildMergeMap(merges: ReadonlyArray<Merge>): {
   }
   return { anchors, hidden }
 }
-

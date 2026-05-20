@@ -201,14 +201,9 @@ describe('@spredsheet/grid', () => {
     expect(mergeActionForSelection(['r0-A', 'r0-B', 'r0-C'], null)).toEqual({
       type: 'merge',
       merge: [0, 0, 0, 2],
-      truncatedRows: false,
     })
     expect(mergeActionForSelection([], 'r3-B')).toEqual({ type: 'unmerge', row: 3, col: 1 })
-    expect(mergeActionForSelection(['r1-A', 'r1-B', 'r2-A'], null)).toEqual({
-      type: 'merge',
-      merge: [1, 1, 0, 1],
-      truncatedRows: true,
-    })
+    expect(mergeActionForSelection(['r1-A', 'r1-B', 'r2-A'], null)).toEqual({ type: 'none' })
     expect(addMergeToList([[0, 0, 0, 1]], [0, 0, 1, 2])).toEqual([[0, 0, 1, 2]])
     expect(removeMergeAt([[0, 0, 0, 2]], 0, 1)).toEqual([])
     const { anchors, hidden } = buildMergeMap([[0, 0, 0, 2]])

@@ -18,10 +18,11 @@ describe('mergeSelection', () => {
     expect(ops.addMerge).not.toHaveBeenCalled()
   })
 
-  it('multi-row selection collapses to first row only (CSS grid limit)', () => {
+  it('multi-row selection is ignored while cross-row merge is unsupported', () => {
     const ops = makeOps()
     mergeSelection(['r1-A', 'r1-B', 'r2-A', 'r2-B'], null, ops)
-    expect(ops.addMerge).toHaveBeenCalledWith([1, 1, 0, 1])
+    expect(ops.addMerge).not.toHaveBeenCalled()
+    expect(ops.unmergeAt).not.toHaveBeenCalled()
   })
 
   it('empty selection + null focus → no-op', () => {
