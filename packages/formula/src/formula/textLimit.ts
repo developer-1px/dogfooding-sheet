@@ -27,10 +27,10 @@ export const boundedRepeat = (text: string, count: number): string | null => {
 
 export const boundedPadStart = (text: string, targetLength: number, pad: string): string | null => {
   const n = boundedLength(targetLength)
-  return n === null ? null : text.padStart(n, pad)
+  return n === null ? null : boundedText(text.padStart(n, pad))
 }
 
 export const boundedPadEnd = (text: string, targetLength: number, pad: string): string | null => {
   const n = boundedLength(targetLength)
-  return n === null ? null : text.padEnd(n, pad)
+  return n === null ? null : boundedText(text.padEnd(n, pad))
 }
