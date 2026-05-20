@@ -1,25 +1,63 @@
 import { useEffect } from 'react'
-import type { SheetOps } from './schema'
+import { colIndex, parseA1, type SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 import { upsertKey } from '../lib/dictOps'
 import { normalizeNoteText } from './noteText'
+import { isSafeCellText } from './cellValue'
 
 export type NoteLookup = (k: string) => string | undefined
 
 const LEGACY_KEY = 'spreadsheet:notes:v1'
 
-const migrateLegacy = (notes: Record<string, string>, ops: SheetOps) =>
+interface NoteBounds {
+  rowCount: number
+  colCount: number
+}
+
+const validNoteKey = (key: string, bounds?: NoteBounds): boolean => {
+  const ref = parseA1(key)
+  if (!ref) return false
+  if (!bounds) return true
+  const col = colIndex(ref.col)
+  return ref.row >= 0 && ref.row < bounds.rowCount && col >= 0 && col < bounds.colCount
+}
+
+const normalizedNote = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') return undefined
+  const note = normalizeNoteText(value)
+  return note !== '' && isSafeCellText(note) ? note : undefined
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+export const coerceLegacyNotes = (raw: unknown, bounds?: NoteBounds): Record<string, string> | undefined => {
+  if (!isRecord(raw)) return undefined
+  const out: Record<string, string> = {}
+  for (const [key, value] of Object.entries(raw)) {
+    if (!validNoteKey(key, bounds)) continue
+    const note = normalizedNote(value)
+    if (note !== undefined) out[key] = note
+  }
+  return Object.keys(out).length > 0 ? out : undefined
+}
+
+const migrateLegacy = (notes: Record<string, string>, ops: SheetOps, bounds?: NoteBounds) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(notes).length === 0, ops,
-    (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, string> : undefined,
+    (raw) => coerceLegacyNotes(raw, bounds),
     (o, v) => o.replace('/notes', v),
   )
 
-export function useNotes(notes: Record<string, string>, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(notes, ops) }, [notes, ops])
+export function useNotes(notes: Record<string, string>, ops: SheetOps, bounds?: NoteBounds) {
+  const rowCount = bounds?.rowCount
+  const colCount = bounds?.colCount
+  useEffect(() => {
+    migrateLegacy(notes, ops, rowCount !== undefined && colCount !== undefined ? { rowCount, colCount } : undefined)
+  }, [notes, ops, rowCount, colCount])
 
   const setNote = (k: string, text: string) => {
-    const trimmed = normalizeNoteText(text)
-    upsertKey(ops, '/notes', notes, k, trimmed || undefined)
+    if (!validNoteKey(k, bounds)) return
+    upsertKey(ops, '/notes', notes, k, normalizedNote(text))
   }
 
   return { setNote, noteOf: (k: string) => notes[k] }
