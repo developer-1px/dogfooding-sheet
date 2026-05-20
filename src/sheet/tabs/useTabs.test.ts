@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { tabActions, type TabActionOps } from './useTabs'
-import { blankBundle, initialSheet, type Sheet } from '../schema'
+import { MAX_SHEET_NAME_LENGTH, MAX_SHEET_TABS, blankBundle, initialSheet, type Sheet } from '../schema'
 
 const make = (): Sheet => ({
   ...initialSheet,
@@ -68,5 +68,47 @@ describe('tabActions', () => {
     const s: Stub = {}
     tabActions(sheet, stubOps(s)).deleteSheet('Only')
     expect(s.reset).toBeUndefined()
+  })
+
+  it('refuses tab creation past the tab cap', () => {
+    const order = Array.from({ length: MAX_SHEET_TABS }, (_v, i) => `S${i + 1}`)
+    const sheet: Sheet = {
+      ...initialSheet,
+      tabs: {
+        order,
+        active: order[0],
+        colors: {},
+        saved: Object.fromEntries(order.map((name) => [name, blankBundle()])),
+      },
+    }
+    const s: Stub = {}
+
+    tabActions(sheet, stubOps(s)).addSheet()
+    tabActions(sheet, stubOps(s)).duplicateSheet(order[0])
+
+    expect(s.reset).toBeUndefined()
+  })
+
+  it('refuses unsafe tab names and colors', () => {
+    const sheet = make()
+    const s: Stub = {}
+
+    tabActions(sheet, stubOps(s)).renameSheet('Sheet1', 'x'.repeat(MAX_SHEET_NAME_LENGTH + 1))
+    tabActions(sheet, stubOps(s)).setTabColor('Sheet1', 'red')
+    tabActions(sheet, stubOps(s)).setTabColor('Ghost', '#ff0000')
+
+    expect(s.replace).toBeUndefined()
+  })
+
+  it('accepts normalized tab names and colors', () => {
+    const sheet = make()
+    const s: Stub = {}
+
+    tabActions(sheet, stubOps(s)).renameSheet('Sheet1', '  Budget  ')
+    expect((s.replace!.value as Sheet['tabs']).order).toEqual(['Budget', 'Sheet2'])
+
+    const c: Stub = {}
+    tabActions(sheet, stubOps(c)).setTabColor('Sheet1', '#ff0000')
+    expect((c.replace!.value as Sheet['tabs']).colors.Sheet1).toBe('#ff0000')
   })
 })

@@ -12,6 +12,8 @@ export const DEFAULT_ROW_COUNT = 20
 export const DEFAULT_COL_COUNT = 10
 export const MAX_ROW_COUNT = 1000
 export const MAX_COL_COUNT = COLS.length
+export const MAX_SHEET_TABS = 50
+export const MAX_SHEET_NAME_LENGTH = 64
 export const ROW_COUNT = DEFAULT_ROW_COUNT
 
 export const colLettersFor = (colCount: number): string[] =>
@@ -31,6 +33,17 @@ const CellStyleSchema = z.object({
 
 const COLOR_RE = /^#[0-9a-fA-F]{3,8}$/
 const MAX_VALIDATION_OPTIONS = 100
+
+export const normalizeSheetName = (name: string): string | null => {
+  const trimmed = name.trim()
+  return trimmed.length > 0 && trimmed.length <= MAX_SHEET_NAME_LENGTH ? trimmed : null
+}
+
+export const isSafeSheetName = (name: string): boolean =>
+  name === normalizeSheetName(name)
+
+export const isSafeTabColor = (color: string): boolean =>
+  COLOR_RE.test(color)
 
 const CellsSchema = z.record(z.string(), z.string())
 
@@ -176,10 +189,10 @@ const sanitizeTabBundle = <T extends RawTabBundle>(bundle: T): T => ({
 const TabBundleSchema = RawTabBundleSchema.transform(sanitizeTabBundle)
 export type TabBundle = z.infer<typeof TabBundleSchema>
 
-const SheetNameSchema = z.string().refine((name) => name.trim().length > 0)
+const SheetNameSchema = z.string().refine(isSafeSheetName)
 
 const TabsSchema = z.object({
-  order: z.array(SheetNameSchema).min(1),
+  order: z.array(SheetNameSchema).min(1).max(MAX_SHEET_TABS),
   active: SheetNameSchema,
   saved: z.record(z.string(), TabBundleSchema),
   colors: z.record(z.string(), z.string()).default({}),
@@ -195,8 +208,9 @@ const TabsSchema = z.object({
   Object.keys(tabs.saved).forEach((name) => {
     if (!names.has(name)) ctx.addIssue({ code: 'custom', path: ['saved', name], message: 'Saved sheet must be present in tab order' })
   })
-  Object.keys(tabs.colors).forEach((name) => {
+  Object.entries(tabs.colors).forEach(([name, color]) => {
     if (!names.has(name)) ctx.addIssue({ code: 'custom', path: ['colors', name], message: 'Tab color must be present in tab order' })
+    if (!isSafeTabColor(color)) ctx.addIssue({ code: 'custom', path: ['colors', name], message: 'Invalid tab color' })
   })
   tabs.order.forEach((name, index) => {
     if (name !== tabs.active && tabs.saved[name] === undefined) {

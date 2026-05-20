@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SheetSchema, blankBundle, cloneBundle, initialSheet } from './schema'
+import { MAX_SHEET_NAME_LENGTH, MAX_SHEET_TABS, SheetSchema, blankBundle, cloneBundle, initialSheet } from './schema'
 import { MAX_CELL_TEXT_LENGTH } from './cellValue'
 
 describe('SheetSchema', () => {
@@ -46,6 +46,28 @@ describe('SheetSchema', () => {
     expect(SheetSchema.safeParse({
       ...initialSheet,
       tabs: { ...initialSheet.tabs, order: ['Sheet1'], active: 'Sheet1', colors: { Ghost: '#ff0000' } },
+    }).success).toBe(false)
+
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: ['Sheet1'], active: 'Sheet1', colors: { Sheet1: 'red' } },
+    }).success).toBe(false)
+
+    const tooManyTabs = Array.from({ length: MAX_SHEET_TABS + 1 }, (_v, i) => `S${i + 1}`)
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: {
+        order: tooManyTabs,
+        active: tooManyTabs[0],
+        saved: Object.fromEntries(tooManyTabs.slice(1).map((name) => [name, blankBundle()])),
+        colors: {},
+      },
+    }).success).toBe(false)
+
+    const tooLongName = 'x'.repeat(MAX_SHEET_NAME_LENGTH + 1)
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: [tooLongName], active: tooLongName },
     }).success).toBe(false)
   })
 

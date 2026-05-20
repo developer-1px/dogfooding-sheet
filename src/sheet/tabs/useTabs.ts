@@ -1,5 +1,16 @@
 import { useEffect } from 'react'
-import { blankBundle, bundleOf, cloneBundle, withBundle, type Sheet, type TabBundle, type Cells } from '../schema'
+import {
+  MAX_SHEET_TABS,
+  blankBundle,
+  bundleOf,
+  cloneBundle,
+  isSafeTabColor,
+  normalizeSheetName,
+  withBundle,
+  type Sheet,
+  type TabBundle,
+  type Cells,
+} from '../schema'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 export interface TabsState {
@@ -39,10 +50,12 @@ export function useTabs(state: TabsState, ops: TabsStateOps) {
   return { state, setState }
 }
 
-const uniqueName = (order: string[]): string => {
+const uniqueName = (order: string[]): string | null => {
+  if (order.length >= MAX_SHEET_TABS) return null
+  const names = new Set(order)
   let n = order.length + 1
-  while (order.includes(`Sheet${n}`)) n++
-  return `Sheet${n}`
+  while (names.has(`Sheet${n}`)) n++
+  return normalizeSheetName(`Sheet${n}`)
 }
 
 export function tabActions(sheet: Sheet, ops: TabActionOps) {
@@ -60,6 +73,7 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
 
   const addSheet = () => {
     const name = uniqueName(state.order)
+    if (!name) return
     const saved = { ...snapshotSaved(), [name]: blankBundle() }
     ops.reset(hydrate(setTabs({ ...state, order: [...state.order, name], active: name, saved }), name, saved))
   }
@@ -75,7 +89,7 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
   }
 
   const renameSheet = (oldName: string, newName: string) => {
-    const trimmed = newName.trim()
+    const trimmed = normalizeSheetName(newName)
     if (!trimmed || trimmed === oldName || state.order.includes(trimmed)) return
     const saved = snapshotSaved()
     saved[trimmed] = saved[oldName] ?? blankBundle()
@@ -90,6 +104,7 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     const idx = state.order.indexOf(name)
     if (idx < 0) return
     const newName = uniqueName(state.order)
+    if (!newName) return
     const saved = snapshotSaved()
     saved[newName] = cloneBundle(saved[name] ?? blankBundle())
     const newOrder = [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)]
@@ -100,7 +115,15 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     const i = state.order.indexOf(state.active), n = state.order.length
     switchTab(state.order[(i + delta + n) % n])
   }
-  const setTabColor = (name: string, color: string) => { const colors = { ...state.colors }; if (color) colors[name] = color; else delete colors[name]; ops.replace('/tabs', { ...state, colors }) }
+  const setTabColor = (name: string, color: string) => {
+    if (!state.order.includes(name)) return
+    const colors = { ...state.colors }
+    if (color) {
+      if (!isSafeTabColor(color)) return
+      colors[name] = color
+    } else delete colors[name]
+    ops.replace('/tabs', { ...state, colors })
+  }
   const reorderTab = (from: string, to: string) => { const fi = state.order.indexOf(from), ti = state.order.indexOf(to); if (fi < 0 || ti < 0 || fi === ti) return; const next = state.order.filter((n) => n !== from); next.splice(ti, 0, from); ops.replace('/tabs', { ...state, order: next }) }
   return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, cycleTab, setTabColor, reorderTab }
 }
