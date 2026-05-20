@@ -36,15 +36,17 @@ export const rectToIdSet = (rect: Rect | null): Set<string> =>
   new Set(rect ? idsInRect(rect) : [])
 
 export function rectFromIds(ids: string[]): Rect | null {
-  const cells = ids.map(parseCellId).flatMap((x) => x ? [x] : [])
-  if (cells.length === 0) return null
   let rMin = Infinity, rMax = -Infinity, cMin = Infinity, cMax = -Infinity
-  for (const { col, row } of cells) {
-    const ci = colIndex(col)
+  for (const id of ids) {
+    const ref = parseCellId(id)
+    if (!ref) continue
+    const ci = colIndex(ref.col)
+    const row = ref.row
     if (row < rMin) rMin = row
     if (row > rMax) rMax = row
     if (ci < cMin) cMin = ci
     if (ci > cMax) cMax = ci
   }
+  if (rMin === Infinity) return null
   return { rMin, rMax, cMin, cMax }
 }

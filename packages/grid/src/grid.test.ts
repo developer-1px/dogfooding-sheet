@@ -9,6 +9,7 @@ describe('@spredsheet/grid', () => {
     expect(parseA1('A0')).toBeNull()
     expect(parseA1(`A${Number.MAX_SAFE_INTEGER + 1}`)).toBeNull()
     expect(rectFromIds(['r1-B', 'r3-D'])).toEqual({ rMin: 1, rMax: 3, cMin: 1, cMax: 3 })
+    expect(rectFromIds(['bad', 'r2-C'])).toEqual({ rMin: 2, rMax: 2, cMin: 2, cMax: 2 })
   })
 
   it('supports column labels beyond single-letter spreadsheet columns', () => {
@@ -83,6 +84,19 @@ describe('@spredsheet/grid', () => {
       ['B2', 'y'],
       ['C2', 'y'],
     ])
+  })
+
+  it('computes fill writes for large selections without spread reductions', () => {
+    const downIds = Array.from({ length: 1000 }, (_unused, row) => `r${row}-A`)
+    const rightIds = Array.from({ length: 1000 }, (_unused, index) => `r0-${columnLabel(index)}`)
+
+    const down = fillDownWrites(downIds, { A1: 'seed' })
+    const right = fillRightWrites(rightIds, { A1: 'seed' })
+
+    expect(down).toHaveLength(999)
+    expect(down.at(-1)).toEqual(['A1000', 'seed'])
+    expect(right).toHaveLength(999)
+    expect(right.at(-1)).toEqual([`${columnLabel(999)}1`, 'seed'])
   })
 
   it('extends fill series and computes auto-fill writes', () => {
