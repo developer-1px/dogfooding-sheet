@@ -11,9 +11,9 @@ import { buildMergeMap } from '../structure/useMerges'
 import { createGridViewModel } from './gridViewModel'
 import { formulaPickDeltaForKey } from './formulaPickKeys'
 import { useGridContextMenu } from './useGridContextMenu'
-import type { SheetCtx } from '../useSheet'
+import type { GridController } from './gridController'
 
-export function Grid({ ctx }: { ctx: SheetCtx }) {
+export function Grid({ ctx }: { ctx: GridController }) {
   const {
     data,
     setFocusId,

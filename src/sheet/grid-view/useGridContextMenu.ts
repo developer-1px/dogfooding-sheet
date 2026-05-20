@@ -2,9 +2,9 @@ import { useContextMenuGesture } from '@interactive-os/aria-kernel/gesture'
 import { idsForCol, idsForRow } from '@spredsheet/grid'
 import { cellId } from '../schema'
 import { useCellMenu } from '../useCellMenu'
-import type { SheetCtx } from '../useSheet'
+import type { GridContextMenuController } from './gridController'
 
-export function useGridContextMenu(ctx: SheetCtx) {
+export function useGridContextMenu(ctx: GridContextMenuController) {
   const cellMenu = useCellMenu({
     sheet: ctx.sheet,
     colLetters: ctx.colLetters,
