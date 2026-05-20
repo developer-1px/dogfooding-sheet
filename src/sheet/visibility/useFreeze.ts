@@ -24,7 +24,7 @@ const migrateLegacy = (freeze: FreezeState, ops: SheetOps) =>
   )
 
 export function useFreeze(freeze: FreezeState, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(freeze, ops) }, [])
+  useEffect(() => { migrateLegacy(freeze, ops) }, [freeze, ops])
 
   const toggleRows = () => ops.replace('/freeze', { ...freeze, rows: freeze.rows ? 0 : 1 })
   const toggleCols = () => ops.replace('/freeze', { ...freeze, cols: freeze.cols ? 0 : 1 })

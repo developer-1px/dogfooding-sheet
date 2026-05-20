@@ -8,7 +8,8 @@
     "build": "pnpm --dir packages/grid build && pnpm --dir packages/formula build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run && pnpm --dir packages/grid test && pnpm --dir packages/formula test"
+    "test": "vitest run && pnpm --dir packages/grid test && pnpm --dir packages/formula test",
+    "check": "pnpm lint && pnpm build && pnpm test"
   },
   "dependencies": {
     "@interactive-os/anyeditable": "file:../editable/packages/anyeditable",

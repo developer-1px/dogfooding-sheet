@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuButtonPattern } from '@interactive-os/aria-kernel/patterns'
 import { exportCsv, importCsvInto, downloadFile, parseCsv } from '../lib/csv'
@@ -39,29 +39,38 @@ export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertL
     if (await confirm({ message: '현재 시트를 가져온 JSON으로 교체하시겠습니까? (실행 취소 가능)', confirmLabel: '교체' })) resetSheet(parsed.data)
   }
 
-  const items = [
-    { id: 'help', label: '도움말 (F1)', action: openHelp },
-    { id: 'show-formulas', label: `${showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)`, action: toggleShowFormulas },
-    { id: 'show-gridlines', label: `${showGridlines ? '✓ ' : ''}격자선 표시`, action: toggleShowGridlines },
-    { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', action: insertLink },
-    { id: 'print', label: '인쇄 (Ctrl/⌘+P)', action: () => window.print() },
-    { id: 'csv-export', label: 'CSV 내보내기', action: exportCsvFile },
-    { id: 'csv-import', label: 'CSV 가져오기', action: () => fileRef.current?.click() },
-    { id: 'json-export', label: 'JSON 내보내기', action: exportJson },
-    { id: 'json-import', label: 'JSON 가져오기', action: () => jsonRef.current?.click() },
-    { id: 'clear-all', label: '전체 셀 지우기', action: () => { confirm({ message: '모든 셀을 지우시겠습니까? (실행 취소 가능)', confirmLabel: '지우기' }).then((ok) => { if (ok) resetCells({}) }) } },
-    { id: 'clear-formats', label: '전체 서식 지우기', action: () => { confirm({ message: '모든 셀 서식·스타일·조건부 서식을 지우시겠습니까? (실행 취소 가능)', confirmLabel: '지우기' }).then((ok) => { if (ok) clearAllFormats() }) } },
-  ]
+  const items = useMemo(() => [
+    { id: 'help', label: '도움말 (F1)' },
+    { id: 'show-formulas', label: `${showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)` },
+    { id: 'show-gridlines', label: `${showGridlines ? '✓ ' : ''}격자선 표시` },
+    { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)' },
+    { id: 'print', label: '인쇄 (Ctrl/⌘+P)' },
+    { id: 'csv-export', label: 'CSV 내보내기' },
+    { id: 'csv-import', label: 'CSV 가져오기' },
+    { id: 'json-export', label: 'JSON 내보내기' },
+    { id: 'json-import', label: 'JSON 가져오기' },
+    { id: 'clear-all', label: '전체 셀 지우기' },
+    { id: 'clear-formats', label: '전체 서식 지우기' },
+  ], [showFormulas, showGridlines])
   const data = fromList(items.map(({ id, label }) => ({ id, label })))
 
   const onEvent = (e: UiEvent) => {
     if (e.type === 'activate' && e.id) {
-      items.find((it) => it.id === e.id)?.action()
-      setOpen(false)
+      if (e.id === 'help') openHelp()
+      else if (e.id === 'show-formulas') toggleShowFormulas()
+      else if (e.id === 'show-gridlines') toggleShowGridlines()
+      else if (e.id === 'link') insertLink()
+      else if (e.id === 'print') window.print()
+      else if (e.id === 'csv-export') exportCsvFile()
+      else if (e.id === 'csv-import') fileRef.current?.click()
+      else if (e.id === 'json-export') exportJson()
+      else if (e.id === 'json-import') jsonRef.current?.click()
+      else if (e.id === 'clear-all') confirm({ message: '모든 셀을 지우시겠습니까? (실행 취소 가능)', confirmLabel: '지우기' }).then((ok) => { if (ok) resetCells({}) })
+      else if (e.id === 'clear-formats') confirm({ message: '모든 셀 서식·스타일·조건부 서식을 지우시겠습니까? (실행 취소 가능)', confirmLabel: '지우기' }).then((ok) => { if (ok) clearAllFormats() })
     }
   }
 
-  const { triggerProps, menuProps, itemProps, open, setOpen } = useMenuButtonPattern(data, onEvent, {
+  const { triggerProps, menuProps, itemProps, open } = useMenuButtonPattern(data, onEvent, {
     label: '추가 메뉴',
   })
 

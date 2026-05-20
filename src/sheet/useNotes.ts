@@ -15,7 +15,7 @@ const migrateLegacy = (notes: Record<string, string>, ops: SheetOps) =>
   )
 
 export function useNotes(notes: Record<string, string>, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(notes, ops) }, [])
+  useEffect(() => { migrateLegacy(notes, ops) }, [notes, ops])
 
   const setNote = (k: string, text: string) => {
     const trimmed = serializeMarkdown(parseMarkdown(text)).trim()

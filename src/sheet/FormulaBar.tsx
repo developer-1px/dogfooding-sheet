@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { cycleTrailingFormulaRef } from './selection/formulaPick'
 
 interface Props {
@@ -14,8 +14,9 @@ interface Props {
 }
 
 export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, canRedo, extra, onAddrClick }: Props) {
-  const [draft, setDraft] = useState(value)
-  useEffect(() => { setDraft(value) }, [value, addr])
+  const [draftState, setDraftState] = useState({ addr, value, draft: value })
+  const draft = draftState.addr === addr && draftState.value === value ? draftState.draft : value
+  const setDraft = (next: string) => setDraftState({ addr, value, draft: next })
 
   return (
     <header className="sheet-toolbar">

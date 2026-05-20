@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useJSONDocument } from 'zod-crud'
 import { SheetSchema, colLettersFor, cellIdToKey, type Writes } from './schema'
 import { evaluateCell } from '@spredsheet/formula'
@@ -67,27 +67,27 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     setSelection((s) => setGridSelectionFocus(s, id))
   }, [edit])
   const formulaPickActive = edit.editing !== null && edit.draft.startsWith('=')
-  const [formulaPickAnchor, setFormulaPickAnchor] = useState<string | null>(null)
-  const [formulaPickTarget, setFormulaPickTarget] = useState<string | null>(null)
+  const formulaPickAnchorRef = useRef<string | null>(null)
+  const formulaPickTargetRef = useRef<string | null>(null)
 
   const pickFormulaRef = useCallback((id: string, opts: { extend?: boolean } = {}) => {
     if (!formulaPickActive) return
-    const anchor = opts.extend && formulaPickAnchor ? formulaPickAnchor : id
+    const anchor = opts.extend && formulaPickAnchorRef.current ? formulaPickAnchorRef.current : id
     const ref = refForFormulaPick(anchor, id)
     if (!ref) return
-    setFormulaPickAnchor(anchor)
-    setFormulaPickTarget(id)
+    formulaPickAnchorRef.current = anchor
+    formulaPickTargetRef.current = id
     setSelectedIds(idsForFormulaPick(anchor, id))
     setSelectAnchor(anchor)
     edit.setDraft(replaceTrailingFormulaRef(edit.draft, ref))
-  }, [edit, formulaPickActive, formulaPickAnchor])
+  }, [edit, formulaPickActive, setSelectAnchor, setSelectedIds])
 
   const moveFormulaPick = useCallback((delta: { dRow: number; dCol: number }, extend = false) => {
     if (!formulaPickActive || !edit.editing) return
-    const base = formulaPickTarget ?? formulaPickAnchor ?? edit.editing
+    const base = formulaPickTargetRef.current ?? formulaPickAnchorRef.current ?? edit.editing
     const next = moveCellId(base, delta.dRow, delta.dCol, rowCount, colLetters)
     if (next) pickFormulaRef(next, { extend })
-  }, [colLetters, edit.editing, formulaPickActive, formulaPickAnchor, formulaPickTarget, pickFormulaRef, rowCount])
+  }, [colLetters, edit.editing, formulaPickActive, pickFormulaRef, rowCount])
 
   const cycleFormulaRef = useCallback(() => {
     if (!formulaPickActive) return
@@ -96,16 +96,16 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
 
   useEffect(() => {
     if (formulaPickActive) return
-    setFormulaPickAnchor(null)
-    setFormulaPickTarget(null)
+    formulaPickAnchorRef.current = null
+    formulaPickTargetRef.current = null
   }, [formulaPickActive])
 
   const commitEdit = (move?: { dRow: number; dCol: number }) => {
     const wasPicking = formulaPickActive
     edit.commitEdit(move)
     if (wasPicking) {
-      setFormulaPickAnchor(null)
-      setFormulaPickTarget(null)
+      formulaPickAnchorRef.current = null
+      formulaPickTargetRef.current = null
       setSelectedIds([])
     }
   }
@@ -114,8 +114,8 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     const wasPicking = formulaPickActive
     edit.cancelEdit()
     if (wasPicking) {
-      setFormulaPickAnchor(null)
-      setFormulaPickTarget(null)
+      formulaPickAnchorRef.current = null
+      formulaPickTargetRef.current = null
       setSelectedIds([])
     }
   }

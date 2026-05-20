@@ -28,7 +28,7 @@ const migrateLegacy = (rules: CondRule[], ops: SheetOps) =>
   )
 
 export function useCondFormat(rules: CondRule[], ops: SheetOps) {
-  useEffect(() => { migrateLegacy(rules, ops) }, [])
+  useEffect(() => { migrateLegacy(rules, ops) }, [rules, ops])
 
   const addRule = (r: CondRule) => {
     const idx = rules.findIndex((x) => x.col === r.col)

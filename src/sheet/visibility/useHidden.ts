@@ -32,7 +32,7 @@ const migrateLegacy = (hidden: HiddenState, ops: SheetOps) =>
   )
 
 export function useHidden(hidden: HiddenState, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(hidden, ops) }, [])
+  useEffect(() => { migrateLegacy(hidden, ops) }, [hidden, ops])
 
   const hideRow = (row: number) => {
     if (hidden.rows.includes(row)) return

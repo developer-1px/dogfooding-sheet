@@ -12,7 +12,6 @@ const numFromCellFactory = (cells: Cells, seen: Set<string>) => (ref: string): n
 
 const evalArith = (expr: string): unknown => {
   if (!/^[\d+\-*/().\s,<>=!]+$/.test(expr)) throw new Error('bad')
-  // eslint-disable-next-line no-new-func
   return Function(`"use strict"; return (${expr})`)()
 }
 

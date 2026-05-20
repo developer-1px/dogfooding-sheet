@@ -17,7 +17,7 @@ export function useColWidths(widths: Record<string, number>, ops: SheetOps) {
   // Live drag overlay — useResizeGesture's onChange writes here; onEnd commits to ops.
   // Single liveWidth state suffices (only one column resized at a time).
   const [liveWidth, setLiveWidth] = useState<{ col: string; w: number } | null>(null)
-  useEffect(() => { migrateLegacy(widths, ops) }, [])
+  useEffect(() => { migrateLegacy(widths, ops) }, [widths, ops])
 
   const autoFit = (col: string, samples: string[]) => {
     const canvas = document.createElement('canvas')

@@ -17,6 +17,7 @@ interface Args {
 function useFillHandleGesture(args: {
   equals: (a: Rect, b: Rect) => boolean
   onCommit: (source: Rect, target: Rect) => void
+  onEnd?: () => void
 }) {
   const sourceRef = useRef<Rect | null>(null)
   const targetRef = useRef<Rect | null>(null)
@@ -33,6 +34,7 @@ function useFillHandleGesture(args: {
     const target = targetRef.current
     if (source && target && !args.equals(source, target)) args.onCommit(source, target)
     clear()
+    args.onEnd?.()
   }
 
   return {
@@ -43,7 +45,7 @@ function useFillHandleGesture(args: {
     },
     handleProps(source: Rect) {
       return {
-        onMouseDown(_event: React.MouseEvent) {
+        onMouseDown() {
           sourceRef.current = source
           targetRef.current = source
           setPreview(source)
@@ -56,15 +58,19 @@ function useFillHandleGesture(args: {
 
 export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds, rowCount, colLetters }: Args) {
   const sourceRef = useRef<Rect | null>(null)
+  const [dragging, setDragging] = useState(false)
 
   const sourceRect = (): Rect | null => fillSourceRect(selectedIds, focusId)
 
   const fill = useFillHandleGesture({
     equals: rectEq,
     onCommit: (src, tgt) => {
-      sourceRef.current = null
       applyFill(src, tgt, cells, writeCell, writeCells)
       setSelectedIds(idsInFillTarget(tgt, colLetters))
+    },
+    onEnd: () => {
+      sourceRef.current = null
+      setDragging(false)
     },
   })
 
@@ -73,7 +79,8 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     if (!src) return
     e.stopPropagation()
     sourceRef.current = src
-    fill.handleProps(src).onMouseDown(e)
+    setDragging(true)
+    fill.handleProps(src).onMouseDown()
   }
 
   const onCellEnterDuringFill = (id: string) => {
@@ -83,5 +90,5 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
     if (target) fill.setTarget(target)
   }
 
-  return { onHandleMouseDown, onCellEnterDuringFill, preview: fill.preview, dragging: sourceRef.current !== null }
+  return { onHandleMouseDown, onCellEnterDuringFill, preview: fill.preview, dragging }
 }

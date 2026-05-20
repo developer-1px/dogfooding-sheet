@@ -43,7 +43,7 @@ const migrateLegacy = (styles: Record<string, CellStyle>, ops: SheetOps) =>
   )
 
 export function useStyles(styles: Record<string, CellStyle>, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(styles, ops) }, [])
+  useEffect(() => { migrateLegacy(styles, ops) }, [styles, ops])
 
   const updateStyle = (keys: string[], patch: Partial<CellStyle>) => {
     upsertKeys(ops, '/styles', styles, keys.map((k) => [k, merge(styles[k], patch)]))

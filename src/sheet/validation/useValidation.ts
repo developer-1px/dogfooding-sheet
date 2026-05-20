@@ -38,7 +38,7 @@ const migrateLegacy = (rules: Record<string, Rule>, ops: SheetOps) =>
   )
 
 export function useValidation(rules: Record<string, Rule>, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(rules, ops) }, [])
+  useEffect(() => { migrateLegacy(rules, ops) }, [rules, ops])
 
   const setListRule = (keys: string[], options: string[]) => {
     const value: Rule | undefined = options.length === 0 ? undefined : { type: 'list', options }

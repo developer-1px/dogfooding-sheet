@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { freezeOffsets } from './freezeOffsets'
 
 describe('freezeOffsets', () => {
-  const rowH = (_r: number) => 28
-  const widthOf = (_c: string) => 100
+  const rowH = () => 28
+  const widthOf = () => 100
 
   it('zero freeze → empty arrays', () => {
     const { tops, lefts } = freezeOffsets(0, 0, rowH, widthOf)

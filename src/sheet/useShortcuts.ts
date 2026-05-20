@@ -17,7 +17,7 @@ export type { JSONOps }
 
 export function useShortcuts(args: Args) {
   const ref = useRef(args)
-  ref.current = args
+  useEffect(() => { ref.current = args }, [args])
   useGlobalShortcuts(() => ref.current)
 
   // Keys that aria-kernel useShortcut can't express cleanly (any-printable to start edit,

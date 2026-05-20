@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSheet, type SheetCtx } from './sheet/useSheet'
 import { DEFAULT_HEIGHT } from './sheet/grid-view/useRowHeights'
 import { DEFAULT_WIDTH } from './sheet/grid-view/useColWidths'
@@ -56,7 +56,7 @@ export default function App() {
         .then((v) => { if (v === null) return; if (v === '') c.clearFilter(); else c.applyFilter(col, v) })
     },
   })
-  ctxRef.current = ctx
+  useEffect(() => { ctxRef.current = ctx }, [ctx])
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
   const addr = selectionAddress(ctx.selectedIds, ctx.focusKey, ctx.rowCount, ctx.colLetters)
 

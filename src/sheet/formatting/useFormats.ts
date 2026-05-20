@@ -15,7 +15,7 @@ const migrateLegacy = (formats: Record<string, Format>, ops: SheetOps) =>
   )
 
 export function useFormats(formats: Record<string, Format>, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(formats, ops) }, [])
+  useEffect(() => { migrateLegacy(formats, ops) }, [formats, ops])
 
   const setFormat = (keys: string[], fmt: Format) => {
     upsertKeys(ops, '/formats', formats, keys.map((k) => [k, fmt === 'plain' ? undefined : fmt]))

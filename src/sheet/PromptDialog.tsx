@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
@@ -14,7 +14,6 @@ interface Props {
 export function PromptDialog({ open, label, placeholder, initial = '', submitLabel = '확인', onSubmit, onCancel }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [value, setValue] = useState(initial)
-  useEffect(() => { if (open) setValue(initial) }, [open, initial])
   const { rootProps } = useDialogModalPattern({
     open, label,
     initialFocusRef: inputRef,

@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from 'react'
+import { useRef, useState, type ReactElement } from 'react'
 import { createElement } from 'react'
 import { PromptDialog } from './PromptDialog'
 
@@ -12,19 +12,22 @@ export interface PromptOptions {
 export type Ask = (opts: PromptOptions) => Promise<string | null>
 
 interface State {
+  id: number
   opts: PromptOptions
   resolve: (value: string | null) => void
 }
 
 export function usePrompt(): { ask: (opts: PromptOptions) => Promise<string | null>; dialog: ReactElement } {
   const [state, setState] = useState<State | null>(null)
+  const nextId = useRef(0)
   const close = (value: string | null) => {
     state?.resolve(value)
     setState(null)
   }
   const ask = (opts: PromptOptions) =>
-    new Promise<string | null>((resolve) => setState({ opts, resolve }))
+    new Promise<string | null>((resolve) => setState({ id: nextId.current++, opts, resolve }))
   const dialog = createElement(PromptDialog, {
+    key: state?.id ?? 'closed',
     open: state !== null,
     label: state?.opts.label ?? '',
     initial: state?.opts.initial,

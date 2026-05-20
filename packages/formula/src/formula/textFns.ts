@@ -46,7 +46,10 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'MID') return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
   if (F === 'TRIM') return wrap(argsT[0].trim())
   if (F === 'NORMALIZE') { try { return wrap(argsT[0].normalize(argsT[1] || 'NFC')) } catch { return wrap('#VALUE!') } }
-  if (F === 'CLEAN') return wrap(argsT[0].replace(/[\x00-\x1F\x7F]/g, ''))
+  if (F === 'CLEAN') return wrap([...argsT[0]].filter((ch) => {
+    const code = ch.charCodeAt(0)
+    return code > 0x1f && code !== 0x7f
+  }).join(''))
   if (F === 'T') return /^-?\d/.test(argsT[0]) ? wrap('') : wrap(argsT[0])
   if (F === 'SUBSTITUTE') {
     const [text, find, repl, occStr] = argsT

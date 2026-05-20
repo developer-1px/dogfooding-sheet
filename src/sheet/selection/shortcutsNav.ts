@@ -23,14 +23,20 @@ export function handleNavigation(e: KeyboardEvent, mod: boolean, a: NavArgs): bo
   }
   if (matchesShortcut(e, 'Mod+ArrowUp Mod+ArrowDown Mod+ArrowLeft Mod+ArrowRight')) {
     const next = jumpToEdge(focusId, cells, rowCount, e.key as 'ArrowUp', colLetters); if (!next) return true
-    e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : moveFocus(next); return true
+    e.preventDefault()
+    if (e.shiftKey) setSelectedIds(idsBetween(focusId, next))
+    else moveFocus(next)
+    return true
   }
   if (e.key === 'Tab') {
     const t = tabTarget(focusId, e.shiftKey, colLetters); if (t) { moveFocus(t); e.preventDefault() }; return true
   }
   if (e.key === 'PageUp' || e.key === 'PageDown') {
     const next = pageTarget(focusId, rowCount, e.key); if (!next) return true
-    e.preventDefault(); e.shiftKey ? setSelectedIds(idsBetween(focusId, next)) : moveFocus(next); return true
+    e.preventDefault()
+    if (e.shiftKey) setSelectedIds(idsBetween(focusId, next))
+    else moveFocus(next)
+    return true
   }
   if (e.key === 'Home' || e.key === 'End') {
     const t = homeEndTarget(focusId, rowCount, e.key, mod, colLetters); if (t) { moveFocus(t); e.preventDefault() }; return true

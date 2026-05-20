@@ -26,7 +26,7 @@ const migrateLegacy = (state: TabsState, ops: SheetOps) =>
   )
 
 export function useTabs(state: TabsState, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(state, ops) }, [])
+  useEffect(() => { migrateLegacy(state, ops) }, [state, ops])
   const setState = (s: TabsState) => ops.replace('/tabs', s)
   return { state, setState }
 }
