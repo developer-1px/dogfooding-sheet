@@ -20,6 +20,19 @@ export default defineConfig([
     },
     rules: {
       'no-console': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "TSAsExpression[typeAnnotation.type='TSNeverKeyword']",
+          message: 'Route zod-crud path/value casts through src/lib/dictOps.ts instead of using `as never` at call sites.',
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/lib/dictOps.ts'],
+    rules: {
+      'no-restricted-syntax': 'off',
     },
   },
 ])
