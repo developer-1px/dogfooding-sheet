@@ -73,12 +73,6 @@ export type SheetOps = JSONOps<Sheet> & {
   canRedo(): boolean
 }
 
-const emptyBundle: TabBundle = {
-  cells: {}, notes: {}, styles: {}, formats: {}, validation: {}, condFormat: [],
-  freeze: { rows: 0, cols: 0 }, hidden: { rows: [], cols: [] }, colWidths: {}, rowHeights: {}, merges: [],
-  rowCount: DEFAULT_ROW_COUNT, colCount: DEFAULT_COL_COUNT,
-}
-
 export const bundleOf = (sheet: Sheet): TabBundle => ({
   cells: sheet.cells, notes: sheet.notes, styles: sheet.styles, formats: sheet.formats,
   validation: sheet.validation, condFormat: sheet.condFormat,
@@ -88,7 +82,40 @@ export const bundleOf = (sheet: Sheet): TabBundle => ({
 
 export const withBundle = (sheet: Sheet, b: TabBundle): Sheet => ({ ...sheet, ...b })
 
-export const blankBundle = (): TabBundle => ({ ...emptyBundle, freeze: { ...emptyBundle.freeze }, hidden: { rows: [], cols: [] } })
+export const blankBundle = (): TabBundle => ({
+  cells: {},
+  notes: {},
+  styles: {},
+  formats: {},
+  validation: {},
+  condFormat: [],
+  freeze: { rows: 0, cols: 0 },
+  hidden: { rows: [], cols: [] },
+  colWidths: {},
+  rowHeights: {},
+  merges: [],
+  rowCount: DEFAULT_ROW_COUNT,
+  colCount: DEFAULT_COL_COUNT,
+})
+
+export const cloneBundle = (bundle: TabBundle): TabBundle => ({
+  cells: { ...bundle.cells },
+  notes: { ...bundle.notes },
+  styles: Object.fromEntries(Object.entries(bundle.styles).map(([key, style]) => [key, { ...style }])),
+  formats: { ...bundle.formats },
+  validation: Object.fromEntries(Object.entries(bundle.validation).map(([key, rule]) => [
+    key,
+    rule.type === 'list' ? { ...rule, options: [...rule.options] } : { ...rule },
+  ])),
+  condFormat: bundle.condFormat.map((rule) => ({ ...rule })),
+  freeze: { ...bundle.freeze },
+  hidden: { rows: [...bundle.hidden.rows], cols: [...bundle.hidden.cols] },
+  colWidths: { ...bundle.colWidths },
+  rowHeights: { ...bundle.rowHeights },
+  merges: bundle.merges.map(([r0, c0, r1, c1]) => [r0, c0, r1, c1]),
+  rowCount: bundle.rowCount,
+  colCount: bundle.colCount,
+})
 
 export const initialSheet: Sheet = {
   ...blankBundle(),

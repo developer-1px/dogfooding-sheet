@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { blankBundle, bundleOf, withBundle, type Sheet, type TabBundle, type Cells } from '../schema'
+import { blankBundle, bundleOf, cloneBundle, withBundle, type Sheet, type TabBundle, type Cells } from '../schema'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 export interface TabsState {
@@ -47,10 +47,10 @@ const uniqueName = (order: string[]): string => {
 
 export function tabActions(sheet: Sheet, ops: TabActionOps) {
   const state = sheet.tabs
-  const snapshotSaved = (): Record<string, TabBundle> => ({ ...state.saved, [state.active]: bundleOf(sheet) })
+  const snapshotSaved = (): Record<string, TabBundle> => ({ ...state.saved, [state.active]: cloneBundle(bundleOf(sheet)) })
   const setTabs = (next: TabsState) => ({ ...sheet, tabs: next })
   const hydrate = (next: Sheet, name: string, saved: Record<string, TabBundle>): Sheet =>
-    withBundle({ ...next, tabs: { ...next.tabs, active: name } }, saved[name] ?? blankBundle())
+    withBundle({ ...next, tabs: { ...next.tabs, active: name } }, cloneBundle(saved[name] ?? blankBundle()))
 
   const switchTab = (name: string) => {
     if (name === state.active || !state.order.includes(name)) return
@@ -91,7 +91,7 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     if (idx < 0) return
     const newName = uniqueName(state.order)
     const saved = snapshotSaved()
-    saved[newName] = { ...(saved[name] ?? blankBundle()) }
+    saved[newName] = cloneBundle(saved[name] ?? blankBundle())
     const newOrder = [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)]
     ops.reset(hydrate(setTabs({ ...state, order: newOrder, active: newName, saved }), newName, saved))
   }

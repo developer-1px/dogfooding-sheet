@@ -46,6 +46,8 @@ describe('tabActions', () => {
     tabActions(sheet, stubOps(s)).duplicateSheet('Sheet2')
     expect(s.reset!.tabs.order).toContain('Sheet3')
     expect(s.reset!.tabs.saved.Sheet3.cells).toEqual({ A1: 'b' })
+    expect(s.reset!.tabs.saved.Sheet3.cells).not.toBe(sheet.tabs.saved.Sheet2.cells)
+    expect(s.reset!.cells).not.toBe(s.reset!.tabs.saved.Sheet3.cells)
   })
   it('switchTab preserves per-tab styles/notes (multi-sheet partition)', () => {
     const sheet: Sheet = {
