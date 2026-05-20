@@ -1,24 +1,56 @@
 import { useEffect } from 'react'
-import type { SheetOps } from '../schema'
+import { colIndex, parseA1, type SheetOps } from '../schema'
 import { upsertKeys } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
-import type { Format } from './formatTypes'
+import { normalizeStoredFormat, type Format } from './formatTypes'
 
 export type { Format } from './formatTypes'
 export type FormatLookup = (k: string) => Format
 const LEGACY_KEY = 'spreadsheet:formats:v1'
 
-const migrateLegacy = (formats: Record<string, Format>, ops: SheetOps) =>
+interface FormatBounds {
+  rowCount: number
+  colCount: number
+}
+
+const validFormatKey = (key: string, bounds?: FormatBounds): boolean => {
+  const ref = parseA1(key)
+  if (!ref) return false
+  if (!bounds) return true
+  const col = colIndex(ref.col)
+  return ref.row >= 0 && ref.row < bounds.rowCount && col >= 0 && col < bounds.colCount
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+export const coerceLegacyFormats = (raw: unknown, bounds?: FormatBounds): Record<string, Format> | undefined => {
+  if (!isRecord(raw)) return undefined
+  const out: Record<string, Format> = {}
+  for (const [key, value] of Object.entries(raw)) {
+    if (!validFormatKey(key, bounds)) continue
+    const format = normalizeStoredFormat(value)
+    if (format !== undefined) out[key] = format
+  }
+  return Object.keys(out).length > 0 ? out : undefined
+}
+
+const migrateLegacy = (formats: Record<string, Format>, ops: SheetOps, bounds?: FormatBounds) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(formats).length === 0, ops,
-    (raw) => raw && typeof raw === 'object' && Object.keys(raw).length > 0 ? raw as Record<string, Format> : undefined,
+    (raw) => coerceLegacyFormats(raw, bounds),
     (o, v) => o.replace('/formats', v),
   )
 
-export function useFormats(formats: Record<string, Format>, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(formats, ops) }, [formats, ops])
+export function useFormats(formats: Record<string, Format>, ops: SheetOps, bounds?: FormatBounds) {
+  const rowCount = bounds?.rowCount
+  const colCount = bounds?.colCount
+  useEffect(() => {
+    migrateLegacy(formats, ops, rowCount !== undefined && colCount !== undefined ? { rowCount, colCount } : undefined)
+  }, [formats, ops, rowCount, colCount])
 
   const setFormat = (keys: string[], fmt: Format) => {
-    upsertKeys(ops, '/formats', formats, keys.map((k) => [k, fmt === 'plain' ? undefined : fmt]))
+    const value = normalizeStoredFormat(fmt)
+    upsertKeys(ops, '/formats', formats, keys.filter((key) => validFormatKey(key, bounds)).map((k) => [k, value]))
   }
 
   return { setFormat, formatOf: (k: string): Format => formats[k] ?? 'plain' }

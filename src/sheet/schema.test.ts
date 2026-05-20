@@ -101,7 +101,7 @@ describe('SheetSchema', () => {
       cells: { A1: 'ok', C1: 'outside col', A3: 'outside row' },
       notes: { A1: ' note ', B1: '', C1: 'outside col' },
       styles: { A1: { b: true }, B1: { bg: 'red', fg: '#fff' }, C1: { i: true } },
-      formats: { B1: 'currency', C1: 'percent' },
+      formats: { A1: 'plain', B1: 'currency', C1: 'percent' },
       validation: {
         A1: { type: 'list', options: ['open', 'open', '', 'x'.repeat(MAX_CELL_TEXT_LENGTH + 1)] },
         B1: { type: 'checkbox' },
@@ -112,7 +112,9 @@ describe('SheetSchema', () => {
         { col: 'A', op: '<' as const, value: '2', color: '#000' },
         { col: 'C', op: '=' as const, value: 'x', color: '#fff' },
         { col: 'B', op: 'contains' as const, value: 'bad color', color: 'red' },
+        { col: 'B', op: '=' as const, value: '', color: '#fff' },
       ],
+      freeze: { rows: 4, cols: 3 },
       hidden: { rows: [1, 1, 2, 0.5], cols: ['A', 'A', 'C'] },
       colWidths: { A: 20, C: 120 },
       rowHeights: { '0': 10, '2': 30, bad: 40 },
@@ -125,6 +127,7 @@ describe('SheetSchema', () => {
     expect(parsed.formats).toEqual({ B1: 'currency' })
     expect(parsed.validation).toEqual({ A1: { type: 'list', options: ['open'] }, B1: { type: 'checkbox' } })
     expect(parsed.condFormat).toEqual([{ col: 'A', op: '<', value: '2', color: '#000' }])
+    expect(parsed.freeze).toEqual({ rows: 2, cols: 2 })
     expect(parsed.hidden).toEqual({ rows: [1], cols: ['A'] })
     expect(parsed.colWidths).toEqual({ A: 40 })
     expect(parsed.rowHeights).toEqual({ '0': 18 })

@@ -1,7 +1,7 @@
 import * as z from 'zod'
 import type { JSONOps } from 'zod-crud'
 import { COL_LETTERS as COLS, colIndex, parseA1 } from '@spredsheet/grid'
-import { FORMAT_KEYS } from './formatting/formatTypes'
+import { FORMAT_KEYS, normalizeStoredFormat } from './formatting/formatTypes'
 import { isSafeCellText, sanitizeCellRecord } from './cellValue'
 import { normalizeNoteText } from './noteText'
 import { COLUMN_WIDTH_BOUNDS, ROW_HEIGHT_BOUNDS, storedResizeValue } from './grid-view/resizeRules'
@@ -33,6 +33,20 @@ const CellStyleSchema = z.object({
 
 const COLOR_RE = /^#[0-9a-fA-F]{3,8}$/
 export const MAX_VALIDATION_OPTIONS = 100
+export const COND_FORMAT_OPS = ['>', '<', '=', '!=', 'contains'] as const
+export type CondFormatOp = typeof COND_FORMAT_OPS[number]
+
+export interface NormalizedCondRule {
+  col: string
+  op: CondFormatOp
+  value: string
+  color: string
+}
+
+export interface NormalizedFreeze {
+  rows: number
+  cols: number
+}
 
 export const normalizeSheetName = (name: string): string | null => {
   const trimmed = name.trim()
@@ -45,6 +59,9 @@ export const isSafeSheetName = (name: string): boolean =>
 export const isSafeColor = (color: string): boolean =>
   COLOR_RE.test(color)
 export const isSafeTabColor = isSafeColor
+
+export const isCondFormatOp = (value: unknown): value is CondFormatOp =>
+  typeof value === 'string' && (COND_FORMAT_OPS as readonly string[]).includes(value)
 
 export interface NormalizedCellStyle {
   b?: boolean
@@ -111,6 +128,28 @@ const isColInBounds = (col: string, colCount: number): boolean => {
   return index >= 0 && index < colCount
 }
 
+export const normalizeCondRule = (
+  rule: { col?: unknown; op?: unknown; value?: unknown; color?: unknown },
+  bundle: Pick<RawTabBundle, 'colCount'>,
+): NormalizedCondRule | undefined => {
+  if (typeof rule.col !== 'string' || !isColInBounds(rule.col, bundle.colCount)) return undefined
+  if (!isCondFormatOp(rule.op)) return undefined
+  if (typeof rule.value !== 'string' || rule.value === '' || !isSafeCellText(rule.value)) return undefined
+  if (typeof rule.color !== 'string' || !isSafeColor(rule.color)) return undefined
+  return { col: rule.col, op: rule.op, value: rule.value, color: rule.color }
+}
+
+const normalizeBoundedCount = (value: unknown, max: number): number =>
+  typeof value === 'number' && Number.isInteger(value) && value > 0 ? Math.min(value, Math.max(0, max)) : 0
+
+export const normalizeFreeze = (
+  freeze: { rows?: unknown; cols?: unknown },
+  bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>,
+): NormalizedFreeze => ({
+  rows: normalizeBoundedCount(freeze.rows, bundle.rowCount),
+  cols: normalizeBoundedCount(freeze.cols, bundle.colCount),
+})
+
 const isRowInBounds = (row: number, rowCount: number): boolean =>
   Number.isInteger(row) && row >= 0 && row < rowCount
 
@@ -159,9 +198,8 @@ const sanitizeCondFormat = (
 ): RawTabBundle['condFormat'] => {
   const byCol = new Map<string, RawTabBundle['condFormat'][number]>()
   for (const rule of rules) {
-    if (!isColInBounds(rule.col, bundle.colCount)) continue
-    if (rule.value === '' || !isSafeCellText(rule.value) || !COLOR_RE.test(rule.color)) continue
-    byCol.set(rule.col, rule)
+    const normalized = normalizeCondRule(rule, bundle)
+    if (normalized) byCol.set(normalized.col, normalized)
   }
   return [...byCol.values()]
 }
@@ -204,9 +242,10 @@ const sanitizeTabBundle = <T extends RawTabBundle>(bundle: T): T => ({
     return normalized !== '' && isSafeCellText(normalized) ? normalized : undefined
   }),
   styles: sanitizeCellScopedRecord(bundle.styles, bundle, normalizeCellStyle),
-  formats: sanitizeCellScopedRecord(bundle.formats, bundle),
+  formats: sanitizeCellScopedRecord(bundle.formats, bundle, normalizeStoredFormat),
   validation: sanitizeValidation(bundle.validation, bundle),
   condFormat: sanitizeCondFormat(bundle.condFormat, bundle),
+  freeze: normalizeFreeze(bundle.freeze, bundle),
   hidden: sanitizeHidden(bundle.hidden, bundle),
   colWidths: sanitizeColWidths(bundle.colWidths, bundle),
   rowHeights: sanitizeRowHeights(bundle.rowHeights, bundle),

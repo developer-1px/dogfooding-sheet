@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nextHiddenState, type HiddenState } from './useHidden'
+import { coerceLegacyHidden, nextHiddenState, normalizeHiddenState, type HiddenState } from './useHidden'
 
 describe('nextHiddenState', () => {
   const hidden: HiddenState = { rows: [1], cols: ['B'] }
@@ -25,5 +25,30 @@ describe('nextHiddenState', () => {
   it('clears all hidden rows and columns when needed', () => {
     expect(nextHiddenState(hidden, { type: 'showAll' })).toEqual({ rows: [], cols: [] })
     expect(nextHiddenState({ rows: [], cols: [] }, { type: 'showAll' })).toBeNull()
+  })
+
+  it('ignores hide requests outside sheet bounds', () => {
+    const bounds = { rowCount: 2, colCount: 2 }
+    expect(nextHiddenState(hidden, { type: 'hideRow', row: 2 }, bounds)).toBeNull()
+    expect(nextHiddenState(hidden, { type: 'hideCol', col: 'C' }, bounds)).toBeNull()
+  })
+})
+
+describe('normalizeHiddenState', () => {
+  it('dedupes hidden rows and columns within bounds', () => {
+    expect(normalizeHiddenState({
+      rows: [2, 0, 0, 3, 1.5],
+      cols: ['B', 'B', 'C', 'A'],
+    }, { rowCount: 3, colCount: 2 })).toEqual({
+      rows: [0, 2],
+      cols: ['B', 'A'],
+    })
+  })
+})
+
+describe('coerceLegacyHidden', () => {
+  it('returns undefined when no legacy hidden target survives', () => {
+    expect(coerceLegacyHidden({ rows: [3], cols: ['C'] }, { rowCount: 2, colCount: 2 })).toBeUndefined()
+    expect(coerceLegacyHidden(null)).toBeUndefined()
   })
 })

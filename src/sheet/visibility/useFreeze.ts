@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import type { SheetOps } from '../schema'
+import { useEffect, useMemo } from 'react'
+import { MAX_COL_COUNT, MAX_ROW_COUNT, normalizeFreeze, type SheetOps } from '../schema'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 export interface FreezeState { rows: number; cols: number }
@@ -13,23 +13,40 @@ export interface FreezeActions {
 
 const LEGACY_KEY = 'spreadsheet:freeze:v1'
 
-const migrateLegacy = (freeze: FreezeState, ops: SheetOps) =>
+interface FreezeBounds {
+  rowCount: number
+  colCount: number
+}
+
+const defaultFreezeBounds = (bounds?: FreezeBounds): FreezeBounds => ({
+  rowCount: bounds?.rowCount ?? MAX_ROW_COUNT,
+  colCount: bounds?.colCount ?? MAX_COL_COUNT,
+})
+
+export const coerceLegacyFreeze = (raw: unknown, bounds?: FreezeBounds): FreezeState | undefined => {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined
+  const next = normalizeFreeze(raw, defaultFreezeBounds(bounds))
+  return next.rows || next.cols ? next : undefined
+}
+
+const migrateLegacy = (freeze: FreezeState, ops: SheetOps, bounds?: FreezeBounds) =>
   migrateLegacyKey(LEGACY_KEY, !freeze.rows && !freeze.cols, ops,
-    (raw) => {
-      const o = raw as { rows?: unknown; cols?: unknown } | null
-      const next: FreezeState = { rows: typeof o?.rows === 'number' ? o.rows : 0, cols: typeof o?.cols === 'number' ? o.cols : 0 }
-      return next.rows || next.cols ? next : undefined
-    },
+    (raw) => coerceLegacyFreeze(raw, bounds),
     (o, v) => o.replace('/freeze', v),
   )
 
-export function useFreeze(freeze: FreezeState, ops: SheetOps) {
-  useEffect(() => { migrateLegacy(freeze, ops) }, [freeze, ops])
+export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBounds) {
+  const rowCount = bounds?.rowCount ?? MAX_ROW_COUNT
+  const colCount = bounds?.colCount ?? MAX_COL_COUNT
+  const current = useMemo(() => normalizeFreeze(freeze, { rowCount, colCount }), [freeze, rowCount, colCount])
 
-  const toggleRows = () => ops.replace('/freeze', { ...freeze, rows: freeze.rows ? 0 : 1 })
-  const toggleCols = () => ops.replace('/freeze', { ...freeze, cols: freeze.cols ? 0 : 1 })
-  const setFreezeRows = (n: number) => ops.replace('/freeze', { ...freeze, rows: Math.max(0, n) })
-  const setFreezeCols = (n: number) => ops.replace('/freeze', { ...freeze, cols: Math.max(0, n) })
+  useEffect(() => { migrateLegacy(current, ops, { rowCount, colCount }) }, [current, ops, rowCount, colCount])
 
-  return { freeze, toggleRows, toggleCols, setFreezeRows, setFreezeCols }
+  const replaceFreeze = (next: FreezeState) => ops.replace('/freeze', normalizeFreeze(next, { rowCount, colCount }))
+  const toggleRows = () => replaceFreeze({ ...current, rows: current.rows ? 0 : 1 })
+  const toggleCols = () => replaceFreeze({ ...current, cols: current.cols ? 0 : 1 })
+  const setFreezeRows = (n: number) => replaceFreeze({ ...current, rows: n })
+  const setFreezeCols = (n: number) => replaceFreeze({ ...current, cols: n })
+
+  return { freeze: current, toggleRows, toggleCols, setFreezeRows, setFreezeCols }
 }

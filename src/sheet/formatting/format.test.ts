@@ -1,6 +1,29 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateCell } from '@spredsheet/formula'
-import { applyFormat } from './useFormats'
+import { applyFormat, coerceLegacyFormats } from './useFormats'
+import { isFormat, normalizeStoredFormat } from './formatTypes'
+
+describe('format coercion', () => {
+  it('normalizes stored format values', () => {
+    expect(isFormat('currency')).toBe(true)
+    expect(isFormat('bad')).toBe(false)
+    expect(normalizeStoredFormat('plain')).toBeUndefined()
+    expect(normalizeStoredFormat('currency')).toBe('currency')
+  })
+
+  it('coerces legacy formats through current bounds and format rules', () => {
+    expect(coerceLegacyFormats({
+      A1: 'currency',
+      B1: 'plain',
+      C1: 'percent',
+      A3: 'date',
+      'bad/key': 'time',
+      B2: 'bad',
+    }, { rowCount: 2, colCount: 2 })).toEqual({
+      A1: 'currency',
+    })
+  })
+})
 
 describe('applyFormat', () => {
   it('plain returns value as-is', () => {
