@@ -349,8 +349,17 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=UNICHAR(128512)')).toBe('😀')
     expect(evaluateCell({}, '=UNICODE("😀")')).toBe('128512')
   })
+  it('UNICHAR / UNICODE reject invalid codepoint inputs', () => {
+    expect(evaluateCell({}, '=UNICHAR(0)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=UNICHAR(1.5)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=UNICHAR(1114112)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=UNICODE()')).toBe('#VALUE!')
+  })
   it('CHAR / CODE round-trip', () => {
     expect(evaluateCell({}, '=CHAR(65)')).toBe('A')
     expect(evaluateCell({}, '=CODE("A")')).toBe('65')
+  })
+  it('CODE rejects missing input', () => {
+    expect(evaluateCell({}, '=CODE()')).toBe('#VALUE!')
   })
 })

@@ -7,6 +7,7 @@ type URLLike = {
   searchParams: { get(name: string): string | null }
 }
 type URLCtor = new (input: string) => URLLike
+const MAX_UNICODE_CODE_POINT = 0x10ffff
 
 const parseURL = (input: string): URLLike => {
   const Ctor = (globalThis as { URL?: URLCtor }).URL
@@ -90,16 +91,21 @@ export function dispatchTextCodec(F: string, argsT: string[]): string | null {
   if (F === 'BASE64DECODE') { try { return wrapBounded(base64Decode(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
   if (F === 'UNICHAR') {
     const n = Number(argsT[0])
-    return Number.isFinite(n) && n > 0 ? wrap(String.fromCodePoint(n)) : wrap('#VALUE!')
+    return Number.isInteger(n) && n > 0 && n <= MAX_UNICODE_CODE_POINT
+      ? wrap(String.fromCodePoint(n))
+      : wrap('#VALUE!')
   }
   if (F === 'UNICODE') {
-    const cp = argsT[0].codePointAt(0)
+    const cp = (argsT[0] ?? '').codePointAt(0)
     return cp !== undefined ? String(cp) : wrap('#VALUE!')
   }
   if (F === 'CHAR') {
     const n = Number(argsT[0])
     return Number.isFinite(n) ? wrap(String.fromCharCode(n)) : wrap('#VALUE!')
   }
-  if (F === 'CODE') return argsT[0].length > 0 ? String(argsT[0].charCodeAt(0)) : wrap('#VALUE!')
+  if (F === 'CODE') {
+    const text = argsT[0] ?? ''
+    return text.length > 0 ? String(text.charCodeAt(0)) : wrap('#VALUE!')
+  }
   return null
 }
