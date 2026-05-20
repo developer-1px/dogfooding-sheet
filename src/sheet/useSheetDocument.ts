@@ -5,7 +5,8 @@ import { loadInitial, saveSheet } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
 
 export function useSheetDocument() {
-  const doc = useJSONDocument(SheetSchema, loadInitial(), { history: 100 })
+  const initial = useMemo(() => loadInitial(), [])
+  const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
   const { value: sheet } = doc
   const ops = useMemo(() => ({
     ...doc.ops,
