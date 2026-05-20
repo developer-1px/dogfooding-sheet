@@ -47,6 +47,15 @@ describe('buildMergeMap', () => {
     expect(ops.replace).toHaveBeenCalledWith('/merges', [[0, 0, 1, 2]])
   })
 
+  it('skips adding a merge when the normalized merge list is unchanged', () => {
+    const ops = makeOps()
+    const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 2 })
+
+    actions.addMerge([0, 0, 0, 1])
+
+    expect(ops.replace).not.toHaveBeenCalled()
+  })
+
   it('ignores add and unmerge requests outside bounds', () => {
     const ops = makeOps()
     const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 2 })
