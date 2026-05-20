@@ -1,5 +1,6 @@
 import type { Ask } from '../usePrompt'
 import type { CondActions, CondOp, CondRule } from './useCondFormat'
+import { isSafeCellText } from '../cellValue'
 
 export type CondFormatActionResult = 'applied' | 'cancelled' | 'invalid' | 'no-column'
 
@@ -8,11 +9,14 @@ const COND_SPEC_RE = /^\s*(>|<|=|!=|contains)\s*(.+?)\s+(#[0-9a-fA-F]{3,8})\s*$/
 export function parseCondFormatSpec(col: string, spec: string): CondRule | null {
   const match = COND_SPEC_RE.exec(spec)
   if (!match) return null
-  if ((match[1] === '>' || match[1] === '<') && match[2].trimStart().startsWith('=')) return null
+  const op = match[1] as CondOp
+  const value = match[2].trim()
+  if (value === '' || !isSafeCellText(value)) return null
+  if ((op === '>' || op === '<') && (!Number.isFinite(Number(value)) || value.startsWith('='))) return null
   return {
     col,
-    op: match[1] as CondOp,
-    value: match[2],
+    op,
+    value,
     color: match[3],
   }
 }

@@ -70,6 +70,12 @@ describe('importCsvInto', () => {
     expect(written).toEqual({ A1: 'a', B1: 'b', A2: '1', B2: '2' })
   })
 
+  it('bounds direct CSV imports to the target sheet dimensions', () => {
+    const written: Record<string, string> = {}
+    importCsvInto('a,b,c\n1,2,3\nx,y,z', (k, v) => { written[k] = v }, { rowCount: 1, colLetters: ['A', 'B'] })
+    expect(written).toEqual({ A1: 'a', B1: 'b' })
+  })
+
   it('writes already parsed rows without reparsing', () => {
     const written: Record<string, string> = {}
     importCsvRowsInto([['a', 'b'], ['1', '2']], (k, v) => { written[k] = v }, { rowCount: 20 })

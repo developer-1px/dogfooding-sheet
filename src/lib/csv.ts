@@ -108,5 +108,9 @@ export function importCsvRowsInto(rows: readonly (readonly string[])[], write: W
 }
 
 export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
-  importCsvRowsInto(parseCsv(text), write, opts)
+  const colLetters = opts.colLetters ?? COL_LETTERS
+  importCsvRowsInto(parseCsv(text, { maxRows: opts.rowCount, maxCols: colLetters.length }), write, {
+    ...opts,
+    colLetters,
+  })
 }

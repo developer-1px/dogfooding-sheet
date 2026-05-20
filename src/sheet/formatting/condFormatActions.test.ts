@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parseCondFormatSpec, promptCondFormatRule } from './condFormatActions'
 import type { CondRule } from './useCondFormat'
 import type { Ask, PromptOptions } from '../usePrompt'
+import { MAX_CELL_TEXT_LENGTH } from '../cellValue'
 
 function askValue(value: string | null, prompts: PromptOptions[] = []): Ask {
   return (opts) => {
@@ -28,8 +29,11 @@ describe('condFormatActions', () => {
 
   it('rejects invalid specs', () => {
     expect(parseCondFormatSpec('B', '>=100 #fff')).toBeNull()
+    expect(parseCondFormatSpec('B', '>foo #fff')).toBeNull()
+    expect(parseCondFormatSpec('B', '<Infinity #fff')).toBeNull()
     expect(parseCondFormatSpec('B', '>100 red')).toBeNull()
     expect(parseCondFormatSpec('B', 'contains #fff')).toBeNull()
+    expect(parseCondFormatSpec('B', `contains ${'x'.repeat(MAX_CELL_TEXT_LENGTH + 1)} #fff`)).toBeNull()
   })
 
   it('prompts and applies a parsed rule', async () => {
