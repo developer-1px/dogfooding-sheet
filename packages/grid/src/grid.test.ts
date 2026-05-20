@@ -240,6 +240,14 @@ describe('@spredsheet/grid', () => {
     ])
   })
 
+  it('parses internal clipboard TSV only within the copied rect', () => {
+    const clip = internalClipboardFromTsv(false, { rMin: 0, rMax: 1, cMin: 0, cMax: 1 }, 'A\tB\tC\r\nD\tE\tF\nG\tH\tI')
+    expect(clip.values).toEqual([
+      ['A', 'B'],
+      ['D', 'E'],
+    ])
+  })
+
   it('rejects oversized internal clipboard text before parsing', () => {
     const oversized = `${'x'.repeat(MAX_TSV_TEXT_LENGTH)}x`
     const clip = internalClipboardFromTsv(false, { rMin: 0, rMax: 0, cMin: 0, cMax: 0 }, oversized)

@@ -28,6 +28,9 @@ const splitTsvRows = (tsv: string, rowLimit: number): string[] =>
 const splitTsvCols = (row: string, colLimit: number): string[] =>
   splitLimited(row, '\t', colLimit)
 
+export const parseTsvMatrix = (tsv: string, rowLimit: number, colLimit: number): string[][] =>
+  splitTsvRows(tsv, rowLimit).map((row) => splitTsvCols(row, colLimit))
+
 export function rectToTsvBounded(rect: Rect, get: Display, maxLength = MAX_TSV_TEXT_LENGTH): string | null {
   const parts: string[] = []
   let length = 0
@@ -60,16 +63,15 @@ export function writesFromTsv(
   const c0 = colIndex(anchor.col)
   const rowLimit = boundedCount(bounds.maxRow, anchor.row)
   const colLimit = boundedCount(bounds.maxCol, c0)
-  const rows = splitTsvRows(tsv, rowLimit)
+  const rows = parseTsvMatrix(tsv, rowLimit, colLimit)
   const writes: Writes = []
   for (let r = 0; r < rows.length; r++) {
-    const cols = splitTsvCols(rows[r], colLimit)
-    for (let c = 0; c < cols.length; c++) {
+    for (let c = 0; c < rows[r].length; c++) {
       const tr = anchor.row + r
       const tc = c0 + c
       const col = columnLabel(tc)
       if (!col) continue
-      writes.push([cellKey(col, tr), cols[c]])
+      writes.push([cellKey(col, tr), rows[r][c]])
     }
   }
   return writes
@@ -86,8 +88,7 @@ export function writesFromTsvToRect(
   if (targetRMax < target.rMin || targetCMax < target.cMin) return []
   const rowLimit = targetRMax - target.rMin + 1
   const colLimit = targetCMax - target.cMin + 1
-  const rows = splitTsvRows(tsv, rowLimit)
-  const source = rows.map((row) => splitTsvCols(row, colLimit))
+  const source = parseTsvMatrix(tsv, rowLimit, colLimit)
   const writes: Writes = []
   for (let r = target.rMin; r <= targetRMax; r++) {
     const sourceRow = source[(r - target.rMin) % source.length] ?? ['']

@@ -1,7 +1,7 @@
 import { cellKey, colIndex, columnLabel, parseCellId, type CellRef, type Writes } from '../coordinates/a1'
 import type { Rect } from '../geometry/rect'
 import { offsetFormulaRefs } from '../structure/formulaRefs'
-import { isSafeTsvText } from './tsv'
+import { isSafeTsvText, parseTsvMatrix } from './tsv'
 
 const boundedCount = (maxExclusive: number | undefined, start: number): number => {
   if (maxExclusive === undefined) return Infinity
@@ -15,6 +15,11 @@ const boundedEnd = (endInclusive: number, maxExclusive: number | undefined): num
   return Number.isFinite(end) ? Math.min(endInclusive, end) : endInclusive
 }
 
+const rectCount = (min: number, max: number): number => {
+  const count = Math.floor(max) - Math.floor(min) + 1
+  return Number.isFinite(count) ? Math.max(0, count) : 0
+}
+
 export interface GridInternalClipboard {
   cut: boolean
   rect: Rect
@@ -24,11 +29,13 @@ export interface GridInternalClipboard {
 
 export function internalClipboardFromTsv(cut: boolean, rect: Rect, text: string): GridInternalClipboard {
   if (!isSafeTsvText(text)) return { cut, rect, text: '', values: [] }
+  const rowLimit = rectCount(rect.rMin, rect.rMax)
+  const colLimit = rectCount(rect.cMin, rect.cMax)
   return {
     cut,
     rect,
     text,
-    values: text.split('\n').map((row) => row.split('\t')),
+    values: parseTsvMatrix(text, rowLimit, colLimit),
   }
 }
 
