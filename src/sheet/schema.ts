@@ -90,22 +90,25 @@ export const normalizeCellStyle = (style: NormalizedCellStyle): NormalizedCellSt
 }
 
 const CellsSchema = z.record(z.string(), z.string())
+const ValidationRuleSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('list'), options: z.array(z.string()) }),
+  z.object({ type: z.literal('checkbox') }),
+])
+const CondFormatRuleSchema = z.object({
+  col: z.string(),
+  op: z.enum(['>', '<', '=', '!=', 'contains']),
+  value: z.string(),
+  color: z.string(),
+})
+const MergeSchema = z.tuple([z.number(), z.number(), z.number(), z.number()])
 
 const RawTabBundleSchema = z.object({
   cells: CellsSchema.default({}),
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
   formats: z.record(z.string(), z.enum(FORMAT_KEYS)).default({}),
-  validation: z.record(z.string(), z.discriminatedUnion('type', [
-    z.object({ type: z.literal('list'), options: z.array(z.string()) }),
-    z.object({ type: z.literal('checkbox') }),
-  ])).default({}),
-  condFormat: z.array(z.object({
-    col: z.string(),
-    op: z.enum(['>', '<', '=', '!=', 'contains']),
-    value: z.string(),
-    color: z.string(),
-  })).default([]),
+  validation: z.record(z.string(), ValidationRuleSchema).default({}),
+  condFormat: z.array(CondFormatRuleSchema).default([]),
   freeze: z.object({
     rows: z.number().int().min(0).max(MAX_ROW_COUNT),
     cols: z.number().int().min(0).max(MAX_COL_COUNT),
@@ -116,12 +119,77 @@ const RawTabBundleSchema = z.object({
   }).default({ rows: [], cols: [] }),
   colWidths: z.record(z.string(), z.number()).default({}),
   rowHeights: z.record(z.string(), z.number()).default({}),
-  merges: z.array(z.tuple([z.number(), z.number(), z.number(), z.number()])).default([]),
+  merges: z.array(MergeSchema).default([]),
   rowCount: z.number().int().min(1).max(MAX_ROW_COUNT).default(DEFAULT_ROW_COUNT),
   colCount: z.number().int().min(1).max(MAX_COL_COUNT).default(DEFAULT_COL_COUNT),
 })
 
 type RawTabBundle = z.infer<typeof RawTabBundleSchema>
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : {}
+
+const asArray = (value: unknown): unknown[] =>
+  Array.isArray(value) ? value : []
+
+const parsedRecord = <T>(value: unknown, schema: z.ZodType<T>): Record<string, T> =>
+  Object.fromEntries(Object.entries(asRecord(value)).flatMap(([key, raw]) => {
+    const parsed = schema.safeParse(raw)
+    return parsed.success ? [[key, parsed.data]] : []
+  }))
+
+const parsedArray = <T>(value: unknown, schema: z.ZodType<T>): T[] =>
+  asArray(value).flatMap((raw) => {
+    const parsed = schema.safeParse(raw)
+    return parsed.success ? [parsed.data] : []
+  })
+
+const stringRecord = (value: unknown): Record<string, string> =>
+  Object.fromEntries(Object.entries(asRecord(value)).flatMap(([key, raw]) =>
+    typeof raw === 'string' ? [[key, raw]] : [],
+  ))
+
+const numberRecord = (value: unknown): Record<string, number> =>
+  Object.fromEntries(Object.entries(asRecord(value)).flatMap(([key, raw]) =>
+    typeof raw === 'number' && Number.isFinite(raw) ? [[key, raw]] : [],
+  ))
+
+const boundedRawCount = (value: unknown, max: number): number =>
+  typeof value === 'number' && Number.isInteger(value) && value >= 0 ? Math.min(value, max) : 0
+
+const sanitizeRawFreeze = (value: unknown): RawTabBundle['freeze'] => {
+  const freeze = asRecord(value)
+  return {
+    rows: boundedRawCount(freeze.rows, MAX_ROW_COUNT),
+    cols: boundedRawCount(freeze.cols, MAX_COL_COUNT),
+  }
+}
+
+const sanitizeRawHidden = (value: unknown): RawTabBundle['hidden'] => {
+  const hidden = asRecord(value)
+  return {
+    rows: asArray(hidden.rows).filter((row): row is number => typeof row === 'number' && Number.isFinite(row)),
+    cols: asArray(hidden.cols).filter((col): col is string => typeof col === 'string'),
+  }
+}
+
+const sanitizeRawTabBundleInput = (value: unknown): unknown => {
+  const bundle = asRecord(value)
+  return {
+    ...bundle,
+    cells: stringRecord(bundle.cells),
+    notes: stringRecord(bundle.notes),
+    styles: parsedRecord(bundle.styles, CellStyleSchema),
+    formats: parsedRecord(bundle.formats, z.enum(FORMAT_KEYS)),
+    validation: parsedRecord(bundle.validation, ValidationRuleSchema),
+    condFormat: parsedArray(bundle.condFormat, CondFormatRuleSchema),
+    freeze: sanitizeRawFreeze(bundle.freeze),
+    hidden: sanitizeRawHidden(bundle.hidden),
+    colWidths: numberRecord(bundle.colWidths),
+    rowHeights: numberRecord(bundle.rowHeights),
+    merges: parsedArray(bundle.merges, MergeSchema),
+  }
+}
 
 const isColInBounds = (col: string, colCount: number): boolean => {
   const index = colIndex(col)
@@ -245,7 +313,7 @@ const sanitizeTabBundle = <T extends RawTabBundle>(bundle: T): T => ({
   merges: sanitizeMerges(bundle.merges, bundle),
 })
 
-const TabBundleSchema = RawTabBundleSchema.transform(sanitizeTabBundle)
+const TabBundleSchema = z.preprocess(sanitizeRawTabBundleInput, RawTabBundleSchema).transform(sanitizeTabBundle)
 export type TabBundle = z.infer<typeof TabBundleSchema>
 
 const SheetNameSchema = z.string().refine(isSafeSheetName)
@@ -278,11 +346,11 @@ const TabsSchema = z.object({
   })
 })
 
-const RawSheetSchema = RawTabBundleSchema.extend({
+const RawSheetShapeSchema = RawTabBundleSchema.extend({
   tabs: TabsSchema.default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
 })
 
-export const SheetSchema = RawSheetSchema.transform(({ tabs, ...bundle }) => ({
+export const SheetSchema = z.preprocess(sanitizeRawTabBundleInput, RawSheetShapeSchema).transform(({ tabs, ...bundle }) => ({
   ...sanitizeTabBundle(bundle),
   tabs,
 }))

@@ -13,5 +13,8 @@ export const normalizeCellWrite = (value: string): NormalizedCellWrite => {
   return isSafeCellText(value) ? { type: 'set', value } : { type: 'reject' }
 }
 
-export const sanitizeCellRecord = (cells: Record<string, string>): Record<string, string> =>
-  Object.fromEntries(Object.entries(cells).filter(([, value]) => value !== '' && isSafeCellText(value)))
+export const sanitizeCellRecord = (cells: Record<string, unknown>): Record<string, string> =>
+  Object.fromEntries(Object.entries(cells).filter((entry): entry is [string, string] => {
+    const [, value] = entry
+    return typeof value === 'string' && value !== '' && isSafeCellText(value)
+  }))

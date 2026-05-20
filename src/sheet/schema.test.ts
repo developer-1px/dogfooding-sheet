@@ -134,6 +134,43 @@ describe('SheetSchema', () => {
     expect(parsed.merges).toEqual([[0, 0, 0, 1]])
   })
 
+  it('drops malformed persisted bundle fragments without losing valid cells', () => {
+    const parsed = SheetSchema.parse({
+      ...initialSheet,
+      rowCount: 3,
+      colCount: 3,
+      cells: { A1: 'ok', B1: 42, C1: 'also ok' },
+      notes: { A1: ' note ', B1: 42 },
+      styles: { A1: { b: true }, B1: 'bad' },
+      formats: { A1: 'currency', B1: 'bad' },
+      validation: {
+        A1: { type: 'checkbox' },
+        B1: { type: 'list', options: 'bad' },
+      },
+      condFormat: [
+        { col: 'A', op: '>' as const, value: '1', color: '#fff' },
+        'bad',
+      ],
+      freeze: { rows: 'bad', cols: 2 },
+      hidden: { rows: [1, 'bad'], cols: ['A', 9] },
+      colWidths: { A: 120, B: 'wide' },
+      rowHeights: { '1': 44, bad: 'tall' },
+      merges: [[0, 0, 0, 1], ['bad']],
+    })
+
+    expect(parsed.cells).toEqual({ A1: 'ok', C1: 'also ok' })
+    expect(parsed.notes).toEqual({ A1: 'note' })
+    expect(parsed.styles).toEqual({ A1: { b: true } })
+    expect(parsed.formats).toEqual({ A1: 'currency' })
+    expect(parsed.validation).toEqual({ A1: { type: 'checkbox' } })
+    expect(parsed.condFormat).toEqual([{ col: 'A', op: '>', value: '1', color: '#fff' }])
+    expect(parsed.freeze).toEqual({ rows: 0, cols: 2 })
+    expect(parsed.hidden).toEqual({ rows: [1], cols: ['A'] })
+    expect(parsed.colWidths).toEqual({ A: 120 })
+    expect(parsed.rowHeights).toEqual({ '1': 44 })
+    expect(parsed.merges).toEqual([[0, 0, 0, 1]])
+  })
+
   it('normalizes persisted overlapping merges with the latest merge winning', () => {
     const parsed = SheetSchema.parse({
       ...initialSheet,

@@ -31,6 +31,22 @@ describe('sheet storage', () => {
     expect(loadInitial(storage).cells).toEqual({ A1: 'Saved' })
   })
 
+  it('loads valid cells when persisted ancillary state is malformed', () => {
+    const saved = {
+      ...initialSheet,
+      cells: { A1: 'Saved', B1: 42 },
+      hidden: { rows: 'bad', cols: ['A'] },
+      styles: { A1: { b: true }, B1: 'bad' },
+    }
+    const { storage } = memoryStorage({ [SHEET_STORAGE_KEY]: JSON.stringify(saved) })
+
+    const loaded = loadInitial(storage)
+
+    expect(loaded.cells).toEqual({ A1: 'Saved' })
+    expect(loaded.hidden).toEqual({ rows: [], cols: ['A'] })
+    expect(loaded.styles).toEqual({ A1: { b: true } })
+  })
+
   it('falls back to the initial sheet for missing, malformed, or invalid persisted data', () => {
     expect(loadInitial(null)).toEqual(initialSheet)
     expect(loadInitial(memoryStorage({ [SHEET_STORAGE_KEY]: '{' }).storage)).toEqual(initialSheet)

@@ -131,6 +131,23 @@ describe('overflowMenuActions', () => {
     expect(resets[0].cells.A1).toBe('Item')
   })
 
+  it('imports JSON by preserving valid cells and dropping malformed ancillary state', async () => {
+    const resets: Sheet[] = []
+
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify({
+        ...initialSheet,
+        cells: { A1: 'Imported', B1: 42 },
+        hidden: { rows: 'bad', cols: ['A'] },
+      })),
+      confirm: confirmValue(true),
+      resetSheet: (sheet) => resets.push(sheet),
+    })).resolves.toBe(true)
+
+    expect(resets[0].cells).toEqual({ A1: 'Imported' })
+    expect(resets[0].hidden).toEqual({ rows: [], cols: ['A'] })
+  })
+
   it('skips invalid or rejected JSON imports', async () => {
     const resets: Sheet[] = []
     const prompts: ConfirmOptions[] = []
