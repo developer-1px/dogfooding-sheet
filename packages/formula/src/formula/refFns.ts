@@ -203,26 +203,47 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const raw = splitArgs(rawArgs)
     if (raw.length === 0) return smartReturn('#REF!')
     const resolved: string[][][] = []
+    let maxRows = 0
+    let maxCols = 0
+    let totalRows = 0
+    let totalCols = 0
     for (const arg of raw) {
       const result = rangeMatrix(arg, c)
       if (!result.ok) return smartReturn(result.error)
-      resolved.push(result.matrix)
+      const matrix = result.matrix
+      resolved.push(matrix)
+      if (matrix.length > maxRows) maxRows = matrix.length
+      if (matrix[0].length > maxCols) maxCols = matrix[0].length
+      totalRows += matrix.length
+      totalCols += matrix[0].length
     }
     if (F === 'HSTACK') {
-      const rowCount = Math.max(...resolved.map(matrix => matrix.length))
-      const colCount = resolved.reduce((sum, matrix) => sum + matrix[0].length, 0)
-      if (!isSafeArrayShape(rowCount, colCount)) return smartReturn('#VALUE!')
-      const rows = Array.from({ length: rowCount }, (_unused, row) =>
-        resolved.flatMap(matrix => matrix[row] ?? Array.from({ length: matrix[0].length }, () => '#N/A'))
-      )
+      if (!isSafeArrayShape(maxRows, totalCols)) return smartReturn('#VALUE!')
+      const rows: string[][] = []
+      for (let row = 0; row < maxRows; row++) {
+        const values: string[] = []
+        for (const matrix of resolved) {
+          const source = matrix[row]
+          if (source) {
+            for (const value of source) values.push(value)
+          } else {
+            for (let col = 0; col < matrix[0].length; col++) values.push('#N/A')
+          }
+        }
+        rows.push(values)
+      }
       return smartReturn(stringifyFormulaArray(rows))
     }
-    const colCount = Math.max(...resolved.map(matrix => matrix[0].length))
-    const rowCount = resolved.reduce((sum, matrix) => sum + matrix.length, 0)
-    if (!isSafeArrayShape(rowCount, colCount)) return smartReturn('#VALUE!')
-    const rows = resolved.flatMap(matrix =>
-      matrix.map(row => row.concat(Array.from({ length: colCount - row.length }, () => '#N/A')))
-    )
+    if (!isSafeArrayShape(totalRows, maxCols)) return smartReturn('#VALUE!')
+    const rows: string[][] = []
+    for (const matrix of resolved) {
+      for (const row of matrix) {
+        const values: string[] = []
+        for (const value of row) values.push(value)
+        for (let col = row.length; col < maxCols; col++) values.push('#N/A')
+        rows.push(values)
+      }
+    }
     return smartReturn(stringifyFormulaArray(rows))
   }
   if (F === 'ARRAY_CONSTRAIN') {
@@ -241,14 +262,22 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const raw = splitArgs(rawArgs)
     if (raw.length === 0) return smartReturn('#REF!')
     const matrices: string[][][] = []
+    let cellCount = 0
     for (const arg of raw) {
       const result = rangeMatrix(arg, c)
       if (!result.ok) return smartReturn(result.error)
-      matrices.push(result.matrix)
+      const matrix = result.matrix
+      matrices.push(matrix)
+      cellCount += matrix.length * matrix[0].length
     }
-    const values = matrices.flatMap(result => flattenMatrix(result, false))
-    if (!isSafeArrayShape(values.length, 1)) return smartReturn('#VALUE!')
-    return smartReturn(stringifyFormulaArray(values.map(value => [value])))
+    if (!isSafeArrayShape(cellCount, 1)) return smartReturn('#VALUE!')
+    const rows: string[][] = []
+    for (const matrix of matrices) {
+      for (const row of matrix) {
+        for (const value of row) rows.push([value])
+      }
+    }
+    return smartReturn(stringifyFormulaArray(rows))
   }
   if (F === 'OFFSET') {
     const base = (rawArgs.split(',')[0] ?? '').trim()

@@ -227,8 +227,28 @@ describe('HSTACK / VSTACK', () => {
     expect(evaluateCell(cells, '=HSTACK(A1:B2, D1:D3)')).toBe('[["a","b","x"],["c","d","y"],["#N/A","#N/A","z"]]')
   })
 
+  it('handles larger horizontal stacks without flatMap intermediates', () => {
+    const cells = { A1: 'top', B1: 'x', A1000: 'bottom', B1000: 'y' }
+    const rows = JSON.parse(evaluateCell(cells, '=HSTACK(A1:A1000, B1:B1000)')) as string[][]
+
+    expect(rows).toHaveLength(1000)
+    expect(rows[0]).toEqual(['top', 'x'])
+    expect(rows[999]).toEqual(['bottom', 'y'])
+  })
+
   it('combines ranges vertically and pads narrower inputs', () => {
     expect(evaluateCell(cells, '=VSTACK(A1:B2, D1:D3)')).toBe('[["a","b"],["c","d"],["x","#N/A"],["y","#N/A"],["z","#N/A"]]')
+  })
+
+  it('handles larger vertical stacks without flatMap intermediates', () => {
+    const cells = { A1: 'top', A500: 'mid', B1: 'next', B500: 'bottom' }
+    const rows = JSON.parse(evaluateCell(cells, '=VSTACK(A1:A500, B1:B500)')) as string[][]
+
+    expect(rows).toHaveLength(1000)
+    expect(rows[0]).toEqual(['top'])
+    expect(rows[499]).toEqual(['mid'])
+    expect(rows[500]).toEqual(['next'])
+    expect(rows[999]).toEqual(['bottom'])
   })
 })
 
@@ -266,6 +286,15 @@ describe('FLATTEN', () => {
 
   it('flattens multiple ranges in argument order', () => {
     expect(evaluateCell(cells, '=FLATTEN(A1:B1, D1:D2)')).toBe('[["a"],["b"],["x"],["y"]]')
+  })
+
+  it('handles larger flatten ranges without flatMap intermediates', () => {
+    const cells = { A1: 'top', A1000: 'bottom' }
+    const rows = JSON.parse(evaluateCell(cells, '=FLATTEN(A1:A1000)')) as string[][]
+
+    expect(rows).toHaveLength(1000)
+    expect(rows[0]).toEqual(['top'])
+    expect(rows[999]).toEqual(['bottom'])
   })
 })
 
