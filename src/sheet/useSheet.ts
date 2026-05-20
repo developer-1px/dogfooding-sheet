@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useJSONDocument } from 'zod-crud'
 import { SheetSchema, colLettersFor, cellIdToKey, type Writes } from './schema'
 import { evaluateCell } from '@spredsheet/formula'
-import { loadInitial, saveSheet, buildData, moveCellId } from './storage'
+import { loadInitial, saveSheet, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
 import { useFormats, applyFormat } from './formatting/useFormats'
 import { CLEAR_STYLE } from './formatting/useStyles'
@@ -18,10 +18,10 @@ import { sheetMutations } from './structure/sheetMutations'
 import { useFindState, highlightedIdsFor } from './find/useFindState'
 import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
-import { cycleTrailingFormulaRef, idsForFormulaPick, refForFormulaPick, replaceTrailingFormulaRef } from './selection/formulaPick'
 import { rowColAtFocus } from './structure/rowColAtFocus'
 import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey, type Patch } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
 import { createGridSelectionState, setGridSelectedIds, setGridSelectionAnchor, setGridSelectionFocus, targetGridIds, type GridSelectionUpdate } from '@spredsheet/grid'
+import { useFormulaPick } from './useFormulaPick'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
@@ -66,56 +66,22 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     edit.setFocusId(id)
     setSelection((s) => setGridSelectionFocus(s, id))
   }, [edit])
-  const formulaPickActive = edit.editing !== null && edit.draft.startsWith('=')
-  const formulaPickAnchorRef = useRef<string | null>(null)
-  const formulaPickTargetRef = useRef<string | null>(null)
-
-  const pickFormulaRef = useCallback((id: string, opts: { extend?: boolean } = {}) => {
-    if (!formulaPickActive) return
-    const anchor = opts.extend && formulaPickAnchorRef.current ? formulaPickAnchorRef.current : id
-    const ref = refForFormulaPick(anchor, id)
-    if (!ref) return
-    formulaPickAnchorRef.current = anchor
-    formulaPickTargetRef.current = id
-    setSelectedIds(idsForFormulaPick(anchor, id))
-    setSelectAnchor(anchor)
-    edit.setDraft(replaceTrailingFormulaRef(edit.draft, ref))
-  }, [edit, formulaPickActive, setSelectAnchor, setSelectedIds])
-
-  const moveFormulaPick = useCallback((delta: { dRow: number; dCol: number }, extend = false) => {
-    if (!formulaPickActive || !edit.editing) return
-    const base = formulaPickTargetRef.current ?? formulaPickAnchorRef.current ?? edit.editing
-    const next = moveCellId(base, delta.dRow, delta.dCol, rowCount, colLetters)
-    if (next) pickFormulaRef(next, { extend })
-  }, [colLetters, edit.editing, formulaPickActive, pickFormulaRef, rowCount])
-
-  const cycleFormulaRef = useCallback(() => {
-    if (!formulaPickActive) return
-    edit.setDraft(cycleTrailingFormulaRef(edit.draft))
-  }, [edit, formulaPickActive])
-
-  useEffect(() => {
-    if (formulaPickActive) return
-    formulaPickAnchorRef.current = null
-    formulaPickTargetRef.current = null
-  }, [formulaPickActive])
+  const formulaPick = useFormulaPick({ edit, rowCount, colLetters, setSelectedIds, setSelectAnchor })
 
   const commitEdit = (move?: { dRow: number; dCol: number }) => {
-    const wasPicking = formulaPickActive
+    const wasPicking = formulaPick.formulaPickActive
     edit.commitEdit(move)
     if (wasPicking) {
-      formulaPickAnchorRef.current = null
-      formulaPickTargetRef.current = null
+      formulaPick.clearFormulaPick()
       setSelectedIds([])
     }
   }
 
   const cancelEdit = () => {
-    const wasPicking = formulaPickActive
+    const wasPicking = formulaPick.formulaPickActive
     edit.cancelEdit()
     if (wasPicking) {
-      formulaPickAnchorRef.current = null
-      formulaPickTargetRef.current = null
+      formulaPick.clearFormulaPick()
       setSelectedIds([])
     }
   }
@@ -166,8 +132,10 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     writeCell, writeCells, display,
     selectedIds, setSelectedIds, setFocusId, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
-    formulaPickActive, pickFormulaRef, moveFormulaPick,
-    cycleFormulaRef,
+    formulaPickActive: formulaPick.formulaPickActive,
+    pickFormulaRef: formulaPick.pickFormulaRef,
+    moveFormulaPick: formulaPick.moveFormulaPick,
+    cycleFormulaRef: formulaPick.cycleFormulaRef,
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
     helpOpen, setHelpOpen,
     showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines: () => setShowGridlines((v) => !v),
