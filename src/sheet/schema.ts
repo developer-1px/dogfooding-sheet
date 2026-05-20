@@ -42,8 +42,35 @@ export const normalizeSheetName = (name: string): string | null => {
 export const isSafeSheetName = (name: string): boolean =>
   name === normalizeSheetName(name)
 
-export const isSafeTabColor = (color: string): boolean =>
+export const isSafeColor = (color: string): boolean =>
   COLOR_RE.test(color)
+export const isSafeTabColor = isSafeColor
+
+export interface NormalizedCellStyle {
+  b?: boolean
+  i?: boolean
+  u?: boolean
+  s?: boolean
+  w?: boolean
+  bd?: boolean
+  a?: 'left' | 'center' | 'right'
+  bg?: string
+  fg?: string
+}
+
+export const normalizeCellStyle = (style: NormalizedCellStyle): NormalizedCellStyle | undefined => {
+  const next: NormalizedCellStyle = {}
+  if (style.b) next.b = true
+  if (style.i) next.i = true
+  if (style.u) next.u = true
+  if (style.s) next.s = true
+  if (style.w) next.w = true
+  if (style.bd) next.bd = true
+  if (style.a) next.a = style.a
+  if (style.bg && isSafeColor(style.bg)) next.bg = style.bg
+  if (style.fg && isSafeColor(style.fg)) next.fg = style.fg
+  return Object.keys(next).length > 0 ? next : undefined
+}
 
 const CellsSchema = z.record(z.string(), z.string())
 
@@ -176,7 +203,7 @@ const sanitizeTabBundle = <T extends RawTabBundle>(bundle: T): T => ({
     const normalized = normalizeNoteText(note)
     return normalized !== '' && isSafeCellText(normalized) ? normalized : undefined
   }),
-  styles: sanitizeCellScopedRecord(bundle.styles, bundle),
+  styles: sanitizeCellScopedRecord(bundle.styles, bundle, normalizeCellStyle),
   formats: sanitizeCellScopedRecord(bundle.formats, bundle),
   validation: sanitizeValidation(bundle.validation, bundle),
   condFormat: sanitizeCondFormat(bundle.condFormat, bundle),

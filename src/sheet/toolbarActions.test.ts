@@ -210,6 +210,13 @@ describe('toolbarActions', () => {
       color: '#0000ff',
       updateStyle,
     })).toBe(true)
+    expect(setToolbarColor({
+      selectedIds: [],
+      focusKey: 'D4',
+      target: 'bg',
+      color: 'red',
+      updateStyle,
+    })).toBe(false)
     expect(clearToolbarStyle({
       selectedIds: [],
       focusKey: 'D4',

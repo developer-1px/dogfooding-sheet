@@ -4,7 +4,7 @@ import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './formatting/useS
 import type { Filter } from './visibility/useFilter'
 import type { ValidationActions } from './validation/useValidation'
 import type { Ask } from './usePrompt'
-import { cellIdToKey, cellKey, normalizeValidationOptions, parseA1, type Display, type WriteCell } from './schema'
+import { cellIdToKey, cellKey, isSafeColor, normalizeValidationOptions, parseA1, type Display, type WriteCell } from './schema'
 
 export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'no-target'
 export type ToolbarStyleFlag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
@@ -170,6 +170,7 @@ export function setToolbarColor({
 }): boolean {
   const keys = targetCellKeys(selectedIds, focusKey)
   if (keys.length === 0) return false
+  if (!isSafeColor(color)) return false
   updateStyle(keys, { [target]: color })
   return true
 }

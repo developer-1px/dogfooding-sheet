@@ -100,7 +100,7 @@ describe('SheetSchema', () => {
       colCount: 2,
       cells: { A1: 'ok', C1: 'outside col', A3: 'outside row' },
       notes: { A1: ' note ', B1: '', C1: 'outside col' },
-      styles: { A1: { b: true }, C1: { i: true } },
+      styles: { A1: { b: true }, B1: { bg: 'red', fg: '#fff' }, C1: { i: true } },
       formats: { B1: 'currency', C1: 'percent' },
       validation: {
         A1: { type: 'list', options: ['open', 'open', '', 'x'.repeat(MAX_CELL_TEXT_LENGTH + 1)] },
@@ -121,7 +121,7 @@ describe('SheetSchema', () => {
 
     expect(parsed.cells).toEqual({ A1: 'ok' })
     expect(parsed.notes).toEqual({ A1: 'note' })
-    expect(parsed.styles).toEqual({ A1: { b: true } })
+    expect(parsed.styles).toEqual({ A1: { b: true }, B1: { fg: '#fff' } })
     expect(parsed.formats).toEqual({ B1: 'currency' })
     expect(parsed.validation).toEqual({ A1: { type: 'list', options: ['open'] }, B1: { type: 'checkbox' } })
     expect(parsed.condFormat).toEqual([{ col: 'A', op: '<', value: '2', color: '#000' }])
