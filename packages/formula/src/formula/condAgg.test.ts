@@ -200,6 +200,9 @@ describe('FILTER', () => {
     expect(evaluateCell(cells, '=FILTER(A1:A2, B1:B2)')).toBe('#N/A')
     expect(evaluateCell(cells, '=FILTER(A1:A2, A1:B2)')).toBe('#VALUE!')
   })
+  it('rejects oversized output ranges', () => {
+    expect(evaluateCell({}, '=FILTER(A1:Z1001, A1:A1001)')).toBe('#VALUE!')
+  })
 })
 
 describe('RANGESORT', () => {
@@ -211,6 +214,10 @@ describe('RANGESORT', () => {
   it('sorts text values lexically', () => {
     const cells = { A1: 'c', A2: 'a', A3: 'b' }
     expect(evaluateCell(cells, '=RANGESORT(A1:A3)')).toBe('["a","b","c"]')
+  })
+  it('rejects range JSON output above the cell text cap', () => {
+    const cells = Object.fromEntries(Array.from({ length: 3000 }, (_unused, index) => [`A${index + 1}`, 'x']))
+    expect(evaluateCell(cells, '=RANGEJSON(A1:A3000)')).toBe('#VALUE!')
   })
 })
 

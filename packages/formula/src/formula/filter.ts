@@ -3,6 +3,7 @@ import { COL_LETTERS, cellKey } from '../a1'
 import type { EvalCell } from './args'
 import { coerceNumber } from './coerce'
 import { parseRange } from './rangeRect'
+import { isSafeArrayShape, stringifyFormulaArray } from './arraySafety'
 
 const isTruthy = (value: string): boolean => {
   if (/^true$/i.test(value)) return true
@@ -24,6 +25,7 @@ export function filterRange(rangeStr: string, conditionStr: string, _cells: Cell
   const rowFilter = condRows === rows && condCols === 1
   const colFilter = condRows === 1 && condCols === cols
   if (!rowFilter && !colFilter) return '#VALUE!'
+  if (!isSafeArrayShape(rows, cols) || !isSafeArrayShape(condRows, condCols)) return '#VALUE!'
 
   if (rowFilter) {
     const out: string[][] = []
@@ -35,7 +37,7 @@ export function filterRange(rangeStr: string, conditionStr: string, _cells: Cell
       out.push(row)
     }
     if (out.length === 0) return '#N/A'
-    return JSON.stringify(cols === 1 ? out.map((row) => row[0]) : out)
+    return stringifyFormulaArray(cols === 1 ? out.map((row) => row[0]) : out)
   }
 
   const out: string[][] = []
@@ -47,5 +49,5 @@ export function filterRange(rangeStr: string, conditionStr: string, _cells: Cell
     }
     out.push(row)
   }
-  return out.some((row) => row.length > 0) ? JSON.stringify(rows === 1 ? out[0] : out) : '#N/A'
+  return out.some((row) => row.length > 0) ? stringifyFormulaArray(rows === 1 ? out[0] : out) : '#N/A'
 }

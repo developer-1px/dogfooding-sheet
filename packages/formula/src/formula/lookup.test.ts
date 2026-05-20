@@ -56,6 +56,10 @@ describe('TRANSPOSE', () => {
     const cells = { A1: 'a', A2: 'b', A3: 'c' }
     expect(evaluateCell(cells, '=TRANSPOSE(A1:A3)')).toBe('[["a","b","c"]]')
   })
+
+  it('rejects oversized source ranges', () => {
+    expect(evaluateCell({}, '=TRANSPOSE(A1:Z1001)')).toBe('#VALUE!')
+  })
 })
 
 describe('SEQUENCE', () => {
@@ -70,6 +74,11 @@ describe('SEQUENCE', () => {
   it('rejects invalid dimensions', () => {
     expect(evaluateCell({}, '=SEQUENCE(0, 2)')).toBe('#VALUE!')
     expect(evaluateCell({}, '=SEQUENCE(2, -1)')).toBe('#VALUE!')
+  })
+
+  it('rejects oversized generated arrays', () => {
+    expect(evaluateCell({}, '=SEQUENCE(26001, 1)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=SEQUENCE(3000, 1)')).toBe('#VALUE!')
   })
 })
 
@@ -163,6 +172,11 @@ describe('WRAPROWS / WRAPCOLS', () => {
     expect(evaluateCell(cells, '=WRAPROWS(A1:E1, 0)')).toBe('#VALUE!')
     expect(evaluateCell(cells, '=WRAPCOLS(A1:E1, -1)')).toBe('#VALUE!')
   })
+
+  it('rejects wrap counts that would allocate oversized padding', () => {
+    expect(evaluateCell({ A1: 'a' }, '=WRAPROWS(A1:A1, 26001)')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: 'a' }, '=WRAPCOLS(A1:A1, 26001)')).toBe('#VALUE!')
+  })
 })
 
 describe('EXPAND', () => {
@@ -182,6 +196,10 @@ describe('EXPAND', () => {
   it('rejects target dimensions smaller than the source', () => {
     expect(evaluateCell(cells, '=EXPAND(A1:B2, 1, 2)')).toBe('#VALUE!')
     expect(evaluateCell(cells, '=EXPAND(A1:B2, 2, 1)')).toBe('#VALUE!')
+  })
+
+  it('rejects target dimensions above the array cap', () => {
+    expect(evaluateCell(cells, '=EXPAND(A1:B2, 26001, 1)')).toBe('#VALUE!')
   })
 })
 
