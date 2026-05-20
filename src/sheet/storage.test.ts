@@ -30,6 +30,9 @@ describe('sheet storage', () => {
     expect(loadInitial(memoryStorage({
       [SHEET_STORAGE_KEY]: JSON.stringify({ ...initialSheet, tabs: { ...initialSheet.tabs, order: [], active: 'Sheet1' } }),
     }).storage)).toEqual(initialSheet)
+    expect(loadInitial(memoryStorage({
+      [SHEET_STORAGE_KEY]: JSON.stringify({ ...initialSheet, tabs: { ...initialSheet.tabs, order: ['Sheet1', 'Sheet2'], active: 'Sheet1', saved: {} } }),
+    }).storage)).toEqual(initialSheet)
   })
 
   it('saves best effort without throwing on quota failures', () => {

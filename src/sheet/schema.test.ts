@@ -31,6 +31,34 @@ describe('SheetSchema', () => {
       ...initialSheet,
       tabs: { ...initialSheet.tabs, order: ['   '], active: '   ' },
     }).success).toBe(false)
+
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: ['Sheet1', 'Sheet2'], active: 'Sheet1', saved: {} },
+    }).success).toBe(false)
+
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: ['Sheet1'], active: 'Sheet1', saved: { Ghost: blankBundle() } },
+    }).success).toBe(false)
+
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: ['Sheet1'], active: 'Sheet1', colors: { Ghost: '#ff0000' } },
+    }).success).toBe(false)
+  })
+
+  it('accepts active sheet as live bundle and inactive sheets as saved bundles', () => {
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      cells: { A1: 'live active' },
+      tabs: {
+        order: ['Sheet1', 'Sheet2'],
+        active: 'Sheet1',
+        saved: { Sheet2: { ...blankBundle(), cells: { A1: 'stored inactive' } } },
+        colors: { Sheet2: '#ff0000' },
+      },
+    }).success).toBe(true)
   })
 
   it('creates isolated blank bundles', () => {

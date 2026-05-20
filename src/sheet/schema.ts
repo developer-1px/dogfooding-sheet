@@ -73,6 +73,17 @@ const TabsSchema = z.object({
   if (!names.has(tabs.active)) {
     ctx.addIssue({ code: 'custom', path: ['active'], message: 'Active sheet must be present in tab order' })
   }
+  Object.keys(tabs.saved).forEach((name) => {
+    if (!names.has(name)) ctx.addIssue({ code: 'custom', path: ['saved', name], message: 'Saved sheet must be present in tab order' })
+  })
+  Object.keys(tabs.colors).forEach((name) => {
+    if (!names.has(name)) ctx.addIssue({ code: 'custom', path: ['colors', name], message: 'Tab color must be present in tab order' })
+  })
+  tabs.order.forEach((name, index) => {
+    if (name !== tabs.active && tabs.saved[name] === undefined) {
+      ctx.addIssue({ code: 'custom', path: ['saved', name], message: `Inactive sheet at index ${index} must have a saved bundle` })
+    }
+  })
 })
 
 export const SheetSchema = TabBundleSchema.extend({
