@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
+import { MAX_EXPANDED_REFS } from './parse'
 import { MAX_GENERATED_TEXT_LENGTH } from './textLimit'
 
 const c = { A1: '5', A2: '10', A3: '3', A4: '20', A5: '8', A6: '' }
@@ -109,6 +110,14 @@ describe('MAXA / MINA / AVERAGEA', () => {
     expect(evaluateCell(cells, '=MAXA(A1:A3)')).toBe('10')
     expect(evaluateCell(cells, '=MINA(A1:A3)')).toBe('0')
     expect(evaluateCell(cells, '=AVERAGEA(A1:A3)')).toBe('5')
+  })
+
+  it('handles max-size MAXA and MINA ranges', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const cells = { [last]: '7' }
+
+    expect(evaluateCell(cells, `=MAXA(A1:${last})`)).toBe('7')
+    expect(evaluateCell(cells, `=MINA(A1:${last})`)).toBe('0')
   })
 })
 
@@ -337,6 +346,14 @@ describe('PERCENTRANK', () => {
     expect(evaluateCell(cells, '=PERCENTRANK(A1:A5, 3)')).toBe('0.5')
     expect(evaluateCell(cells, '=PERCENTRANK(A1:A5, 1)')).toBe('0')
     expect(evaluateCell(cells, '=PERCENTRANK(A1:A5, 5)')).toBe('1')
+  })
+
+  it('handles max-size ranges without materializing numeric values', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const cells = { A1: '1', [last]: '2' }
+
+    expect(evaluateCell(cells, `=PERCENTRANK(A1:${last}, 0)`)).toBe('0')
+    expect(evaluateCell(cells, `=PERCENTRANK(A1:${last}, 2)`)).toBe('1')
   })
 })
 

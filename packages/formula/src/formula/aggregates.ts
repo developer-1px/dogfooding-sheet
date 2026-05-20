@@ -47,6 +47,15 @@ const valueError = (): string => wrap('#VALUE!')
 const finiteResult = (value: number): string =>
   Number.isFinite(value) ? String(value) : numError()
 
+const minMaxValue = (values: readonly number[], pick: 'MIN' | 'MAX'): number => {
+  let best = values[0] ?? NaN
+  for (let i = 1; i < values.length; i++) {
+    const value = values[i]
+    if (pick === 'MIN' ? value < best : value > best) best = value
+  }
+  return best
+}
+
 export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   if (F !== 'SUM' && F !== 'AVERAGE' && F !== 'MIN' && F !== 'MAX' && F !== 'COUNT' && F !== 'MEDIAN' && F !== 'STDEV' && F !== 'STDEVP' && F !== 'VAR' && F !== 'VARP' && F !== 'MODE' && F !== 'PRODUCT' && F !== 'SUMSQ' && F !== 'GEOMEAN' && F !== 'HARMEAN' && F !== 'AVEDEV' && F !== 'MAXA' && F !== 'MINA' && F !== 'AVERAGEA') return null
   const args = splitArgs(rawArgs)
@@ -88,15 +97,22 @@ export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   }
   const mean = nums.reduce((a, b) => a + b, 0) / Math.max(1, nums.length)
   if (F === 'AVERAGE') return finiteResult(mean)
-  if (F === 'MIN') return finiteResult(Math.min(...nums))
-  if (F === 'MAX') return finiteResult(Math.max(...nums))
+  if (F === 'MIN' || F === 'MAX') return finiteResult(minMaxValue(nums, F))
   if (F === 'COUNT') return String(nums.length)
   if (F === 'MAXA' || F === 'MINA' || F === 'AVERAGEA') {
-    const vs = [...refs.map((r) => c.numFromCell(r)), ...literalNums]
-    if (vs.length === 0) return '0'
-    if (F === 'MAXA') return finiteResult(Math.max(...vs))
-    if (F === 'MINA') return finiteResult(Math.min(...vs))
-    return finiteResult(vs.reduce((a, b) => a + b, 0) / vs.length)
+    let count = 0
+    let sum = 0
+    let best = F === 'MINA' ? Infinity : -Infinity
+    const add = (value: number) => {
+      count++
+      sum += value
+      if (F === 'MINA' ? value < best : value > best) best = value
+    }
+    for (const ref of refs) add(c.numFromCell(ref))
+    for (const value of literalNums) add(value)
+    if (count === 0) return '0'
+    if (F === 'AVERAGEA') return finiteResult(sum / count)
+    return finiteResult(best)
   }
   if (F === 'MEDIAN') {
     const s = [...nums].sort((a, b) => a - b)

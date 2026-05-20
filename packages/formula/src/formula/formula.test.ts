@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { evaluateCell, MAX_ARITHMETIC_DEPTH, MAX_FORMULA_LENGTH } from './eval'
-import { refsInFormula } from './parse'
+import { MAX_EXPANDED_REFS, refsInFormula } from './parse'
 
 const cells = (m: Record<string, string>) => m
 
@@ -70,6 +70,14 @@ describe('evaluateCell', () => {
     expect(evaluateCell(cells({ A1: 'text', A2: '' }), '=AVERAGE(A1:A2)')).toBe('#DIV/0!')
     expect(evaluateCell(cells({ A1: 'text', A2: '' }), '=COUNT(A1:A2)')).toBe('0')
     expect(evaluateCell(cells({ A1: 'text', A2: '' }), '=MIN(A1:A2)')).toBe('#VALUE!')
+  })
+
+  it('handles max-size MIN and MAX ranges', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const c = cells({ [last]: '7' })
+
+    expect(evaluateCell(c, `=MAX(A1:${last})`)).toBe('7')
+    expect(evaluateCell(c, `=MIN(A1:${last})`)).toBe('7')
   })
 
   it('IF with comparison', () => {

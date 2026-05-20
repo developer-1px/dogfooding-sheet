@@ -68,10 +68,20 @@ export function zScore(value: number, rangeStr: string, numFromCell: NumFromCell
 /** PERCENTRANK(range, value) — fraction of values strictly less than value, in [0,1]. */
 export function percentRank(rangeStr: string, value: number, numFromCell: NumFromCell): string {
   if (!Number.isFinite(value)) return valueError()
-  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
-  if (nums.length === 0) return '#N/A'
-  if (value < Math.min(...nums) || value > Math.max(...nums)) return '#N/A'
-  return finiteResult(nums.filter((n) => n < value).length / (nums.length - 1 || 1))
+  let count = 0
+  let less = 0
+  let min = Infinity
+  let max = -Infinity
+  for (const ref of collectRefs(rangeStr)) {
+    const n = numFromCell(ref)
+    if (!Number.isFinite(n)) continue
+    count++
+    if (n < value) less++
+    if (n < min) min = n
+    if (n > max) max = n
+  }
+  if (count === 0 || value < min || value > max) return '#N/A'
+  return finiteResult(less / (count - 1 || 1))
 }
 
 /** QUARTILE(range, q) — q in 0..4 mapped to PERCENTILE 0/.25/.5/.75/1. */
