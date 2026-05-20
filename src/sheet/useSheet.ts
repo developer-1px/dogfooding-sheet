@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { colLettersFor } from './schema'
 import { useFormats } from './formatting/useFormats'
 import { useStyles } from './formatting/useStyles'
@@ -20,8 +19,7 @@ import { useSheetPresentation } from './useSheetPresentation'
 import { useSheetShortcutBindings } from './useSheetShortcutBindings'
 import { useSheetDocument } from './useSheetDocument'
 import { useSheetLayout, type SheetLayoutPrompts } from './useSheetLayout'
-
-export type SheetCtx = ReturnType<typeof useSheet>
+import { useSheetViewState } from './useSheetViewState'
 
 export interface SheetOptions extends SheetLayoutPrompts {
   openGoto?: () => void
@@ -44,9 +42,7 @@ export function useSheet(opts: SheetOptions = {}) {
   const layout = useSheetLayout(sheet, ops, opts)
   const merges = useMerges(sheet.merges, ops)
   const find = useFindState()
-  const [helpOpen, setHelpOpen] = useState(false)
-  const [showFormulas, setShowFormulas] = useState(false)
-  const [showGridlines, setShowGridlines] = useState(true)
+  const viewState = useSheetViewState()
   const tabs = useTabs(sheet.tabs, ops)
   const tabFns = tabActions(sheet, ops)
 
@@ -77,7 +73,7 @@ export function useSheet(opts: SheetOptions = {}) {
     cells: sheet.cells,
     rowCount,
     colLetters,
-    showFormulas,
+    showFormulas: viewState.showFormulas,
     formatOf: fmt.formatOf,
     filter: filter.filter,
     focusId: edit.focusId,
@@ -86,8 +82,6 @@ export function useSheet(opts: SheetOptions = {}) {
   })
 
   const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops)
-
-  const toggleShowFormulas = () => setShowFormulas((v) => !v)
 
   useSheetShortcutBindings({
     editing: edit.editing,
@@ -107,7 +101,7 @@ export function useSheet(opts: SheetOptions = {}) {
     targetKeys,
     openFind: find.openFind,
     openReplace: find.openReplace,
-    openHelp: () => setHelpOpen(true),
+    openHelp: viewState.openHelp,
     openGoto: opts.openGoto ?? (() => {}),
     insertLink: opts.openLink ?? (() => {}),
     editNote: opts.openNote ?? (() => {}),
@@ -115,7 +109,7 @@ export function useSheet(opts: SheetOptions = {}) {
     styleOf: styles.styleOf,
     setFormat: fmt.setFormat,
     display,
-    toggleShowFormulas,
+    toggleShowFormulas: viewState.toggleShowFormulas,
     cycleTab: tabFns.cycleTab,
     insertRow,
     deleteRow,
@@ -139,8 +133,12 @@ export function useSheet(opts: SheetOptions = {}) {
     moveFormulaPick: formulaPick.moveFormulaPick,
     cycleFormulaRef: formulaPick.cycleFormulaRef,
     findOpen: find.findOpen, setFindOpen: find.setFindOpen, findMode: find.findMode,
-    helpOpen, setHelpOpen,
-    showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines: () => setShowGridlines((v) => !v),
+    helpOpen: viewState.helpOpen,
+    setHelpOpen: viewState.setHelpOpen,
+    showFormulas: viewState.showFormulas,
+    toggleShowFormulas: viewState.toggleShowFormulas,
+    showGridlines: viewState.showGridlines,
+    toggleShowGridlines: viewState.toggleShowGridlines,
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     freeze: freeze.freeze,
