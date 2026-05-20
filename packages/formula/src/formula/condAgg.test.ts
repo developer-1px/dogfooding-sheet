@@ -196,6 +196,13 @@ describe('TRIMMEAN', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5', A6: '6', A7: '7', A8: '8', A9: '9', A10: '100' }
     expect(evaluateCell(cells, '=TRIMMEAN(A1:A10, 0.2)')).toBe('5.5')
   })
+
+  it('handles max-size ranges without trimming via slice arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const cells = { [last]: '100' }
+
+    expect(Number(evaluateCell(cells, `=TRIMMEAN(A1:${last}, 0)`))).toBeCloseTo(100 / MAX_EXPANDED_REFS)
+  })
 })
 
 describe('PERCENTILE / QUARTILE', () => {
@@ -204,6 +211,13 @@ describe('PERCENTILE / QUARTILE', () => {
     expect(evaluateCell(cells, '=PERCENTILE(A1:A5, 0)')).toBe('1')
     expect(evaluateCell(cells, '=PERCENTILE(A1:A5, 0.5)')).toBe('3')
     expect(evaluateCell(cells, '=PERCENTILE(A1:A5, 1)')).toBe('5')
+  })
+  it('handles max-size percentile ranges without map/filter intermediates', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const cells = { [last]: '100' }
+
+    expect(evaluateCell(cells, `=PERCENTILE(A1:${last}, 0)`)).toBe('0')
+    expect(evaluateCell(cells, `=PERCENTILE(A1:${last}, 1)`)).toBe('100')
   })
   it('QUARTILE matches percentile mapping', () => {
     const cells = { A1: '1', A2: '2', A3: '3', A4: '4', A5: '5' }

@@ -10,19 +10,33 @@ const numError = (): string => '#NUM!'
 const finiteResult = (value: number): string =>
   Number.isFinite(value) ? String(value) : numError()
 
+const finiteNumbers = (
+  rangeStr: string,
+  numFromCell: NumFromCell,
+  keep: (value: number) => boolean = Number.isFinite,
+): number[] => {
+  const nums: number[] = []
+  for (const ref of collectRefs(rangeStr)) {
+    const value = numFromCell(ref)
+    if (keep(value)) nums.push(value)
+  }
+  return nums
+}
+
 /** TRIMMEAN(range, fraction) — drop fraction*N from each end, average rest. */
 export function trimmean(rangeStr: string, frac: number, numFromCell: NumFromCell): string {
-  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
   if (!Number.isFinite(frac)) return valueError()
+  const nums = finiteNumbers(rangeStr, numFromCell).sort((a, b) => a - b)
   if (frac < 0 || frac >= 1 || nums.length === 0) return numError()
   const drop = Math.floor((nums.length * frac) / 2)
-  const kept = nums.slice(drop, nums.length - drop)
-  return finiteResult(kept.reduce((a, b) => a + b, 0) / kept.length)
+  let sum = 0
+  for (let i = drop; i < nums.length - drop; i++) sum += nums[i]
+  return finiteResult(sum / (nums.length - drop * 2))
 }
 
 /** PERCENTILE(range, p) — linear interpolation, p in [0,1]. */
 export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell): string {
-  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
+  const nums = finiteNumbers(rangeStr, numFromCell).sort((a, b) => a - b)
   if (!Number.isFinite(p)) return valueError()
   if (nums.length === 0 || p < 0 || p > 1) return numError()
   const idx = p * (nums.length - 1)
@@ -32,7 +46,7 @@ export function percentile(rangeStr: string, p: number, numFromCell: NumFromCell
 
 /** GINI(range) — Gini coefficient of inequality, in [0,1]. */
 export function gini(rangeStr: string, numFromCell: NumFromCell): string {
-  const nums = collectRefs(rangeStr).map(numFromCell).filter((n) => Number.isFinite(n) && n >= 0).sort((a, b) => a - b)
+  const nums = finiteNumbers(rangeStr, numFromCell, (n) => Number.isFinite(n) && n >= 0).sort((a, b) => a - b)
   const n = nums.length
   if (n === 0) return '#NUM!'
   const sum = nums.reduce((s, v) => s + v, 0)
@@ -44,7 +58,7 @@ export function gini(rangeStr: string, numFromCell: NumFromCell): string {
 
 /** SKEW: population skewness; KURT: excess kurtosis (Fisher). */
 export function moment(F: 'SKEW' | 'KURT', rangeStr: string, numFromCell: NumFromCell): string {
-  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
+  const nums = finiteNumbers(rangeStr, numFromCell)
   const n = nums.length
   if (n < 2) return '#NUM!'
   const m = nums.reduce((s, v) => s + v, 0) / n
@@ -58,7 +72,7 @@ export function moment(F: 'SKEW' | 'KURT', rangeStr: string, numFromCell: NumFro
 /** ZSCORE(value, range) — (value - mean) / stdev_population. */
 export function zScore(value: number, rangeStr: string, numFromCell: NumFromCell): string {
   if (!Number.isFinite(value)) return valueError()
-  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite)
+  const nums = finiteNumbers(rangeStr, numFromCell)
   if (nums.length === 0) return '#N/A'
   const m = nums.reduce((s, v) => s + v, 0) / nums.length
   const sd = Math.sqrt(nums.reduce((s, v) => s + (v - m) ** 2, 0) / nums.length)
