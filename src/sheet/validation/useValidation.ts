@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import type { SheetOps } from '../schema'
+import type { Cells, SheetOps } from '../schema'
 import { upsertKeys } from '../../lib/dictOps'
+import type { Patch } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 export interface ListRule { type: 'list'; options: string[] }
@@ -20,6 +21,21 @@ export const normalizeCheckboxValue = (value: string | undefined): 'TRUE' | 'FAL
   return 'FALSE'
 }
 
+export function checkboxConversionPatch(rules: Record<string, Rule>, cells: Cells, keys: string[]): Patch {
+  const patch: Patch = []
+  for (const key of keys) {
+    const rulePath = `/validation/${key}`
+    if (rules[key] === undefined) patch.push({ op: 'add', path: rulePath, value: { type: 'checkbox' } })
+    else if (rules[key]?.type !== 'checkbox') patch.push({ op: 'replace', path: rulePath, value: { type: 'checkbox' } })
+
+    const value = normalizeCheckboxValue(cells[key])
+    const cellPath = `/cells/${key}`
+    if (cells[key] === undefined) patch.push({ op: 'add', path: cellPath, value })
+    else if (cells[key] !== value) patch.push({ op: 'replace', path: cellPath, value })
+  }
+  return patch
+}
+
 const LEGACY_KEY = 'spreadsheet:validation:v1'
 
 const migrateLegacy = (rules: Record<string, Rule>, ops: SheetOps) =>
@@ -37,7 +53,7 @@ const migrateLegacy = (rules: Record<string, Rule>, ops: SheetOps) =>
     (o, v) => o.replace('/validation', v),
   )
 
-export function useValidation(rules: Record<string, Rule>, ops: SheetOps) {
+export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: SheetOps) {
   useEffect(() => { migrateLegacy(rules, ops) }, [rules, ops])
 
   const setListRule = (keys: string[], options: string[]) => {
@@ -45,7 +61,10 @@ export function useValidation(rules: Record<string, Rule>, ops: SheetOps) {
     upsertKeys(ops, '/validation', rules, keys.map((k) => [k, value]))
   }
   const clearRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, keys.map((k) => [k, undefined]))
-  const setCheckboxRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, keys.map((k) => [k, { type: 'checkbox' as const }]))
+  const setCheckboxRule = (keys: string[]) => {
+    const patch = checkboxConversionPatch(rules, cells, keys)
+    if (patch.length) ops.patch(patch as never)
+  }
 
   return { setListRule, setCheckboxRule, clearRule, ruleOf: (k: string): Rule | undefined => rules[k] }
 }

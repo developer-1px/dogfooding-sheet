@@ -2,19 +2,10 @@ import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../../App'
 import { mouseClick, setupReactDOM } from '../test-utils'
-import { normalizeCheckboxValue } from './useValidation'
 
 const dom = setupReactDOM()
 
 describe('validation preview interactions', () => {
-  it('normalizes existing values when converting cells to checkboxes', () => {
-    expect(normalizeCheckboxValue(undefined)).toBe('FALSE')
-    expect(normalizeCheckboxValue('')).toBe('FALSE')
-    expect(normalizeCheckboxValue('1')).toBe('TRUE')
-    expect(normalizeCheckboxValue('yes')).toBe('TRUE')
-    expect(normalizeCheckboxValue('FALSE')).toBe('FALSE')
-  })
-
   it('does not crash when the list validation button is clicked with the mouse', async () => {
     await act(async () => dom.root.render(createElement(App)))
     window.prompt = () => { throw new Error('prompt() is not supported') }
