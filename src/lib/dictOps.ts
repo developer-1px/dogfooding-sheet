@@ -24,6 +24,12 @@ export function removeValue(ops: RemoveOps, path: string): void {
   ops.remove(path as never)
 }
 
+const escapePathSegment = (segment: string): string =>
+  segment.replace(/~/g, '~0').replace(/\//g, '~1')
+
+const childPath = (base: string, key: string): string =>
+  `${base}/${escapePathSegment(key)}`
+
 /**
  * Surgical add/replace/remove for one key inside a dict-record stored in the SSOT doc.
  * Per zod-crud guidance — avoids `ops.replace('/path', { ...all, [k]: v })` anti-pattern
@@ -36,7 +42,7 @@ export function upsertKey<T, V>(
   key: string,
   value: V | undefined,
 ): void {
-  const path = `${base}/${key}`
+  const path = childPath(base, key)
   if (value === undefined) {
     if (current[key] !== undefined) removeValue(ops, path)
   } else if (current[key] === undefined) {
@@ -55,7 +61,7 @@ export function upsertKeys<T, V>(
 ): void {
   const patch: Patch = []
   for (const [key, value] of entries) {
-    const path = `${base}/${key}`
+    const path = childPath(base, key)
     if (value === undefined) { if (current[key] !== undefined) patch.push({ op: 'remove', path }) }
     else if (current[key] === undefined) patch.push({ op: 'add', path, value })
     else if (current[key] !== value) patch.push({ op: 'replace', path, value })
