@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { type Cells, type WriteCell, type WriteMany } from '../schema'
 import { fillSourceRect, fillTargetForCell, idsInFillTarget, rectEq, type Rect } from '@spredsheet/grid'
 import { applyFill } from './applyFill'
@@ -21,7 +21,14 @@ function useFillHandleGesture(args: {
 }) {
   const sourceRef = useRef<Rect | null>(null)
   const targetRef = useRef<Rect | null>(null)
+  const mouseupRef = useRef<(() => void) | null>(null)
   const [preview, setPreview] = useState<Rect | null>(null)
+
+  const removeMouseup = () => {
+    if (!mouseupRef.current) return
+    window.removeEventListener('mouseup', mouseupRef.current)
+    mouseupRef.current = null
+  }
 
   const clear = () => {
     sourceRef.current = null
@@ -30,12 +37,17 @@ function useFillHandleGesture(args: {
   }
 
   const commit = () => {
+    removeMouseup()
     const source = sourceRef.current
     const target = targetRef.current
     if (source && target && !args.equals(source, target)) args.onCommit(source, target)
     clear()
     args.onEnd?.()
   }
+
+  useEffect(() => () => {
+    removeMouseup()
+  }, [])
 
   return {
     preview,
@@ -49,6 +61,8 @@ function useFillHandleGesture(args: {
           sourceRef.current = source
           targetRef.current = source
           setPreview(source)
+          removeMouseup()
+          mouseupRef.current = commit
           window.addEventListener('mouseup', commit, { once: true })
         },
       }
