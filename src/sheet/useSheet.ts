@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useJSONDocument } from 'zod-crud'
 import { SheetSchema, colLettersFor, type Writes } from './schema'
-import { evaluateCell } from '@spredsheet/formula'
-import { loadInitial, saveSheet, buildData } from './storage'
+import { loadInitial, saveSheet } from './storage'
 import { useShortcuts } from './useShortcuts'
-import { useFormats, applyFormat } from './formatting/useFormats'
+import { useFormats } from './formatting/useFormats'
 import { CLEAR_STYLE } from './formatting/useStyles'
 import { useStyles } from './formatting/useStyles'
 import { useFreeze } from './visibility/useFreeze'
-import { useFilter, hiddenRows } from './visibility/useFilter'
+import { useFilter } from './visibility/useFilter'
 import { useHidden } from './visibility/useHidden'
 import { useNotes } from './useNotes'
 import { normalizeCheckboxValue, useValidation } from './validation/useValidation'
@@ -22,6 +21,7 @@ import { rowColAtFocus } from './structure/rowColAtFocus'
 import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey, type Patch } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
 import { useFormulaPick } from './useFormulaPick'
 import { useSheetSelection } from './useSheetSelection'
+import { useSheetPresentation } from './useSheetPresentation'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
@@ -79,10 +79,10 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     }
   }
 
-  const display = (k: string) => showFormulas ? (sheet.cells[k] ?? '') : applyFormat(evaluateCell(sheet.cells, sheet.cells[k] ?? ''), fmt.formatOf(k))
-  const data = buildData((k) => display(k), rowCount, colLetters)
-  data.meta = { ...data.meta, focus: edit.focusId, selectAnchor: selection.selectAnchor ?? undefined }
-  for (const id of selectedIds) data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
+  const { display, data, hiddenRowSet } = useSheetPresentation({
+    cells: sheet.cells, rowCount, colLetters, showFormulas, formatOf: fmt.formatOf,
+    filter: filter.filter, focusId: edit.focusId, selectedIds, selectAnchor: selection.selectAnchor,
+  })
 
   const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops)
 
@@ -133,7 +133,7 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
     freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, setFreezeRows: freeze.setFreezeRows, setFreezeCols: freeze.setFreezeCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
     rowCount, colCount: sheet.colCount, colLetters,
-    hiddenRowSet: hiddenRows(filter.filter, rowCount, display),
+    hiddenRowSet,
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
     hideRow: hidden.hideRow, hideCol: hidden.hideCol, showRow: hidden.showRow, showCol: hidden.showCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
     setNote: notes.setNote, noteOf: notes.noteOf, editNote: opts.openNote ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
