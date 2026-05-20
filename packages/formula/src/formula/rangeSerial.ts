@@ -15,8 +15,18 @@ const vals = (r: string, e: EvalCell): string[] => {
 }
 
 /** RANGEJSON(range) — JSON array of evaluated values. */
-export const rangeJSON = (r: string | undefined, _c: Cells, e: EvalCell) =>
-  hasRangeArg(r) ? stringifyFormulaArray(vals(r, e)) : valueError()
+export const rangeJSON = (r: string | undefined, _c: Cells, e: EvalCell) => {
+  if (!hasRangeArg(r)) return valueError()
+  const parts: string[] = []
+  let length = 2
+  for (const ref of collectRefs(r)) {
+    const value = JSON.stringify(e(ref)) ?? 'null'
+    length += value.length + (parts.length > 0 ? 1 : 0)
+    if (length > MAX_GENERATED_TEXT_LENGTH) return valueError()
+    parts.push(value)
+  }
+  return `[${parts.join(',')}]`
+}
 
 /** RANGECSV(range) — values comma-separated, double-quote escaped if needed. */
 export const rangeCsv = (r: string | undefined, _c: Cells, e: EvalCell) => {

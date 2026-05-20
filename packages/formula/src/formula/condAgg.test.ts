@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
 import { MAX_EXPANDED_REFS } from './parse'
+import { rangeJSON } from './rangeSerial'
 import { MAX_GENERATED_TEXT_LENGTH } from './textLimit'
 
 const c = { A1: '5', A2: '10', A3: '3', A4: '20', A5: '8', A6: '' }
@@ -282,6 +283,18 @@ describe('RANGEJSON', () => {
   it('serializes range as JSON array', () => {
     const cells = { A1: 'a', A2: 'b', A3: 'c' }
     expect(evaluateCell(cells, '=RANGEJSON(A1:A3)')).toBe('["a","b","c"]')
+  })
+
+  it('rejects oversized JSON output before evaluating the rest of the range', () => {
+    let calls = 0
+    const value = rangeJSON('A1:A3', {}, () => {
+      calls++
+      if (calls > 1) throw new Error('should not evaluate after output cap is exceeded')
+      return 'x'.repeat(MAX_GENERATED_TEXT_LENGTH)
+    })
+
+    expect(value).toBe('#VALUE!')
+    expect(calls).toBe(1)
   })
 })
 
