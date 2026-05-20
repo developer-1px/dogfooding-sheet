@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   applyCheckboxValidation,
+  clearAllFormatsPatch,
+  clearCellValuesPatch,
   applyToolbarFormat,
   applyToolbarAutoSum,
   clearToolbarStyle,
@@ -283,6 +285,25 @@ describe('toolbarActions', () => {
         keys: ['D4'],
         patch: { b: false, i: false, u: false, s: false, w: false, bd: false, a: undefined, bg: '', fg: '' },
       },
+    ])
+  })
+
+  it('builds no-op clear patches when values and formats are already empty', () => {
+    expect(clearCellValuesPatch({})).toEqual([])
+    expect(clearAllFormatsPatch({ styles: {}, formats: {}, condFormat: [] })).toEqual([])
+  })
+
+  it('builds clear patches only for populated values and format state', () => {
+    expect(clearCellValuesPatch({ A1: 'x' })).toEqual([
+      { op: 'replace', path: '/cells', value: {} },
+    ])
+    expect(clearAllFormatsPatch({
+      styles: { A1: { b: true } },
+      formats: {},
+      condFormat: [{ col: 'A', op: '>', value: '1', color: '#fff' }],
+    })).toEqual([
+      { op: 'replace', path: '/styles', value: {} },
+      { op: 'replace', path: '/condFormat', value: [] },
     ])
   })
 })
