@@ -405,6 +405,7 @@ describe('MAXSTR / MINSTR', () => {
     const cells = { A1: 'banana', A2: 'apple', A3: 'cherry' }
     expect(evaluateCell(cells, '=MAXSTR(A1:A3)')).toBe('cherry')
     expect(evaluateCell(cells, '=MINSTR(A1:A3)')).toBe('apple')
+    expect(evaluateCell({ A1: '', A2: '' }, '=MAXSTR(A1:A2)')).toBe('#N/A')
   })
 })
 
@@ -413,6 +414,7 @@ describe('MAXLEN / MINLEN', () => {
     const cells = { A1: 'red', A2: 'green', A3: 'aquamarine' }
     expect(evaluateCell(cells, '=MAXLEN(A1:A3)')).toBe('10')
     expect(evaluateCell(cells, '=MINLEN(A1:A3)')).toBe('3')
+    expect(evaluateCell({ A1: '', A2: '' }, '=MINLEN(A1:A2)')).toBe('0')
   })
 })
 
@@ -454,6 +456,7 @@ describe('SAMPLE', () => {
     const cells = { A1: 'a', A2: 'b', A3: '', A4: 'c' }
     const v = evaluateCell(cells, '=SAMPLE(A1:A4)')
     expect(['a', 'b', 'c']).toContain(v)
+    expect(evaluateCell({ A1: '', A2: '' }, '=SAMPLE(A1:A2)')).toBe('#N/A')
   })
 })
 

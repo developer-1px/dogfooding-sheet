@@ -24,18 +24,24 @@ export function arrayToText(rangeStr: string | undefined, sep: string, _cells: C
 
 export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
   if (!hasRangeArg(rangeStr)) return valueError()
-  const vals = collectRefs(rangeStr).map(evalCell).filter((v) => v !== '')
-  if (vals.length === 0) return '#N/A'
-  let best = vals[0]
-  for (let i = 1; i < vals.length; i++) if (F === 'MAXSTR' ? vals[i] > best : vals[i] < best) best = vals[i]
-  return best
+  let best: string | null = null
+  for (const ref of collectRefs(rangeStr)) {
+    const value = evalCell(ref)
+    if (value === '') continue
+    if (best === null || (F === 'MAXSTR' ? value > best : value < best)) best = value
+  }
+  return best ?? '#N/A'
 }
 
 export function lenStat(F: 'MAXLEN' | 'MINLEN', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
   if (!hasRangeArg(rangeStr)) return valueError()
-  const lens = collectRefs(rangeStr).map((r) => evalCell(r).length).filter((n) => n > 0)
-  if (lens.length === 0) return '0'
-  return String(F === 'MAXLEN' ? Math.max(...lens) : Math.min(...lens))
+  let best: number | null = null
+  for (const ref of collectRefs(rangeStr)) {
+    const length = evalCell(ref).length
+    if (length === 0) continue
+    if (best === null || (F === 'MAXLEN' ? length > best : length < best)) best = length
+  }
+  return String(best ?? 0)
 }
 
 export function firstLast(F: 'FIRST' | 'LAST', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
@@ -101,7 +107,13 @@ export function countNumeric(rangeStr: string | undefined, _cells: Cells, evalCe
 
 export function sample(rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
   if (!hasRangeArg(rangeStr)) return valueError()
-  const vals = collectRefs(rangeStr).map(evalCell).filter((v) => v !== '')
-  if (vals.length === 0) return '#N/A'
-  return vals[Math.floor(Math.random() * vals.length)]
+  let picked = ''
+  let count = 0
+  for (const ref of collectRefs(rangeStr)) {
+    const value = evalCell(ref)
+    if (value === '') continue
+    count++
+    if (Math.random() < 1 / count) picked = value
+  }
+  return count === 0 ? '#N/A' : picked
 }
