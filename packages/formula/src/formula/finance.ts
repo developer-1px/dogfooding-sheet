@@ -18,6 +18,25 @@ const optionalFiniteArg = (argsN: number[], index: number, fallback: number): nu
 const finiteResult = (value: number): string =>
   Number.isFinite(value) ? String(value) : numError()
 
+interface CashFlows {
+  values: number[]
+  hasPositive: boolean
+  hasNegative: boolean
+}
+
+const collectCashFlows = (rangeStr: string, numFromCell: NumFromCell): CashFlows => {
+  const values: number[] = []
+  let hasPositive = false
+  let hasNegative = false
+  for (const ref of collectRefs(rangeStr)) {
+    const value = numFromCell(ref)
+    values.push(value)
+    if (value > 0) hasPositive = true
+    if (value < 0) hasNegative = true
+  }
+  return { values, hasPositive, hasNegative }
+}
+
 const pmtVal = (rate: number, nper: number, pv: number, fv = 0): number => {
   if (rate === 0) return -(pv + fv) / nper
   const f = Math.pow(1 + rate, nper)
@@ -61,8 +80,9 @@ export function dispatchFinance(F: string, argsT: string[], argsN: number[], raw
     return finiteResult(-(futureValue + pmt * (f - 1) / rate) / f)
   }
   if (F === 'IRR') {
-    const cf = collectRefs(rawArgs.split(',')[0]).map(numFromCell)
-    if (cf.length < 2 || !cf.some((v) => v > 0) || !cf.some((v) => v < 0)) return numError()
+    const cashFlows = collectCashFlows(rawArgs.split(',')[0], numFromCell)
+    const cf = cashFlows.values
+    if (cf.length < 2 || !cashFlows.hasPositive || !cashFlows.hasNegative) return numError()
     const guess = argsT[1] === undefined ? 0.1 : argsN[1]
     if (!Number.isFinite(guess)) return valueError()
     if (guess <= -1) return numError()
@@ -88,7 +108,7 @@ export function dispatchFinance(F: string, argsT: string[], argsN: number[], raw
   if (F === 'NPV') {
     if (!Number.isFinite(argsN[0])) return valueError()
     const rate = argsN[0]
-    const cf = collectRefs(rawArgs.slice(rawArgs.indexOf(',') + 1)).map(numFromCell)
+    const cf = collectCashFlows(rawArgs.slice(rawArgs.indexOf(',') + 1), numFromCell).values
     if (cf.length === 0) return numError()
     let total = 0
     for (let i = 0; i < cf.length; i++) {

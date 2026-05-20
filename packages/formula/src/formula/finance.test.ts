@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
+import { MAX_EXPANDED_REFS } from './parse'
 
 describe('finance', () => {
   it('PMT / FV / PV financial functions', () => {
@@ -22,6 +23,13 @@ describe('finance', () => {
   it('NPV discounts cashflows', () => {
     const cells = { A1: '100', A2: '200', A3: '300' }
     expect(Number(evaluateCell(cells, '=NPV(0.1, A1:A3)'))).toBeCloseTo(481.59, 1)
+  })
+
+  it('handles max-size NPV ranges without cashflow map arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const cells = { A1: '100', A2: '200', [last]: '300' }
+
+    expect(Number(evaluateCell(cells, `=NPV(0, A1:${last})`))).toBeCloseTo(600)
   })
 
   it('rejects invalid finance inputs', () => {

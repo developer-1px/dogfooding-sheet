@@ -14,15 +14,23 @@ const finiteResult = (value: number): string =>
 
 export function largeSmall(F: 'LARGE' | 'SMALL', rangeStr: string, k: number, numFromCell: NumFromCell): string {
   if (!hasRangeArg(rangeStr) || !Number.isFinite(k)) return valueError()
-  const nums = collectRefs(rangeStr).map(numFromCell).filter(Number.isFinite).sort((a, b) => a - b)
+  const nums: number[] = []
+  for (const ref of collectRefs(rangeStr)) {
+    const value = numFromCell(ref)
+    if (Number.isFinite(value)) nums.push(value)
+  }
+  nums.sort((a, b) => a - b)
   if (!Number.isInteger(k) || k < 1 || k > nums.length) return numError()
   return String(F === 'LARGE' ? nums[nums.length - k] : nums[k - 1])
 }
 
 export function sumproduct(rangeStrs: string[], numFromCell: NumFromCell): string {
   if (rangeStrs.length === 0) return '0'
-  if (rangeStrs.some((s) => !hasRangeArg(s))) return valueError()
-  const cols = rangeStrs.map(collectRefs)
+  const cols: string[][] = []
+  for (const rangeStr of rangeStrs) {
+    if (!hasRangeArg(rangeStr)) return valueError()
+    cols.push(collectRefs(rangeStr))
+  }
   let len = cols[0]?.length ?? 0
   for (let i = 1; i < cols.length; i++) len = Math.min(len, cols[i].length)
   let sum = 0

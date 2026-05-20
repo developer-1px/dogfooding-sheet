@@ -627,6 +627,17 @@ describe('extra math', () => {
     expect(evaluateCell(cells, '=SMALL(A1:A5,1)')).toBe('1')
     expect(evaluateCell(cells, '=SMALL(A1:A5,3)')).toBe('5')
   })
+  it('handles max-size LARGE and SMALL ranges without map/filter intermediates', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const cells = Object.fromEntries(
+      Array.from({ length: MAX_EXPANDED_REFS }, (_unused, index) => [`A${index + 1}`, String(index + 1)]),
+    )
+
+    expect(evaluateCell(cells, `=LARGE(A1:${last}, 1)`)).toBe(String(MAX_EXPANDED_REFS))
+    expect(evaluateCell(cells, `=LARGE(A1:${last}, 2)`)).toBe(String(MAX_EXPANDED_REFS - 1))
+    expect(evaluateCell(cells, `=SMALL(A1:${last}, 1)`)).toBe('1')
+    expect(evaluateCell(cells, `=SMALL(A1:${last}, 2)`)).toBe('2')
+  })
   it('PRODUCT multiplies range', () => {
     expect(evaluateCell({ A1: '2', A2: '3', A3: '4' }, '=PRODUCT(A1:A3)')).toBe('24')
   })
