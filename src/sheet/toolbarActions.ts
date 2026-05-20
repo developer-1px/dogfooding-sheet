@@ -59,7 +59,12 @@ export async function promptToolbarFilter({
   const focus = focusKey ? parseA1(focusKey) : null
   if (!focus) return 'no-target'
 
-  const text = await ask({ label: `${focus.col}열에서 찾을 값`, initial: filter?.text ?? '', submitLabel: '필터' })
+  let text: string | null
+  try {
+    text = await ask({ label: `${focus.col}열에서 찾을 값`, initial: filter?.text ?? '', submitLabel: '필터' })
+  } catch {
+    return 'cancelled'
+  }
   if (text === null) return 'cancelled'
   const normalized = normalizeFilterText(text)
   if (normalized === null) return 'invalid'
@@ -87,7 +92,12 @@ export async function promptListValidation({
   const keys = targetCellKeys(selectedIds, focusKey)
   if (keys.length === 0) return 'no-target'
 
-  const csv = await ask({ label: '허용 값 (쉼표 구분, 비우면 해제)', submitLabel: '적용' })
+  let csv: string | null
+  try {
+    csv = await ask({ label: '허용 값 (쉼표 구분, 비우면 해제)', submitLabel: '적용' })
+  } catch {
+    return 'cancelled'
+  }
   if (csv === null) return 'cancelled'
 
   const options = validationOptionsFromCsv(csv)

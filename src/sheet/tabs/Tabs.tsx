@@ -67,6 +67,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
                 e.stopPropagation()
                 confirm({ message: `"${name}" 시트를 삭제하시겠습니까?`, confirmLabel: '삭제' })
                   .then((ok) => { if (ok) deleteSheet(name) })
+                  .catch(() => {})
               }}
               title="시트 삭제"
             >×</button>

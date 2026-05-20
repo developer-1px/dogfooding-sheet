@@ -11,9 +11,11 @@ export function DevToolsOverlay() {
   useEffect(() => {
     if (!loadDevToolsOverlayDev) return
     let cancelled = false
-    loadDevToolsOverlayDev().then((module) => {
-      if (!cancelled) setDevToolsOverlayDev(() => module.DevToolsOverlayDev)
-    })
+    loadDevToolsOverlayDev()
+      .then((module) => {
+        if (!cancelled) setDevToolsOverlayDev(() => module.DevToolsOverlayDev)
+      })
+      .catch(() => {})
     return () => { cancelled = true }
   }, [])
 

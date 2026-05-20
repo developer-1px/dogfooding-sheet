@@ -11,6 +11,8 @@ function askValue(value: string | null, prompts: PromptOptions[] = []): Ask {
   }
 }
 
+const rejectingAsk = (): Ask => () => Promise.reject(new Error('closed'))
+
 describe('condFormatActions', () => {
   it('parses comparison and contains specs', () => {
     expect(parseCondFormatSpec('B', '>100 #ffeb3b')).toEqual({
@@ -64,6 +66,18 @@ describe('condFormatActions', () => {
     await expect(promptCondFormatRule({ col: 'A', ask: askValue('bad', prompts), addCondRule })).resolves.toBe('invalid')
 
     expect(prompts).toHaveLength(2)
+    expect(rules).toEqual([])
+  })
+
+  it('treats rejected rule prompts as cancelled', async () => {
+    const rules: CondRule[] = []
+
+    await expect(promptCondFormatRule({
+      col: 'A',
+      ask: rejectingAsk(),
+      addCondRule: (rule) => rules.push(rule),
+    })).resolves.toBe('cancelled')
+
     expect(rules).toEqual([])
   })
 })

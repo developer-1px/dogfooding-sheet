@@ -14,6 +14,8 @@ function askQueue(values: Array<string | null>, prompts: PromptOptions[] = []): 
   }
 }
 
+const rejectingAsk = (): Ask => () => Promise.reject(new Error('closed'))
+
 function fakeCtx(calls: string[] = [], overrides: Partial<SheetPromptController> = {}): SheetPromptController {
   return {
     rowCount: 10,
@@ -118,6 +120,22 @@ describe('sheetPromptActions', () => {
     actions.promptRowHeight(4)
     await flush()
     actions.promptColWidth('B')
+    await flush()
+
+    expect(calls).toEqual([])
+  })
+
+  it('absorbs rejected prompts and action failures', async () => {
+    const calls: string[] = []
+    const rejected = sheetPromptActions(rejectingAsk(), () => fakeCtx(calls))
+
+    rejected.openGoto()
+    await flush()
+
+    const failingApply = sheetPromptActions(askQueue(['https://example.com']), () =>
+      fakeCtx(calls, { writeCell: () => { throw new Error('blocked') } }))
+    failingApply.openLink()
+    await flush()
     await flush()
 
     expect(calls).toEqual([])

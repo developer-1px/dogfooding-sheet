@@ -49,10 +49,14 @@ const resizePromptValue = (value: string, defaultValue: number): number | null =
 const formulaStringLiteral = (value: string): string =>
   `"${value.replace(/"/g, '""')}"`
 
+const runPromptResult = <T,>(promise: Promise<T>, apply: (value: T) => void): void => {
+  void promise.then(apply).catch(() => {})
+}
+
 export function sheetPromptActions(ask: Ask, getCtx: () => SheetPromptController | null): SheetPromptActions {
   return {
     openGoto: () => {
-      void ask(GOTO_PROMPT).then((v) => {
+      runPromptResult(ask(GOTO_PROMPT), (v) => {
         const c = getCtx()
         if (v && c) gotoCell(v, c.setFocusId, c.setSelectedIds, { rowCount: c.rowCount, colCount: c.colCount }, c.setSelectAnchor)
       })
@@ -61,50 +65,55 @@ export function sheetPromptActions(ask: Ask, getCtx: () => SheetPromptController
       const c = getCtx()
       const k = key ?? c?.focusKey
       if (!c || !k) return
-      void ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' })
-        .then((v) => { if (v !== null) getCtx()?.setNote(k, v) })
+      runPromptResult(ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' }),
+        (v) => { if (v !== null) getCtx()?.setNote(k, v) },
+      )
     },
     openLink: () => {
       const c = getCtx()
       const k = c?.focusKey
       if (!c || !k) return
-      void ask({ label: '하이퍼링크 URL', placeholder: 'https://...', submitLabel: '삽입' })
-        .then((url) => {
+      runPromptResult(ask({ label: '하이퍼링크 URL', placeholder: 'https://...', submitLabel: '삽입' }),
+        (url) => {
           if (!url) return
           const urlLiteral = formulaStringLiteral(url)
           c.writeCell(k, `=HYPERLINK(${urlLiteral}, ${urlLiteral})`)
-        })
+        },
+      )
     },
     promptRowHeight: (row: number) => {
       const c = getCtx()
       if (!c) return
-      void ask({ label: `${row + 1}행 높이 (px, 비우면 기본값)`, initial: String(c.rowHeightOf(row)), submitLabel: '적용' })
-        .then((v) => {
+      runPromptResult(ask({ label: `${row + 1}행 높이 (px, 비우면 기본값)`, initial: String(c.rowHeightOf(row)), submitLabel: '적용' }),
+        (v) => {
           if (v === null) return
           const n = resizePromptValue(v, DEFAULT_HEIGHT)
           if (n !== null) c.setRowHeight(row, n)
-        })
+        },
+      )
     },
     promptColWidth: (col: string) => {
       const c = getCtx()
       if (!c) return
       const cur = c.sheet.colWidths[col] ?? DEFAULT_WIDTH
-      void ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' })
-        .then((v) => {
+      runPromptResult(ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' }),
+        (v) => {
           if (v === null) return
           const n = resizePromptValue(v, DEFAULT_WIDTH)
           if (n !== null) c.setColWidth(col, n)
-        })
+        },
+      )
     },
     promptFilter: (col: string) => {
       const c = getCtx()
       if (!c) return
-      void ask({ label: `${col}열 필터 조건`, initial: c.filter?.col === col ? c.filter.text : '', submitLabel: '필터' })
-        .then((v) => {
+      runPromptResult(ask({ label: `${col}열 필터 조건`, initial: c.filter?.col === col ? c.filter.text : '', submitLabel: '필터' }),
+        (v) => {
           if (v === null) return
           if (v === '') c.clearFilter()
           else c.applyFilter(col, v)
-        })
+        },
+      )
     },
   }
 }

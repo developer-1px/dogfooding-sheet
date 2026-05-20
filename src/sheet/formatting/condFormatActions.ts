@@ -32,11 +32,16 @@ export async function promptCondFormatRule({
 }): Promise<CondFormatActionResult> {
   if (!col) return 'no-column'
 
-  const spec = await ask({
-    label: `${col}열 조건부 서식 (예: >100 #ffeb3b 또는 contains foo #c8e6c9)`,
-    initial: '>0 #fff59d',
-    submitLabel: '추가',
-  })
+  let spec: string | null
+  try {
+    spec = await ask({
+      label: `${col}열 조건부 서식 (예: >100 #ffeb3b 또는 contains foo #c8e6c9)`,
+      initial: '>0 #fff59d',
+      submitLabel: '추가',
+    })
+  } catch {
+    return 'cancelled'
+  }
   if (!spec) return 'cancelled'
 
   const rule = parseCondFormatSpec(col, spec)

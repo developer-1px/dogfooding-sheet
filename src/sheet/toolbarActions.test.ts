@@ -22,6 +22,8 @@ function askValue(value: string | null, prompts: PromptOptions[] = []): Ask {
   }
 }
 
+const rejectingAsk = (): Ask => () => Promise.reject(new Error('closed'))
+
 describe('toolbarActions', () => {
   it('resolves toolbar target keys from selection or focused key', () => {
     expect(targetCellKeys(['r0-A', 'r1-B'], 'C3')).toEqual(['A1', 'B2'])
@@ -110,6 +112,20 @@ describe('toolbarActions', () => {
     expect(calls).toEqual(['apply:B:>1', 'clear', 'clear'])
   })
 
+  it('treats rejected filter prompts as cancelled', async () => {
+    const calls: string[] = []
+
+    await expect(promptToolbarFilter({
+      ask: rejectingAsk(),
+      focusKey: 'B2',
+      filter: null,
+      applyFilter: (col, text) => calls.push(`apply:${col}:${text}`),
+      clearFilter: () => calls.push('clear'),
+    })).resolves.toBe('cancelled')
+
+    expect(calls).toEqual([])
+  })
+
   it('prompts for list validation and applies or clears the target keys', async () => {
     const calls: string[] = []
     const prompts: PromptOptions[] = []
@@ -146,6 +162,20 @@ describe('toolbarActions', () => {
 
     expect(result).toBe('no-target')
     expect(prompts).toEqual([])
+  })
+
+  it('treats rejected list validation prompts as cancelled', async () => {
+    const calls: string[] = []
+
+    await expect(promptListValidation({
+      ask: rejectingAsk(),
+      selectedIds: ['r0-A'],
+      focusKey: null,
+      setListRule: (keys, options) => calls.push(`list:${keys.join('|')}:${options.join('|')}`),
+      clearRule: (keys) => calls.push(`clear:${keys.join('|')}`),
+    })).resolves.toBe('cancelled')
+
+    expect(calls).toEqual([])
   })
 
   it('applies checkbox validation to selection or focus', () => {
