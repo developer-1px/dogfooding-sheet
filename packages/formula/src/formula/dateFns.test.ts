@@ -35,6 +35,16 @@ describe('date functions', () => {
     expect(evaluateCell({}, '=DAYS("2026-05-15", "2026-05-10")')).toBe('5')
     expect(evaluateCell({}, '=DAYS(DATEVALUE("2026-05-15"), DATEVALUE("2026-05-10"))')).toBe('5')
   })
+
+  it('date functions reject missing and invalid date inputs', () => {
+    expect(evaluateCell({}, '=YEAR()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=MONTH()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=DAY()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=DAYS("2026-05-15")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=DATEVALUE()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=DATEVALUE("2026-02-31")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=YEAR("2026-02-31")')).toBe('#VALUE!')
+  })
 })
 
 describe('math additions', () => {
@@ -104,6 +114,15 @@ describe('math additions', () => {
     expect(evaluateCell({}, '=SECOND(TIME(1, 65, 30))')).toBe('30')
   })
 
+  it('time functions reject missing and invalid time strings', () => {
+    expect(evaluateCell({}, '=TIMEVALUE()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=HOUR()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=MINUTE()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=SECOND()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=TIMEVALUE("25:00:00")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=TIMEVALUE("12:60:00")')).toBe('#VALUE!')
+  })
+
   it('WORKDAY skips weekends', () => {
     // 2026-05-08 is Fri → +1 workday = Mon 2026-05-11
     expect(evaluateCell({}, '=WORKDAY("2026-05-08", 1)')).toBe('2026-05-11')
@@ -122,5 +141,14 @@ describe('math additions', () => {
     expect(evaluateCell({}, '=WORKDAY("2026-05-08", 1.5)')).toBe('#VALUE!')
     expect(evaluateCell({}, '=WORKDAY("2026-05-08", 10001)')).toBe('#VALUE!')
     expect(evaluateCell({}, '=NETWORKDAYS("2026-01-01","2054-01-01")')).toBe('#VALUE!')
+  })
+
+  it('calendar functions reject missing and impossible date inputs', () => {
+    expect(evaluateCell({}, '=WEEKNUM()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=WEEKDAY()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=WORKDAY()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=NETWORKDAYS("2026-01-01")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=WEEKNUM("2026-02-31")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=WORKDAY("2026-02-31", 1)')).toBe('#VALUE!')
   })
 })

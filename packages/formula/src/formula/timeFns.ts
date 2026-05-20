@@ -3,11 +3,16 @@ import { wrap } from './marker'
 
 const DAY_SECONDS = 86400
 
-const parseTime = (s: string): { h: number; m: number; sec: number } | null => {
+const parseTime = (s: string | undefined): { h: number; m: number; sec: number } | null => {
+  if (s === undefined) return null
   const n = Number(s)
   if (Number.isFinite(n)) return secondsToTime(Math.floor(((n % 1) + 1) % 1 * DAY_SECONDS))
   const m = /^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/.exec(s.trim())
-  return m ? { h: Number(m[1]), m: Number(m[2]), sec: Number(m[3] ?? '0') } : null
+  if (!m) return null
+  const h = Number(m[1]), min = Number(m[2]), sec = Number(m[3] ?? '0')
+  return h >= 0 && h <= 23 && min >= 0 && min <= 59 && sec >= 0 && sec <= 59
+    ? { h, m: min, sec }
+    : null
 }
 
 const secondsToTime = (total: number): { h: number; m: number; sec: number } => {

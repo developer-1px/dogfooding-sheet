@@ -18,12 +18,16 @@ const DAY_MS = 86400000
 const fmtUTC = (d: Date): string =>
   `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`
 
+const isSameUtcDate = (d: Date, y: number, m: number, day: number): boolean =>
+  d.getUTCFullYear() === y && d.getUTCMonth() === m - 1 && d.getUTCDate() === day
+
 export const date = (y: number, m: number, d: number): string => {
   const dt = new Date(Date.UTC(y, m - 1, d))
   return isNaN(dt.getTime()) ? '#VALUE!' : fmtUTC(dt)
 }
 
-const parseDate = (s: string): Date | null => {
+const parseDate = (s: string | undefined): Date | null => {
+  if (s === undefined) return null
   const n = Number(s)
   if (Number.isFinite(n)) {
     const d = new Date(SHEET_EPOCH_UTC + n * DAY_MS)
@@ -31,8 +35,9 @@ const parseDate = (s: string): Date | null => {
   }
   const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s.trim())
   if (!m) return null
-  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
-  return isNaN(d.getTime()) ? null : d
+  const y = Number(m[1]), month = Number(m[2]), day = Number(m[3])
+  const d = new Date(Date.UTC(y, month - 1, day))
+  return isNaN(d.getTime()) || !isSameUtcDate(d, y, month, day) ? null : d
 }
 
 export const year = (s: string) => parseDate(s)?.getUTCFullYear() ?? NaN
@@ -50,10 +55,10 @@ export function dispatchDate(F: string, argsT: string[]): string | null {
   if (F === 'TODAY') return wrap(today())
   if (F === 'NOW') return wrap(now())
   if (F === 'DATE') return wrap(date(Number(argsT[0]), Number(argsT[1]), Number(argsT[2])))
-  if (F === 'YEAR') return String(year(argsT[0]))
-  if (F === 'MONTH') return String(month(argsT[0]))
-  if (F === 'DAY') return String(day(argsT[0]))
-  if (F === 'DAYS') return String(days(argsT[0], argsT[1]))
+  if (F === 'YEAR') { const d = parseDate(argsT[0]); return d ? String(d.getUTCFullYear()) : wrap('#VALUE!') }
+  if (F === 'MONTH') { const d = parseDate(argsT[0]); return d ? String(d.getUTCMonth() + 1) : wrap('#VALUE!') }
+  if (F === 'DAY') { const d = parseDate(argsT[0]); return d ? String(d.getUTCDate()) : wrap('#VALUE!') }
+  if (F === 'DAYS') { const value = days(argsT[0], argsT[1]); return Number.isFinite(value) ? String(value) : wrap('#VALUE!') }
   if (F === 'DATEVALUE') {
     const d = parseDate(argsT[0]); if (!d) return wrap('#VALUE!')
     // Sheets epoch: 1899-12-30

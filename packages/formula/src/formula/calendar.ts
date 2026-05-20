@@ -5,11 +5,16 @@ const DAY_MS = 86_400_000
 const MAX_CALENDAR_ITERATION_DAYS = 10_000
 
 const fmtUTC = (r: Date) => `${r.getUTCFullYear()}-${pad2(r.getUTCMonth() + 1)}-${pad2(r.getUTCDate())}`
-const parseDate = (s: string): Date | null => {
+const isSameUtcDate = (d: Date, y: number, m: number, day: number): boolean =>
+  d.getUTCFullYear() === y && d.getUTCMonth() === m - 1 && d.getUTCDate() === day
+
+const parseDate = (s: string | undefined): Date | null => {
+  if (s === undefined) return null
   const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s.trim())
   if (!m) return null
-  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
-  return isNaN(d.getTime()) ? null : d
+  const y = Number(m[1]), month = Number(m[2]), day = Number(m[3])
+  const d = new Date(Date.UTC(y, month - 1, day))
+  return isNaN(d.getTime()) || !isSameUtcDate(d, y, month, day) ? null : d
 }
 const daySpan = (a: Date, b: Date): number => Math.floor(Math.abs(b.getTime() - a.getTime()) / DAY_MS)
 const isSafeWorkdayCount = (value: number): boolean =>
