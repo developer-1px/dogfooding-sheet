@@ -1,13 +1,5 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
-import { idsForRow } from '@spredsheet/grid'
-import { cellId, parseCellId } from '../schema'
-
-const rowSelectIds = (rIdx: number, anchor: string | null, colLetters: readonly string[]): string[] => {
-  const p = anchor ? parseCellId(anchor) : null; const from = p ? p.row : rIdx
-  const ids: string[] = []
-  for (let r = Math.min(from, rIdx); r <= Math.max(from, rIdx); r++) ids.push(...idsForRow(r, colLetters))
-  return ids
-}
+import { selectRowHeader } from './headerSelection'
 
 interface Props {
   rIdx: number
@@ -68,10 +60,10 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
       aria-current={active ? 'true' : undefined}
       aria-selected={selected}
       onClick={(e) => {
-        const id = cellId('A', rIdx)
-        setSelectedIds(rowSelectIds(rIdx, e.shiftKey ? focusId : null, colLetters))
-        setFocusId(id)
-        setSelectAnchor(id)
+        const selection = selectRowHeader(rIdx, e.shiftKey ? focusId : null, colLetters)
+        setSelectedIds(selection.selectedIds)
+        setFocusId(selection.focusId)
+        setSelectAnchor(selection.anchorId)
       }}
       onContextMenu={onContextMenu}
       title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정"

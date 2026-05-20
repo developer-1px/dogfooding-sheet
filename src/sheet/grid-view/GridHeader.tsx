@@ -1,6 +1,6 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
-import { cellId, colIndex } from '../schema'
-import { idsForCol, idsForAll } from '@spredsheet/grid'
+import { colIndex } from '../schema'
+import { selectAllHeaders, selectColumnHeader } from './headerSelection'
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 
 interface Props {
@@ -22,15 +22,6 @@ interface Props {
   onHeaderContextMenu: (e: React.MouseEvent, col: string) => void
   rowCount: number
   colLetters: readonly string[]
-}
-
-const colRangeIds = (target: string, anchor: string | null, rowCount: number, colLetters: readonly string[]): string[] => {
-  const a = anchor ? colIndex(anchor) : -1
-  const t = colIndex(target)
-  if (a < 0) return idsForCol(target, rowCount)
-  const ids: string[] = []
-  for (let i = Math.min(a, t); i <= Math.max(a, t); i++) ids.push(...idsForCol(colLetters[i], rowCount))
-  return ids
 }
 
 function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
@@ -83,10 +74,10 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         aria-selected={allSelected}
         title="전체 시트 선택"
         onClick={() => {
-          const first = cellId('A', 0)
-          setSelectedIds(idsForAll(rowCount, colLetters))
-          setFocusId(first)
-          setSelectAnchor(first)
+          const selection = selectAllHeaders(rowCount, colLetters)
+          setSelectedIds(selection.selectedIds)
+          setFocusId(selection.focusId)
+          setSelectAnchor(selection.anchorId)
         }}
       />
       {colLetters.map((c) => {
@@ -102,10 +93,10 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             aria-current={c === focusCol ? 'true' : undefined}
             aria-selected={selectedCols.has(c)}
             onClick={(e) => {
-              const id = cellId(c, 0)
-              setSelectedIds(colRangeIds(c, e.shiftKey ? focusCol : null, rowCount, colLetters))
-              setFocusId(id)
-              setSelectAnchor(id)
+              const selection = selectColumnHeader(c, e.shiftKey ? focusCol : null, rowCount, colLetters)
+              setSelectedIds(selection.selectedIds)
+              setFocusId(selection.focusId)
+              setSelectAnchor(selection.anchorId)
             }}
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
             title="우클릭으로 열 메뉴"
