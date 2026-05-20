@@ -1,8 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { GridCell } from '@interactive-os/aria-kernel/patterns'
-import { isNumeric } from '@spredsheet/grid'
+import { colIndex, isNumeric, type Rect } from '@spredsheet/grid'
 import { cellKey, parseCellId } from '../schema'
-import { isFillCorner } from '../fill/fillCorner'
 import { styleToProps, type StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
@@ -23,7 +22,7 @@ interface GridCellViewModelArgs {
   freezeCols: number
   freezeLefts: readonly number[]
   focusId: string | null
-  selectedIds: readonly string[]
+  fillSourceRect: Rect | null
   styleOf: StyleLookup
   noteOf: NoteLookup
   rawOf: NoteLookup
@@ -104,7 +103,7 @@ export function createGridCellViewModel(args: GridCellViewModelArgs): GridCellVi
     validationOptions: rule?.type === 'list' ? rule.options : undefined,
     checkbox: rule?.type === 'checkbox',
     nextCheckboxValue: raw === 'TRUE' ? 'FALSE' : 'TRUE',
-    fillCorner: isFillCorner(args.cell.id, args.focusId, Array.from(args.selectedIds)),
+    fillCorner: !!parsed && !!args.fillSourceRect && parsed.row === args.fillSourceRect.rMax && colIndex(parsed.col) === args.fillSourceRect.cMax,
     previewing: args.previewIds.has(args.cell.id),
   }
 }

@@ -80,6 +80,18 @@ describe('evaluateCell', () => {
     expect(evaluateCell(c, `=MIN(A1:${last})`)).toBe('7')
   })
 
+  it('handles max-size aggregate ranges without extra argument arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const c = cells(Object.fromEntries(
+      Array.from({ length: MAX_EXPANDED_REFS }, (_unused, index) => [`A${index + 1}`, String(index + 1)]),
+    ))
+
+    expect(evaluateCell(c, `=SUM(A1:${last})`)).toBe(String(MAX_EXPANDED_REFS * (MAX_EXPANDED_REFS + 1) / 2))
+    expect(evaluateCell(c, `=AVERAGE(A1:${last})`)).toBe(String((MAX_EXPANDED_REFS + 1) / 2))
+    expect(evaluateCell(c, `=COUNT(A1:${last})`)).toBe(String(MAX_EXPANDED_REFS))
+    expect(evaluateCell(c, `=MEDIAN(A1:${last})`)).toBe(String((MAX_EXPANDED_REFS + 1) / 2))
+  })
+
   it('IF with comparison', () => {
     expect(evaluateCell(cells({ A1: '10' }), '=IF(A1>5,1,0)')).toBe('1')
     expect(evaluateCell(cells({ A1: '3' }), '=IF(A1>5,1,0)')).toBe('0')

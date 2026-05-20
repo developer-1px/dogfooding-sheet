@@ -9,17 +9,22 @@ const unquote = (arg: string): string => {
   return s.startsWith('"') && s.endsWith('"') ? s.slice(1, -1).replace(/""/g, '"') : s
 }
 
-const numericCellValues = (refs: string[], c: Ctx): number[] =>
-  refs
-    .map((ref) => coerceNumber(c.evalCell(ref)))
-    .filter(Number.isFinite)
+const numericCellValues = (refs: string[], c: Ctx): number[] => {
+  const out: number[] = []
+  for (const ref of refs) {
+    const value = coerceNumber(c.evalCell(ref))
+    if (Number.isFinite(value)) out.push(value)
+  }
+  return out
+}
 
 const firstError = (refs: string[], args: string[], c: Ctx): string | undefined => {
   for (const ref of refs) {
     const value = c.evalCell(ref)
     if (isErrorValue(value)) return value
   }
-  for (const arg of args.filter((a) => !isPureRefArg(a))) {
+  for (const arg of args) {
+    if (isPureRefArg(arg)) continue
     const s = arg.trim()
     if (s.startsWith('"') && s.endsWith('"')) continue
     if (Number.isFinite(coerceNumber(unquote(arg)))) continue
@@ -38,7 +43,24 @@ const literalNumber = (arg: string, c: Ctx): number => {
 const isPureRefArg = (arg: string): boolean =>
   /^\s*\$?[A-Z]+\$?\d+(?::\$?[A-Z]+\$?\d+)?\s*$/.test(arg)
 
-const collectArgRefs = (args: string[]): string[] => args.filter(isPureRefArg).flatMap((arg) => collectRefs(arg))
+const collectArgRefs = (args: string[]): string[] => {
+  const refs: string[] = []
+  for (const arg of args) {
+    if (!isPureRefArg(arg)) continue
+    for (const ref of collectRefs(arg)) refs.push(ref)
+  }
+  return refs
+}
+
+const literalNumbers = (args: string[], c: Ctx): number[] => {
+  const nums: number[] = []
+  for (const arg of args) {
+    if (isPureRefArg(arg)) continue
+    const value = literalNumber(arg, c)
+    if (Number.isFinite(value)) nums.push(value)
+  }
+  return nums
+}
 
 const numError = (): string => wrap('#NUM!')
 const divZeroError = (): string => wrap('#DIV/0!')
@@ -62,11 +84,9 @@ export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
   const refs = collectArgRefs(args)
   const error = firstError(refs, args, c)
   if (error) return wrap(error)
-  const literalNums = args
-    .filter((arg) => !isPureRefArg(arg))
-    .map((arg) => literalNumber(arg, c))
-    .filter(Number.isFinite)
-  const nums = [...numericCellValues(refs, c), ...literalNums]
+  const literalNums = literalNumbers(args, c)
+  const nums = numericCellValues(refs, c)
+  for (const value of literalNums) nums.push(value)
   if (F === 'PRODUCT') return finiteResult(nums.reduce((a, b) => a * b, 1))
   if (F === 'SUMSQ') return finiteResult(nums.reduce((a, b) => a + b * b, 0))
   if (F === 'AVEDEV') {
@@ -115,10 +135,10 @@ export function aggregate(F: string, rawArgs: string, c: Ctx): string | null {
     return finiteResult(best)
   }
   if (F === 'MEDIAN') {
-    const s = [...nums].sort((a, b) => a - b)
-    const m = s.length
+    nums.sort((a, b) => a - b)
+    const m = nums.length
     if (m === 0) return '0'
-    return finiteResult(m % 2 ? s[(m - 1) / 2] : (s[m / 2 - 1] + s[m / 2]) / 2)
+    return finiteResult(m % 2 ? nums[(m - 1) / 2] : (nums[m / 2 - 1] + nums[m / 2]) / 2)
   }
   const ss = nums.reduce((acc, n) => acc + (n - mean) ** 2, 0)
   const variance = ss / Math.max(1, nums.length - 1)

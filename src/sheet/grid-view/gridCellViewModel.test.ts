@@ -32,7 +32,7 @@ describe('createGridCellViewModel', () => {
       freezeCols: 0,
       freezeLefts: [],
       focusId: null,
-      selectedIds: [],
+      fillSourceRect: null,
       styleOf: () => undefined,
       noteOf: () => undefined,
       rawOf: () => undefined,
@@ -53,7 +53,7 @@ describe('createGridCellViewModel', () => {
       freezeCols: 0,
       freezeLefts: [],
       focusId: null,
-      selectedIds: [],
+      fillSourceRect: null,
       styleOf: () => undefined,
       noteOf: () => undefined,
       rawOf: () => undefined,
@@ -76,7 +76,7 @@ describe('createGridCellViewModel', () => {
       freezeCols: 1,
       freezeLefts: [48],
       focusId: 'r0-A',
-      selectedIds: ['r0-A'],
+      fillSourceRect: { rMin: 0, rMax: 0, cMin: 0, cMax: 0 },
       styleOf: () => ({ b: true, bg: '#fff' }),
       noteOf: () => 'note',
       rawOf: () => '=SUM(B1:B2)',
@@ -116,7 +116,7 @@ describe('createGridCellViewModel', () => {
       freezeCols: 0,
       freezeLefts: [],
       focusId: null,
-      selectedIds: [],
+      fillSourceRect: null,
       styleOf: () => undefined,
       noteOf: () => undefined,
       rawOf: () => 'TRUE',
@@ -128,5 +128,30 @@ describe('createGridCellViewModel', () => {
 
     expect(view?.checkbox).toBe(true)
     expect(view?.nextCheckboxValue).toBe('FALSE')
+  })
+
+  it('uses a precomputed fill source rect for fill-corner state', () => {
+    const base = {
+      rowIndex: 1,
+      colIndex: 1,
+      colLetters: ['A', 'B'],
+      hiddenCols: new Set<string>(),
+      mergeAnchors: new Map<string, never>(),
+      mergeHidden: new Set<string>(),
+      freezeCols: 0,
+      freezeLefts: [],
+      focusId: null,
+      fillSourceRect: { rMin: 0, rMax: 1, cMin: 0, cMax: 1 },
+      styleOf: () => undefined,
+      noteOf: () => undefined,
+      rawOf: () => undefined,
+      ruleOf: () => undefined,
+      condBgOf: () => undefined,
+      highlightedIds: new Set<string>(),
+      previewIds: new Set<string>(),
+    }
+
+    expect(createGridCellViewModel({ ...base, cell: cell('r1-B') })?.fillCorner).toBe(true)
+    expect(createGridCellViewModel({ ...base, cell: cell('r1-A') })?.fillCorner).toBe(false)
   })
 })

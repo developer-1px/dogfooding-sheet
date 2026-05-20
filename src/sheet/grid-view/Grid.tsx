@@ -5,7 +5,7 @@ import { useColWidths } from './useColWidths'
 import { ContextMenu } from '../ContextMenu'
 import { useSheetGrid } from './useSheetGrid'
 import { useAutoFill } from '../fill/useAutoFill'
-import { rectToIdSet } from '@spredsheet/grid'
+import { fillSourceRect, rectToIdSet } from '@spredsheet/grid'
 import { freezeOffsets } from './freezeOffsets'
 import { buildMergeMap } from '../structure/useMerges'
 import { createGridViewModel } from './gridViewModel'
@@ -53,6 +53,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
     rowCount: ctx.rowCount,
     colLetters: ctx.colLetters,
   })
+  const fillSource = fillSourceRect(selectedIds, focusId)
   const previewIds = rectToIdSet(fill.preview)
   const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({
     data,
@@ -130,7 +131,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
             setFocusId={setFocusId}
             setSelectAnchor={setSelectAnchor}
             focusId={focusId}
-            selectedIds={selectedIds}
+            fillSourceRect={fillSource}
             editing={editing}
             draft={draft}
             setDraft={setDraft}

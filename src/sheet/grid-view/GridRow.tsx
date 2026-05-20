@@ -8,6 +8,7 @@ import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
 import type { GridCell } from '@interactive-os/aria-kernel/patterns'
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
+import type { Rect } from '@spredsheet/grid'
 
 interface Props {
   rIdx: number
@@ -29,7 +30,7 @@ interface Props {
   setFocusId: (id: string) => void
   setSelectAnchor: (id: string | null) => void
   focusId: string | null
-  selectedIds: string[]
+  fillSourceRect: Rect | null
   editing: string | null
   draft: string
   setDraft: (v: string) => void
@@ -100,7 +101,7 @@ export function GridRow(p: Props) {
           freezeCols: p.freezeCols,
           freezeLefts: p.freezeLefts,
           focusId: p.focusId,
-          selectedIds: p.selectedIds,
+          fillSourceRect: p.fillSourceRect,
           styleOf: p.styleOf,
           noteOf: p.noteOf,
           rawOf: p.rawOf,
