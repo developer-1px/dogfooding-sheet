@@ -4,11 +4,13 @@ import { stripText } from './marker'
 
 export type NumFromCell = (ref: string) => number
 export type Eval = (s: string) => string
+export type EvalCell = (ref: string) => string
 
 export interface Ctx {
   cells: Cells
   seen: Set<string>
   numFromCell: NumFromCell
+  evalCell: EvalCell
   evalRaw: Eval
 }
 
@@ -35,7 +37,7 @@ export const argString = (raw: string, c: Ctx): string => {
   if (/^\$?[A-Z]\$?\d+:\$?[A-Z]\$?\d+$/.test(a)) return a
   if (/^\$?[A-Z]\$?\d+$/.test(a)) {
     const ref = parseA1(a)
-    return ref ? c.evalRaw(c.cells[cellKey(ref.col, ref.row)] ?? '') : ''
+    return ref ? c.evalCell(cellKey(ref.col, ref.row)) : ''
   }
   return stripText(c.evalRaw('=' + a))
 }

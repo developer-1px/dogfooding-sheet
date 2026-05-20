@@ -1,5 +1,5 @@
 import type { Cells } from '../a1'
-import type { NumFromCell, Eval } from "./args"
+import type { NumFromCell, EvalCell } from "./args"
 import { collectRefs } from './parse'
 
 
@@ -32,18 +32,18 @@ export function weightAvg(vStr: string, wStr: string, numFromCell: NumFromCell):
   return t === 0 ? '#DIV/0!' : String(s / t)
 }
 
-export function maxMinBy(F: 'MAX_BY' | 'MIN_BY', valStr: string, keyStr: string, cells: Cells, evalRaw: Eval, numFromCell: NumFromCell): string {
+export function maxMinBy(F: 'MAX_BY' | 'MIN_BY', valStr: string, keyStr: string, _cells: Cells, evalCell: EvalCell, numFromCell: NumFromCell): string {
   const vals = collectRefs(valStr)
   const keys = collectRefs(keyStr).map(numFromCell)
   if (keys.length === 0) return '#N/A'
   let best = 0
   for (let i = 1; i < keys.length; i++) if (F === 'MAX_BY' ? keys[i] > keys[best] : keys[i] < keys[best]) best = i
-  return evalRaw(cells[vals[best]] ?? '')
+  return evalCell(vals[best])
 }
 
 /** JACCARD(rangeA, rangeB) — |A∩B|/|A∪B| over distinct non-empty values. */
-export function jaccard(aStr: string, bStr: string, cells: Cells, evalRaw: Eval): string {
-  const set = (s: string) => new Set(collectRefs(s).map((r) => evalRaw(cells[r] ?? '')).filter((v) => v !== ''))
+export function jaccard(aStr: string, bStr: string, _cells: Cells, evalCell: EvalCell): string {
+  const set = (s: string) => new Set(collectRefs(s).map(evalCell).filter((v) => v !== ''))
   const A = set(aStr), B = set(bStr)
   const uni = new Set([...A, ...B])
   if (uni.size === 0) return '#N/A'

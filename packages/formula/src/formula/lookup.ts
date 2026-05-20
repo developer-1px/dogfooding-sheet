@@ -1,4 +1,4 @@
-import type { Eval } from './args'
+import type { EvalCell } from './args'
 import type { Cells } from '../a1'
 import { parseRange, evalCell } from './rangeRect'
 import { coerceNumber } from './coerce'
@@ -19,7 +19,7 @@ const compareLookupValues = (a: string, b: string): number => {
   return a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true })
 }
 
-const lookupVector = (rangeStr: string, cells: Cells, evalRaw: Eval): { values: string[], rowMode: boolean } | string => {
+const lookupVector = (rangeStr: string, cells: Cells, evalCellRef: EvalCell): { values: string[], rowMode: boolean } | string => {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   const rows = r.rMax - r.rMin + 1
@@ -27,7 +27,7 @@ const lookupVector = (rangeStr: string, cells: Cells, evalRaw: Eval): { values: 
   if (rows > 1 && cols > 1) return '#VALUE!'
   const rowMode = rows > 1
   const len = rowMode ? rows : cols
-  const values = Array.from({ length: len }, (_v, i) => evalCell(cells, rowMode ? r.cMin : r.cMin + i, rowMode ? r.rMin + i : r.rMin, evalRaw))
+  const values = Array.from({ length: len }, (_v, i) => evalCell(cells, rowMode ? r.cMin : r.cMin + i, rowMode ? r.rMin + i : r.rMin, evalCellRef))
   return { values, rowMode }
 }
 
@@ -53,7 +53,7 @@ export function vlookup(
   rangeStr: string,
   colIdx: number,
   cells: Cells,
-  evalRaw: Eval,
+  evalCellRef: EvalCell,
   rangeLookup?: string,
 ): string {
   const r = parseRange(rangeStr)
@@ -63,12 +63,12 @@ export function vlookup(
   if (targetCol > r.cMax) return '#REF!'
   let approximate = '#N/A'
   for (let row = r.rMin; row <= r.rMax; row++) {
-    const value = evalCell(cells, r.cMin, row, evalRaw)
+    const value = evalCell(cells, r.cMin, row, evalCellRef)
     const cmp = compareLookupValues(value, key)
     if (cmp === 0) {
-      return evalCell(cells, targetCol, row, evalRaw)
+      return evalCell(cells, targetCol, row, evalCellRef)
     }
-    if (!isExactLookup(rangeLookup) && cmp < 0) approximate = evalCell(cells, targetCol, row, evalRaw)
+    if (!isExactLookup(rangeLookup) && cmp < 0) approximate = evalCell(cells, targetCol, row, evalCellRef)
   }
   return isExactLookup(rangeLookup) ? '#N/A' : approximate
 }
@@ -78,7 +78,7 @@ export function hlookup(
   rangeStr: string,
   rowIdx: number,
   cells: Cells,
-  evalRaw: Eval,
+  evalCellRef: EvalCell,
   rangeLookup?: string,
 ): string {
   const r = parseRange(rangeStr)
@@ -88,12 +88,12 @@ export function hlookup(
   if (targetRow > r.rMax) return '#REF!'
   let approximate = '#N/A'
   for (let col = r.cMin; col <= r.cMax; col++) {
-    const value = evalCell(cells, col, r.rMin, evalRaw)
+    const value = evalCell(cells, col, r.rMin, evalCellRef)
     const cmp = compareLookupValues(value, key)
     if (cmp === 0) {
-      return evalCell(cells, col, targetRow, evalRaw)
+      return evalCell(cells, col, targetRow, evalCellRef)
     }
-    if (!isExactLookup(rangeLookup) && cmp < 0) approximate = evalCell(cells, col, targetRow, evalRaw)
+    if (!isExactLookup(rangeLookup) && cmp < 0) approximate = evalCell(cells, col, targetRow, evalCellRef)
   }
   return isExactLookup(rangeLookup) ? '#N/A' : approximate
 }
@@ -104,11 +104,11 @@ export function xlookup(
   resultRangeStr: string,
   ifNotFound: string | undefined,
   cells: Cells,
-  evalRaw: Eval,
+  evalCellRef: EvalCell,
   matchMode = 0,
   searchMode = 1,
 ): string {
-  const L = lookupVector(lookupRangeStr, cells, evalRaw)
+  const L = lookupVector(lookupRangeStr, cells, evalCellRef)
   const R = parseRange(resultRangeStr)
   if (typeof L === 'string' || !R) return typeof L === 'string' ? L : '#REF!'
   const rowMode = L.rowMode
@@ -117,19 +117,19 @@ export function xlookup(
   if (resultLen !== len) return '#VALUE!'
   const i = lookupIndex(key, L.values, matchMode, searchMode)
   if (typeof i === 'string') return i === '#N/A' ? (ifNotFound ?? '#N/A') : i
-  return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalRaw)
+  return evalCell(cells, rowMode ? R.cMin : R.cMin + i, rowMode ? R.rMin + i : R.rMin, evalCellRef)
 }
 
-export function index(rangeStr: string, row: number, col: number, cells: Cells, evalRaw: Eval): string {
+export function index(rangeStr: string, row: number, col: number, cells: Cells, evalCellRef: EvalCell): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   const tr = r.rMin + row - 1
   const tc = r.cMin + col - 1
   if (tr > r.rMax || tc > r.cMax || tr < r.rMin || tc < r.cMin) return '#REF!'
-  return evalCell(cells, tc, tr, evalRaw)
+  return evalCell(cells, tc, tr, evalCellRef)
 }
 
-export function match(key: string, rangeStr: string, cells: Cells, evalRaw: Eval, matchType = 1): string {
+export function match(key: string, rangeStr: string, cells: Cells, evalCellRef: EvalCell, matchType = 1): string {
   const r = parseRange(rangeStr)
   if (!r) return '#REF!'
   let pos = 0
@@ -138,7 +138,7 @@ export function match(key: string, rangeStr: string, cells: Cells, evalRaw: Eval
   for (let row = r.rMin; row <= r.rMax; row++) {
     for (let col = r.cMin; col <= r.cMax; col++) {
       pos++
-      const cmp = compareLookupValues(evalCell(cells, col, row, evalRaw), key)
+      const cmp = compareLookupValues(evalCell(cells, col, row, evalCellRef), key)
       if (cmp === 0) return String(pos)
       if (matchType === 1 && cmp < 0) approximate = String(pos)
       if (matchType === -1 && cmp > 0) approximate = String(pos)
@@ -147,8 +147,8 @@ export function match(key: string, rangeStr: string, cells: Cells, evalRaw: Eval
   return matchType === 0 ? '#N/A' : approximate
 }
 
-export function xmatch(key: string, rangeStr: string, cells: Cells, evalRaw: Eval, matchMode = 0, searchMode = 1): string {
-  const vector = lookupVector(rangeStr, cells, evalRaw)
+export function xmatch(key: string, rangeStr: string, cells: Cells, evalCellRef: EvalCell, matchMode = 0, searchMode = 1): string {
+  const vector = lookupVector(rangeStr, cells, evalCellRef)
   if (typeof vector === 'string') return vector
   const i = lookupIndex(key, vector.values, matchMode, searchMode)
   return typeof i === 'string' ? i : String(i + 1)

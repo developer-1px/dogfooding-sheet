@@ -1,4 +1,4 @@
-import type { Eval } from './args'
+import type { EvalCell } from './args'
 import { COL_LETTERS, cellKey, parseA1, type Cells } from '../a1'
 import { rectOfCell, rectFromRefs, type Rect } from '../rect'
 
@@ -15,5 +15,5 @@ export const parseRange = (s: string): Rect | null => {
   return a && b ? rectFromRefs(a, b) : null
 }
 
-export const evalCell = (cells: Cells, c: number, r: number, evalRaw: Eval): string =>
-  evalRaw(cells[cellKey(COL_LETTERS[c], r)] ?? '')
+export const evalCell = (_cells: Cells, c: number, r: number, evalCellRef: EvalCell): string =>
+  evalCellRef(cellKey(COL_LETTERS[c], r))

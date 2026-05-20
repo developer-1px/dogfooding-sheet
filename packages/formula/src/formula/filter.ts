@@ -1,6 +1,6 @@
 import type { Cells } from '../a1'
 import { COL_LETTERS, cellKey } from '../a1'
-import type { Eval } from './args'
+import type { EvalCell } from './args'
 import { coerceNumber } from './coerce'
 import { parseRange } from './rangeRect'
 
@@ -11,7 +11,7 @@ const isTruthy = (value: string): boolean => {
   return Number.isFinite(n) ? n !== 0 : value !== ''
 }
 
-export function filterRange(rangeStr: string, conditionStr: string, cells: Cells, evalRaw: Eval): string {
+export function filterRange(rangeStr: string, conditionStr: string, _cells: Cells, evalCell: EvalCell): string {
   const range = parseRange(rangeStr)
   const condition = parseRange(conditionStr)
   if (!range || !condition) return '#REF!'
@@ -28,10 +28,10 @@ export function filterRange(rangeStr: string, conditionStr: string, cells: Cells
   if (rowFilter) {
     const out: string[][] = []
     for (let r = 0; r < rows; r++) {
-      const keep = isTruthy(evalRaw(cells[cellKey(COL_LETTERS[condition.cMin], condition.rMin + r)] ?? ''))
+      const keep = isTruthy(evalCell(cellKey(COL_LETTERS[condition.cMin], condition.rMin + r)))
       if (!keep) continue
       const row: string[] = []
-      for (let c = 0; c < cols; c++) row.push(evalRaw(cells[cellKey(COL_LETTERS[range.cMin + c], range.rMin + r)] ?? ''))
+      for (let c = 0; c < cols; c++) row.push(evalCell(cellKey(COL_LETTERS[range.cMin + c], range.rMin + r)))
       out.push(row)
     }
     if (out.length === 0) return '#N/A'
@@ -42,8 +42,8 @@ export function filterRange(rangeStr: string, conditionStr: string, cells: Cells
   for (let r = 0; r < rows; r++) {
     const row: string[] = []
     for (let c = 0; c < cols; c++) {
-      const keep = isTruthy(evalRaw(cells[cellKey(COL_LETTERS[condition.cMin + c], condition.rMin)] ?? ''))
-      if (keep) row.push(evalRaw(cells[cellKey(COL_LETTERS[range.cMin + c], range.rMin + r)] ?? ''))
+      const keep = isTruthy(evalCell(cellKey(COL_LETTERS[condition.cMin + c], condition.rMin)))
+      if (keep) row.push(evalCell(cellKey(COL_LETTERS[range.cMin + c], range.rMin + r)))
     }
     out.push(row)
   }

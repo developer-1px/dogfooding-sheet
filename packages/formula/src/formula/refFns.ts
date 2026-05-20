@@ -1,10 +1,10 @@
-import { splitArgs, type Eval } from './args'
+import { splitArgs, type EvalCell } from './args'
 import { COL_LETTERS, parseA1, cellKey, colIndex, type Cells } from '../a1'
 import { evalCell as evalRangeCell, parseRange } from './rangeRect'
 import { smartReturn } from './marker'
 
 
-interface Ctx { cells: Cells; evalRaw: Eval }
+interface Ctx { cells: Cells; evalCell: EvalCell }
 
 const rangeMatrix = (range: string, c: Ctx): string[][] | null => {
   const r = parseRange(range)
@@ -13,7 +13,7 @@ const rangeMatrix = (range: string, c: Ctx): string[][] | null => {
   for (let rr = r.rMin; rr <= r.rMax; rr++) {
     const row: string[] = []
     for (let col = r.cMin; col <= r.cMax; col++) {
-      row.push(evalRangeCell(c.cells, col, rr, c.evalRaw))
+      row.push(evalRangeCell(c.cells, col, rr, c.evalCell))
     }
     rows.push(row)
   }
@@ -221,13 +221,13 @@ export function dispatchRef(F: string, argsT: string[], rawArgs: string, c: Ctx)
     const col = colIndex(p.col) + dc, row = p.row + dr
     if (col < 0 || col > 9 || row < 0) return smartReturn('#REF!')
     const ref = cellKey(COL_LETTERS[col], row)
-    return smartReturn(c.evalRaw(c.cells[ref] ?? ''))
+    return smartReturn(c.evalCell(ref))
   }
   if (F === 'INDIRECT') {
     const ref = (argsT[0] ?? '').trim()
     const p = parseA1(ref)
     if (!p) return smartReturn('#REF!')
-    return smartReturn(c.evalRaw(c.cells[cellKey(p.col, p.row)] ?? ''))
+    return smartReturn(c.evalCell(cellKey(p.col, p.row)))
   }
   if (F === 'ADDRESS') {
     const r = Number(argsT[0]), col = Number(argsT[1])

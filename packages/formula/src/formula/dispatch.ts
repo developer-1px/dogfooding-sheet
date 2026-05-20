@@ -45,33 +45,33 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   const argsT = evalArgs(rawArgs, c)
 
-  if (F === 'COUNTIF') return String(countif(argsT[0], argsT[1], c.cells, c.evalRaw))
-  if (F === 'SUMIF') return String(sumif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
-  if (F === 'COUNTA') return String(counta(argsT[0], c.cells, c.evalRaw))
-  if (F === 'COUNTBLANK') return String(countblank(argsT[0], c.cells, c.evalRaw))
-  if (F === 'COUNTUNIQUE') return String(countunique(argsT[0], c.cells, c.evalRaw))
-  if (F === 'AVERAGEIF') return smartReturn(String(averageif(argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw)))
-  if (F === 'COUNTIFS') return String(countifs(argsT, c.cells, c.evalRaw))
-  if (F === 'SUMIFS') return String(sumifs(argsT, c.cells, c.evalRaw))
-  if (F === 'AVERAGEIFS') return smartReturn(String(averageifs(argsT, c.cells, c.evalRaw)))
-  if (F === 'MINIFS' || F === 'MAXIFS') return String(minMaxIf(F === 'MINIFS' ? 'MIN' : 'MAX', argsT[0], argsT[1], argsT[2], c.cells, c.evalRaw))
+  if (F === 'COUNTIF') return String(countif(argsT[0], argsT[1], c.evalCell))
+  if (F === 'SUMIF') return String(sumif(argsT[0], argsT[1], argsT[2], c.evalCell))
+  if (F === 'COUNTA') return String(counta(argsT[0], c.evalCell))
+  if (F === 'COUNTBLANK') return String(countblank(argsT[0], c.evalCell))
+  if (F === 'COUNTUNIQUE') return String(countunique(argsT[0], c.evalCell))
+  if (F === 'AVERAGEIF') return smartReturn(String(averageif(argsT[0], argsT[1], argsT[2], c.evalCell)))
+  if (F === 'COUNTIFS') return String(countifs(argsT, c.evalCell))
+  if (F === 'SUMIFS') return String(sumifs(argsT, c.evalCell))
+  if (F === 'AVERAGEIFS') return smartReturn(String(averageifs(argsT, c.evalCell)))
+  if (F === 'MINIFS' || F === 'MAXIFS') return String(minMaxIf(F === 'MINIFS' ? 'MIN' : 'MAX', argsT[0], argsT[1], argsT[2], c.evalCell))
   if (F === 'WEIGHTAVG') { const a = splitArgs(rawArgs); return smartReturn(weightAvg(a[0], a[1], c.numFromCell)) }
-  if (F === 'MAX_BY' || F === 'MIN_BY') { const a = splitArgs(rawArgs); return smartReturn(maxMinBy(F, a[0], a[1], c.cells, c.evalRaw, c.numFromCell)) }
-  if (F === 'MOSTCOMMON' || F === 'LEASTCOMMON') return smartReturn(freqStat(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'RANGEJSON') return smartReturn(rangeJSON(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'RANGESORT' || F === 'SORT') return smartReturn(rangeSort(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'RANGEUNIQUE' || F === 'UNIQUE') return smartReturn(rangeUnique(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'ENTROPY') return smartReturn(entropy(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'JACCARD') { const a = splitArgs(rawArgs); return smartReturn(jaccard(a[0], a[1], c.cells, c.evalRaw)) }
-  if (F === 'RANGECSV') return smartReturn(rangeCsv(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'COUNTNUMERIC') return countNumeric(splitArgs(rawArgs)[0], c.cells, c.evalRaw)
-  if (F === 'RANGEHASH') return smartReturn(rangeHash(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'MAXSTR' || F === 'MINSTR') return smartReturn(strStat(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'MAXLEN' || F === 'MINLEN') return String(lenStat(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'FIRST' || F === 'LAST') return smartReturn(firstLast(F, splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'ARRAYTOTEXT') { const a = splitArgs(rawArgs); return smartReturn(arrayToText(a[0], argsT[1] ?? ', ', c.cells, c.evalRaw)) }
-  if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalRaw))
-  if (F === 'FILTER') { const a = splitArgs(rawArgs); return smartReturn(filterRange(a[0], a[1], c.cells, c.evalRaw)) }
+  if (F === 'MAX_BY' || F === 'MIN_BY') { const a = splitArgs(rawArgs); return smartReturn(maxMinBy(F, a[0], a[1], c.cells, c.evalCell, c.numFromCell)) }
+  if (F === 'MOSTCOMMON' || F === 'LEASTCOMMON') return smartReturn(freqStat(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'RANGEJSON') return smartReturn(rangeJSON(splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'RANGESORT' || F === 'SORT') return smartReturn(rangeSort(splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'RANGEUNIQUE' || F === 'UNIQUE') return smartReturn(rangeUnique(splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'ENTROPY') return smartReturn(entropy(splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'JACCARD') { const a = splitArgs(rawArgs); return smartReturn(jaccard(a[0], a[1], c.cells, c.evalCell)) }
+  if (F === 'RANGECSV') return smartReturn(rangeCsv(splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'COUNTNUMERIC') return countNumeric(splitArgs(rawArgs)[0], c.cells, c.evalCell)
+  if (F === 'RANGEHASH') return smartReturn(rangeHash(splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'MAXSTR' || F === 'MINSTR') return smartReturn(strStat(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'MAXLEN' || F === 'MINLEN') return String(lenStat(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'FIRST' || F === 'LAST') return smartReturn(firstLast(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'ARRAYTOTEXT') { const a = splitArgs(rawArgs); return smartReturn(arrayToText(a[0], argsT[1] ?? ', ', c.cells, c.evalCell)) }
+  if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalCell))
+  if (F === 'FILTER') { const a = splitArgs(rawArgs); return smartReturn(filterRange(a[0], a[1], c.cells, c.evalCell)) }
   if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
   const stat = dispatchStat(F, argsT, rawArgs, c.numFromCell); if (stat !== null) return stat
 
@@ -88,13 +88,13 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   const fin = dispatchFinance(F, argsT, argsN, rawArgs, c.numFromCell); if (fin !== null) return fin
   const logic = dispatchLogic(F, argsT, argsN); if (logic !== null) return logic
 
-  if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw, splitArgs(rawArgs)[3]))
-  if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalRaw, splitArgs(rawArgs)[3]))
+  if (F === 'VLOOKUP') return smartReturn(vlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalCell, splitArgs(rawArgs)[3]))
+  if (F === 'HLOOKUP') return smartReturn(hlookup(argsT[0], argsT[1], Number(argsT[2]), c.cells, c.evalCell, splitArgs(rawArgs)[3]))
   const ref = dispatchRef(F, argsT, rawArgs, c); if (ref !== null) return ref
-  if (F === 'XLOOKUP') return smartReturn(xlookup(argsT[0], argsT[1], argsT[2], argsT[3], c.cells, c.evalRaw, Number(argsT[4] ?? '0'), Number(argsT[5] ?? '1')))
-  if (F === 'XMATCH') return smartReturn(xmatch(argsT[0], argsT[1], c.cells, c.evalRaw, Number(argsT[2] ?? '0'), Number(argsT[3] ?? '1')))
-  if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalRaw))
-  if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalRaw, Number(argsT[2] ?? '1')))
-  if (F === 'INRANGE') return matchFn(argsT[0], argsT[1], c.cells, c.evalRaw, 0) === '#N/A' ? '0' : '1'
+  if (F === 'XLOOKUP') return smartReturn(xlookup(argsT[0], argsT[1], argsT[2], argsT[3], c.cells, c.evalCell, Number(argsT[4] ?? '0'), Number(argsT[5] ?? '1')))
+  if (F === 'XMATCH') return smartReturn(xmatch(argsT[0], argsT[1], c.cells, c.evalCell, Number(argsT[2] ?? '0'), Number(argsT[3] ?? '1')))
+  if (F === 'INDEX') return smartReturn(indexFn(argsT[0], Number(argsT[1]), Number(argsT[2] ?? '1'), c.cells, c.evalCell))
+  if (F === 'MATCH') return smartReturn(matchFn(argsT[0], argsT[1], c.cells, c.evalCell, Number(argsT[2] ?? '1')))
+  if (F === 'INRANGE') return matchFn(argsT[0], argsT[1], c.cells, c.evalCell, 0) === '#N/A' ? '0' : '1'
   return '0'
 }

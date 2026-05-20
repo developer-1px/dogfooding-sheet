@@ -2,10 +2,24 @@ import type { Cells } from '../a1'
 import { ABS_A1_RE, FUNC_RE } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 import { coerceNumber } from './coerce'
+import type { EvalCell } from './args'
 
+const CYCLE_ERROR = '#CYCLE!'
 
-const numFromCellFactory = (cells: Cells, seen: Set<string>) => (ref: string): number => {
-  const v = evaluate(cells, cells[ref] ?? '', seen)
+class FormulaCycleError extends Error {}
+
+const evalCellFactory = (cells: Cells, seen: Set<string>): EvalCell => (ref: string): string => {
+  if (seen.has(ref)) throw new FormulaCycleError()
+  seen.add(ref)
+  try {
+    return evaluate(cells, cells[ref] ?? '', seen)
+  } finally {
+    seen.delete(ref)
+  }
+}
+
+const numFromCellFactory = (evalCell: EvalCell) => (ref: string): number => {
+  const v = evalCell(ref)
   const n = coerceNumber(v)
   return Number.isFinite(n) ? n : 0
 }
@@ -119,8 +133,9 @@ const evalArith = (expr: string): number => {
 function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): string {
   if (!raw.startsWith('=')) return raw
   let expr = raw.slice(1)
-  const numFromCell = numFromCellFactory(cells, seen)
-  const ctx = { cells, seen, numFromCell, evalRaw: (r: string) => evaluate(cells, r, seen) }
+  const evalCell = evalCellFactory(cells, seen)
+  const numFromCell = numFromCellFactory(evalCell)
+  const ctx = { cells, seen, numFromCell, evalCell, evalRaw: (r: string) => evaluate(cells, r, seen) }
 
   let prev = ''
   while (prev !== expr) {
@@ -132,11 +147,7 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
 
   expr = expr.replace(ABS_A1_RE, (_m, _absCol, c, _absRow, r) => {
     const ref = `${c}${r}`
-    if (seen.has(ref)) return '0'
-    seen.add(ref)
-    const n = numFromCell(ref)
-    seen.delete(ref)
-    return String(n)
+    return String(numFromCell(ref))
   })
 
   try {
@@ -151,4 +162,11 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
   }
 }
 
-export const evaluateCell = (cells: Cells, raw: string) => evaluate(cells, raw)
+export const evaluateCell = (cells: Cells, raw: string) => {
+  try {
+    return evaluate(cells, raw)
+  } catch (error) {
+    if (error instanceof FormulaCycleError) return CYCLE_ERROR
+    throw error
+  }
+}

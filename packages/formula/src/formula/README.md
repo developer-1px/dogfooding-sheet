@@ -15,7 +15,7 @@ refsInFormula('=A1+B2:B4')                  // → ['A1', 'B2', 'B3', 'B4']
 
 `evaluateCell(cells, raw)` — Returns the evaluated value as a string. Plain
 values pass through unchanged. Formulas (starting with `=`) are recursively
-evaluated with circular-reference protection (returns `0` fallback for cycles).
+evaluated with circular-reference protection (returns `#CYCLE!` for cycles).
 Errors return `#ERR`, `#REF!`, or `#N/A`.
 
 `refsInFormula(raw)` — Extracts cell references from a formula string. Useful

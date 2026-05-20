@@ -83,8 +83,10 @@ describe('evaluateCell', () => {
     expect(evaluateCell({}, '=AVERAGE(ROUND(1.2, 0), ROUND(2.8, 0))')).toBe('2')
   })
 
-  it('circular reference returns 0 fallback', () => {
-    expect(evaluateCell(cells({ A1: '=A1+1' }), '=A1')).toBe('1')
+  it('returns an explicit error for circular references', () => {
+    expect(evaluateCell(cells({ A1: '=A1+1' }), '=A1')).toBe('#CYCLE!')
+    expect(evaluateCell(cells({ A1: '=B1+1', B1: '=A1+1' }), '=A1')).toBe('#CYCLE!')
+    expect(evaluateCell(cells({ A1: '=SUM(A1:A2)', A2: '2' }), '=SUM(A1:A2)')).toBe('#CYCLE!')
   })
 
   it('empty refs treated as 0', () => {

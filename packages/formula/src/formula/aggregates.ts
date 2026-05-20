@@ -11,12 +11,12 @@ const unquote = (arg: string): string => {
 
 const numericCellValues = (refs: string[], c: Ctx): number[] =>
   refs
-    .map((ref) => coerceNumber(c.evalRaw(c.cells[ref] ?? '')))
+    .map((ref) => coerceNumber(c.evalCell(ref)))
     .filter(Number.isFinite)
 
 const firstError = (refs: string[], args: string[], c: Ctx): string | undefined => {
   for (const ref of refs) {
-    const value = c.evalRaw(c.cells[ref] ?? '')
+    const value = c.evalCell(ref)
     if (isErrorValue(value)) return value
   }
   for (const arg of args.filter((a) => !isPureRefArg(a))) {
