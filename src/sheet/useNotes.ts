@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { parseMarkdown, serializeMarkdown } from '@interactive-os/editor'
 import type { SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
 import { upsertKey } from '../lib/dictOps'
+import { normalizeNoteText } from './noteText'
 
 export type NoteLookup = (k: string) => string | undefined
 
@@ -18,7 +18,7 @@ export function useNotes(notes: Record<string, string>, ops: SheetOps) {
   useEffect(() => { migrateLegacy(notes, ops) }, [notes, ops])
 
   const setNote = (k: string, text: string) => {
-    const trimmed = serializeMarkdown(parseMarkdown(text)).trim()
+    const trimmed = normalizeNoteText(text)
     upsertKey(ops, '/notes', notes, k, trimmed || undefined)
   }
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useJSONDocument } from 'zod-crud'
+import { useJSONDocument } from 'zod-crud/react'
 import { upsertKey } from '../lib/dictOps'
 import { SheetSchema, type Writes } from './schema'
 import { loadInitial, saveSheet } from './storage'

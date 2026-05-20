@@ -16,9 +16,7 @@
     "@interactive-os/aria-kernel": "file:../aria-kernel/packages/aria-kernel",
     "@interactive-os/devtools": "file:../devtools",
     "@interactive-os/document": "file:../document",
-    "@interactive-os/editor": "file:../editor",
     "@interactive-os/keyboard": "file:../keyboard/packages/keyboard",
-    "@interactive-os/keyboard-navigation": "file:../keyboard-navigation/packages/keyboard-navigation",
     "@interactive-os/playground-catalog": "file:../playground-catalog",
     "@spredsheet/formula": "workspace:*",
     "@spredsheet/grid": "workspace:*",
@@ -46,7 +44,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@interactive-os/document": "file:../document"
+      "@interactive-os/document": "file:../document",
+      "@interactive-os/keyboard-navigation": "file:../keyboard-navigation/packages/collection-navigation"
     }
   }
 }
