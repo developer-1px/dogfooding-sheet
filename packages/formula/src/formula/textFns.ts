@@ -3,7 +3,7 @@ import { dispatchTextCodec } from './textCodec'
 import { dispatchTextCase } from './textCase'
 import { dispatchTextAlgo } from './textAlgo'
 import { dispatchTextOps } from './textOps'
-import { stringifyFormulaArray } from './arraySafety'
+import { isSafeArrayShape, stringifyFormulaArray } from './arraySafety'
 import { MAX_GENERATED_TEXT_LENGTH, boundedJoin, boundedLength, boundedText } from './textLimit'
 
 const splitLiteral = (text: string, delimiter: string): string[] =>
@@ -15,7 +15,7 @@ const textSplitRows = (
   rowDelimiter: string,
   ignoreEmpty: boolean,
   pad: string,
-): string[][] => {
+): string[][] | null => {
   const rawRows = splitLiteral(text, rowDelimiter)
   const rows: string[][] = []
   let width = 0
@@ -32,6 +32,7 @@ const textSplitRows = (
     if (ignoreEmpty && row.length === 0) continue
     if (row.length > width) width = row.length
     rows.push(row)
+    if (!isSafeArrayShape(rows.length, width)) return null
   }
 
   for (const row of rows) {
@@ -202,7 +203,8 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const ignoreEmpty = (argsT[3] ?? '0') !== '0'
     const pad = argsT[5] ?? '#N/A'
     if (colDelimiter === '' && rowDelimiter === '') return wrap('#VALUE!')
-    return wrap(stringifyFormulaArray(textSplitRows(text, colDelimiter, rowDelimiter, ignoreEmpty, pad)))
+    const rows = textSplitRows(text, colDelimiter, rowDelimiter, ignoreEmpty, pad)
+    return wrap(rows ? stringifyFormulaArray(rows) : '#VALUE!')
   }
   if (F === 'TEXTBEFORE') {
     const text = argsT[0] ?? ''

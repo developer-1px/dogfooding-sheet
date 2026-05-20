@@ -205,6 +205,13 @@ describe('text functions', () => {
     expect(parsed.at(-1)).toEqual(['r199', 'a', '-'])
   })
 
+  it('TEXTSPLIT rejects padded shapes above the array cap', () => {
+    const wideRow = Array.from({ length: 201 }, () => 'x').join(',')
+    const tallRows = Array.from({ length: 130 }, () => 'y').join(';')
+
+    expect(evaluateCell({}, `=TEXTSPLIT("${wideRow};${tallRows}", ",", ";", 0, 0, "-")`)).toBe('#VALUE!')
+  })
+
   it('TEXTBEFORE / TEXTAFTER split by delimiter', () => {
     expect(evaluateCell({}, '=TEXTBEFORE("hello@example.com","@")')).toBe('hello')
     expect(evaluateCell({}, '=TEXTAFTER("hello@example.com","@")')).toBe('example.com')
