@@ -135,7 +135,7 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
   if (F === 'ARRAYTOTEXT') { const a = splitArgs(rawArgs); return smartReturn(arrayToText(a[0], argsT[1] ?? ', ', c.cells, c.evalCell)) }
   if (F === 'SAMPLE') return smartReturn(sample(splitArgs(rawArgs)[0], c.cells, c.evalCell))
   if (F === 'FILTER') { const a = splitArgs(rawArgs); return smartReturn(filterRange(a[0], a[1], c.cells, c.evalCell)) }
-  if (F === 'SUMPRODUCT') return sumproduct(splitArgs(rawArgs), c.numFromCell)
+  if (F === 'SUMPRODUCT') return smartReturn(sumproduct(splitArgs(rawArgs), c.numFromCell))
   const stat = dispatchStat(F, argsT, rawArgs, c.numFromCell); if (stat !== null) return stat
 
   const argsN = argsT.map(coerceNumber)

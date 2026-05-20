@@ -420,6 +420,21 @@ describe('SUMPRODUCT', () => {
     const cells = { A1: '2', A2: '3', A3: '4', B1: '10', B2: '20', B3: '30' }
     expect(evaluateCell(cells, '=SUMPRODUCT(A1:A3, B1:B3)')).toBe('200')
   })
+
+  it('returns explicit errors for invalid range operation inputs', () => {
+    const cells = { A1: '5', A2: '1', A3: '8', B1: '1', B2: '0', B3: '-1', C1: '0', C2: '0', C3: '0' }
+    const huge = { A1: '1e308', B1: '1e308' }
+
+    expect(evaluateCell(cells, '=WEIGHTAVG(A1:A3)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=WEIGHTAVG(A1:A3, C1:C3)')).toBe('#DIV/0!')
+    expect(evaluateCell(cells, '=MAX_BY(A1:A3)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=JACCARD(A1:A3)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=LARGE(A1:A3, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=SMALL(A1:A3, 1.5)')).toBe('#NUM!')
+    expect(evaluateCell(cells, '=RANK("x", A1:A3)')).toBe('#VALUE!')
+    expect(evaluateCell(cells, '=RANK(8, A1:A3, "x")')).toBe('#VALUE!')
+    expect(evaluateCell(huge, '=SUMPRODUCT(A1:A1, B1:B1)')).toBe('#NUM!')
+  })
 })
 
 describe('COUNTUNIQUE', () => {
