@@ -1,4 +1,5 @@
 import { wrap } from './marker'
+import { MAX_GENERATED_TEXT_LENGTH, boundedText } from './textLimit'
 
 type URLLike = {
   hostname: string
@@ -56,6 +57,9 @@ const base64Encode = (text: string): string => {
 const base64Decode = (encoded: string): string => {
   const clean = encoded.replace(/\s/g, '')
   if (clean.length % 4 !== 0) throw new Error('invalid base64')
+  const decodedLength = Math.floor(clean.length / 4) * 3
+    - (clean.endsWith('==') ? 2 : clean.endsWith('=') ? 1 : 0)
+  if (decodedLength > MAX_GENERATED_TEXT_LENGTH) throw new Error('base64 too large')
   const bytes: number[] = []
   for (let i = 0; i < clean.length; i += 4) {
     const c1 = base64Chars.indexOf(clean[i])
@@ -71,17 +75,19 @@ const base64Decode = (encoded: string): string => {
   return fromUtf8Bytes(bytes)
 }
 
+const wrapBounded = (value: string): string => wrap(boundedText(value) ?? '#VALUE!')
+
 export function dispatchTextCodec(F: string, argsT: string[]): string | null {
   if (F === 'URLHOST') { try { return wrap(parseURL(argsT[0]).hostname) } catch { return wrap('#VALUE!') } }
   if (F === 'URLPATH') { try { return wrap(parseURL(argsT[0]).pathname) } catch { return wrap('#VALUE!') } }
   if (F === 'URLQUERY') {
     try { const url = parseURL(argsT[0]); return wrap(url.searchParams.get(argsT[1] ?? '') ?? '') } catch { return wrap('#VALUE!') }
   }
-  if (F === 'ENCODEURL') return wrap(encodeURIComponent(argsT[0] ?? ''))
-  if (F === 'DECODEURL') { try { return wrap(decodeURIComponent(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
-  if (F === 'JSONESCAPE') return wrap(JSON.stringify(argsT[0] ?? '').slice(1, -1))
-  if (F === 'BASE64ENCODE') { try { return wrap(base64Encode(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
-  if (F === 'BASE64DECODE') { try { return wrap(base64Decode(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
+  if (F === 'ENCODEURL') return wrapBounded(encodeURIComponent(argsT[0] ?? ''))
+  if (F === 'DECODEURL') { try { return wrapBounded(decodeURIComponent(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
+  if (F === 'JSONESCAPE') return wrapBounded(JSON.stringify(argsT[0] ?? '').slice(1, -1))
+  if (F === 'BASE64ENCODE') { try { return wrapBounded(base64Encode(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
+  if (F === 'BASE64DECODE') { try { return wrapBounded(base64Decode(argsT[0] ?? '')) } catch { return wrap('#VALUE!') } }
   if (F === 'UNICHAR') {
     const n = Number(argsT[0])
     return Number.isFinite(n) && n > 0 ? wrap(String.fromCodePoint(n)) : wrap('#VALUE!')

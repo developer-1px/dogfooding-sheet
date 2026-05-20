@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { evaluateCell } from './eval'
+import { MAX_GENERATED_TEXT_LENGTH } from './textLimit'
 
 describe('text functions', () => {
   it('YESNO / BOOLTEXT', () => {
@@ -36,6 +37,13 @@ describe('text functions', () => {
   it('ENCODEURL escapes special characters', () => {
     expect(evaluateCell({}, '=ENCODEURL("hello world & co")')).toBe('hello%20world%20%26%20co')
     expect(evaluateCell({}, '=DECODEURL("hello%20world%20%26%20co")')).toBe('hello world & co')
+  })
+  it('rejects oversized generated codec text', () => {
+    expect(evaluateCell({ A1: 'x'.repeat(Math.floor(MAX_GENERATED_TEXT_LENGTH * 3 / 4) + 1) }, '=BASE64ENCODE(A1)')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: 'YWFh'.repeat(Math.floor(MAX_GENERATED_TEXT_LENGTH / 3) + 1) }, '=BASE64DECODE(A1)')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: ' '.repeat(Math.floor(MAX_GENERATED_TEXT_LENGTH / 3) + 1) }, '=ENCODEURL(A1)')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: '%61'.repeat(MAX_GENERATED_TEXT_LENGTH + 1) }, '=DECODEURL(A1)')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: '"'.repeat(Math.floor(MAX_GENERATED_TEXT_LENGTH / 2) + 1) }, '=JSONESCAPE(A1)')).toBe('#VALUE!')
   })
   it('HYPERLINK uses label when given, else URL', () => {
     expect(evaluateCell({}, '=HYPERLINK("https://example.com", "click")')).toBe('click')

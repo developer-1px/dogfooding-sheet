@@ -1,5 +1,8 @@
 export const MAX_GENERATED_TEXT_LENGTH = 10_000
 
+export const boundedText = (value: string): string | null =>
+  value.length <= MAX_GENERATED_TEXT_LENGTH ? value : null
+
 export const boundedLength = (value: number): number | null => {
   const n = Math.floor(value)
   return Number.isFinite(n) && n >= 0 && n <= MAX_GENERATED_TEXT_LENGTH ? n : null
