@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react'
 import { createElement } from 'react'
 import { ConfirmDialog } from './ConfirmDialog'
 
@@ -17,12 +17,21 @@ interface State {
 
 export function useConfirm(): { confirm: (opts: ConfirmOptions) => Promise<boolean>; dialog: ReactElement } {
   const [state, setState] = useState<State | null>(null)
-  const close = (ok: boolean) => {
+  const resolveRef = useRef<((ok: boolean) => void) | null>(null)
+  const close = useCallback((ok: boolean) => {
     state?.resolve(ok)
     setState(null)
-  }
-  const confirm = (opts: ConfirmOptions) =>
-    new Promise<boolean>((resolve) => setState({ opts, resolve }))
+  }, [state])
+  const confirm = useCallback((opts: ConfirmOptions) =>
+    new Promise<boolean>((resolve) => {
+      resolveRef.current?.(false)
+      resolveRef.current = resolve
+      setState({ opts, resolve })
+    }), [])
+  useEffect(() => () => {
+    resolveRef.current?.(false)
+    resolveRef.current = null
+  }, [])
   const dialog = createElement(ConfirmDialog, {
     open: state !== null,
     message: state?.opts.message ?? '',
