@@ -1,8 +1,10 @@
 import * as z from 'zod'
 import type { JSONOps } from 'zod-crud'
-import { COL_LETTERS as COLS } from '@spredsheet/grid'
+import { COL_LETTERS as COLS, colIndex, parseA1 } from '@spredsheet/grid'
 import { FORMAT_KEYS } from './formatting/formatTypes'
-import { sanitizeCellRecord } from './cellValue'
+import { isSafeCellText, sanitizeCellRecord } from './cellValue'
+import { normalizeNoteText } from './noteText'
+import { COLUMN_WIDTH_BOUNDS, ROW_HEIGHT_BOUNDS, storedResizeValue } from './grid-view/resizeRules'
 
 export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, moveCellIdByDelta, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
 
@@ -27,9 +29,12 @@ const CellStyleSchema = z.object({
   fg: z.string().optional(),
 })
 
-const CellsSchema = z.record(z.string(), z.string()).transform(sanitizeCellRecord)
+const COLOR_RE = /^#[0-9a-fA-F]{3,8}$/
+const MAX_VALIDATION_OPTIONS = 100
 
-const TabBundleSchema = z.object({
+const CellsSchema = z.record(z.string(), z.string())
+
+const RawTabBundleSchema = z.object({
   cells: CellsSchema.default({}),
   notes: z.record(z.string(), z.string()).default({}),
   styles: z.record(z.string(), CellStyleSchema).default({}),
@@ -58,6 +63,117 @@ const TabBundleSchema = z.object({
   rowCount: z.number().int().min(1).max(MAX_ROW_COUNT).default(DEFAULT_ROW_COUNT),
   colCount: z.number().int().min(1).max(MAX_COL_COUNT).default(DEFAULT_COL_COUNT),
 })
+
+type RawTabBundle = z.infer<typeof RawTabBundleSchema>
+
+const isColInBounds = (col: string, colCount: number): boolean => {
+  const index = colIndex(col)
+  return index >= 0 && index < colCount
+}
+
+const isRowInBounds = (row: number, rowCount: number): boolean =>
+  Number.isInteger(row) && row >= 0 && row < rowCount
+
+const isCellKeyInBounds = (key: string, bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>): boolean => {
+  const ref = parseA1(key)
+  return !!ref && isRowInBounds(ref.row, bundle.rowCount) && isColInBounds(ref.col, bundle.colCount)
+}
+
+const sanitizeCellScopedRecord = <V>(
+  record: Record<string, V>,
+  bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>,
+  normalize: (value: V) => V | undefined = (value) => value,
+): Record<string, V> =>
+  Object.fromEntries(Object.entries(record).flatMap(([key, value]) => {
+    if (!isCellKeyInBounds(key, bundle)) return []
+    const next = normalize(value)
+    return next === undefined ? [] : [[key, next]]
+  }))
+
+const uniqueSafeStrings = (values: readonly string[]): string[] => {
+  const out: string[] = []
+  const seen = new Set<string>()
+  for (const raw of values) {
+    const value = raw.trim()
+    if (value === '' || !isSafeCellText(value) || seen.has(value)) continue
+    seen.add(value)
+    out.push(value)
+    if (out.length >= MAX_VALIDATION_OPTIONS) break
+  }
+  return out
+}
+
+const sanitizeValidation = (
+  rules: RawTabBundle['validation'],
+  bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>,
+): RawTabBundle['validation'] =>
+  sanitizeCellScopedRecord(rules, bundle, (rule) => {
+    if (rule.type === 'checkbox') return rule
+    const options = uniqueSafeStrings(rule.options)
+    return options.length > 0 ? { type: 'list', options } : undefined
+  })
+
+const sanitizeCondFormat = (
+  rules: RawTabBundle['condFormat'],
+  bundle: Pick<RawTabBundle, 'colCount'>,
+): RawTabBundle['condFormat'] => {
+  const byCol = new Map<string, RawTabBundle['condFormat'][number]>()
+  for (const rule of rules) {
+    if (!isColInBounds(rule.col, bundle.colCount)) continue
+    if (rule.value === '' || !isSafeCellText(rule.value) || !COLOR_RE.test(rule.color)) continue
+    byCol.set(rule.col, rule)
+  }
+  return [...byCol.values()]
+}
+
+const sanitizeHidden = (hidden: RawTabBundle['hidden'], bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>): RawTabBundle['hidden'] => ({
+  rows: [...new Set(hidden.rows.filter((row) => isRowInBounds(row, bundle.rowCount)))].sort((a, b) => a - b),
+  cols: [...new Set(hidden.cols.filter((col) => isColInBounds(col, bundle.colCount)))],
+})
+
+const sanitizeColWidths = (widths: RawTabBundle['colWidths'], bundle: Pick<RawTabBundle, 'colCount'>): RawTabBundle['colWidths'] =>
+  Object.fromEntries(Object.entries(widths).flatMap(([col, width]) =>
+    isColInBounds(col, bundle.colCount) && Number.isFinite(width)
+      ? [[col, storedResizeValue(width, COLUMN_WIDTH_BOUNDS)]]
+      : [],
+  ))
+
+const sanitizeRowHeights = (heights: RawTabBundle['rowHeights'], bundle: Pick<RawTabBundle, 'rowCount'>): RawTabBundle['rowHeights'] =>
+  Object.fromEntries(Object.entries(heights).flatMap(([rowKey, height]) => {
+    const row = /^\d+$/.test(rowKey) ? Number(rowKey) : NaN
+    return isRowInBounds(row, bundle.rowCount) && Number.isFinite(height)
+      ? [[rowKey, storedResizeValue(height, ROW_HEIGHT_BOUNDS)]]
+      : []
+  }))
+
+const sanitizeMerges = (merges: RawTabBundle['merges'], bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>): RawTabBundle['merges'] =>
+  merges.filter(([rMin, rMax, cMin, cMax]) =>
+    [rMin, rMax, cMin, cMax].every(Number.isInteger) &&
+    rMin <= rMax && cMin <= cMax &&
+    !(rMin === rMax && cMin === cMax) &&
+    isRowInBounds(rMin, bundle.rowCount) &&
+    isRowInBounds(rMax, bundle.rowCount) &&
+    cMin >= 0 && cMax < bundle.colCount,
+  )
+
+const sanitizeTabBundle = <T extends RawTabBundle>(bundle: T): T => ({
+  ...bundle,
+  cells: sanitizeCellScopedRecord(sanitizeCellRecord(bundle.cells), bundle),
+  notes: sanitizeCellScopedRecord(bundle.notes, bundle, (note) => {
+    const normalized = normalizeNoteText(note)
+    return normalized !== '' && isSafeCellText(normalized) ? normalized : undefined
+  }),
+  styles: sanitizeCellScopedRecord(bundle.styles, bundle),
+  formats: sanitizeCellScopedRecord(bundle.formats, bundle),
+  validation: sanitizeValidation(bundle.validation, bundle),
+  condFormat: sanitizeCondFormat(bundle.condFormat, bundle),
+  hidden: sanitizeHidden(bundle.hidden, bundle),
+  colWidths: sanitizeColWidths(bundle.colWidths, bundle),
+  rowHeights: sanitizeRowHeights(bundle.rowHeights, bundle),
+  merges: sanitizeMerges(bundle.merges, bundle),
+})
+
+const TabBundleSchema = RawTabBundleSchema.transform(sanitizeTabBundle)
 export type TabBundle = z.infer<typeof TabBundleSchema>
 
 const SheetNameSchema = z.string().refine((name) => name.trim().length > 0)
@@ -89,9 +205,14 @@ const TabsSchema = z.object({
   })
 })
 
-export const SheetSchema = TabBundleSchema.extend({
+const RawSheetSchema = RawTabBundleSchema.extend({
   tabs: TabsSchema.default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
 })
+
+export const SheetSchema = RawSheetSchema.transform(({ tabs, ...bundle }) => ({
+  ...sanitizeTabBundle(bundle),
+  tabs,
+}))
 export type Sheet = z.infer<typeof SheetSchema>
 export type SheetOps = JSONOps<Sheet> & {
   undo(): boolean
