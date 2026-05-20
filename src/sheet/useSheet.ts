@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useJSONDocument } from 'zod-crud'
-import { SheetSchema, colLettersFor, type Writes } from './schema'
-import { loadInitial, saveSheet } from './storage'
+import { useState } from 'react'
+import { colLettersFor } from './schema'
 import { useFormats } from './formatting/useFormats'
 import { useStyles } from './formatting/useStyles'
 import { useFreeze } from './visibility/useFreeze'
@@ -14,26 +12,27 @@ import { sheetMutations } from './structure/sheetMutations'
 import { useFindState, highlightedIdsFor } from './find/useFindState'
 import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
-import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
+import { useMerges } from './structure/useMerges'
+import { mergeSelection } from './structure/mergeSelection'
 import { useFormulaPick } from './useFormulaPick'
 import { useSheetSelection } from './useSheetSelection'
 import { useSheetPresentation } from './useSheetPresentation'
 import { useSheetShortcutBindings } from './useSheetShortcutBindings'
+import { useSheetDocument } from './useSheetDocument'
+import { useSheetLayout, type SheetLayoutPrompts } from './useSheetLayout'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
-export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string) => void; openLink?: () => void; promptRowHeight?: (row: number) => void; promptColWidth?: (col: string) => void; promptFilter?: (col: string) => void } = {}) {
-  const doc = useJSONDocument(SheetSchema, loadInitial(), { history: 100 })
-  const { value: sheet } = doc
+interface SheetOptions extends SheetLayoutPrompts {
+  openGoto?: () => void
+  openNote?: (key?: string) => void
+  openLink?: () => void
+}
+
+export function useSheet(opts: SheetOptions = {}) {
+  const { sheet, ops, writeCell, writeCells } = useSheetDocument()
   const rowCount = sheet.rowCount
   const colLetters = colLettersFor(sheet.colCount)
-  const ops = useMemo(() => ({
-    ...doc.ops,
-    undo: () => doc.commands.undo(),
-    redo: () => doc.commands.redo(),
-    canUndo: () => doc.history.canUndo,
-    canRedo: () => doc.history.canRedo,
-  }), [doc.commands, doc.history, doc.ops])
   const fmt = useFormats(sheet.formats, ops)
   const styles = useStyles(sheet.styles, ops)
   const freeze = useFreeze(sheet.freeze, ops)
@@ -41,17 +40,15 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   const hidden = useHidden(sheet.hidden, ops)
   const notes = useNotes(sheet.notes, ops)
   const validation = useValidation(sheet.validation, sheet.cells, ops)
-  const cond = useCondFormat(sheet.condFormat, ops); const rowH = useRowHeights(sheet.rowHeights, ops); const merges = useMerges(sheet.merges, ops)
+  const cond = useCondFormat(sheet.condFormat, ops)
+  const layout = useSheetLayout(sheet, ops, opts)
+  const merges = useMerges(sheet.merges, ops)
   const find = useFindState()
   const [helpOpen, setHelpOpen] = useState(false)
-  const [showFormulas, setShowFormulas] = useState(false); const [showGridlines, setShowGridlines] = useState(true)
+  const [showFormulas, setShowFormulas] = useState(false)
+  const [showGridlines, setShowGridlines] = useState(true)
   const tabs = useTabs(sheet.tabs, ops)
   const tabFns = tabActions(sheet, ops)
-
-  useEffect(() => { saveSheet(sheet) }, [sheet])
-
-  const writeCell = (k: string, v: string) => upsertKey(ops, '/cells', sheet.cells, k, v === '' ? undefined : v)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes)
 
   const edit = useEditState({ cells: sheet.cells, writeCell, rowCount, colLetters })
   const selection = useSheetSelection(edit)
@@ -77,8 +74,15 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   }
 
   const { display, data, hiddenRowSet } = useSheetPresentation({
-    cells: sheet.cells, rowCount, colLetters, showFormulas, formatOf: fmt.formatOf,
-    filter: filter.filter, focusId: edit.focusId, selectedIds, selectAnchor: selection.selectAnchor,
+    cells: sheet.cells,
+    rowCount,
+    colLetters,
+    showFormulas,
+    formatOf: fmt.formatOf,
+    filter: filter.filter,
+    focusId: edit.focusId,
+    selectedIds,
+    selectAnchor: selection.selectAnchor,
   })
 
   const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops)
@@ -86,13 +90,40 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   const toggleShowFormulas = () => setShowFormulas((v) => !v)
 
   useSheetShortcutBindings({
-    editing: edit.editing, focusId: edit.focusId, focusKey: edit.focusKey,
-    startEdit: edit.startEdit, sheet, rowCount, colLetters, ops, writeCell, writeCells,
-    selectedIds, setSelectedIds, setFocusId, setSelectAnchor, targetKeys,
-    openFind: find.openFind, openReplace: find.openReplace,
-    openHelp: () => setHelpOpen(true), openGoto: opts.openGoto ?? (() => {}), insertLink: opts.openLink ?? (() => {}), editNote: opts.openNote ?? (() => {}),
-    updateStyle: styles.updateStyle, styleOf: styles.styleOf, setFormat: fmt.setFormat, display, toggleShowFormulas, cycleTab: tabFns.cycleTab,
-    insertRow, deleteRow, insertCol, deleteCol, hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll,
+    editing: edit.editing,
+    focusId: edit.focusId,
+    focusKey: edit.focusKey,
+    startEdit: edit.startEdit,
+    sheet,
+    rowCount,
+    colLetters,
+    ops,
+    writeCell,
+    writeCells,
+    selectedIds,
+    setSelectedIds,
+    setFocusId,
+    setSelectAnchor,
+    targetKeys,
+    openFind: find.openFind,
+    openReplace: find.openReplace,
+    openHelp: () => setHelpOpen(true),
+    openGoto: opts.openGoto ?? (() => {}),
+    insertLink: opts.openLink ?? (() => {}),
+    editNote: opts.openNote ?? (() => {}),
+    updateStyle: styles.updateStyle,
+    styleOf: styles.styleOf,
+    setFormat: fmt.setFormat,
+    display,
+    toggleShowFormulas,
+    cycleTab: tabFns.cycleTab,
+    insertRow,
+    deleteRow,
+    insertCol,
+    deleteCol,
+    hideRow: hidden.hideRow,
+    hideCol: hidden.hideCol,
+    showAll: hidden.showAll,
     addMerge: merges.addMerge, unmergeAt: merges.unmergeAt,
   })
 
@@ -112,16 +143,39 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines: () => setShowGridlines((v) => !v),
     setFormat: fmt.setFormat, formatOf: fmt.formatOf,
     updateStyle: styles.updateStyle, styleOf: styles.styleOf,
-    freeze: freeze.freeze, toggleFreezeRows: freeze.toggleRows, toggleFreezeCols: freeze.toggleCols, setFreezeRows: freeze.setFreezeRows, setFreezeCols: freeze.setFreezeCols, filter: filter.filter, applyFilter: filter.apply, clearFilter: filter.clear,
+    freeze: freeze.freeze,
+    toggleFreezeRows: freeze.toggleRows,
+    toggleFreezeCols: freeze.toggleCols,
+    setFreezeRows: freeze.setFreezeRows,
+    setFreezeCols: freeze.setFreezeCols,
+    filter: filter.filter,
+    applyFilter: filter.apply,
+    clearFilter: filter.clear,
     rowCount, colCount: sheet.colCount, colLetters,
     hiddenRowSet,
     hidden: hidden.hidden, hiddenRows: hidden.rowSet, hiddenCols: hidden.colSet,
-    hideRow: hidden.hideRow, hideCol: hidden.hideCol, showRow: hidden.showRow, showCol: hidden.showCol, showAll: hidden.showAll, hasHidden: hidden.hasHidden,
-    setNote: notes.setNote, noteOf: notes.noteOf, editNote: opts.openNote ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
-    setListRule: validation.setListRule, setCheckboxRule: validation.setCheckboxRule, clearRule: validation.clearRule, ruleOf: validation.ruleOf,
+    hideRow: hidden.hideRow,
+    hideCol: hidden.hideCol,
+    showRow: hidden.showRow,
+    showCol: hidden.showCol,
+    showAll: hidden.showAll,
+    hasHidden: hidden.hasHidden,
+    setNote: notes.setNote,
+    noteOf: notes.noteOf,
+    editNote: opts.openNote ?? (() => {}),
+    insertLink: opts.openLink ?? (() => {}),
+    setListRule: validation.setListRule,
+    setCheckboxRule: validation.setCheckboxRule,
+    clearRule: validation.clearRule,
+    ruleOf: validation.ruleOf,
     condBgOf: cond.bgFor, addCondRule: cond.addRule, clearCondRules: cond.clearAll,
     insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol,
-    rowHeightOf: rowH.heightOf, setRowHeight: rowH.setHeight, onRowResize: rowH.onResize, onRowResizeEnd: rowH.onResizeEnd, resetRowHeight: rowH.resetRowHeight, promptRowHeight: opts.promptRowHeight ?? (() => {}), promptColWidth: opts.promptColWidth ?? (() => {}), promptFilter: opts.promptFilter ?? (() => {}), setColWidth: (col: string, w: number) => upsertKey(ops, '/colWidths', sheet.colWidths, col, w === DEFAULT_WIDTH ? undefined : Math.max(40, Math.round(w))), merges: sheet.merges, addMerge: merges.addMerge, unmergeAt: merges.unmergeAt, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
-    tabs: tabs.state, ...tabFns,
+    ...layout,
+    merges: sheet.merges,
+    addMerge: merges.addMerge,
+    unmergeAt: merges.unmergeAt,
+    mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
+    tabs: tabs.state,
+    ...tabFns,
   }
 }

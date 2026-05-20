@@ -5,7 +5,19 @@ import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 export const DEFAULT_WIDTH = 100
-const MIN_WIDTH = 40
+export const MIN_WIDTH = 40
+
+export const storedColumnWidth = (width: number): number | undefined => {
+  const normalized = Number.isFinite(width) ? Math.max(MIN_WIDTH, Math.round(width)) : DEFAULT_WIDTH
+  return normalized === DEFAULT_WIDTH ? undefined : normalized
+}
+
+export const setColumnWidth = (
+  ops: SheetOps,
+  widths: Record<string, number>,
+  col: string,
+  width: number,
+) => upsertKey(ops, '/colWidths', widths, col, storedColumnWidth(width))
 
 const migrateLegacy = (widths: Record<string, number>, ops: SheetOps) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(widths).length === 0, ops,
@@ -29,7 +41,7 @@ export function useColWidths(widths: Record<string, number>, ops: SheetOps) {
       const w = Math.ceil(ctx.measureText(s).width) + 16
       if (w > max) max = w
     }
-    upsertKey(ops, '/colWidths', widths, col, Math.min(400, max))
+    setColumnWidth(ops, widths, col, Math.min(400, max))
   }
 
   const widthOf = (col: string) =>
@@ -37,7 +49,7 @@ export function useColWidths(widths: Record<string, number>, ops: SheetOps) {
 
   const onResize = (col: string, w: number) => setLiveWidth({ col, w })
   const onResizeEnd = (col: string, w: number) => {
-    upsertKey(ops, '/colWidths', widths, col, w)
+    setColumnWidth(ops, widths, col, w)
     setLiveWidth(null)
   }
 
