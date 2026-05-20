@@ -27,13 +27,33 @@ describe('downloadFile', () => {
       expect(document.body.contains(this)).toBe(true)
     })
 
-    downloadFile('sheet.json', '{"ok":true}')
+    expect(downloadFile('sheet.json', '{"ok":true}')).toBe(true)
 
     expect(blobType).toBe('application/json;charset=utf-8')
     expect(createObjectURL).toHaveBeenCalledTimes(1)
     expect(click).toHaveBeenCalledTimes(1)
     expect(document.querySelector('a[download="sheet.json"]')).toBeNull()
     expect(revokeObjectURL).not.toHaveBeenCalled()
+
+    vi.advanceTimersByTime(1000)
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:sheet')
+  })
+
+  it('reports download setup failures without throwing', () => {
+    vi.spyOn(URL, 'createObjectURL').mockImplementation(() => { throw new Error('blocked') })
+
+    expect(downloadFile('sheet.csv', 'a,b')).toBe(false)
+    expect(document.querySelector('a[download="sheet.csv"]')).toBeNull()
+  })
+
+  it('cleans up and revokes the URL when the synthetic click fails', () => {
+    vi.useFakeTimers()
+    vi.spyOn(URL, 'createObjectURL').mockImplementation(() => 'blob:sheet')
+    const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { throw new Error('blocked') })
+
+    expect(downloadFile('sheet.csv', 'a,b')).toBe(false)
+    expect(document.querySelector('a[download="sheet.csv"]')).toBeNull()
 
     vi.advanceTimersByTime(1000)
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:sheet')

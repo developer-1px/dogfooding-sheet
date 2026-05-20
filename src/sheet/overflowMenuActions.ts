@@ -28,8 +28,12 @@ export const MAX_IMPORT_FILE_BYTES = 5_000_000
 
 const readImportText = async (file: File): Promise<string | null> => {
   if (typeof file.size === 'number' && file.size > MAX_IMPORT_FILE_BYTES) return null
-  const text = await file.text()
-  return text.length <= MAX_IMPORT_FILE_BYTES ? text : null
+  try {
+    const text = await file.text()
+    return text.length <= MAX_IMPORT_FILE_BYTES ? text : null
+  } catch {
+    return null
+  }
 }
 
 export const overflowMenuItems = (state: { showFormulas: boolean; showGridlines: boolean }): OverflowMenuItem[] => [
@@ -87,16 +91,25 @@ export async function importOverflowCsv({
   } catch {
     return false
   }
-  const ok = await confirm({
-    message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)',
-    confirmLabel: '가져오기',
-  })
+  let ok: boolean
+  try {
+    ok = await confirm({
+      message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)',
+      confirmLabel: '가져오기',
+    })
+  } catch {
+    return false
+  }
   if (!ok) return false
-  importCsvRowsInto(rows, writeCell, {
-    rowCount: sheet.rowCount,
-    colLetters: colLettersFor(sheet.colCount),
-    writeMany: writeCells,
-  })
+  try {
+    importCsvRowsInto(rows, writeCell, {
+      rowCount: sheet.rowCount,
+      colLetters: colLettersFor(sheet.colCount),
+      writeMany: writeCells,
+    })
+  } catch {
+    return false
+  }
   return true
 }
 
@@ -128,12 +141,21 @@ export async function importOverflowJson({
     return false
   }
   if (!parsed.success) return false
-  const ok = await confirm({
-    message: '현재 시트를 가져온 JSON으로 교체하시겠습니까? (실행 취소 가능)',
-    confirmLabel: '교체',
-  })
+  let ok: boolean
+  try {
+    ok = await confirm({
+      message: '현재 시트를 가져온 JSON으로 교체하시겠습니까? (실행 취소 가능)',
+      confirmLabel: '교체',
+    })
+  } catch {
+    return false
+  }
   if (!ok) return false
-  resetSheet(parsed.data)
+  try {
+    resetSheet(parsed.data)
+  } catch {
+    return false
+  }
   return true
 }
 
@@ -153,29 +175,33 @@ export interface OverflowMenuCommands {
 }
 
 export async function runOverflowMenuCommand(id: OverflowMenuItemId, commands: OverflowMenuCommands): Promise<boolean> {
-  if (id === 'help') commands.openHelp()
-  else if (id === 'show-formulas') commands.toggleShowFormulas()
-  else if (id === 'show-gridlines') commands.toggleShowGridlines()
-  else if (id === 'link') commands.insertLink()
-  else if (id === 'print') commands.print()
-  else if (id === 'csv-export') commands.exportCsv()
-  else if (id === 'csv-import') commands.openCsvImport()
-  else if (id === 'json-export') commands.exportJson()
-  else if (id === 'json-import') commands.openJsonImport()
-  else if (id === 'clear-values') {
-    const ok = await commands.confirm({
-      message: '모든 셀 값을 지우시겠습니까? (실행 취소 가능)',
-      confirmLabel: '지우기',
-    })
-    if (!ok) return false
-    commands.clearCellValues({})
-  } else if (id === 'clear-formats') {
-    const ok = await commands.confirm({
-      message: '모든 셀 서식·스타일·조건부 서식을 지우시겠습니까? (실행 취소 가능)',
-      confirmLabel: '지우기',
-    })
-    if (!ok) return false
-    commands.clearAllFormats()
+  try {
+    if (id === 'help') commands.openHelp()
+    else if (id === 'show-formulas') commands.toggleShowFormulas()
+    else if (id === 'show-gridlines') commands.toggleShowGridlines()
+    else if (id === 'link') commands.insertLink()
+    else if (id === 'print') commands.print()
+    else if (id === 'csv-export') commands.exportCsv()
+    else if (id === 'csv-import') commands.openCsvImport()
+    else if (id === 'json-export') commands.exportJson()
+    else if (id === 'json-import') commands.openJsonImport()
+    else if (id === 'clear-values') {
+      const ok = await commands.confirm({
+        message: '모든 셀 값을 지우시겠습니까? (실행 취소 가능)',
+        confirmLabel: '지우기',
+      })
+      if (!ok) return false
+      commands.clearCellValues({})
+    } else if (id === 'clear-formats') {
+      const ok = await commands.confirm({
+        message: '모든 셀 서식·스타일·조건부 서식을 지우시겠습니까? (실행 취소 가능)',
+        confirmLabel: '지우기',
+      })
+      if (!ok) return false
+      commands.clearAllFormats()
+    }
+    return true
+  } catch {
+    return false
   }
-  return true
 }

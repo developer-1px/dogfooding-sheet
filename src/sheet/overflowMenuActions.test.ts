@@ -13,6 +13,7 @@ import { initialSheet, type Sheet } from './schema'
 import type { Confirm, ConfirmOptions } from './useConfirm'
 
 const textFile = (text: string, size = text.length): File => ({ size, text: () => Promise.resolve(text) }) as File
+const unreadableFile = (): File => ({ size: 1, text: () => Promise.reject(new Error('unreadable')) }) as File
 
 function confirmValue(value: boolean, prompts: ConfirmOptions[] = []): Confirm {
   return (opts) => {
@@ -20,6 +21,8 @@ function confirmValue(value: boolean, prompts: ConfirmOptions[] = []): Confirm {
     return Promise.resolve(value)
   }
 }
+
+const rejectingConfirm = (): Confirm => () => Promise.reject(new Error('closed'))
 
 describe('overflowMenuActions', () => {
   it('builds stateful menu labels and validates menu ids', () => {
@@ -108,6 +111,60 @@ describe('overflowMenuActions', () => {
 
     expect(prompts).toEqual([])
     expect(writes).toEqual([])
+  })
+
+  it('rejects unreadable imports before confirmation', async () => {
+    const writes: string[] = []
+    const resets: Sheet[] = []
+    const prompts: ConfirmOptions[] = []
+
+    await expect(importOverflowCsv({
+      file: unreadableFile(),
+      confirm: confirmValue(true, prompts),
+      sheet: { rowCount: 20, colCount: 2 },
+      writeCell: (key, value) => writes.push(`cell:${key}:${value}`),
+      writeCells: (batch) => writes.push(`batch:${batch.length}`),
+    })).resolves.toBe(false)
+
+    await expect(importOverflowJson({
+      file: unreadableFile(),
+      confirm: confirmValue(true, prompts),
+      resetSheet: (sheet) => resets.push(sheet),
+    })).resolves.toBe(false)
+
+    expect(prompts).toEqual([])
+    expect(writes).toEqual([])
+    expect(resets).toEqual([])
+  })
+
+  it('reports import confirmation and apply failures without rejecting', async () => {
+    await expect(importOverflowCsv({
+      file: textFile('a,b'),
+      confirm: rejectingConfirm(),
+      sheet: { rowCount: 20, colCount: 2 },
+      writeCell: () => {},
+      writeCells: () => { throw new Error('should not write') },
+    })).resolves.toBe(false)
+
+    await expect(importOverflowCsv({
+      file: textFile('a,b'),
+      confirm: confirmValue(true),
+      sheet: { rowCount: 20, colCount: 2 },
+      writeCell: () => {},
+      writeCells: () => { throw new Error('blocked') },
+    })).resolves.toBe(false)
+
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify(initialSheet)),
+      confirm: rejectingConfirm(),
+      resetSheet: () => { throw new Error('should not reset') },
+    })).resolves.toBe(false)
+
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify(initialSheet)),
+      confirm: confirmValue(true),
+      resetSheet: () => { throw new Error('blocked') },
+    })).resolves.toBe(false)
   })
 
   it('exports and imports JSON sheets', async () => {
@@ -202,6 +259,23 @@ describe('overflowMenuActions', () => {
     await runOverflowMenuCommand('json-import', commands)
 
     expect(calls).toEqual(['help', 'formulas', 'gridlines', 'link', 'print', 'csv-export', 'csv-import', 'json-export', 'json-import'])
+  })
+
+  it('reports command failures without rejecting the UI event path', async () => {
+    await expect(runOverflowMenuCommand('print', {
+      openHelp: () => {},
+      toggleShowFormulas: () => {},
+      toggleShowGridlines: () => {},
+      insertLink: () => {},
+      print: () => { throw new Error('blocked') },
+      exportCsv: () => {},
+      openCsvImport: () => {},
+      exportJson: () => {},
+      openJsonImport: () => {},
+      confirm: confirmValue(true),
+      clearCellValues: () => {},
+      clearAllFormats: () => {},
+    })).resolves.toBe(false)
   })
 
   it('confirms destructive menu commands', async () => {
