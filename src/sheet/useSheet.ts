@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useJSONDocument } from 'zod-crud'
-import { SheetSchema, colLettersFor, cellIdToKey, type Writes } from './schema'
+import { SheetSchema, colLettersFor, type Writes } from './schema'
 import { evaluateCell } from '@spredsheet/formula'
 import { loadInitial, saveSheet, buildData } from './storage'
 import { useShortcuts } from './useShortcuts'
@@ -20,8 +20,8 @@ import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
 import { rowColAtFocus } from './structure/rowColAtFocus'
 import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey, type Patch } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
-import { createGridSelectionState, setGridSelectedIds, setGridSelectionAnchor, setGridSelectionFocus, targetGridIds, type GridSelectionUpdate } from '@spredsheet/grid'
 import { useFormulaPick } from './useFormulaPick'
+import { useSheetSelection } from './useSheetSelection'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
@@ -37,7 +37,6 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
     canUndo: () => doc.history.canUndo,
     canRedo: () => doc.history.canRedo,
   }), [doc.commands, doc.history, doc.ops])
-  const [selection, setSelection] = useState(() => createGridSelectionState<string>('r0-A'))
   const fmt = useFormats(sheet.formats, ops)
   const styles = useStyles(sheet.styles, ops)
   const freeze = useFreeze(sheet.freeze, ops)
@@ -58,14 +57,8 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes)
 
   const edit = useEditState({ cells: sheet.cells, writeCell, rowCount, colLetters })
-  const selectedIds = selection.selectedIds
-  const selectAnchor = selection.anchorId
-  const setSelectedIds = useCallback((ids: GridSelectionUpdate<string>) => setSelection((s) => setGridSelectedIds(s, ids)), [])
-  const setSelectAnchor = useCallback((id: string | null) => setSelection((s) => setGridSelectionAnchor(s, id)), [])
-  const setFocusId = useCallback((id: string | null) => {
-    edit.setFocusId(id)
-    setSelection((s) => setGridSelectionFocus(s, id))
-  }, [edit])
+  const selection = useSheetSelection(edit)
+  const { selectedIds, setSelectedIds, setFocusId, setSelectAnchor, targetKeys } = selection
   const formulaPick = useFormulaPick({ edit, rowCount, colLetters, setSelectedIds, setSelectAnchor })
 
   const commitEdit = (move?: { dRow: number; dCol: number }) => {
@@ -88,14 +81,11 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
 
   const display = (k: string) => showFormulas ? (sheet.cells[k] ?? '') : applyFormat(evaluateCell(sheet.cells, sheet.cells[k] ?? ''), fmt.formatOf(k))
   const data = buildData((k) => display(k), rowCount, colLetters)
-  data.meta = { ...data.meta, focus: edit.focusId, selectAnchor: selectAnchor ?? undefined }
+  data.meta = { ...data.meta, focus: edit.focusId, selectAnchor: selection.selectAnchor ?? undefined }
   for (const id of selectedIds) data.entities[id] = { ...(data.entities[id] ?? {}), selected: true }
 
   const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops)
 
-  const targetKeys = (): string[] => {
-    return targetGridIds({ focusId: edit.focusId, selectedIds }).map(cellIdToKey)
-  }
   const setCheckboxRule = (keys: string[]) => {
     const patch: Patch = []
     for (const k of keys) {
