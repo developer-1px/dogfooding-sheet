@@ -57,6 +57,20 @@ describe('overflowMenuActions', () => {
     expect(writes).toEqual(['batch:A1:a|B1:b|A2:1|B2:2'])
   })
 
+  it('imports only cells inside the sheet dimensions', async () => {
+    const writes: string[] = []
+
+    await expect(importOverflowCsv({
+      file: textFile('a,b,c\n1,2,3\nx,y,z'),
+      confirm: confirmValue(true),
+      sheet: { rowCount: 1, colCount: 2 },
+      writeCell: (key, value) => writes.push(`cell:${key}:${value}`),
+      writeCells: (batch) => writes.push(`batch:${batch.map(([key, value]) => `${key}:${value}`).join('|')}`),
+    })).resolves.toBe(true)
+
+    expect(writes).toEqual(['batch:A1:a|B1:b'])
+  })
+
   it('does not import CSV when confirmation is rejected', async () => {
     const writes: string[] = []
 

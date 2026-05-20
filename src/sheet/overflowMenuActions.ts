@@ -82,7 +82,11 @@ export async function importOverflowCsv({
   const text = await readImportText(file)
   if (text === null) return false
   let rows: string[][]
-  try { rows = parseCsv(text) } catch { return false }
+  try {
+    rows = parseCsv(text, { maxRows: sheet.rowCount, maxCols: sheet.colCount })
+  } catch {
+    return false
+  }
   const ok = await confirm({
     message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)',
     confirmLabel: '가져오기',

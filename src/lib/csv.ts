@@ -30,34 +30,68 @@ export function exportCsv(get: Display, opts: ExportOpts): string {
   return lines.join('\n')
 }
 
-export function parseCsv(text: string): string[][] {
+export interface ParseCsvOptions {
+  maxRows?: number
+  maxCols?: number
+}
+
+const boundedLimit = (value: number | undefined): number =>
+  value === undefined || !Number.isFinite(value) ? Infinity : Math.max(0, Math.floor(value))
+
+export function parseCsv(text: string, opts: ParseCsvOptions = {}): string[][] {
+  const maxRows = boundedLimit(opts.maxRows)
+  const maxCols = boundedLimit(opts.maxCols)
   const rows: string[][] = []
   let cur: string[] = []
   let buf = ''
   let inQ = false
   let quoteClosed = false
+  let rowIndex = 0
+  let colIndex = 0
+  let fieldHasContent = false
+  const shouldCaptureField = () => rowIndex < maxRows && colIndex < maxCols
+  const append = (ch: string) => {
+    fieldHasContent = true
+    if (shouldCaptureField()) buf += ch
+  }
+  const pushField = () => {
+    if (shouldCaptureField()) cur.push(buf)
+    buf = ''
+    quoteClosed = false
+    fieldHasContent = false
+    colIndex++
+  }
+  const pushRow = () => {
+    if (rowIndex < maxRows) rows.push(cur)
+    cur = []
+    rowIndex++
+    colIndex = 0
+  }
   for (let i = 0; i < text.length; i++) {
     const ch = text[i]
     if (inQ) {
       if (ch === '"') {
-        if (text[i + 1] === '"') { buf += '"'; i++ }
+        if (text[i + 1] === '"') { append('"'); i++ }
         else { inQ = false; quoteClosed = true }
-      } else buf += ch
+      } else append(ch)
     } else {
       if (quoteClosed && ch !== ',' && ch !== '\n' && ch !== '\r') throw new Error('Invalid CSV')
       if (ch === '"') {
-        if (buf) buf += ch
+        if (fieldHasContent) append(ch)
         else inQ = true
-      } else if (ch === ',') { cur.push(buf); buf = ''; quoteClosed = false }
+      } else if (ch === ',') { pushField() }
       else if (ch === '\n' || ch === '\r') {
         if (ch === '\r' && text[i + 1] === '\n') i++
-        cur.push(buf); buf = ''; quoteClosed = false
-        rows.push(cur); cur = []
-      } else buf += ch
+        pushField()
+        pushRow()
+      } else append(ch)
     }
   }
   if (inQ) throw new Error('Invalid CSV')
-  if (buf || cur.length || quoteClosed) { cur.push(buf); rows.push(cur) }
+  if (fieldHasContent || colIndex > 0 || quoteClosed) {
+    pushField()
+    pushRow()
+  }
   return rows
 }
 
