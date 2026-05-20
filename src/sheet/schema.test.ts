@@ -11,6 +11,28 @@ describe('SheetSchema', () => {
     expect(parsed.success).toBe(true)
   })
 
+  it('rejects invalid persisted tab state', () => {
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: [], active: 'Sheet1' },
+    }).success).toBe(false)
+
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: ['Sheet1'], active: 'Missing' },
+    }).success).toBe(false)
+
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: ['Sheet1', 'Sheet1'], active: 'Sheet1' },
+    }).success).toBe(false)
+
+    expect(SheetSchema.safeParse({
+      ...initialSheet,
+      tabs: { ...initialSheet.tabs, order: ['   '], active: '   ' },
+    }).success).toBe(false)
+  })
+
   it('creates isolated blank bundles', () => {
     const a = blankBundle()
     const b = blankBundle()

@@ -57,13 +57,26 @@ const TabBundleSchema = z.object({
 })
 export type TabBundle = z.infer<typeof TabBundleSchema>
 
+const SheetNameSchema = z.string().refine((name) => name.trim().length > 0)
+
+const TabsSchema = z.object({
+  order: z.array(SheetNameSchema).min(1),
+  active: SheetNameSchema,
+  saved: z.record(z.string(), TabBundleSchema),
+  colors: z.record(z.string(), z.string()).default({}),
+}).superRefine((tabs, ctx) => {
+  const names = new Set<string>()
+  tabs.order.forEach((name, index) => {
+    if (names.has(name)) ctx.addIssue({ code: 'custom', path: ['order', index], message: 'Duplicate sheet name' })
+    names.add(name)
+  })
+  if (!names.has(tabs.active)) {
+    ctx.addIssue({ code: 'custom', path: ['active'], message: 'Active sheet must be present in tab order' })
+  }
+})
+
 export const SheetSchema = TabBundleSchema.extend({
-  tabs: z.object({
-    order: z.array(z.string()),
-    active: z.string(),
-    saved: z.record(z.string(), TabBundleSchema),
-    colors: z.record(z.string(), z.string()).default({}),
-  }).default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
+  tabs: TabsSchema.default({ order: ['Sheet1'], active: 'Sheet1', saved: {}, colors: {} }),
 })
 export type Sheet = z.infer<typeof SheetSchema>
 export type SheetOps = JSONOps<Sheet> & {
