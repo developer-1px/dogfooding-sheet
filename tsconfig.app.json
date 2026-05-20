@@ -17,6 +17,7 @@
     "paths": {
       "@aria/engine": ["./src/interactive-os/devtoolsARIAShims.ts"],
       "@aria/primitives": ["./src/interactive-os/devtoolsARIAShims.ts"],
+      "@interactive-os/playground-catalog": ["../playground-catalog/src/index.d.mts"],
       "@spredsheet/formula": ["./packages/formula/src/index.ts"],
       "@spredsheet/grid": ["./packages/grid/src/index.ts"]
     },

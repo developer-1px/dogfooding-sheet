@@ -32,9 +32,9 @@ importers:
       '@interactive-os/keyboard-navigation':
         specifier: file:../keyboard-navigation/packages/keyboard-navigation
         version: file:../keyboard-navigation/packages/keyboard-navigation
-      '@interactive-os/site-generator':
-        specifier: file:../site-generator
-        version: file:../site-generator
+      '@interactive-os/playground-catalog':
+        specifier: file:../playground-catalog
+        version: file:../playground-catalog
       '@spredsheet/formula':
         specifier: workspace:*
         version: link:packages/formula
@@ -2265,9 +2265,9 @@ packages:
     name: '@interactive-os/keyboard'
     dev: false
 
-  file:../site-generator:
-    resolution: {directory: ../site-generator, type: directory}
-    name: '@interactive-os/site-generator'
+  file:../playground-catalog:
+    resolution: {directory: ../playground-catalog, type: directory}
+    name: '@interactive-os/playground-catalog'
     dependencies:
       '@interactive-os/document': file:../document
     dev: false

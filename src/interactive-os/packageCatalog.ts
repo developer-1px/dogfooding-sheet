@@ -1,5 +1,5 @@
 import { docFor } from '@interactive-os/document'
-import { createPackageDoc } from '@interactive-os/site-generator'
+import { createPackageDoc } from '@interactive-os/playground-catalog'
 
 const CATALOG_SOURCE = `
 /** Local package catalog for the spreadsheet dogfood runtime. */
@@ -15,7 +15,7 @@ export const interactiveOsPackages = [
   '@interactive-os/keyboard-navigation',
   '@interactive-os/devtools',
   '@interactive-os/document',
-  '@interactive-os/site-generator',
+  '@interactive-os/playground-catalog',
   '@interactive-os/editor',
   'zod-crud',
 ].map((name) => createPackageDoc({

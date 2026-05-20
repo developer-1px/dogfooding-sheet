@@ -16,6 +16,7 @@ export default defineConfig({
       { find: /^@interactive-os\/aria-kernel\/key$/, replacement: local('./node_modules/@interactive-os/aria-kernel/dist/key/index.js') },
       { find: /^@interactive-os\/aria-kernel\/(.+)$/, replacement: local('./node_modules/@interactive-os/aria-kernel/dist/$1.js') },
       { find: /^@interactive-os\/anyeditable$/, replacement: local('./node_modules/@interactive-os/anyeditable/dist/index.js') },
+      { find: /^@interactive-os\/playground-catalog$/, replacement: local('../playground-catalog/src/index.mjs') },
       { find: /^zod-crud$/, replacement: local('./node_modules/zod-crud/dist/index.js') },
     ],
     conditions: ['import', 'module', 'browser', 'default'],

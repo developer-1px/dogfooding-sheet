@@ -19,7 +19,7 @@
     "@interactive-os/editor": "file:../editor",
     "@interactive-os/keyboard": "file:../keyboard/packages/keyboard",
     "@interactive-os/keyboard-navigation": "file:../keyboard-navigation/packages/keyboard-navigation",
-    "@interactive-os/site-generator": "file:../site-generator",
+    "@interactive-os/playground-catalog": "file:../playground-catalog",
     "@spredsheet/formula": "workspace:*",
     "@spredsheet/grid": "workspace:*",
     "react": "^19.2.5",
