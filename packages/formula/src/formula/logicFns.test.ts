@@ -42,11 +42,26 @@ describe('logic functions', () => {
     expect(evaluateCell({}, '=TYPE(1/0)')).toBe('16')
   })
 
+  it('logic predicates reject missing required inputs', () => {
+    expect(evaluateCell({}, '=ISBLANK()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ISNUMBER()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ISTEXT()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ISERROR()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=TYPE()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ISEVEN()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ISODD()')).toBe('#VALUE!')
+  })
+
   it('ISBETWEEN inclusive by default', () => {
     expect(evaluateCell({}, '=ISBETWEEN(5, 1, 10)')).toBe('1')
     expect(evaluateCell({}, '=ISBETWEEN(10, 1, 10)')).toBe('1')
     expect(evaluateCell({}, '=ISBETWEEN(10, 1, 10, 1, 0)')).toBe('0')
     expect(evaluateCell({}, '=ISBETWEEN(11, 1, 10)')).toBe('0')
+  })
+
+  it('ISBETWEEN rejects missing and non-numeric required inputs', () => {
+    expect(evaluateCell({}, '=ISBETWEEN(5, 1)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=ISBETWEEN("x", 1, 10)')).toBe('#VALUE!')
   })
 
   it('ISERROR / ISEVEN / ISODD predicates', () => {

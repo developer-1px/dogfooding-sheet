@@ -1,6 +1,14 @@
-import { smartReturn } from './marker'
+import { smartReturn, wrap } from './marker'
 import { coerceNumber } from './coerce'
 import { isErrorValue } from './errorValue'
+
+const hasArg = (value: string | undefined): value is string => value !== undefined
+
+const finiteArg = (value: string | undefined): number | null => {
+  if (!hasArg(value)) return null
+  const n = coerceNumber(value)
+  return Number.isFinite(n) ? n : null
+}
 
 export function dispatchLogic(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'AND') return argsN.every((n) => !!n) ? '1' : '0'
@@ -18,12 +26,13 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
   }
   if (F === 'ISURL') return /^https?:\/\/[^\s]+$/.test(argsT[0] ?? '') ? '1' : '0'
   if (F === 'ISEMAIL') return /^[\w.+-]+@[\w.-]+\.\w{2,}$/.test(argsT[0] ?? '') ? '1' : '0'
-  if (F === 'ISBLANK') return argsT[0] === '' ? '1' : '0'
-  if (F === 'ISNUMBER') return argsT[0] !== '' && Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0'
-  if (F === 'ISTEXT') return argsT[0] !== '' && !Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0'
-  if (F === 'ISERROR') return isErrorValue(argsT[0]) ? '1' : '0'
+  if (F === 'ISBLANK') return hasArg(argsT[0]) ? (argsT[0] === '' ? '1' : '0') : wrap('#VALUE!')
+  if (F === 'ISNUMBER') return hasArg(argsT[0]) ? (argsT[0] !== '' && Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0') : wrap('#VALUE!')
+  if (F === 'ISTEXT') return hasArg(argsT[0]) ? (argsT[0] !== '' && !Number.isFinite(coerceNumber(argsT[0])) ? '1' : '0') : wrap('#VALUE!')
+  if (F === 'ISERROR') return hasArg(argsT[0]) ? (isErrorValue(argsT[0]) ? '1' : '0') : wrap('#VALUE!')
   if (F === 'TYPE') {
     const v = argsT[0]
+    if (!hasArg(v)) return wrap('#VALUE!')
     if (isErrorValue(v)) return '16'
     if (v === '1' || v === '0') return '4'
     if (v !== '' && Number.isFinite(coerceNumber(v))) return '1'
@@ -39,12 +48,13 @@ export function dispatchLogic(F: string, argsT: string[], argsN: number[]): stri
     for (const v of argsT) if (v !== '') return smartReturn(v)
     return smartReturn('')
   }
-  if (F === 'ISEVEN') return Number.isFinite(argsN[0]) && Math.floor(argsN[0]) % 2 === 0 ? '1' : '0'
-  if (F === 'ISODD') return Number.isFinite(argsN[0]) && Math.abs(Math.floor(argsN[0])) % 2 === 1 ? '1' : '0'
+  if (F === 'ISEVEN') return hasArg(argsT[0]) ? (Number.isFinite(argsN[0]) && Math.floor(argsN[0]) % 2 === 0 ? '1' : '0') : wrap('#VALUE!')
+  if (F === 'ISODD') return hasArg(argsT[0]) ? (Number.isFinite(argsN[0]) && Math.abs(Math.floor(argsN[0])) % 2 === 1 ? '1' : '0') : wrap('#VALUE!')
   if (F === 'ISBETWEEN') {
-    const v = argsN[0], lo = argsN[1], hi = argsN[2]
+    const v = finiteArg(argsT[0]), lo = finiteArg(argsT[1]), hi = finiteArg(argsT[2])
+    if (v === null || lo === null || hi === null) return wrap('#VALUE!')
     const lowOpen = (argsT[3] ?? '1') === '0', highOpen = (argsT[4] ?? '1') === '0'
-    return Number.isFinite(v) && (lowOpen ? v > lo : v >= lo) && (highOpen ? v < hi : v <= hi) ? '1' : '0'
+    return (lowOpen ? v > lo : v >= lo) && (highOpen ? v < hi : v <= hi) ? '1' : '0'
   }
   if (F === 'IFERROR') {
     const v = argsT[0]
