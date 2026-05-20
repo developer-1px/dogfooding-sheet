@@ -132,6 +132,15 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=SPLIT("a<>b.c", "<>.", 1)')).toBe('[["a","b","c"]]')
   })
 
+  it('SPLIT treats split-by-each delimiters as literal characters', () => {
+    expect(evaluateCell({}, '=SPLIT("a-b/c.d", "-/.", 1)')).toBe('[["a","b","c","d"]]')
+  })
+
+  it('SPLIT rejects oversized generated arrays', () => {
+    const text = ','.repeat(5_000)
+    expect(evaluateCell({}, `=SPLIT("${text}", ",", 1, 0)`)).toBe('#VALUE!')
+  })
+
   it('TEXTSPLIT returns a 2D array', () => {
     expect(evaluateCell({}, '=TEXTSPLIT("a,b;c,d", ",", ";")')).toBe('[["a","b"],["c","d"]]')
     expect(evaluateCell({}, '=TEXTSPLIT("a,b;c", ",", ";", 0, 0, "-")')).toBe('[["a","b"],["c","-"]]')

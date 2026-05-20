@@ -3,9 +3,28 @@ import { dispatchTextCodec } from './textCodec'
 import { dispatchTextCase } from './textCase'
 import { dispatchTextAlgo } from './textAlgo'
 import { dispatchTextOps } from './textOps'
+import { stringifyFormulaArray } from './arraySafety'
 
 const splitLiteral = (text: string, delimiter: string): string[] =>
   delimiter === '' ? [text] : text.split(delimiter)
+
+const splitByAnyChar = (text: string, delimiters: string): string[] => {
+  const delimiterChars = new Set<string>()
+  for (let i = 0; i < delimiters.length; i++) delimiterChars.add(delimiters[i])
+
+  const parts: string[] = []
+  let start = 0
+
+  for (let i = 0; i < text.length; i++) {
+    if (delimiterChars.has(text[i])) {
+      parts.push(text.slice(start, i))
+      start = i + 1
+    }
+  }
+
+  parts.push(text.slice(start))
+  return parts
+}
 
 const delimiterIndex = (text: string, delimiter: string, instance: number, caseInsensitive: boolean): number => {
   if (delimiter === '' || instance === 0) return -1
@@ -76,9 +95,9 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const splitByEach = (argsT[2] ?? '1') !== '0'
     const removeEmpty = (argsT[3] ?? '1') !== '0'
     const parts = splitByEach
-      ? text.split(new RegExp(`[${delimiter.replace(/[\\^$.*+?()[\]{}|/-]/g, '\\$&')}]`))
+      ? splitByAnyChar(text, delimiter)
       : text.split(delimiter)
-    return wrap(JSON.stringify([removeEmpty ? parts.filter(part => part !== '') : parts]))
+    return wrap(stringifyFormulaArray([removeEmpty ? parts.filter(part => part !== '') : parts]))
   }
   if (F === 'TEXTSPLIT') {
     const text = argsT[0] ?? ''
@@ -91,7 +110,7 @@ export function dispatchText(F: string, argsT: string[]): string | null {
     const rows = rawRows.map(row => splitLiteral(row, colDelimiter))
     const filtered = ignoreEmpty ? rows.map(row => row.filter(cell => cell !== '')).filter(row => row.length > 0) : rows
     const width = Math.max(0, ...filtered.map(row => row.length))
-    return wrap(JSON.stringify(filtered.map(row => row.concat(Array.from({ length: width - row.length }, () => pad)))))
+    return wrap(stringifyFormulaArray(filtered.map(row => row.concat(Array.from({ length: width - row.length }, () => pad)))))
   }
   if (F === 'TEXTBEFORE') {
     const text = argsT[0] ?? ''

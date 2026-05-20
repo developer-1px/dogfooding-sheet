@@ -1,14 +1,15 @@
 import type { EvalCell } from './args'
 import { coerceNumber } from './coerce'
 import { collectRefs } from './parse'
-import { matchCriteria } from './criteriaMatch'
+import { compileCriteria } from './criteriaMatch'
 
 
 export function countif(rangeStr: string, criteria: string, evalCell: EvalCell): number {
   const refs = collectRefs(rangeStr)
+  const matches = compileCriteria(criteria)
   let n = 0
   for (const r of refs) {
-    if (matchCriteria(evalCell(r), criteria)) n++
+    if (matches(evalCell(r))) n++
   }
   return n
 }
@@ -21,9 +22,10 @@ export function sumif(
 ): number {
   const refs = collectRefs(rangeStr)
   const sumRefs = sumRangeStr ? collectRefs(sumRangeStr) : refs
+  const matches = compileCriteria(criteria)
   let sum = 0
   for (let i = 0; i < refs.length; i++) {
-    if (matchCriteria(evalCell(refs[i]), criteria)) {
+    if (matches(evalCell(refs[i]))) {
       const v = coerceNumber(evalCell(sumRefs[i] ?? refs[i]))
       if (Number.isFinite(v)) sum += v
     }
@@ -66,9 +68,10 @@ export function averageif(
 ): number | string {
   const refs = collectRefs(rangeStr)
   const avgRefs = avgRangeStr ? collectRefs(avgRangeStr) : refs
+  const matches = compileCriteria(criteria)
   let sum = 0, n = 0
   for (let i = 0; i < refs.length; i++) {
-    if (!matchCriteria(evalCell(refs[i]), criteria)) continue
+    if (!matches(evalCell(refs[i]))) continue
     const v = coerceNumber(evalCell(avgRefs[i] ?? refs[i]))
     if (Number.isFinite(v)) { sum += v; n++ }
   }

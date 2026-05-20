@@ -25,6 +25,11 @@ describe('COUNTIF wildcards', () => {
     expect(evaluateCell(cells, '=COUNTIF(A1:A4, "a~?")')).toBe('1')
     expect(evaluateCell(cells, '=COUNTIF(A1:A4, "a~~")')).toBe('1')
   })
+  it('treats regex metacharacters as literals in wildcard criteria', () => {
+    const cells = { A1: 'a.b', A2: 'axb', A3: 'a+b', A4: 'a.bc' }
+    expect(evaluateCell(cells, '=COUNTIF(A1:A4, "a.*")')).toBe('2')
+    expect(evaluateCell(cells, '=COUNTIF(A1:A4, "a+?")')).toBe('1')
+  })
 })
 
 describe('SUMIF', () => {

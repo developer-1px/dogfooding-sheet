@@ -317,6 +317,12 @@ describe('XLOOKUP', () => {
     expect(evaluateCell(table, '=XLOOKUP("a????ot", A1:A3, B1:B3, "n/a", 2)')).toBe('2')
     expect(evaluateCell(table, '=XLOOKUP("ap*", A1:A3, B1:B3, "n/a", 2, -1)')).toBe('2')
   })
+  it('supports escaped wildcard match mode', () => {
+    const table = { A1: 'a*', B1: 'star', A2: 'a?', B2: 'question', A3: 'a~', B3: 'tilde' }
+    expect(evaluateCell(table, '=XLOOKUP("a~*", A1:A3, B1:B3, "n/a", 2)')).toBe('star')
+    expect(evaluateCell(table, '=XLOOKUP("a~?", A1:A3, B1:B3, "n/a", 2)')).toBe('question')
+    expect(evaluateCell(table, '=XLOOKUP("a~~", A1:A3, B1:B3, "n/a", 2)')).toBe('tilde')
+  })
   it('requires compatible lookup and result ranges', () => {
     const table = { A1: 'a', A2: 'b', A3: 'c', B1: '1', B2: '2' }
     expect(evaluateCell(table, '=XLOOKUP("b", A1:A3, B1:B2)')).toBe('#VALUE!')
@@ -335,6 +341,7 @@ describe('XMATCH', () => {
     expect(evaluateCell(table, '=XMATCH(25, A1:A4, 1)')).toBe('3')
     expect(evaluateCell(table, '=XMATCH("ap*", B1:B4, 2)')).toBe('1')
     expect(evaluateCell(table, '=XMATCH("ap*", B1:B4, 2, -1)')).toBe('4')
+    expect(evaluateCell({ A1: 'a*', A2: 'ab' }, '=XMATCH("a~*", A1:A2, 2)')).toBe('1')
   })
   it('requires a one-dimensional lookup range', () => {
     expect(evaluateCell(data, '=XMATCH("Bread", A1:B3)')).toBe('#VALUE!')

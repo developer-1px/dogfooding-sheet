@@ -2,7 +2,7 @@ import type { EvalCell } from './args'
 import type { Cells } from '../a1'
 import { parseRange, evalCell } from './rangeRect'
 import { coerceNumber } from './coerce'
-import { wildcardToRegex } from './criteriaMatch'
+import { compileWildcardMatcher } from './criteriaMatch'
 
 
 export { parseRange }
@@ -34,12 +34,12 @@ const lookupVector = (rangeStr: string, cells: Cells, evalCellRef: EvalCell): { 
 const lookupIndex = (key: string, values: string[], matchMode: number, searchMode: number): number | string => {
   if (![-1, 0, 1, 2].includes(matchMode) || ![1, -1, 2, -2].includes(searchMode)) return '#VALUE!'
   const reverse = searchMode === -1 || searchMode === -2
-  const wildcard = matchMode === 2 ? wildcardToRegex(key) : null
+  const wildcard = matchMode === 2 ? compileWildcardMatcher(key) : null
   const ordered = Array.from({ length: values.length }, (_v, i) => reverse ? values.length - 1 - i : i)
   let best = -1
   for (const i of ordered) {
     const value = values[i]
-    if (wildcard?.test(value)) return i
+    if (wildcard?.(value)) return i
     const cmp = compareLookupValues(value, key)
     if (cmp === 0) return i
     if (matchMode === -1 && cmp < 0 && (best < 0 || compareLookupValues(value, values[best]) > 0)) best = i

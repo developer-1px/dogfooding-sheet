@@ -1,18 +1,32 @@
 import type { EvalCell } from './args'
 import { collectRefs } from './parse'
-import { matchCriteria } from './criteriaMatch'
+import { compileCriteria, type CriteriaMatcher } from './criteriaMatch'
 import { coerceNumber } from './coerce'
 
 
+type CompiledCriteriaRange = {
+  refs: string[]
+  matches: CriteriaMatcher
+}
+
 /** Build a predicate from interleaved (range, criteria) pairs. */
-const matchAll = (pairs: string[], evalCell: EvalCell) =>
-  (i: number): boolean => {
-    for (let p = 0; p < pairs.length; p += 2) {
-      const refs = collectRefs(pairs[p])
-      if (!matchCriteria(evalCell(refs[i]), pairs[p + 1])) return false
+const matchAll = (pairs: string[], evalCell: EvalCell) => {
+  const compiled: CompiledCriteriaRange[] = []
+
+  for (let p = 0; p < pairs.length; p += 2) {
+    compiled.push({
+      refs: collectRefs(pairs[p]),
+      matches: compileCriteria(pairs[p + 1] ?? ''),
+    })
+  }
+
+  return (i: number): boolean => {
+    for (const pair of compiled) {
+      if (!pair.matches(evalCell(pair.refs[i] ?? ''))) return false
     }
     return true
   }
+}
 
 export function countifs(args: string[], evalCell: EvalCell): number {
   const len = collectRefs(args[0]).length
@@ -58,9 +72,10 @@ export function minMaxIf(
 ): number {
   const values = collectRefs(valueRangeStr)
   const crits = collectRefs(critRangeStr)
+  const matches = compileCriteria(criteria)
   const picked: number[] = []
   for (let i = 0; i < values.length; i++) {
-    if (!matchCriteria(evalCell(crits[i] ?? values[i]), criteria)) continue
+    if (!matches(evalCell(crits[i] ?? values[i]))) continue
     const v = coerceNumber(evalCell(values[i]))
     if (Number.isFinite(v)) picked.push(v)
   }
