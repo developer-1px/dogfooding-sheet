@@ -43,8 +43,9 @@ No `window.prompt` / `window.confirm` / `window.alert`. All interactions route t
 ```sh
 pnpm install
 pnpm dev          # vite dev server
-pnpm build        # tsc -b && vite build
-pnpm test         # vitest run
+pnpm check        # lint + production build + all tests
+pnpm build        # package builds + tsc -b + vite build
+pnpm test         # app + grid + formula tests
 ```
 
 ## Open issues filed during dogfooding

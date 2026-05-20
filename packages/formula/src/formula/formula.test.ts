@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
 import { evaluateCell } from './eval'
 import { refsInFormula } from './parse'
 
@@ -14,6 +15,8 @@ describe('evaluateCell', () => {
     expect(evaluateCell(cells({ A1: '2', B1: '3' }), '=A1+B1')).toBe('5')
     expect(evaluateCell(cells({ A1: '10', B1: '4' }), '=A1-B1*2')).toBe('2')
     expect(evaluateCell(cells({ A1: '2', B1: '3' }), '=$A$1+B$1')).toBe('5')
+    expect(evaluateCell({}, '=-(1+2)*3')).toBe('-9')
+    expect(evaluateCell({}, '=1/0')).toBe('#DIV/0!')
   })
 
   it('coerces common formatted numbers in cell references', () => {
@@ -65,6 +68,9 @@ describe('evaluateCell', () => {
   it('IF with comparison', () => {
     expect(evaluateCell(cells({ A1: '10' }), '=IF(A1>5,1,0)')).toBe('1')
     expect(evaluateCell(cells({ A1: '3' }), '=IF(A1>5,1,0)')).toBe('0')
+    expect(evaluateCell({}, '=1=1')).toBe('1')
+    expect(evaluateCell({}, '=1<>1')).toBe('0')
+    expect(evaluateCell({}, '=2>=1')).toBe('1')
   })
 
   it('ROUND', () => {
@@ -87,6 +93,14 @@ describe('evaluateCell', () => {
 
   it('bad expression returns #ERR', () => {
     expect(evaluateCell({}, '=alert(1)')).toBe('#ERR')
+    expect(evaluateCell({}, '=1;globalThis.__formulaInjected=1')).toBe('#ERR')
+    expect((globalThis as typeof globalThis & { __formulaInjected?: number }).__formulaInjected).toBeUndefined()
+  })
+
+  it('does not use runtime code generation for arithmetic fallback', () => {
+    const source = readFileSync(new URL('./eval.ts', import.meta.url), 'utf8')
+    expect(source).not.toContain('Function(')
+    expect(source).not.toContain('eval(')
   })
 })
 
