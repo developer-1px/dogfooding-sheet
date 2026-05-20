@@ -12,6 +12,10 @@ describe('human fmt', () => {
     expect(evaluateCell({}, '=STRINGIFY("a","b")')).toBe('["a","b"]')
   })
 
+  it('STRINGIFY rejects oversized generated text', () => {
+    expect(evaluateCell({ A1: 'x'.repeat(10_000) }, '=STRINGIFY(A1)')).toBe('#VALUE!')
+  })
+
   it('STARS / PROGRESSBAR', () => {
     expect(evaluateCell({}, '=STARS(3)')).toBe('★★★☆☆')
     expect(evaluateCell({}, '=STARS(0)')).toBe('☆☆☆☆☆')

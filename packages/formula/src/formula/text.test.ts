@@ -333,9 +333,17 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=TEXT(0.25, "0%")')).toBe('25%')
     expect(evaluateCell({}, '=TEXT(7, "0.000")')).toBe('7.000')
   })
+  it('TEXT rejects unsafe fraction digit formats', () => {
+    expect(evaluateCell({}, `=TEXT(1, "0.${'0'.repeat(101)}")`)).toBe('#VALUE!')
+    expect(evaluateCell({ A1: '1e308' }, '=TEXT(A1, "0%")')).toBe('#VALUE!')
+  })
   it('DOLLAR formats with thousands and decimals', () => {
     expect(evaluateCell({}, '=DOLLAR(1234.5)')).toBe('$1,234.50')
     expect(evaluateCell({}, '=DOLLAR(1234.5, 0)')).toBe('$1,235')
+  })
+  it('DOLLAR rejects unsafe fraction digits', () => {
+    expect(evaluateCell({}, '=DOLLAR(1, -1)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=DOLLAR(1, 101)')).toBe('#VALUE!')
   })
   it('UNICHAR / UNICODE handle codepoints', () => {
     expect(evaluateCell({}, '=UNICHAR(128512)')).toBe('😀')
