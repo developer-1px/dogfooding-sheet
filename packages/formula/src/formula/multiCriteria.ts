@@ -9,6 +9,18 @@ type CompiledCriteriaRange = {
   matches: CriteriaMatcher
 }
 
+const valueError = (): string => '#VALUE!'
+const numError = (): string => '#NUM!'
+
+const hasRangeArg = (value: string | undefined): value is string =>
+  typeof value === 'string' && value.trim() !== ''
+
+const validCriteriaPairs = (args: string[], offset = 0): boolean =>
+  args.length > offset && (args.length - offset) % 2 === 0
+
+const finiteResult = (value: number): number | string =>
+  Number.isFinite(value) ? value : numError()
+
 /** Build a predicate from interleaved (range, criteria) pairs. */
 const matchAll = (pairs: string[], evalCell: EvalCell) => {
   const compiled: CompiledCriteriaRange[] = []
@@ -28,7 +40,8 @@ const matchAll = (pairs: string[], evalCell: EvalCell) => {
   }
 }
 
-export function countifs(args: string[], evalCell: EvalCell): number {
+export function countifs(args: string[], evalCell: EvalCell): number | string {
+  if (!validCriteriaPairs(args) || args.some((arg, index) => index % 2 === 0 && !hasRangeArg(arg))) return valueError()
   const len = collectRefs(args[0]).length
   const pred = matchAll(args, evalCell)
   let n = 0
@@ -36,7 +49,8 @@ export function countifs(args: string[], evalCell: EvalCell): number {
   return n
 }
 
-export function sumifs(args: string[], evalCell: EvalCell): number {
+export function sumifs(args: string[], evalCell: EvalCell): number | string {
+  if (!hasRangeArg(args[0]) || !validCriteriaPairs(args, 1) || args.slice(1).some((arg, index) => index % 2 === 0 && !hasRangeArg(arg))) return valueError()
   const sumRefs = collectRefs(args[0])
   const pred = matchAll(args.slice(1), evalCell)
   let sum = 0
@@ -45,10 +59,11 @@ export function sumifs(args: string[], evalCell: EvalCell): number {
     const v = coerceNumber(evalCell(sumRefs[i]))
     if (Number.isFinite(v)) sum += v
   }
-  return sum
+  return finiteResult(sum)
 }
 
 export function averageifs(args: string[], evalCell: EvalCell): number | string {
+  if (!hasRangeArg(args[0]) || !validCriteriaPairs(args, 1) || args.slice(1).some((arg, index) => index % 2 === 0 && !hasRangeArg(arg))) return valueError()
   const avgRefs = collectRefs(args[0])
   const pred = matchAll(args.slice(1), evalCell)
   let sum = 0
@@ -60,16 +75,17 @@ export function averageifs(args: string[], evalCell: EvalCell): number | string 
     sum += v
     count++
   }
-  return count ? sum / count : '#DIV/0!'
+  return count ? finiteResult(sum / count) : '#DIV/0!'
 }
 
 export function minMaxIf(
   pick: 'MIN' | 'MAX',
-  valueRangeStr: string,
-  critRangeStr: string,
-  criteria: string,
+  valueRangeStr: string | undefined,
+  critRangeStr: string | undefined,
+  criteria: string | undefined,
   evalCell: EvalCell,
-): number {
+): number | string {
+  if (!hasRangeArg(valueRangeStr) || !hasRangeArg(critRangeStr) || criteria === undefined) return valueError()
   const values = collectRefs(valueRangeStr)
   const crits = collectRefs(critRangeStr)
   const matches = compileCriteria(criteria)
@@ -80,5 +96,5 @@ export function minMaxIf(
     if (Number.isFinite(v)) picked.push(v)
   }
   if (picked.length === 0) return 0
-  return pick === 'MIN' ? Math.min(...picked) : Math.max(...picked)
+  return finiteResult(pick === 'MIN' ? Math.min(...picked) : Math.max(...picked))
 }

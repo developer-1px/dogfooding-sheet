@@ -84,6 +84,25 @@ describe('MINIFS / MAXIFS', () => {
   })
 })
 
+describe('conditional aggregate errors', () => {
+  it('rejects missing arguments and non-finite results', () => {
+    const huge = { A1: 'x', A2: 'x', B1: '1e308', B2: '1e308' }
+
+    expect(evaluateCell({}, '=COUNTIF()')).toBe('#VALUE!')
+    expect(evaluateCell(c, '=COUNTIF(A1:A5)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=SUMIF()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=COUNTA()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=COUNTBLANK()')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=COUNTUNIQUE()')).toBe('#VALUE!')
+    expect(evaluateCell(c, '=COUNTIFS(A1:A5)')).toBe('#VALUE!')
+    expect(evaluateCell(c, '=SUMIFS(A1:A5, A1:A5)')).toBe('#VALUE!')
+    expect(evaluateCell(c, '=AVERAGEIFS(A1:A5, A1:A5)')).toBe('#VALUE!')
+    expect(evaluateCell(c, '=MINIFS(A1:A5, A1:A5)')).toBe('#VALUE!')
+    expect(evaluateCell(c, '=MAXIFS(A1:A5, A1:A5)')).toBe('#VALUE!')
+    expect(evaluateCell(huge, '=SUMIF(A1:A2, "x", B1:B2)')).toBe('#NUM!')
+  })
+})
+
 describe('MAXA / MINA / AVERAGEA', () => {
   it('treat text as 0 in stats', () => {
     const cells = { A1: '5', A2: 'text', A3: '10' }

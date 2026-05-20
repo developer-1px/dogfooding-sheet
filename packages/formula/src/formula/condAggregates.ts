@@ -3,8 +3,20 @@ import { coerceNumber } from './coerce'
 import { collectRefs } from './parse'
 import { compileCriteria } from './criteriaMatch'
 
+const valueError = (): string => '#VALUE!'
+const numError = (): string => '#NUM!'
 
-export function countif(rangeStr: string, criteria: string, evalCell: EvalCell): number {
+const hasRangeArg = (value: string | undefined): value is string =>
+  typeof value === 'string' && value.trim() !== ''
+
+const hasCriteriaArg = (value: string | undefined): value is string =>
+  value !== undefined
+
+const finiteResult = (value: number): number | string =>
+  Number.isFinite(value) ? value : numError()
+
+export function countif(rangeStr: string | undefined, criteria: string | undefined, evalCell: EvalCell): number | string {
+  if (!hasRangeArg(rangeStr) || !hasCriteriaArg(criteria)) return valueError()
   const refs = collectRefs(rangeStr)
   const matches = compileCriteria(criteria)
   let n = 0
@@ -15,11 +27,12 @@ export function countif(rangeStr: string, criteria: string, evalCell: EvalCell):
 }
 
 export function sumif(
-  rangeStr: string,
-  criteria: string,
+  rangeStr: string | undefined,
+  criteria: string | undefined,
   sumRangeStr: string | undefined,
   evalCell: EvalCell,
-): number {
+): number | string {
+  if (!hasRangeArg(rangeStr) || !hasCriteriaArg(criteria)) return valueError()
   const refs = collectRefs(rangeStr)
   const sumRefs = sumRangeStr ? collectRefs(sumRangeStr) : refs
   const matches = compileCriteria(criteria)
@@ -30,10 +43,11 @@ export function sumif(
       if (Number.isFinite(v)) sum += v
     }
   }
-  return sum
+  return finiteResult(sum)
 }
 
-export function counta(rangeStr: string, evalCell: EvalCell): number {
+export function counta(rangeStr: string | undefined, evalCell: EvalCell): number | string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const refs = collectRefs(rangeStr)
   let n = 0
   for (const r of refs) {
@@ -42,7 +56,8 @@ export function counta(rangeStr: string, evalCell: EvalCell): number {
   return n
 }
 
-export function countblank(rangeStr: string, evalCell: EvalCell): number {
+export function countblank(rangeStr: string | undefined, evalCell: EvalCell): number | string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const refs = collectRefs(rangeStr)
   let n = 0
   for (const r of refs) {
@@ -51,7 +66,8 @@ export function countblank(rangeStr: string, evalCell: EvalCell): number {
   return n
 }
 
-export function countunique(rangeStr: string, evalCell: EvalCell): number {
+export function countunique(rangeStr: string | undefined, evalCell: EvalCell): number | string {
+  if (!hasRangeArg(rangeStr)) return valueError()
   const seen = new Set<string>()
   for (const r of collectRefs(rangeStr)) {
     const v = evalCell(r)
@@ -61,11 +77,12 @@ export function countunique(rangeStr: string, evalCell: EvalCell): number {
 }
 
 export function averageif(
-  rangeStr: string,
-  criteria: string,
+  rangeStr: string | undefined,
+  criteria: string | undefined,
   avgRangeStr: string | undefined,
   evalCell: EvalCell,
 ): number | string {
+  if (!hasRangeArg(rangeStr) || !hasCriteriaArg(criteria)) return valueError()
   const refs = collectRefs(rangeStr)
   const avgRefs = avgRangeStr ? collectRefs(avgRangeStr) : refs
   const matches = compileCriteria(criteria)
@@ -75,5 +92,5 @@ export function averageif(
     const v = coerceNumber(evalCell(avgRefs[i] ?? refs[i]))
     if (Number.isFinite(v)) { sum += v; n++ }
   }
-  return n > 0 ? sum / n : '#DIV/0!'
+  return n > 0 ? finiteResult(sum / n) : '#DIV/0!'
 }

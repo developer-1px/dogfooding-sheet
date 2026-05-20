@@ -108,16 +108,16 @@ export function dispatch(fn: string, rawArgs: string, c: Ctx): string {
 
   const argsT = evalArgs(rawArgs, c)
 
-  if (F === 'COUNTIF') return String(countif(argsT[0], argsT[1], c.evalCell))
-  if (F === 'SUMIF') return String(sumif(argsT[0], argsT[1], argsT[2], c.evalCell))
-  if (F === 'COUNTA') return String(counta(argsT[0], c.evalCell))
-  if (F === 'COUNTBLANK') return String(countblank(argsT[0], c.evalCell))
-  if (F === 'COUNTUNIQUE') return String(countunique(argsT[0], c.evalCell))
+  if (F === 'COUNTIF') return smartReturn(String(countif(argsT[0], argsT[1], c.evalCell)))
+  if (F === 'SUMIF') return smartReturn(String(sumif(argsT[0], argsT[1], argsT[2], c.evalCell)))
+  if (F === 'COUNTA') return smartReturn(String(counta(argsT[0], c.evalCell)))
+  if (F === 'COUNTBLANK') return smartReturn(String(countblank(argsT[0], c.evalCell)))
+  if (F === 'COUNTUNIQUE') return smartReturn(String(countunique(argsT[0], c.evalCell)))
   if (F === 'AVERAGEIF') return smartReturn(String(averageif(argsT[0], argsT[1], argsT[2], c.evalCell)))
-  if (F === 'COUNTIFS') return String(countifs(argsT, c.evalCell))
-  if (F === 'SUMIFS') return String(sumifs(argsT, c.evalCell))
+  if (F === 'COUNTIFS') return smartReturn(String(countifs(argsT, c.evalCell)))
+  if (F === 'SUMIFS') return smartReturn(String(sumifs(argsT, c.evalCell)))
   if (F === 'AVERAGEIFS') return smartReturn(String(averageifs(argsT, c.evalCell)))
-  if (F === 'MINIFS' || F === 'MAXIFS') return String(minMaxIf(F === 'MINIFS' ? 'MIN' : 'MAX', argsT[0], argsT[1], argsT[2], c.evalCell))
+  if (F === 'MINIFS' || F === 'MAXIFS') return smartReturn(String(minMaxIf(F === 'MINIFS' ? 'MIN' : 'MAX', argsT[0], argsT[1], argsT[2], c.evalCell)))
   if (F === 'WEIGHTAVG') { const a = splitArgs(rawArgs); return smartReturn(weightAvg(a[0], a[1], c.numFromCell)) }
   if (F === 'MAX_BY' || F === 'MIN_BY') { const a = splitArgs(rawArgs); return smartReturn(maxMinBy(F, a[0], a[1], c.cells, c.evalCell, c.numFromCell)) }
   if (F === 'MOSTCOMMON' || F === 'LEASTCOMMON') return smartReturn(freqStat(F, splitArgs(rawArgs)[0], c.cells, c.evalCell))
