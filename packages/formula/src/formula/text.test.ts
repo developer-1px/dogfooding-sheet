@@ -53,6 +53,10 @@ describe('text functions', () => {
   it('CONCAT joins strings and refs', () => {
     expect(evaluateCell({ A1: 'hello' }, '=CONCAT(A1, " ", "world")')).toBe('hello world')
   })
+  it('preserves generated text that looks like a formula call', () => {
+    expect(evaluateCell({}, '=CONCAT("SUM(", "1)")')).toBe('SUM(1)')
+    expect(evaluateCell({}, '=TEXTJOIN("", 1, "ROUND(", "1.2", ")")')).toBe('ROUND(1.2)')
+  })
   it('LEN returns length', () => {
     expect(evaluateCell({ A1: 'hello' }, '=LEN(A1)')).toBe('5')
   })

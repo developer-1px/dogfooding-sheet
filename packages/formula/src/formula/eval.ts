@@ -184,8 +184,14 @@ const isFunctionNamePart = (ch: string | undefined): boolean =>
 
 const replaceFunctionCall = (expr: string, c: Ctx, lazyOnly = false): string => {
   let inQuote = false
+  let inText = false
   for (let i = 0; i < expr.length; i++) {
     const ch = expr[i]
+    if (ch === TM) {
+      inText = !inText
+      continue
+    }
+    if (inText) continue
     if (ch === '"' && inQuote && expr[i + 1] === '"') {
       i++
       continue
