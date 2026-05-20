@@ -22,10 +22,15 @@ const readClipboardText = async (): Promise<string | null> => {
   }
 }
 
-const flush = (writes: Writes, write: WriteCell, writeMany?: WriteMany) => {
-  if (writes.length === 0) return
-  if (writeMany) writeMany(writes)
-  else for (const [k, v] of writes) write(k, v)
+const flush = (writes: Writes, write: WriteCell, writeMany?: WriteMany): boolean => {
+  try {
+    if (writes.length === 0) return true
+    if (writeMany) writeMany(writes)
+    else for (const [k, v] of writes) write(k, v)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function copyOrCut(
@@ -50,7 +55,10 @@ export function copyOrCut(
       if (cut && internalClipboard === nextClipboard) internalClipboard = null
       return false
     }
-    if (cut) flush(clearWritesForIds(ids), writeCell, writeCells)
+    if (cut && !flush(clearWritesForIds(ids), writeCell, writeCells)) {
+      if (internalClipboard === nextClipboard) internalClipboard = null
+      return false
+    }
     return true
   })
 }
@@ -60,8 +68,8 @@ export function pasteTsvAt(
   anchor: CellRef,
   writeCell: WriteCell,
   bounds: { maxRow?: number; maxCol?: number; writeMany?: WriteMany } = {},
-): void {
-  flush(writesFromTsv(tsv, anchor, bounds), writeCell, bounds.writeMany)
+): boolean {
+  return flush(writesFromTsv(tsv, anchor, bounds), writeCell, bounds.writeMany)
 }
 
 export function pasteTsvIntoSelection(
@@ -70,13 +78,12 @@ export function pasteTsvIntoSelection(
   anchor: CellRef,
   writeCell: WriteCell,
   bounds: { maxRow?: number; maxCol?: number; writeMany?: WriteMany } = {},
-): void {
+): boolean {
   const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null
   if (!rect) {
-    pasteTsvAt(tsv, anchor, writeCell, bounds)
-    return
+    return pasteTsvAt(tsv, anchor, writeCell, bounds)
   }
-  flush(writesFromTsvToRect(tsv, rect, bounds), writeCell, bounds.writeMany)
+  return flush(writesFromTsvToRect(tsv, rect, bounds), writeCell, bounds.writeMany)
 }
 
 export function pasteAt(
@@ -89,19 +96,17 @@ export function pasteAt(
   const pasteInternal = (): boolean => {
     if (!internalClipboard) return false
     const rect = selectedIds.length > 1 ? rectFromIds(selectedIds) : null
-    flush(rect
+    return flush(rect
       ? writesFromInternalClipboardToRect(internalClipboard, rect, { maxRow, maxCol })
       : writesFromInternalClipboard(internalClipboard, p, { maxRow, maxCol }), writeCell, writeCells)
-    return true
   }
 
   return readClipboardText().then((t) => {
     if (t === null) return pasteInternal()
     if (internalClipboard && internalClipboard.text === t) return pasteInternal()
-    if (selectedIds.length > 1) pasteTsvIntoSelection(t, selectedIds, p, writeCell, { maxRow, maxCol, writeMany: writeCells })
-    else if (t.includes('\t') || t.includes('\n')) pasteTsvAt(t, p, writeCell, { maxRow, maxCol, writeMany: writeCells })
-    else writeCell(focusKey, t)
-    return true
+    if (selectedIds.length > 1) return pasteTsvIntoSelection(t, selectedIds, p, writeCell, { maxRow, maxCol, writeMany: writeCells })
+    if (t.includes('\t') || t.includes('\n')) return pasteTsvAt(t, p, writeCell, { maxRow, maxCol, writeMany: writeCells })
+    return flush([[focusKey, t]], writeCell)
   })
 }
 
@@ -111,15 +116,14 @@ export function copySingleCell(value: string): Promise<boolean> {
 
 export function cutSingleCell(value: string, key: string, writeCell: WriteCell): Promise<boolean> {
   return copySingleCell(value).then((ok) => {
-    if (ok) writeCell(key, '')
-    return ok
+    if (!ok) return false
+    return flush([[key, '']], writeCell)
   })
 }
 
 export function pasteSingleCell(key: string, writeCell: WriteCell): Promise<boolean> {
   return readClipboardText().then((text) => {
     if (text === null) return false
-    writeCell(key, text)
-    return true
+    return flush([[key, text]], writeCell)
   })
 }

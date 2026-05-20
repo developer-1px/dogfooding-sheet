@@ -1,9 +1,10 @@
 import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuPattern } from '@interactive-os/aria-kernel/patterns'
+import { runMenuItemAction, type MenuAction } from './contextMenuActions'
 
 export interface MenuItem {
   label: string
-  onClick: () => void
+  onClick: MenuAction
   disabled?: boolean
 }
 
@@ -24,7 +25,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
   const onEvent = (e: UiEvent) => {
     if (e.type === 'activate' && e.id) {
       const item = itemList.find((it) => it.id === e.id)
-      item?.action?.()
+      runMenuItemAction(item?.action)
       onClose()
     }
   }
@@ -51,7 +52,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
             {...menuitemProps(`m${i}`)}
             className="ctx-item"
             disabled={it.disabled}
-            onClick={() => { it.onClick(); onClose() }}
+            onClick={() => { runMenuItemAction(it.onClick); onClose() }}
           >
             {it.label}
           </button>

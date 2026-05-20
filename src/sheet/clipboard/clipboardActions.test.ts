@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { cellId, MAX_TSV_TEXT_LENGTH, rectToTsv } from '@spredsheet/grid'
-import { copyOrCut, cutSingleCell, pasteAt, pasteTsvAt, pasteTsvIntoSelection } from './clipboardActions'
+import { copyOrCut, cutSingleCell, pasteAt, pasteSingleCell, pasteTsvAt, pasteTsvIntoSelection } from './clipboardActions'
 
 describe('rectToTsv / pasteTsv roundtrip', () => {
   it('serializes rect to tab-separated rows', () => {
@@ -89,6 +89,20 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
     expect(writes).toEqual(['batch:A1:|B1:'])
   })
 
+  it('reports a failed cut when clearing cells throws', async () => {
+    let clipboardText = ''
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (text: string) => { clipboardText = text; return Promise.resolve() },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    })
+
+    await expect(copyOrCut([cellId('A', 0)], true, { A1: 'keep' }, () => { throw new Error('blocked') })).resolves.toBe(false)
+    expect(clipboardText).toBe('keep')
+  })
+
   it('adjusts formula references when pasting an internal copy', async () => {
     let clipboardText = ''
     Object.defineProperty(navigator, 'clipboard', {
@@ -171,5 +185,22 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
     await expect(cutSingleCell('keep', 'A1', (k, v) => { written[k] = v })).resolves.toBe(false)
 
     expect(written).toEqual({})
+  })
+
+  it('reports false when single-cell cut or paste writes fail', async () => {
+    let clipboardText = ''
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (text: string) => { clipboardText = text; return Promise.resolve() },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    })
+
+    await expect(cutSingleCell('keep', 'A1', () => { throw new Error('blocked') })).resolves.toBe(false)
+    expect(clipboardText).toBe('keep')
+
+    clipboardText = 'paste'
+    await expect(pasteSingleCell('A1', () => { throw new Error('blocked') })).resolves.toBe(false)
   })
 })
