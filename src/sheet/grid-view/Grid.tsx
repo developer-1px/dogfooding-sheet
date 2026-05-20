@@ -64,7 +64,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
     startEdit,
     isEditing: () => editing !== null,
   })
-  const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops)
+  const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops, { colCount: ctx.colLetters.length })
   const autoFitCol = (c: string) => {
     autoFit(c, Array.from({ length: ctx.rowCount }, (_, r) => ctx.display(cellKey(c, r))))
   }

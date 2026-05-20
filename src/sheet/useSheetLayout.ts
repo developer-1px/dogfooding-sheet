@@ -11,7 +11,7 @@ export interface SheetLayoutPrompts {
 const noop = () => {}
 
 export function useSheetLayout(sheet: Sheet, ops: SheetOps, prompts: SheetLayoutPrompts) {
-  const rowHeights = useRowHeights(sheet.rowHeights, ops)
+  const rowHeights = useRowHeights(sheet.rowHeights, ops, { rowCount: sheet.rowCount })
 
   return {
     rowHeightOf: rowHeights.heightOf,
@@ -23,7 +23,7 @@ export function useSheetLayout(sheet: Sheet, ops: SheetOps, prompts: SheetLayout
     promptColWidth: prompts.promptColWidth ?? noop,
     promptFilter: prompts.promptFilter ?? noop,
     setColWidth: (col: string, width: number) => {
-      setColumnWidth(ops, sheet.colWidths, col, width)
+      setColumnWidth(ops, sheet.colWidths, col, width, { colCount: sheet.colCount })
     },
   }
 }
