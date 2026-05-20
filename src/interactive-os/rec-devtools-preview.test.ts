@@ -1,15 +1,14 @@
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { DevToolsOverlay } from './DevToolsOverlay'
+import { DevToolsOverlayDev } from './DevToolsOverlayDev'
 
 describe('REC devtools overlay', () => {
-  const originalDev = import.meta.env.DEV
   let host: HTMLDivElement
   let root: ReturnType<typeof createRoot>
 
   beforeEach(() => {
-    import.meta.env.DEV = true
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true
     host = document.createElement('div')
     document.body.append(host)
     root = createRoot(host)
@@ -18,13 +17,11 @@ describe('REC devtools overlay', () => {
   afterEach(() => {
     act(() => root.unmount())
     host.remove()
-    import.meta.env.DEV = originalDev
   })
 
   it('renders a visible REC button in dev', () => {
-    act(() => root.render(createElement(DevToolsOverlay)))
+    act(() => root.render(createElement(DevToolsOverlayDev)))
 
     expect(document.querySelector<HTMLButtonElement>('.rec-devtools')?.textContent).toBe('REC')
   })
 })
-

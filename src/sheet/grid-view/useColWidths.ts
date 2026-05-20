@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react'
 import { COL_LETTERS, type SheetOps } from '../schema'
 import { upsertKey } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
+import { COLUMN_WIDTH_BOUNDS, clampResizeValue, storedResizeValue } from './resizeRules'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 export const DEFAULT_WIDTH = 100
-export const MIN_WIDTH = 40
+export const MIN_WIDTH = COLUMN_WIDTH_BOUNDS.min
+export const MAX_WIDTH = COLUMN_WIDTH_BOUNDS.max
 
 export const storedColumnWidth = (width: number): number | undefined => {
-  const normalized = Number.isFinite(width) ? Math.max(MIN_WIDTH, Math.round(width)) : DEFAULT_WIDTH
+  const normalized = Number.isFinite(width) ? storedResizeValue(width, COLUMN_WIDTH_BOUNDS) : DEFAULT_WIDTH
   return normalized === DEFAULT_WIDTH ? undefined : normalized
 }
 
@@ -41,7 +43,7 @@ export function useColWidths(widths: Record<string, number>, ops: SheetOps) {
       const w = Math.ceil(ctx.measureText(s).width) + 16
       if (w > max) max = w
     }
-    setColumnWidth(ops, widths, col, Math.min(400, max))
+    setColumnWidth(ops, widths, col, clampResizeValue(max, COLUMN_WIDTH_BOUNDS))
   }
 
   const widthOf = (col: string) =>

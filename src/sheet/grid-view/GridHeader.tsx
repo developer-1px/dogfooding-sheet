@@ -1,6 +1,7 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { colIndex } from '../schema'
 import { selectAllHeaders, selectColumnHeader } from './headerSelection'
+import { COLUMN_WIDTH_BOUNDS, resizeValueForKey } from './resizeRules'
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 
 interface Props {
@@ -37,12 +38,9 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
     initial: () => widthOf(col),
     onChange: (w) => onResize(col, w),
     onEnd: (w) => onResizeEnd(col, w),
-    min: 40,
-    max: 400,
+    min: COLUMN_WIDTH_BOUNDS.min,
+    max: COLUMN_WIDTH_BOUNDS.max,
   })
-  const resizeBy = (delta: number) => {
-    onResizeEnd(col, Math.max(40, Math.min(400, widthOf(col) + delta)))
-  }
   return (
     <span
       className="col-resizer col-resize"
@@ -51,12 +49,14 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
       tabIndex={0}
       aria-label={`${col}열 너비 조정`}
       aria-orientation="vertical"
-      aria-valuemin={40}
-      aria-valuemax={400}
+      aria-valuemin={COLUMN_WIDTH_BOUNDS.min}
+      aria-valuemax={COLUMN_WIDTH_BOUNDS.max}
       aria-valuenow={Math.round(width)}
       onKeyDown={(e) => {
-        if (e.key === 'ArrowLeft') { e.preventDefault(); resizeBy(e.shiftKey ? -50 : -10) }
-        else if (e.key === 'ArrowRight') { e.preventDefault(); resizeBy(e.shiftKey ? 50 : 10) }
+        const next = resizeValueForKey(widthOf(col), e.key, e.shiftKey, 'x', COLUMN_WIDTH_BOUNDS)
+        if (next === null) return
+        e.preventDefault()
+        onResizeEnd(col, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }}
       title="드래그로 너비 조정 / ← → 키로 조정 / 더블클릭 자동 맞춤"

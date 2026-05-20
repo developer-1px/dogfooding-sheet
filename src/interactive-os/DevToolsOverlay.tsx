@@ -1,17 +1,22 @@
-import { interactiveOsPackages } from './packageCatalog'
-import { RecDevToolsOverlay } from './RecDevToolsOverlay'
-import './devtools.css'
+import { useEffect, useState } from 'react'
+
+type DevToolsOverlayDevComponent = typeof import('./DevToolsOverlayDev').DevToolsOverlayDev
+const loadDevToolsOverlayDev = import.meta.env.MODE === 'development'
+  ? () => import('./DevToolsOverlayDev')
+  : null
 
 export function DevToolsOverlay() {
-  if (!import.meta.env.DEV) return null
-  return (
-    <>
-      <span
-        hidden
-        data-interactive-os-packages={interactiveOsPackages.length}
-        data-interactive-os-devtools="linked"
-      />
-      <RecDevToolsOverlay />
-    </>
-  )
+  const [DevToolsOverlayDev, setDevToolsOverlayDev] = useState<DevToolsOverlayDevComponent | null>(null)
+
+  useEffect(() => {
+    if (!loadDevToolsOverlayDev) return
+    let cancelled = false
+    loadDevToolsOverlayDev().then((module) => {
+      if (!cancelled) setDevToolsOverlayDev(() => module.DevToolsOverlayDev)
+    })
+    return () => { cancelled = true }
+  }, [])
+
+  if (!loadDevToolsOverlayDev || !DevToolsOverlayDev) return null
+  return <DevToolsOverlayDev />
 }

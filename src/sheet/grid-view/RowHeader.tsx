@@ -1,5 +1,6 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { selectRowHeader } from './headerSelection'
+import { ROW_HEIGHT_BOUNDS, resizeValueForKey } from './resizeRules'
 
 interface Props {
   rIdx: number
@@ -26,11 +27,8 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
     initial: () => heightOf(rIdx),
     onChange: (h) => onResize(rIdx, h),
     onEnd: (h) => onResizeEnd(rIdx, h),
-    min: 18,
+    min: ROW_HEIGHT_BOUNDS.min,
   })
-  const resizeBy = (delta: number) => {
-    onResizeEnd(rIdx, Math.max(18, heightOf(rIdx) + delta))
-  }
   return (
     <span
       className="row-resizer row-resize"
@@ -39,11 +37,13 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
       tabIndex={0}
       aria-label={`${rIdx + 1}행 높이 조정`}
       aria-orientation="horizontal"
-      aria-valuemin={18}
+      aria-valuemin={ROW_HEIGHT_BOUNDS.min}
       aria-valuenow={Math.round(height)}
       onKeyDown={(e) => {
-        if (e.key === 'ArrowUp') { e.preventDefault(); resizeBy(e.shiftKey ? -50 : -10) }
-        else if (e.key === 'ArrowDown') { e.preventDefault(); resizeBy(e.shiftKey ? 50 : 10) }
+        const next = resizeValueForKey(heightOf(rIdx), e.key, e.shiftKey, 'y', ROW_HEIGHT_BOUNDS)
+        if (next === null) return
+        e.preventDefault()
+        onResizeEnd(rIdx, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }}
       title="드래그=높이 조정 / ↑ ↓ 키로 조정 / 더블클릭=기본값 복원"
