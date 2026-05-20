@@ -1,12 +1,10 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useSheet, type SheetCtx } from './sheet/useSheet'
-import { DEFAULT_HEIGHT } from './sheet/grid-view/useRowHeights'
-import { DEFAULT_WIDTH } from './sheet/grid-view/useColWidths'
 import { FormulaBar } from './sheet/FormulaBar'
 import { Grid } from './sheet/grid-view/Grid'
 import { StatusBar } from './sheet/StatusBar'
 import { parseCellId } from './sheet/schema'
-import { gotoCell, selectionAddress } from './sheet/selection/gotoCell'
+import { selectionAddress } from './sheet/selection/gotoCell'
 import { Find } from './sheet/find/Find'
 import { HelpDialog } from './sheet/HelpDialog'
 import { usePrompt } from './sheet/usePrompt'
@@ -14,48 +12,17 @@ import { useConfirm } from './sheet/useConfirm'
 import { Tabs } from './sheet/tabs/Tabs'
 import { buildMergeMap } from './sheet/structure/useMerges'
 import { SheetToolbar } from './sheet/SheetToolbar'
+import { useSheetPromptActions } from './sheet/sheetPromptActions'
 import { DevToolsOverlay } from './interactive-os/DevToolsOverlay'
 import './App.css'
-
-const GOTO_PROMPT = { label: '이동할 셀 또는 범위 (예: B5, A1:C3, B:B, 2:2)', placeholder: 'B5 또는 B:B', submitLabel: '이동' }
 
 export default function App() {
   const { ask, dialog: promptDialog } = usePrompt()
   const { confirm, dialog: confirmDialog } = useConfirm()
   const ctxRef = useRef<SheetCtx | null>(null)
-  const ctx = useSheet({
-    openGoto: () => ask(GOTO_PROMPT)
-      .then((v) => {
-        const c = ctxRef.current
-        if (v && c) gotoCell(v, c.setFocusId, c.setSelectedIds, { rowCount: c.rowCount, colCount: c.colCount }, c.setSelectAnchor)
-      }),
-    openNote: (key?: string) => {
-      const c = ctxRef.current; const k = key ?? c?.focusKey; if (!c || !k) return
-      ask({ label: '셀 노트', initial: c.noteOf(k) ?? '', submitLabel: '저장' })
-        .then((v) => { if (v !== null) ctxRef.current?.setNote(k, v) })
-    },
-    openLink: () => {
-      const c = ctxRef.current; const k = c?.focusKey; if (!c || !k) return
-      ask({ label: '하이퍼링크 URL', placeholder: 'https://...', submitLabel: '삽입' })
-        .then((url) => { if (url) c.writeCell(k, `=HYPERLINK("${url.replace(/"/g, '\\"')}", "${url.replace(/"/g, '\\"')}")`) })
-    },
-    promptRowHeight: (row: number) => {
-      const c = ctxRef.current; if (!c) return
-      ask({ label: `${row + 1}행 높이 (px, 비우면 기본값)`, initial: String(c.rowHeightOf(row)), submitLabel: '적용' })
-        .then((v) => { if (v === null) return; const n = Number(v); if (v === '' || !Number.isFinite(n)) c.setRowHeight(row, DEFAULT_HEIGHT); else c.setRowHeight(row, n) })
-    },
-    promptColWidth: (col: string) => {
-      const c = ctxRef.current; if (!c) return
-      const cur = c.sheet.colWidths[col] ?? DEFAULT_WIDTH
-      ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' })
-        .then((v) => { if (v === null) return; const n = Number(v); c.setColWidth(col, (v === '' || !Number.isFinite(n)) ? DEFAULT_WIDTH : n) })
-    },
-    promptFilter: (col: string) => {
-      const c = ctxRef.current; if (!c) return
-      ask({ label: `${col}열 필터 조건`, initial: c.filter?.col === col ? c.filter.text : '', submitLabel: '필터' })
-        .then((v) => { if (v === null) return; if (v === '') c.clearFilter(); else c.applyFilter(col, v) })
-    },
-  })
+  const getCtx = useCallback(() => ctxRef.current, [])
+  const promptActions = useSheetPromptActions(ask, getCtx)
+  const ctx = useSheet(promptActions)
   useEffect(() => { ctxRef.current = ctx }, [ctx])
   const rawValue = ctx.focusKey ? ctx.sheet.cells[ctx.focusKey] ?? '' : ''
   const addr = selectionAddress(ctx.selectedIds, ctx.focusKey, ctx.rowCount, ctx.colLetters)
@@ -64,7 +31,7 @@ export default function App() {
     <div className="sheet-app">
       <FormulaBar
         addr={addr}
-        onAddrClick={() => ask(GOTO_PROMPT).then((v) => { if (v) gotoCell(v, ctx.setFocusId, ctx.setSelectedIds, { rowCount: ctx.rowCount, colCount: ctx.colCount }, ctx.setSelectAnchor) })}
+        onAddrClick={promptActions.openGoto}
         value={rawValue}
         onCommit={(v) => ctx.focusKey && ctx.writeCell(ctx.focusKey, v)}
         onUndo={() => ctx.ops.undo()}

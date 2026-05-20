@@ -23,7 +23,7 @@ import { useSheetLayout, type SheetLayoutPrompts } from './useSheetLayout'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
-interface SheetOptions extends SheetLayoutPrompts {
+export interface SheetOptions extends SheetLayoutPrompts {
   openGoto?: () => void
   openNote?: (key?: string) => void
   openLink?: () => void

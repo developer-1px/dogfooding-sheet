@@ -41,44 +41,45 @@ export function cellMenuItems(a: CellMenuActions, cellId: string, kind: CellMenu
   const p = parseCellId(cellId)
   if (!p) return []
 
-  const row = p.row
-  const col = p.col
-  const key = cellKey(col, row)
-  const colPosition = colIndex(col) + 1
-  const rowRevealItems: CellMenuEntry[] = rowRestoreControls(row, a.hiddenRows)
-    .map((control) => ({ label: control.label, onClick: () => a.showRow(control.row) }))
-  const colRevealItems: CellMenuEntry[] = columnRestoreControls(col, a.colLetters, a.hiddenCols)
-    .map((control) => ({ label: control.label, onClick: () => a.showCol(control.col) }))
+  if (kind === 'row') return rowMenuItems(a, p.row)
+  if (kind === 'col') return colMenuItems(a, p.col)
+  return cellMenuItemsForAddress(a, p.row, p.col)
+}
 
-  if (kind === 'row') return [
+function rowMenuItems(a: CellMenuActions, row: number): CellMenuEntry[] {
+  return [
     { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
     { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
     { label: '행 삭제', onClick: () => a.deleteRow(row) },
     { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
-    ...rowRevealItems,
+    ...rowRevealItems(a, row),
     { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
     'separator',
-    { label: a.freeze.rows === row + 1 ? '행 고정 해제' : `${row + 1}행까지 고정`, onClick: () => a.setFreezeRows(a.freeze.rows === row + 1 ? 0 : row + 1) },
+    rowFreezeItem(a, row),
     { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
   ]
+}
 
-  if (kind === 'col') return [
+function colMenuItems(a: CellMenuActions, col: string): CellMenuEntry[] {
+  return [
     { label: `${col}열 왼쪽에 삽입`, onClick: () => a.insertCol(col) },
     { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
     { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
-    ...colRevealItems,
-    { label: a.filterCol === col ? '필터 수정…' : '필터 적용…', onClick: () => a.promptFilter(col) },
-    ...(a.filterCol === col ? [{ label: '필터 해제', onClick: a.clearFilter }] : []),
+    ...colRevealItems(a, col),
+    ...colFilterItems(a, col),
     { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
     'separator',
-    { label: a.freeze.cols === colPosition ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colPosition ? 0 : colPosition) },
+    colFreezeItem(a, col),
     { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
     'separator',
-    { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
-    { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },
+    ...colSortItems(a, col),
   ]
+}
 
+function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): CellMenuEntry[] {
+  const key = cellKey(col, row)
   const note = a.noteOf(key)
+
   return [
     { label: '잘라내기', onClick: () => cutSingleCell(a.sheet.cells[key] ?? '', key, a.writeCell) },
     { label: '복사', onClick: () => copySingleCell(a.sheet.cells[key] ?? '') },
@@ -98,11 +99,52 @@ export function cellMenuItems(a: CellMenuActions, cellId: string, kind: CellMenu
     { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
     { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
     { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
-    { label: a.freeze.rows === row + 1 ? '행 고정 해제' : `${row + 1}행까지 고정`, onClick: () => a.setFreezeRows(a.freeze.rows === row + 1 ? 0 : row + 1) },
-    { label: a.freeze.cols === colPosition ? '열 고정 해제' : `${col}열까지 고정`, onClick: () => a.setFreezeCols(a.freeze.cols === colPosition ? 0 : colPosition) },
+    rowFreezeItem(a, row),
+    colFreezeItem(a, col),
     { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
     'separator',
+    ...colSortItems(a, col),
+  ]
+}
+
+function rowRevealItems(a: CellMenuActions, row: number): CellMenuEntry[] {
+  return rowRestoreControls(row, a.hiddenRows)
+    .map((control) => ({ label: control.label, onClick: () => a.showRow(control.row) }))
+}
+
+function colRevealItems(a: CellMenuActions, col: string): CellMenuEntry[] {
+  return columnRestoreControls(col, a.colLetters, a.hiddenCols)
+    .map((control) => ({ label: control.label, onClick: () => a.showCol(control.col) }))
+}
+
+function colFilterItems(a: CellMenuActions, col: string): CellMenuEntry[] {
+  return [
+    { label: a.filterCol === col ? '필터 수정…' : '필터 적용…', onClick: () => a.promptFilter(col) },
+    ...(a.filterCol === col ? [{ label: '필터 해제', onClick: a.clearFilter }] : []),
+  ]
+}
+
+function colSortItems(a: CellMenuActions, col: string): CellMenuEntry[] {
+  return [
     { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
     { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },
   ]
+}
+
+function rowFreezeItem(a: CellMenuActions, row: number): MenuItem {
+  const freezeRows = row + 1
+  const isFrozen = a.freeze.rows === freezeRows
+  return {
+    label: isFrozen ? '행 고정 해제' : `${freezeRows}행까지 고정`,
+    onClick: () => a.setFreezeRows(isFrozen ? 0 : freezeRows),
+  }
+}
+
+function colFreezeItem(a: CellMenuActions, col: string): MenuItem {
+  const colPosition = colIndex(col) + 1
+  const isFrozen = a.freeze.cols === colPosition
+  return {
+    label: isFrozen ? '열 고정 해제' : `${col}열까지 고정`,
+    onClick: () => a.setFreezeCols(isFrozen ? 0 : colPosition),
+  }
 }

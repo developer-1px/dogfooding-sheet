@@ -74,8 +74,10 @@ describe('cellMenuItems', () => {
     expect(labels(items)).toContain('필터 해제')
     expect(labels(items)).toContain('열 고정 해제')
     item(items, 'A열 숨김 표시').onClick()
+    item(items, '필터 해제').onClick()
     item(items, '열 고정 해제').onClick()
-    expect(calls).toEqual(['showCol:A', 'setFreezeCols:0'])
+    item(items, 'B 내림차순 정렬').onClick()
+    expect(calls).toEqual(['showCol:A', 'clearFilter', 'setFreezeCols:0', 'sortByCol:B:desc'])
   })
 
   it('builds cell items from address, note, structure, freeze, and sort state', () => {
@@ -91,7 +93,8 @@ describe('cellMenuItems', () => {
     expect(labels(items)).toContain('B열까지 고정')
     item(items, '지우기').onClick()
     item(items, '노트 삭제').onClick()
-    expect(calls).toEqual(['writeCell:B2:', 'setNote:B2:'])
+    item(items, 'B 오름차순 정렬').onClick()
+    expect(calls).toEqual(['writeCell:B2:', 'setNote:B2:', 'sortByCol:B:asc'])
   })
 
   it('returns no items for an invalid cell id', () => {
