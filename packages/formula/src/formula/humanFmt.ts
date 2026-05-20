@@ -1,4 +1,5 @@
 import { wrap } from './marker'
+import { boundedLength, boundedRepeat } from './textLimit'
 
 export function dispatchHumanFmt(F: string, argsT: string[]): string | null {
   if (F === 'STARS') {
@@ -7,9 +8,12 @@ export function dispatchHumanFmt(F: string, argsT: string[]): string | null {
   }
   if (F === 'PROGRESSBAR') {
     const pct = Math.max(0, Math.min(100, Number(argsT[0])))
-    const len = Math.floor(Number(argsT[1] ?? '20'))
+    const len = boundedLength(Number(argsT[1] ?? '20'))
+    if (len === null) return wrap('#VALUE!')
     const filled = Math.round(pct / 100 * len)
-    return wrap('█'.repeat(filled) + '░'.repeat(len - filled))
+    const done = boundedRepeat('█', filled)
+    const todo = boundedRepeat('░', len - filled)
+    return wrap(done === null || todo === null ? '#VALUE!' : done + todo)
   }
   if (F === 'KORNUM') {
     const n = Number(argsT[0])

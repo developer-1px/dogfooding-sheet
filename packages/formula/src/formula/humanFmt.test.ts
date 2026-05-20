@@ -16,6 +16,7 @@ describe('human fmt', () => {
     expect(evaluateCell({}, '=STARS(3)')).toBe('★★★☆☆')
     expect(evaluateCell({}, '=STARS(0)')).toBe('☆☆☆☆☆')
     expect(evaluateCell({}, '=PROGRESSBAR(50, 4)')).toBe('██░░')
+    expect(evaluateCell({}, '=PROGRESSBAR(50, 1000000000)')).toBe('#VALUE!')
   })
 
   it('KORNUM formats with 만/억/조', () => {

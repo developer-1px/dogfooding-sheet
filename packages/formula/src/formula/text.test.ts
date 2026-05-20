@@ -159,6 +159,12 @@ describe('text functions', () => {
   it('REPT repeats text', () => {
     expect(evaluateCell({}, '=REPT("ab", 3)')).toBe('ababab')
   })
+  it('caps generated text length', () => {
+    expect(evaluateCell({}, '=REPT("x", 1000000000)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=LPAD("x", 1000000000, "0")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=RPAD("x", 1000000000, "0")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=RANDSTRING(1000000000)')).toBe('#VALUE!')
+  })
   it('SLUG / CAMELCASE / SNAKECASE', () => {
     expect(evaluateCell({}, '=SLUG("Hello World!")')).toBe('hello-world')
     expect(evaluateCell({}, '=CAMELCASE("hello world")')).toBe('helloWorld')

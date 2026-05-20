@@ -1,4 +1,5 @@
 import { wrap } from './marker'
+import { boundedLength, boundedPadEnd, boundedPadStart, boundedRepeat } from './textLimit'
 
 /** Small text utilities: word/line/char counts, padding, slicing, transforms. */
 export function dispatchTextOps(F: string, argsT: string[]): string | null {
@@ -20,11 +21,13 @@ export function dispatchTextOps(F: string, argsT: string[]): string | null {
     const s = argsT[0] ?? '', show = Math.max(0, Math.floor(Number(argsT[1] ?? '4')))
     const ch = argsT[2] || '*'
     const hide = Math.max(0, s.length - show)
-    return wrap(ch.repeat(hide) + s.slice(hide))
+    const mask = boundedRepeat(ch, hide)
+    return wrap(mask === null ? '#VALUE!' : mask + s.slice(hide))
   }
   if (F === 'ROT13') return wrap((argsT[0] ?? '').replace(/[A-Za-z]/g, (c) => String.fromCharCode(c.charCodeAt(0) + (c.toLowerCase() < 'n' ? 13 : -13))))
   if (F === 'RANDSTRING') {
-    const n = Math.max(0, Math.floor(Number(argsT[0] ?? '8')))
+    const n = boundedLength(Number(argsT[0] ?? '8'))
+    if (n === null) return wrap('#VALUE!')
     const cs = argsT[1] || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let s = ''
     for (let i = 0; i < n; i++) s += cs[Math.floor(Math.random() * cs.length)]
@@ -48,9 +51,9 @@ export function dispatchTextOps(F: string, argsT: string[]): string | null {
     while ((i = h.indexOf(n, i)) >= 0) { c++; i += n.length }
     return String(c)
   }
-  if (F === 'LPAD') return wrap(argsT[0].padStart(Number(argsT[1] ?? '0'), argsT[2] || ' '))
-  if (F === 'RPAD') return wrap(argsT[0].padEnd(Number(argsT[1] ?? '0'), argsT[2] || ' '))
+  if (F === 'LPAD') return wrap(boundedPadStart(argsT[0], Number(argsT[1] ?? '0'), argsT[2] || ' ') ?? '#VALUE!')
+  if (F === 'RPAD') return wrap(boundedPadEnd(argsT[0], Number(argsT[1] ?? '0'), argsT[2] || ' ') ?? '#VALUE!')
   if (F === 'REVERSE') return wrap([...argsT[0]].reverse().join(''))
-  if (F === 'REPT') return wrap(argsT[0].repeat(Math.max(0, Number(argsT[1] ?? '0'))))
+  if (F === 'REPT') return wrap(boundedRepeat(argsT[0], Number(argsT[1] ?? '0')) ?? '#VALUE!')
   return null
 }

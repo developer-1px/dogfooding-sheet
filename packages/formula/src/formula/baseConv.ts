@@ -1,10 +1,11 @@
 import { wrap } from './marker'
+import { boundedPadStart } from './textLimit'
 
 export function dispatchBaseConv(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'BASE') {
     const [n, base, minLen = 0] = argsN
     if (base < 2 || base > 36) return wrap('#NUM!')
-    return wrap(Math.floor(n).toString(base).toUpperCase().padStart(minLen, '0'))
+    return wrap(boundedPadStart(Math.floor(n).toString(base).toUpperCase(), minLen, '0') ?? '#VALUE!')
   }
   if (F === 'DECIMAL') { const n = parseInt(argsT[0] ?? '', argsN[1]); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
   if (F === 'HEX2DEC') { const n = parseInt(argsT[0] ?? '', 16); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }

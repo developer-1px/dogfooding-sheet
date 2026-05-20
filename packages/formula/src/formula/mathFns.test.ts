@@ -116,6 +116,7 @@ describe('math functions', () => {
   it('BASE / DECIMAL / HEX2DEC / DEC2HEX / BIN2DEC / DEC2BIN', () => {
     expect(evaluateCell({}, '=BASE(255, 16)')).toBe('FF')
     expect(evaluateCell({}, '=BASE(7, 2, 4)')).toBe('0111')
+    expect(evaluateCell({}, '=BASE(7, 2, 1000000000)')).toBe('#VALUE!')
     expect(evaluateCell({}, '=DECIMAL("FF", 16)')).toBe('255')
     expect(evaluateCell({}, '=HEX2DEC("1A")')).toBe('26')
     expect(evaluateCell({}, '=DEC2HEX(26)')).toBe('1A')
