@@ -132,27 +132,39 @@ const asRecord = (value: unknown): Record<string, unknown> =>
 const asArray = (value: unknown): unknown[] =>
   Array.isArray(value) ? value : []
 
-const parsedRecord = <T>(value: unknown, schema: z.ZodType<T>): Record<string, T> =>
-  Object.fromEntries(Object.entries(asRecord(value)).flatMap(([key, raw]) => {
+const parsedRecord = <T>(value: unknown, schema: z.ZodType<T>): Record<string, T> => {
+  const out: Record<string, T> = {}
+  for (const [key, raw] of Object.entries(asRecord(value))) {
     const parsed = schema.safeParse(raw)
-    return parsed.success ? [[key, parsed.data]] : []
-  }))
+    if (parsed.success) out[key] = parsed.data
+  }
+  return out
+}
 
-const parsedArray = <T>(value: unknown, schema: z.ZodType<T>): T[] =>
-  asArray(value).flatMap((raw) => {
+const parsedArray = <T>(value: unknown, schema: z.ZodType<T>): T[] => {
+  const out: T[] = []
+  for (const raw of asArray(value)) {
     const parsed = schema.safeParse(raw)
-    return parsed.success ? [parsed.data] : []
-  })
+    if (parsed.success) out.push(parsed.data)
+  }
+  return out
+}
 
-const stringRecord = (value: unknown): Record<string, string> =>
-  Object.fromEntries(Object.entries(asRecord(value)).flatMap(([key, raw]) =>
-    typeof raw === 'string' ? [[key, raw]] : [],
-  ))
+const stringRecord = (value: unknown): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const [key, raw] of Object.entries(asRecord(value))) {
+    if (typeof raw === 'string') out[key] = raw
+  }
+  return out
+}
 
-const numberRecord = (value: unknown): Record<string, number> =>
-  Object.fromEntries(Object.entries(asRecord(value)).flatMap(([key, raw]) =>
-    typeof raw === 'number' && Number.isFinite(raw) ? [[key, raw]] : [],
-  ))
+const numberRecord = (value: unknown): Record<string, number> => {
+  const out: Record<string, number> = {}
+  for (const [key, raw] of Object.entries(asRecord(value))) {
+    if (typeof raw === 'number' && Number.isFinite(raw)) out[key] = raw
+  }
+  return out
+}
 
 const boundedRawCount = (value: unknown, max: number): number =>
   typeof value === 'number' && Number.isInteger(value) && value >= 0 ? Math.min(value, max) : 0
@@ -230,12 +242,15 @@ const sanitizeCellScopedRecord = <V>(
   record: Record<string, V>,
   bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>,
   normalize: (value: V) => V | undefined = (value) => value,
-): Record<string, V> =>
-  Object.fromEntries(Object.entries(record).flatMap(([key, value]) => {
-    if (!isCellKeyInBounds(key, bundle)) return []
+): Record<string, V> => {
+  const out: Record<string, V> = {}
+  for (const [key, value] of Object.entries(record)) {
+    if (!isCellKeyInBounds(key, bundle)) continue
     const next = normalize(value)
-    return next === undefined ? [] : [[key, next]]
-  }))
+    if (next !== undefined) out[key] = next
+  }
+  return out
+}
 
 export const normalizeValidationOptions = (values: readonly unknown[]): string[] => {
   const out: string[] = []
@@ -272,25 +287,38 @@ const sanitizeCondFormat = (
   return [...byCol.values()]
 }
 
-const sanitizeHidden = (hidden: RawTabBundle['hidden'], bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>): RawTabBundle['hidden'] => ({
-  rows: [...new Set(hidden.rows.filter((row) => isRowInBounds(row, bundle.rowCount)))].sort((a, b) => a - b),
-  cols: [...new Set(hidden.cols.filter((col) => isColInBounds(col, bundle.colCount)))],
-})
+const sanitizeHidden = (hidden: RawTabBundle['hidden'], bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>): RawTabBundle['hidden'] => {
+  const rows = new Set<number>()
+  const cols = new Set<string>()
+  for (const row of hidden.rows) {
+    if (isRowInBounds(row, bundle.rowCount)) rows.add(row)
+  }
+  for (const col of hidden.cols) {
+    if (isColInBounds(col, bundle.colCount)) cols.add(col)
+  }
+  return { rows: [...rows].sort((a, b) => a - b), cols: [...cols] }
+}
 
-const sanitizeColWidths = (widths: RawTabBundle['colWidths'], bundle: Pick<RawTabBundle, 'colCount'>): RawTabBundle['colWidths'] =>
-  Object.fromEntries(Object.entries(widths).flatMap(([col, width]) =>
-    isColInBounds(col, bundle.colCount) && Number.isFinite(width)
-      ? [[col, storedResizeValue(width, COLUMN_WIDTH_BOUNDS)]]
-      : [],
-  ))
+const sanitizeColWidths = (widths: RawTabBundle['colWidths'], bundle: Pick<RawTabBundle, 'colCount'>): RawTabBundle['colWidths'] => {
+  const out: RawTabBundle['colWidths'] = {}
+  for (const [col, width] of Object.entries(widths)) {
+    if (isColInBounds(col, bundle.colCount) && Number.isFinite(width)) {
+      out[col] = storedResizeValue(width, COLUMN_WIDTH_BOUNDS)
+    }
+  }
+  return out
+}
 
-const sanitizeRowHeights = (heights: RawTabBundle['rowHeights'], bundle: Pick<RawTabBundle, 'rowCount'>): RawTabBundle['rowHeights'] =>
-  Object.fromEntries(Object.entries(heights).flatMap(([rowKey, height]) => {
+const sanitizeRowHeights = (heights: RawTabBundle['rowHeights'], bundle: Pick<RawTabBundle, 'rowCount'>): RawTabBundle['rowHeights'] => {
+  const out: RawTabBundle['rowHeights'] = {}
+  for (const [rowKey, height] of Object.entries(heights)) {
     const row = /^\d+$/.test(rowKey) ? Number(rowKey) : NaN
-    return isRowInBounds(row, bundle.rowCount) && Number.isFinite(height)
-      ? [[rowKey, storedResizeValue(height, ROW_HEIGHT_BOUNDS)]]
-      : []
-  }))
+    if (isRowInBounds(row, bundle.rowCount) && Number.isFinite(height)) {
+      out[rowKey] = storedResizeValue(height, ROW_HEIGHT_BOUNDS)
+    }
+  }
+  return out
+}
 
 const sanitizeMerges = (merges: RawTabBundle['merges'], bundle: Pick<RawTabBundle, 'rowCount' | 'colCount'>): RawTabBundle['merges'] =>
   normalizeMergeList(merges, bundle)

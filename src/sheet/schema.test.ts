@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_SHEET_NAME_LENGTH, MAX_SHEET_TABS, SheetSchema, blankBundle, cloneBundle, initialSheet } from './schema'
+import { MAX_ROW_COUNT, MAX_SHEET_NAME_LENGTH, MAX_SHEET_TABS, SheetSchema, blankBundle, cloneBundle, initialSheet } from './schema'
 import { MAX_CELL_TEXT_LENGTH } from './cellValue'
 
 describe('SheetSchema', () => {
@@ -169,6 +169,37 @@ describe('SheetSchema', () => {
     expect(parsed.colWidths).toEqual({ A: 120 })
     expect(parsed.rowHeights).toEqual({ '1': 44 })
     expect(parsed.merges).toEqual([[0, 0, 0, 1]])
+  })
+
+  it('sanitizes larger persisted records without expanding discard lists', () => {
+    const cells = Object.fromEntries(Array.from({ length: MAX_ROW_COUNT + 500 }, (_unused, row) => [`A${row + 1}`, String(row + 1)]))
+    const rowHeights = Object.fromEntries(Array.from({ length: MAX_ROW_COUNT + 500 }, (_unused, row) => [String(row), 24]))
+    const hiddenRows = Array.from({ length: MAX_ROW_COUNT * 2 }, (_unused, row) => row % (MAX_ROW_COUNT + 200))
+
+    const parsed = SheetSchema.parse({
+      ...initialSheet,
+      rowCount: MAX_ROW_COUNT,
+      colCount: 2,
+      cells,
+      hidden: {
+        rows: hiddenRows,
+        cols: ['A', 'B', 'C', 'A'],
+      },
+      rowHeights,
+      colWidths: { A: 120, B: 80, C: 90 },
+    })
+
+    expect(Object.keys(parsed.cells)).toHaveLength(MAX_ROW_COUNT)
+    expect(parsed.cells.A1).toBe('1')
+    expect(parsed.cells.A1000).toBe('1000')
+    expect(parsed.cells.A1001).toBeUndefined()
+    expect(parsed.hidden.rows).toHaveLength(MAX_ROW_COUNT)
+    expect(parsed.hidden.rows[0]).toBe(0)
+    expect(parsed.hidden.rows[MAX_ROW_COUNT - 1]).toBe(MAX_ROW_COUNT - 1)
+    expect(parsed.hidden.cols).toEqual(['A', 'B'])
+    expect(Object.keys(parsed.rowHeights)).toHaveLength(MAX_ROW_COUNT)
+    expect(parsed.rowHeights['1000']).toBeUndefined()
+    expect(parsed.colWidths).toEqual({ A: 120, B: 80 })
   })
 
   it('normalizes persisted overlapping merges with the latest merge winning', () => {
