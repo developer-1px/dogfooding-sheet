@@ -79,8 +79,9 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
   const fill = useFillHandleGesture({
     equals: rectEq,
     onCommit: (src, tgt) => {
-      applyFill(src, tgt, cells, writeCell, writeCells)
-      setSelectedIds(idsInFillTarget(tgt, colLetters))
+      if (applyFill(src, tgt, cells, writeCell, writeCells)) {
+        setSelectedIds(idsInFillTarget(tgt, colLetters))
+      }
     },
     onEnd: () => {
       sourceRef.current = null

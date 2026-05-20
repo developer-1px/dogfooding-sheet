@@ -70,4 +70,38 @@ describe('useAutoFill', () => {
 
     expect(activeMouseup.size).toBe(0)
   })
+
+  it('does not move the selection when fill writes fail', () => {
+    const selected: string[][] = []
+
+    function Harness() {
+      const fill = useAutoFill({
+        selectedIds: [],
+        focusId: cellId('A', 0),
+        cells: { A1: '1' },
+        writeCell: () => { throw new Error('blocked') },
+        setSelectedIds: (ids) => { selected.push(ids) },
+        rowCount: 3,
+        colLetters: ['A'],
+      })
+      return createElement('div', null,
+        createElement('button', { className: 'handle', onMouseDown: fill.onHandleMouseDown }, 'fill'),
+        createElement('button', { className: 'target', onMouseEnter: () => fill.onCellEnterDuringFill(cellId('A', 1)) }, 'target'),
+      )
+    }
+
+    act(() => root!.render(createElement(Harness)))
+    const handle = document.querySelector<HTMLButtonElement>('.handle')
+    const target = document.querySelector<HTMLButtonElement>('.target')
+    expect(handle).not.toBeNull()
+    expect(target).not.toBeNull()
+
+    act(() => {
+      handle!.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+      target!.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
+      window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+    })
+
+    expect(selected).toEqual([])
+  })
 })

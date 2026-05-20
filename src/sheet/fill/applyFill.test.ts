@@ -35,4 +35,13 @@ describe('applyFill', () => {
     expect(writes.C1).toBe('30')
     expect(writes.D1).toBe('40')
   })
+
+  it('reports write failures without throwing', () => {
+    expect(applyFill(
+      { rMin: 0, rMax: 0, cMin: 0, cMax: 0 },
+      { rMin: 0, rMax: 1, cMin: 0, cMax: 0 },
+      { A1: 'x' },
+      () => { throw new Error('blocked') },
+    )).toBe(false)
+  })
 })

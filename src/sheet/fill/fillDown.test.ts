@@ -19,4 +19,9 @@ describe('fillDown', () => {
     fillRight(['r0-A', 'r0-B', 'r0-C', 'r1-A', 'r1-B', 'r1-C'], cells, (k, v) => { writes[k] = v })
     expect(writes).toEqual({ B1: 'x', C1: 'x', B2: 'y', C2: 'y' })
   })
+
+  it('reports write failures without throwing', () => {
+    expect(fillDown(['r0-A', 'r1-A'], { A1: 'x' }, () => { throw new Error('blocked') })).toBe(false)
+    expect(fillRight(['r0-A', 'r0-B'], { A1: 'x' }, () => {}, () => { throw new Error('blocked') })).toBe(false)
+  })
 })

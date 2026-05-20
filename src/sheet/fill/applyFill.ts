@@ -6,8 +6,13 @@ export function applyFill(
   cells: Cells,
   write: WriteCell,
   writeMany?: WriteMany,
-) {
+): boolean {
   const writes: Writes = applyFillWrites(src, tgt, cells)
-  if (writes.length === 0) return
-  if (writeMany) writeMany(writes); else for (const [k, v] of writes) write(k, v)
+  try {
+    if (writes.length === 0) return true
+    if (writeMany) writeMany(writes); else for (const [k, v] of writes) write(k, v)
+    return true
+  } catch {
+    return false
+  }
 }
