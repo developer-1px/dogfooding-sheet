@@ -1,52 +1,48 @@
 import { Toolbar } from './Toolbar'
 import type { Ask } from './usePrompt'
 import type { Confirm } from './useConfirm'
-import type { SheetCtx } from './useSheet'
+import type { Display, Sheet, SheetOps, WriteCell, WriteMany } from './schema'
+import type { Format, FormatLookup } from './formatting/useFormats'
+import type { CellStyle, StyleLookup } from './formatting/useStyles'
+import type { SheetMutations } from './structure/sheetMutations'
+import type { FreezeActions, FreezeState } from './visibility/useFreeze'
+import type { Filter } from './visibility/useFilter'
+import type { HiddenActions } from './visibility/useHidden'
+import type { ValidationActions } from './validation/useValidation'
+import type { CondActions } from './formatting/useCondFormat'
 
-type SheetToolbarController = Pick<SheetCtx,
-  | 'display'
-  | 'writeCell'
-  | 'writeCells'
-  | 'focusKey'
-  | 'selectedIds'
-  | 'setFormat'
-  | 'formatOf'
-  | 'insertRow'
-  | 'deleteRow'
-  | 'insertCol'
-  | 'deleteCol'
-  | 'appendRows'
-  | 'appendCols'
-  | 'sortByCol'
-  | 'updateStyle'
-  | 'styleOf'
-  | 'freeze'
-  | 'toggleFreezeRows'
-  | 'toggleFreezeCols'
-  | 'setFreezeRows'
-  | 'setFreezeCols'
-  | 'filter'
-  | 'applyFilter'
-  | 'clearFilter'
-  | 'hasHidden'
-  | 'showAll'
-  | 'setListRule'
-  | 'setCheckboxRule'
-  | 'clearRule'
-  | 'setHelpOpen'
-  | 'insertLink'
-  | 'addCondRule'
-  | 'clearCondRules'
-  | 'sheet'
-  | 'ops'
-  | 'showFormulas'
-  | 'toggleShowFormulas'
-  | 'showGridlines'
-  | 'toggleShowGridlines'
-  | 'mergeSelection'
-  | 'rowCount'
-  | 'colCount'
->
+interface SheetToolbarController
+  extends SheetMutations,
+  ValidationActions,
+  CondActions,
+  FreezeActions,
+  Pick<HiddenActions, 'showAll'> {
+  display: Display
+  writeCell: WriteCell
+  writeCells: WriteMany
+  focusKey: string | null
+  selectedIds: string[]
+  setFormat: (keys: string[], format: Format) => void
+  formatOf: FormatLookup
+  updateStyle: (keys: string[], patch: Partial<CellStyle>) => void
+  styleOf: StyleLookup
+  freeze: FreezeState
+  filter: Filter | null
+  applyFilter: (col: string, text: string) => void
+  clearFilter: () => void
+  hasHidden: boolean
+  setHelpOpen: (open: boolean) => void
+  insertLink: () => void
+  sheet: Sheet
+  ops: Pick<SheetOps, 'reset' | 'replace' | 'undo' | 'redo' | 'canUndo' | 'canRedo' | 'patch'>
+  showFormulas: boolean
+  toggleShowFormulas: () => void
+  showGridlines: boolean
+  toggleShowGridlines: () => void
+  mergeSelection: () => void
+  rowCount: number
+  colCount: number
+}
 
 export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarController; ask: Ask; confirm: Confirm }) {
   return (
