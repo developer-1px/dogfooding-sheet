@@ -94,11 +94,24 @@ describe('tabActions', () => {
     const sheet = make()
     const s: Stub = {}
 
+    tabActions(sheet, stubOps(s)).renameSheet('Ghost', 'Valid')
     tabActions(sheet, stubOps(s)).renameSheet('Sheet1', 'x'.repeat(MAX_SHEET_NAME_LENGTH + 1))
     tabActions(sheet, stubOps(s)).setTabColor('Sheet1', 'red')
     tabActions(sheet, stubOps(s)).setTabColor('Ghost', '#ff0000')
 
     expect(s.replace).toBeUndefined()
+  })
+
+  it('reorders tabs only when both tab names exist', () => {
+    const sheet = make()
+    const s: Stub = {}
+
+    tabActions(sheet, stubOps(s)).reorderTab('Ghost', 'Sheet1')
+    tabActions(sheet, stubOps(s)).reorderTab('Sheet1', 'Missing')
+    expect(s.replace).toBeUndefined()
+
+    tabActions(sheet, stubOps(s)).reorderTab('Sheet2', 'Sheet1')
+    expect((s.replace!.value as Sheet['tabs']).order).toEqual(['Sheet2', 'Sheet1'])
   })
 
   it('accepts normalized tab names and colors', () => {

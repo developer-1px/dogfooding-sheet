@@ -99,18 +99,30 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
   const setTabs = (next: TabsState) => ({ ...sheet, tabs: next })
   const hydrate = (next: Sheet, name: string, saved: Record<string, TabBundle>): Sheet =>
     withBundle({ ...next, tabs: { ...next.tabs, active: name } }, cloneBundle(saved[name] ?? blankBundle()))
+  const safeTabs = (next: TabsState): TabsState | null => {
+    const parsed = SheetSchema.safeParse({ ...sheet, tabs: next })
+    return parsed.success ? parsed.data.tabs : null
+  }
+  const replaceTabs = (next: TabsState) => {
+    const tabs = safeTabs(next)
+    if (tabs) ops.replace('/tabs', tabs)
+  }
+  const resetSheet = (next: Sheet) => {
+    const parsed = SheetSchema.safeParse(next)
+    if (parsed.success) ops.reset(parsed.data)
+  }
 
   const switchTab = (name: string) => {
     if (name === state.active || !state.order.includes(name)) return
     const saved = snapshotSaved()
-    ops.reset(hydrate(setTabs({ ...state, active: name, saved }), name, saved))
+    resetSheet(hydrate(setTabs({ ...state, active: name, saved }), name, saved))
   }
 
   const addSheet = () => {
     const name = uniqueName(state.order)
     if (!name) return
     const saved = { ...snapshotSaved(), [name]: blankBundle() }
-    ops.reset(hydrate(setTabs({ ...state, order: [...state.order, name], active: name, saved }), name, saved))
+    resetSheet(hydrate(setTabs({ ...state, order: [...state.order, name], active: name, saved }), name, saved))
   }
 
   const deleteSheet = (name: string) => {
@@ -120,19 +132,19 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     delete saved[name]
     const colors = { ...state.colors }; delete colors[name]
     const newActive = state.active === name ? newOrder[Math.max(0, state.order.indexOf(name) - 1)] : state.active
-    ops.reset(hydrate(setTabs({ ...state, order: newOrder, active: newActive, saved, colors }), newActive, saved))
+    resetSheet(hydrate(setTabs({ ...state, order: newOrder, active: newActive, saved, colors }), newActive, saved))
   }
 
   const renameSheet = (oldName: string, newName: string) => {
     const trimmed = normalizeSheetName(newName)
-    if (!trimmed || trimmed === oldName || state.order.includes(trimmed)) return
+    if (!state.order.includes(oldName) || !trimmed || trimmed === oldName || state.order.includes(trimmed)) return
     const saved = snapshotSaved()
     saved[trimmed] = saved[oldName] ?? blankBundle()
     delete saved[oldName]
     const newOrder = state.order.map((n) => (n === oldName ? trimmed : n))
     const active = state.active === oldName ? trimmed : state.active
     const colors = { ...state.colors }; if (colors[oldName]) { colors[trimmed] = colors[oldName]; delete colors[oldName] }
-    ops.replace('/tabs', { order: newOrder, active, saved, colors })
+    replaceTabs({ order: newOrder, active, saved, colors })
   }
 
   const duplicateSheet = (name: string) => {
@@ -143,7 +155,7 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     const saved = snapshotSaved()
     saved[newName] = cloneBundle(saved[name] ?? blankBundle())
     const newOrder = [...state.order.slice(0, idx + 1), newName, ...state.order.slice(idx + 1)]
-    ops.reset(hydrate(setTabs({ ...state, order: newOrder, active: newName, saved }), newName, saved))
+    resetSheet(hydrate(setTabs({ ...state, order: newOrder, active: newName, saved }), newName, saved))
   }
 
   const cycleTab = (delta: 1 | -1) => {
@@ -157,8 +169,14 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
       if (!isSafeTabColor(color)) return
       colors[name] = color
     } else delete colors[name]
-    ops.replace('/tabs', { ...state, colors })
+    replaceTabs({ ...state, colors })
   }
-  const reorderTab = (from: string, to: string) => { const fi = state.order.indexOf(from), ti = state.order.indexOf(to); if (fi < 0 || ti < 0 || fi === ti) return; const next = state.order.filter((n) => n !== from); next.splice(ti, 0, from); ops.replace('/tabs', { ...state, order: next }) }
+  const reorderTab = (from: string, to: string) => {
+    const fi = state.order.indexOf(from), ti = state.order.indexOf(to)
+    if (fi < 0 || ti < 0 || fi === ti) return
+    const next = state.order.filter((n) => n !== from)
+    next.splice(ti, 0, from)
+    replaceTabs({ ...state, order: next })
+  }
   return { switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, cycleTab, setTabColor, reorderTab }
 }
