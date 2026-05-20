@@ -117,4 +117,10 @@ describe('math additions', () => {
     // Spans a weekend
     expect(evaluateCell({}, '=NETWORKDAYS("2026-05-04","2026-05-15")')).toBe('10')
   })
+
+  it('rejects unsafe calendar iteration inputs', () => {
+    expect(evaluateCell({}, '=WORKDAY("2026-05-08", 1.5)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=WORKDAY("2026-05-08", 10001)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=NETWORKDAYS("2026-01-01","2054-01-01")')).toBe('#VALUE!')
+  })
 })
