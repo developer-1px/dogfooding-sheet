@@ -9,29 +9,34 @@ export function RecDevToolsOverlay() {
   const [elapsed, setElapsed] = useState(0)
   const startTime = useRef(0)
   const interval = useRef<ReturnType<typeof setInterval> | null>(null)
+  const recordingRef = useRef(false)
 
-  const stopTimer = () => {
+  const clearTimer = useCallback(() => {
     if (interval.current) clearInterval(interval.current)
     interval.current = null
-    setElapsed(0)
-  }
+  }, [])
 
   const toggle = useCallback(() => {
-    if (recording) {
+    if (recordingRef.current) {
       const data = recorder.stop()
+      recordingRef.current = false
       setRecording(false)
-      stopTimer()
+      clearTimer()
+      setElapsed(0)
       navigator.clipboard?.writeText(data.text).catch(() => {})
       return
     }
 
     recorder.start()
+    recordingRef.current = true
     setRecording(true)
+    clearTimer()
+    setElapsed(0)
     startTime.current = Date.now()
     interval.current = setInterval(() => {
       setElapsed(Math.floor((Date.now() - startTime.current) / 1000))
     }, 1000)
-  }, [recorder, recording])
+  }, [clearTimer, recorder])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -41,12 +46,16 @@ export function RecDevToolsOverlay() {
       }
     }
     window.addEventListener('keydown', onKey, true)
-    return () => {
-      window.removeEventListener('keydown', onKey, true)
-      stopTimer()
-      if (recorder.isActive) recorder.stop()
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [toggle])
+
+  useEffect(() => () => {
+    clearTimer()
+    if (recordingRef.current || recorder.isActive) {
+      recorder.stop()
+      recordingRef.current = false
     }
-  }, [recorder, toggle])
+  }, [clearTimer, recorder])
 
   const minutes = Math.floor(elapsed / 60)
   const seconds = String(elapsed % 60).padStart(2, '0')
