@@ -40,6 +40,15 @@ export const GOTO_PROMPT = {
   submitLabel: '이동',
 }
 
+const resizePromptValue = (value: string, defaultValue: number): number | null => {
+  if (value === '') return defaultValue
+  const n = Number(value)
+  return Number.isFinite(n) ? n : null
+}
+
+const formulaStringLiteral = (value: string): string =>
+  `"${value.replace(/"/g, '""')}"`
+
 export function sheetPromptActions(ask: Ask, getCtx: () => SheetPromptController | null): SheetPromptActions {
   return {
     openGoto: () => {
@@ -62,8 +71,8 @@ export function sheetPromptActions(ask: Ask, getCtx: () => SheetPromptController
       void ask({ label: '하이퍼링크 URL', placeholder: 'https://...', submitLabel: '삽입' })
         .then((url) => {
           if (!url) return
-          const escapedUrl = url.replace(/"/g, '\\"')
-          c.writeCell(k, `=HYPERLINK("${escapedUrl}", "${escapedUrl}")`)
+          const urlLiteral = formulaStringLiteral(url)
+          c.writeCell(k, `=HYPERLINK(${urlLiteral}, ${urlLiteral})`)
         })
     },
     promptRowHeight: (row: number) => {
@@ -72,8 +81,8 @@ export function sheetPromptActions(ask: Ask, getCtx: () => SheetPromptController
       void ask({ label: `${row + 1}행 높이 (px, 비우면 기본값)`, initial: String(c.rowHeightOf(row)), submitLabel: '적용' })
         .then((v) => {
           if (v === null) return
-          const n = Number(v)
-          c.setRowHeight(row, v === '' || !Number.isFinite(n) ? DEFAULT_HEIGHT : n)
+          const n = resizePromptValue(v, DEFAULT_HEIGHT)
+          if (n !== null) c.setRowHeight(row, n)
         })
     },
     promptColWidth: (col: string) => {
@@ -83,8 +92,8 @@ export function sheetPromptActions(ask: Ask, getCtx: () => SheetPromptController
       void ask({ label: `${col}열 너비 (px, 비우면 기본값)`, initial: String(cur), submitLabel: '적용' })
         .then((v) => {
           if (v === null) return
-          const n = Number(v)
-          c.setColWidth(col, v === '' || !Number.isFinite(n) ? DEFAULT_WIDTH : n)
+          const n = resizePromptValue(v, DEFAULT_WIDTH)
+          if (n !== null) c.setColWidth(col, n)
         })
     },
     promptFilter: (col: string) => {

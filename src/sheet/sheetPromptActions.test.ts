@@ -59,14 +59,14 @@ describe('sheetPromptActions', () => {
     expect(calls).toEqual(['setNote:B2:new note'])
   })
 
-  it('escapes quotes when inserting hyperlink formulas', async () => {
+  it('uses spreadsheet string escaping when inserting hyperlink formulas', async () => {
     const calls: string[] = []
     const actions = sheetPromptActions(askQueue(['https://example.com/"q"']), () => fakeCtx(calls))
 
     actions.openLink()
     await flush()
 
-    expect(calls).toEqual(['writeCell:B2:=HYPERLINK("https://example.com/\\"q\\"", "https://example.com/\\"q\\"")'])
+    expect(calls).toEqual(['writeCell:B2:=HYPERLINK("https://example.com/""q""", "https://example.com/""q""")'])
   })
 
   it('applies row and column size prompts with default fallbacks', async () => {
@@ -109,5 +109,17 @@ describe('sheetPromptActions', () => {
 
     expect(prompts[0].initial).toBe(String(DEFAULT_WIDTH))
     expect(calls).toEqual([`setColWidth:C:${DEFAULT_WIDTH}`])
+  })
+
+  it('ignores malformed row and column size prompt values', async () => {
+    const calls: string[] = []
+    const actions = sheetPromptActions(askQueue(['wide', 'Infinity']), () => fakeCtx(calls))
+
+    actions.promptRowHeight(4)
+    await flush()
+    actions.promptColWidth('B')
+    await flush()
+
+    expect(calls).toEqual([])
   })
 })

@@ -48,6 +48,7 @@ describe('text functions', () => {
   it('HYPERLINK uses label when given, else URL', () => {
     expect(evaluateCell({}, '=HYPERLINK("https://example.com", "click")')).toBe('click')
     expect(evaluateCell({}, '=HYPERLINK("https://example.com")')).toBe('https://example.com')
+    expect(evaluateCell({}, '=HYPERLINK("https://example.com/""q""", "https://example.com/""q""")')).toBe('https://example.com/"q"')
   })
   it('CONCAT joins strings and refs', () => {
     expect(evaluateCell({ A1: 'hello' }, '=CONCAT(A1, " ", "world")')).toBe('hello world')
