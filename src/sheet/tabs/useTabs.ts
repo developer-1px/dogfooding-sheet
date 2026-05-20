@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import {
   MAX_SHEET_TABS,
+  SheetSchema,
   blankBundle,
   bundleOf,
   cloneBundle,
+  initialSheet,
   isSafeTabColor,
   normalizeSheetName,
   withBundle,
@@ -30,17 +32,50 @@ export interface TabActionOps extends TabsStateOps {
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const legacyCells = (value: unknown): Cells =>
+  isRecord(value)
+    ? Object.fromEntries(Object.entries(value).filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
+    : {}
+
+export const coerceLegacyTabsState = (raw: unknown): TabsState | undefined => {
+  if (!isRecord(raw) || !Array.isArray(raw.order) || typeof raw.active !== 'string' || !isRecord(raw.saved)) return undefined
+  if (raw.order.length === 0 || raw.order.length > MAX_SHEET_TABS) return undefined
+
+  const order: string[] = []
+  const names = new Set<string>()
+  for (const rawName of raw.order) {
+    if (typeof rawName !== 'string') return undefined
+    const name = normalizeSheetName(rawName)
+    if (!name || names.has(name)) return undefined
+    names.add(name)
+    order.push(name)
+  }
+
+  const active = normalizeSheetName(raw.active)
+  if (!active || !names.has(active)) return undefined
+
+  const savedCells = new Map<string, Cells>()
+  for (const [rawName, cells] of Object.entries(raw.saved)) {
+    const name = normalizeSheetName(rawName)
+    if (name && names.has(name)) savedCells.set(name, legacyCells(cells))
+  }
+
+  const tabs: TabsState = {
+    order,
+    active,
+    colors: {},
+    saved: Object.fromEntries(order.map((name) => [name, { ...blankBundle(), cells: savedCells.get(name) ?? {} }])),
+  }
+  const parsed = SheetSchema.safeParse({ ...initialSheet, tabs })
+  return parsed.success ? parsed.data.tabs : undefined
+}
+
 const migrateLegacy = (state: TabsState, ops: TabsStateOps) =>
   migrateLegacyKey(LEGACY_KEY, state.order.length <= 1 && Object.keys(state.saved).length === 0, ops,
-    (raw) => {
-      const o = raw as { order?: unknown; active?: unknown; saved?: unknown } | null
-      if (!Array.isArray(o?.order) || typeof o.active !== 'string' || !o.saved) return undefined
-      return {
-        order: o.order as string[], active: o.active, colors: {},
-        saved: Object.fromEntries(Object.entries(o.saved as Record<string, Cells>)
-          .map(([k, cells]) => [k, { ...blankBundle(), cells }])),
-      } as TabsState
-    },
+    coerceLegacyTabsState,
     (o, v) => o.replace('/tabs', v),
   )
 
