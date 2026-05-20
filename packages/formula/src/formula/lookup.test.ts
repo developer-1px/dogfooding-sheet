@@ -208,6 +208,10 @@ describe('EXPAND', () => {
   it('rejects target dimensions above the array cap', () => {
     expect(evaluateCell(cells, '=EXPAND(A1:B2, 26001, 1)')).toBe('#VALUE!')
   })
+
+  it('rejects expanded arrays whose serialized text would exceed the output cap', () => {
+    expect(evaluateCell({ A1: 'a', B1: 'x'.repeat(10_000) }, '=EXPAND(A1:A1, 2, 2, B1)')).toBe('#VALUE!')
+  })
 })
 
 describe('HSTACK / VSTACK', () => {

@@ -18,8 +18,25 @@ const arrayCellCount = (value: readonly unknown[]): number => {
   return total
 }
 
+const jsonElementLength = (value: unknown, limit: number): number | null => {
+  if (!Array.isArray(value)) {
+    const json = JSON.stringify(value) ?? 'null'
+    return json.length <= limit ? json.length : null
+  }
+
+  let length = 2
+  for (let i = 0; i < value.length; i++) {
+    if (i > 0) length++
+    const childLength = jsonElementLength(value[i], limit - length)
+    if (childLength === null) return null
+    length += childLength
+    if (length > limit) return null
+  }
+  return length
+}
+
 export const stringifyFormulaArray = (value: readonly unknown[]): string => {
   if (arrayCellCount(value) > MAX_FORMULA_ARRAY_CELLS) return '#VALUE!'
-  const json = JSON.stringify(value)
-  return json.length <= MAX_GENERATED_TEXT_LENGTH ? json : '#VALUE!'
+  if (jsonElementLength(value, MAX_GENERATED_TEXT_LENGTH) === null) return '#VALUE!'
+  return JSON.stringify(value) ?? '#VALUE!'
 }
