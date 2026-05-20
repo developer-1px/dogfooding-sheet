@@ -213,6 +213,11 @@ describe('RANGECSV', () => {
     const cells = { A1: 'a', A2: 'b,c', A3: 'd"e' }
     expect(evaluateCell(cells, '=RANGECSV(A1:A3)')).toBe('a,"b,c","d""e"')
   })
+
+  it('rejects oversized CSV output without materializing the whole result', () => {
+    const cells = { A1: 'x'.repeat(MAX_GENERATED_TEXT_LENGTH), A2: 'y' }
+    expect(evaluateCell(cells, '=RANGECSV(A1:A2)')).toBe('#VALUE!')
+  })
 })
 
 describe('RANGEJSON', () => {
