@@ -1,17 +1,30 @@
 import { wrap } from './marker'
+import { compileSafeRegex, isSafeRegexText } from './regexSafety'
 
 export function dispatchRegex(F: string, argsT: string[]): string | null {
   if (F === 'REGEXMATCH') {
-    try { return new RegExp(argsT[1] ?? '').test(argsT[0]) ? '1' : '0' } catch { return wrap('#VALUE!') }
+    const text = argsT[0] ?? ''
+    const re = isSafeRegexText(text) ? compileSafeRegex(argsT[1] ?? '') : null
+    return re ? (re.test(text) ? '1' : '0') : wrap('#VALUE!')
   }
   if (F === 'REGEXEXTRACT') {
-    try { const m = new RegExp(argsT[1] ?? '').exec(argsT[0]); return wrap(m ? (m[1] ?? m[0]) : '#N/A') } catch { return wrap('#VALUE!') }
+    const text = argsT[0] ?? ''
+    const re = isSafeRegexText(text) ? compileSafeRegex(argsT[1] ?? '') : null
+    if (!re) return wrap('#VALUE!')
+    const m = re.exec(text)
+    return wrap(m ? (m[1] ?? m[0]) : '#N/A')
   }
   if (F === 'REGEXREPLACE') {
-    try { return wrap(argsT[0].replace(new RegExp(argsT[1] ?? '', 'g'), argsT[2] ?? '')) } catch { return wrap('#VALUE!') }
+    const text = argsT[0] ?? ''
+    const re = isSafeRegexText(text) ? compileSafeRegex(argsT[1] ?? '', 'g') : null
+    if (!re) return wrap('#VALUE!')
+    const replaced = text.replace(re, argsT[2] ?? '')
+    return wrap(isSafeRegexText(replaced) ? replaced : '#VALUE!')
   }
   if (F === 'REGEXCOUNT') {
-    try { return String((argsT[0].match(new RegExp(argsT[1] ?? '', 'g')) ?? []).length) } catch { return wrap('#VALUE!') }
+    const text = argsT[0] ?? ''
+    const re = isSafeRegexText(text) ? compileSafeRegex(argsT[1] ?? '', 'g') : null
+    return re ? String((text.match(re) ?? []).length) : wrap('#VALUE!')
   }
   return null
 }

@@ -65,10 +65,19 @@ describe('text functions', () => {
   })
   it('REGEXMATCH / REGEXEXTRACT / REGEXREPLACE', () => {
     expect(evaluateCell({}, '=REGEXMATCH("foo123", "\\d+")')).toBe('1')
+    expect(evaluateCell({}, '=REGEXMATCH("a(b)", "\\(b\\)")')).toBe('1')
     expect(evaluateCell({}, '=REGEXEXTRACT("foo123bar", "\\d+")')).toBe('123')
     expect(evaluateCell({}, '=REGEXREPLACE("a1b2c3", "\\d", "X")')).toBe('aXbXcX')
     expect(evaluateCell({}, '=REGEXCOUNT("a1b22c333", "\\d+")')).toBe('3')
     expect(evaluateCell({}, '=REGEXCOUNT("abc", "\\d")')).toBe('0')
+  })
+  it('rejects unsafe regex inputs', () => {
+    const longText = 'a'.repeat(10001)
+    const longPattern = 'a'.repeat(257)
+
+    expect(evaluateCell({}, '=REGEXMATCH("aaaa", "(a+)+$")')).toBe('#VALUE!')
+    expect(evaluateCell({}, `=REGEXMATCH("abc", "${longPattern}")`)).toBe('#VALUE!')
+    expect(evaluateCell({}, `=REGEXMATCH("${longText}", "a")`)).toBe('#VALUE!')
   })
   it('NORMALIZE Unicode form', () => {
     expect(evaluateCell({}, '=NORMALIZE("café", "NFC")').length).toBe(4)

@@ -1,5 +1,5 @@
 import type { Cells } from '../a1'
-import { ABS_A1_RE, FUNC_RE, RangeLimitError } from './parse'
+import { ABS_A1_RE, FORMULA_FUNCTION_NAMES, RangeLimitError } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 import { coerceNumber } from './coerce'
 import type { Ctx, EvalCell } from './args'
@@ -156,7 +156,13 @@ const matchingParen = (expr: string, open: number): number => {
   return -1
 }
 
-const replaceLazyCall = (expr: string, c: Ctx): string => {
+const isFunctionNameStart = (ch: string | undefined): boolean =>
+  ch !== undefined && /[A-Za-z_]/.test(ch)
+
+const isFunctionNamePart = (ch: string | undefined): boolean =>
+  ch !== undefined && /[A-Za-z0-9_]/.test(ch)
+
+const replaceFunctionCall = (expr: string, c: Ctx, lazyOnly = false): string => {
   let inQuote = false
   for (let i = 0; i < expr.length; i++) {
     const ch = expr[i]
@@ -168,12 +174,13 @@ const replaceLazyCall = (expr: string, c: Ctx): string => {
       inQuote = !inQuote
       continue
     }
-    if (inQuote || !/[A-Za-z_]/.test(ch)) continue
+    if (inQuote || !isFunctionNameStart(ch)) continue
 
     const start = i
-    while (/[A-Za-z_]/.test(expr[i] ?? '')) i++
+    while (isFunctionNamePart(expr[i])) i++
     const fn = expr.slice(start, i).toUpperCase()
-    if (!LAZY_FUNCTIONS.has(fn) || expr[i] !== '(') continue
+    if (expr[i] !== '(' || !FORMULA_FUNCTION_NAMES.has(fn)) continue
+    if (lazyOnly && !LAZY_FUNCTIONS.has(fn)) continue
 
     const close = matchingParen(expr, i)
     if (close < 0) return expr
@@ -211,8 +218,8 @@ function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): str
   let prev = ''
   while (prev !== expr) {
     prev = expr
-    expr = replaceLazyCall(expr, ctx)
-    expr = expr.replace(FUNC_RE, (_m, fn: string, args: string) => dispatch(fn, args, ctx))
+    expr = replaceFunctionCall(expr, ctx, true)
+    expr = replaceFunctionCall(expr, ctx)
   }
 
   if (expr.startsWith(TM) && expr.endsWith(TM)) return stripText(expr)
