@@ -8,6 +8,22 @@ body, html, #root {
   background: #f8f9fa; color: #202124;
 }
 .sheet-app { display: flex; flex-direction: column; height: 100vh; }
+.app-error {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #f8f9fa;
+  color: #202124;
+}
+.app-error button {
+  padding: 6px 12px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
 
 .sheet-toolbar {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
