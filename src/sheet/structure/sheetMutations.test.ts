@@ -106,4 +106,41 @@ describe('sheetMutations', () => {
       ['replace', '/colCount', 6],
     ])
   })
+
+  it('sorts cell metadata with the data rows', () => {
+    const { ops, calls } = recordingOps()
+    const state = sheet({
+      cells: {
+        A1: 'name', B1: 'rank',
+        A2: 'slow', B2: '3', C2: 'tail',
+        A3: 'fast', B3: '1',
+        A4: 'mid', B4: '2',
+      },
+      notes: { A2: 'slow note', A3: 'fast note' },
+      styles: { B2: { b: true }, B3: { i: true } },
+      formats: { C2: 'currency' },
+      validation: { A4: { type: 'checkbox' } },
+      hidden: { rows: [1, 3], cols: ['C'] },
+      rowHeights: { '1': 31, '2': 32, '3': 33 },
+      merges: [[0, 0, 0, 1]],
+    })
+
+    sheetMutations(state, ops).sortByCol('B', 'asc')
+
+    expect(calls).toEqual([['patch', [
+      { op: 'replace', path: '/cells', value: {
+        A1: 'name', B1: 'rank',
+        A2: 'fast', B2: '1',
+        A3: 'mid', B3: '2',
+        A4: 'slow', B4: '3', C4: 'tail',
+      } },
+      { op: 'replace', path: '/notes', value: { A4: 'slow note', A2: 'fast note' } },
+      { op: 'replace', path: '/styles', value: { B4: { b: true }, B2: { i: true } } },
+      { op: 'replace', path: '/formats', value: { C4: 'currency' } },
+      { op: 'replace', path: '/validation', value: { A3: { type: 'checkbox' } } },
+      { op: 'replace', path: '/hidden', value: { rows: [2, 3], cols: ['C'] } },
+      { op: 'replace', path: '/rowHeights', value: { '1': 32, '2': 33, '3': 31 } },
+      { op: 'replace', path: '/merges', value: [] },
+    ]]])
+  })
 })

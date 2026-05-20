@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, MAX_TSV_TEXT_LENGTH, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, rectToTsvBounded, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, MAX_TSV_TEXT_LENGTH, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, rectToTsvBounded, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, sortRowOrder, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -285,6 +285,7 @@ describe('@spredsheet/grid', () => {
       A3: 'B',
       B3: '2',
     })
+    expect(sortRowOrder({ A1: 'name', A2: 'B', B2: '2', A3: 'A', B3: '1' }, { col: 'B', dir: 'asc', rowCount: 3 })).toEqual([2, 1])
   })
 
   it('sorts common formatted numeric values numerically', () => {

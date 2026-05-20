@@ -1,5 +1,5 @@
 import { COL_LETTERS, MAX_COL_COUNT, MAX_ROW_COUNT, cellKey, colIndex, parseA1, type Sheet, type SheetOps } from '../schema'
-import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp, sortByColumn } from '@spredsheet/grid'
+import { insertRow as insertRowOp, deleteRow as deleteRowOp, insertCol as insertColOp, deleteCol as deleteColOp, sortByColumn, sortRowOrder } from '@spredsheet/grid'
 import { applyPatch, type Patch } from '../../lib/dictOps'
 
 const isEqual = (a: unknown, b: unknown): boolean =>
@@ -118,9 +118,6 @@ const apply = (sheet: Sheet, ops: SheetOps, next: Partial<Sheet> & Pick<Sheet, '
   applyPatch(ops, patch)
 }
 
-const applyCellOnly = (sheet: Sheet, ops: SheetOps, nextCells: Record<string, string>) =>
-  apply(sheet, ops, { cells: cellsInBounds(nextCells, sheet) })
-
 const shiftedCellMetadataByRow = (sheet: Sheet, shiftRow: (row: number) => number | null) => ({
   notes: shiftCellScopedRecord(sheet.notes, (col, row) => {
     const shifted = shiftRow(row)
@@ -201,6 +198,22 @@ const deleteColPatch = (sheet: Sheet, atCol: number) => {
   }
 }
 
+const sortPatch = (sheet: Sheet, col: string, dir: 'asc' | 'desc') => {
+  const opts = { col, dir, rowCount: sheet.rowCount, colCount: sheet.colCount }
+  const fromRow = 1
+  const rowMap = new Map<number, number>()
+  sortRowOrder(sheet.cells, opts).forEach((sourceRow, index) => {
+    rowMap.set(sourceRow, fromRow + index)
+  })
+  const shiftRow = (row: number) => rowMap.get(row) ?? row
+  return {
+    cells: cellsInBounds(sortByColumn(sheet.cells, opts), sheet),
+    ...shiftedCellMetadataByRow(sheet, shiftRow),
+    rowHeights: shiftRowRecord(sheet.rowHeights, shiftRow),
+    hidden: { ...sheet.hidden, rows: shiftHiddenRows(sheet.hidden.rows, shiftRow) },
+  }
+}
+
 const validRow = (row: number, rowCount: number): boolean =>
   Number.isInteger(row) && row >= 0 && row < rowCount
 
@@ -246,7 +259,7 @@ export function sheetMutations(sheet: Sheet, ops: SheetOps): SheetMutations {
       if (next !== null) ops.replace('/colCount', next)
     },
     sortByCol: (col, dir) => {
-      if (validCol(col, sheet.colCount) !== null) applyCellOnly(sheet, ops, sortByColumn(sheet.cells, { col, dir, rowCount: sheet.rowCount, colCount: sheet.colCount }))
+      if (sheet.rowCount > 1 && validCol(col, sheet.colCount) !== null) apply(sheet, ops, sortPatch(sheet, col, dir))
     },
   }
 }

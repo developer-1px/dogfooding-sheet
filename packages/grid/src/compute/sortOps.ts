@@ -39,17 +39,28 @@ export interface SortOpts {
   toRow?: number
 }
 
-export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
+const sortRows = (cells: Cells, opts: SortOpts): Array<{ sourceRow: number; cells: Record<string, string> }> => {
   const { col, dir, rowCount, colCount = Math.max(COL_LETTERS.length, colIndex(col) + 1), fromRow = 1, toRow = rowCount - 1 } = opts
   const cols = columnLabels(colCount)
   const sign = dir === 'asc' ? 1 : -1
-  const rows: Array<Record<string, string>> = []
+  const rows: Array<{ sourceRow: number; cells: Record<string, string> }> = []
   for (let r = fromRow; r <= toRow; r++) {
     const rec: Record<string, string> = {}
     for (const c of cols) rec[c] = cells[cellKey(c, r)] ?? ''
-    rows.push(rec)
+    rows.push({ sourceRow: r, cells: rec })
   }
-  rows.sort((a, b) => compareValues(a[col] ?? '', b[col] ?? '', sign))
+  rows.sort((a, b) => compareValues(a.cells[col] ?? '', b.cells[col] ?? '', sign))
+  return rows
+}
+
+export function sortRowOrder(cells: Cells, opts: SortOpts): number[] {
+  return sortRows(cells, opts).map((row) => row.sourceRow)
+}
+
+export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
+  const { col, rowCount, colCount = Math.max(COL_LETTERS.length, colIndex(col) + 1), fromRow = 1, toRow = rowCount - 1 } = opts
+  const cols = columnLabels(colCount)
+  const rows = sortRows(cells, opts)
 
   const next: Cells = {}
   for (const [k, v] of Object.entries(cells)) {
@@ -60,7 +71,7 @@ export function sortByColumn(cells: Cells, opts: SortOpts): Cells {
   for (let i = 0; i < rows.length; i++) {
     const targetRow = fromRow + i
     for (const c of cols) {
-      const v = rows[i][c]
+      const v = rows[i].cells[c]
       if (v !== '') next[cellKey(c, targetRow)] = v
     }
   }
