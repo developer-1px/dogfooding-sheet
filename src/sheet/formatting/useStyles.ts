@@ -53,11 +53,36 @@ const merge = (a: CellStyle | undefined, b: Partial<CellStyle>): CellStyle | und
   return normalizeCellStyle({ ...(a ?? {}), ...b })
 }
 
+export const sameCellStyle = (a: CellStyle, b: CellStyle): boolean =>
+  a.b === b.b &&
+  a.i === b.i &&
+  a.u === b.u &&
+  a.s === b.s &&
+  a.w === b.w &&
+  a.bd === b.bd &&
+  a.a === b.a &&
+  a.bg === b.bg &&
+  a.fg === b.fg
+
 const migrateLegacy = (styles: Record<string, CellStyle>, ops: SheetOps, bounds?: StyleBounds) =>
   migrateLegacyKey(LEGACY_KEY, Object.keys(styles).length === 0, ops,
     (raw) => coerceLegacyStyles(raw, bounds),
     (o, v) => o.replace('/styles', v),
   )
+
+export const updateStyleValues = (
+  styles: Record<string, CellStyle>,
+  ops: SheetOps,
+  keys: string[],
+  patch: Partial<CellStyle>,
+  bounds?: StyleBounds,
+): void => {
+  const entries: Array<[string, CellStyle | undefined]> = []
+  for (const key of keys) {
+    if (validStyleKey(key, bounds)) entries.push([key, merge(styles[key], patch)])
+  }
+  upsertKeys(ops, '/styles', styles, entries, sameCellStyle)
+}
 
 export function useStyles(styles: Record<string, CellStyle>, ops: SheetOps, bounds?: StyleBounds) {
   const rowCount = bounds?.rowCount
@@ -66,13 +91,7 @@ export function useStyles(styles: Record<string, CellStyle>, ops: SheetOps, boun
     migrateLegacy(styles, ops, rowCount !== undefined && colCount !== undefined ? { rowCount, colCount } : undefined)
   }, [styles, ops, rowCount, colCount])
 
-  const updateStyle = (keys: string[], patch: Partial<CellStyle>) => {
-    const entries: Array<[string, CellStyle | undefined]> = []
-    for (const key of keys) {
-      if (validStyleKey(key, bounds)) entries.push([key, merge(styles[key], patch)])
-    }
-    upsertKeys(ops, '/styles', styles, entries)
-  }
+  const updateStyle = (keys: string[], patch: Partial<CellStyle>) => updateStyleValues(styles, ops, keys, patch, bounds)
 
   return { updateStyle, styleOf: (k: string) => styles[k] }
 }

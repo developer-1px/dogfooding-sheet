@@ -7,6 +7,9 @@ interface PatchOps { patch(patch: never): unknown }
 interface AddOps { add(path: never, value: never): unknown }
 interface ReplaceOps { replace(path: never, value: never): unknown }
 interface RemoveOps { remove(path: never): unknown }
+type Equal<V> = (a: V, b: V) => boolean
+
+const defaultEqual = <V>(a: V, b: V): boolean => a === b
 
 export function applyPatch(ops: PatchOps, patch: Patch): void {
   if (patch.length > 0) ops.patch(patch as never)
@@ -41,13 +44,14 @@ export function upsertKey<T, V>(
   current: Record<string, V>,
   key: string,
   value: V | undefined,
+  equal: Equal<V> = defaultEqual,
 ): void {
   const path = childPath(base, key)
   if (value === undefined) {
     if (current[key] !== undefined) removeValue(ops, path)
   } else if (current[key] === undefined) {
     addValue(ops, path, value)
-  } else if (current[key] !== value) {
+  } else if (!equal(current[key], value)) {
     replaceValue(ops, path, value)
   }
 }
@@ -58,6 +62,7 @@ export function upsertKeys<T, V>(
   base: string,
   current: Record<string, V>,
   entries: Array<[string, V | undefined]>,
+  equal: Equal<V> = defaultEqual,
 ): void {
   const patch: Patch = []
   const latest = new Map(entries)
@@ -65,7 +70,7 @@ export function upsertKeys<T, V>(
     const path = childPath(base, key)
     if (value === undefined) { if (current[key] !== undefined) patch.push({ op: 'remove', path }) }
     else if (current[key] === undefined) patch.push({ op: 'add', path, value })
-    else if (current[key] !== value) patch.push({ op: 'replace', path, value })
+    else if (!equal(current[key], value)) patch.push({ op: 'replace', path, value })
   }
   applyPatch(ops, patch)
 }

@@ -84,6 +84,25 @@ const migrateLegacy = (rules: Record<string, Rule>, ops: SheetOps, bounds?: Vali
     (o, v) => o.replace('/validation', v),
   )
 
+export const sameValidationRule = (a: Rule, b: Rule): boolean => {
+  if (a.type !== b.type) return false
+  if (a.type === 'checkbox' || b.type === 'checkbox') return true
+  return a.options.length === b.options.length && a.options.every((option, index) => option === b.options[index])
+}
+
+export const setListValidationRule = (
+  rules: Record<string, Rule>,
+  ops: SheetOps,
+  keys: string[],
+  options: string[],
+  bounds?: ValidationBounds,
+): void => {
+  const targetKeys = validKeys(keys, bounds)
+  const normalized = normalizeValidationOptions(options)
+  const value: Rule | undefined = normalized.length === 0 ? undefined : { type: 'list', options: normalized }
+  upsertKeys(ops, '/validation', rules, targetKeys.map((k) => [k, value]), sameValidationRule)
+}
+
 export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: SheetOps, bounds?: ValidationBounds) {
   const rowCount = bounds?.rowCount
   const colCount = bounds?.colCount
@@ -91,12 +110,7 @@ export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: Sh
     migrateLegacy(rules, ops, rowCount !== undefined && colCount !== undefined ? { rowCount, colCount } : undefined)
   }, [rules, ops, rowCount, colCount])
 
-  const setListRule = (keys: string[], options: string[]) => {
-    const targetKeys = validKeys(keys, bounds)
-    const normalized = normalizeValidationOptions(options)
-    const value: Rule | undefined = normalized.length === 0 ? undefined : { type: 'list', options: normalized }
-    upsertKeys(ops, '/validation', rules, targetKeys.map((k) => [k, value]))
-  }
+  const setListRule = (keys: string[], options: string[]) => setListValidationRule(rules, ops, keys, options, bounds)
   const clearRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, validKeys(keys, bounds).map((k) => [k, undefined]))
   const setCheckboxRule = (keys: string[]) => {
     const patch = checkboxConversionPatch(rules, cells, validKeys(keys, bounds))

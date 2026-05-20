@@ -77,4 +77,24 @@ describe('dictOps mutation adapter', () => {
       ]],
     ])
   })
+
+  it('supports semantic equality for object values', () => {
+    const calls: unknown[] = []
+    const ops = {
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    }
+    const typedOps = ops as unknown as JSONOps<{ records: Record<string, { value: string }> }>
+    const equalByValue = (a: { value: string }, b: { value: string }) => a.value === b.value
+
+    upsertKeys(typedOps, '/records', { A: { value: 'same' }, B: { value: 'old' } }, [
+      ['A', { value: 'same' }],
+      ['B', { value: 'new' }],
+    ], equalByValue)
+
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'replace', path: '/records/B', value: { value: 'new' } },
+      ]],
+    ])
+  })
 })

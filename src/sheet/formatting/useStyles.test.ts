@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { coerceLegacyStyles, styleToProps } from './useStyles'
+import type { SheetOps } from '../schema'
+import { coerceLegacyStyles, styleToProps, updateStyleValues } from './useStyles'
+
+const recordingOps = () => {
+  const calls: unknown[] = []
+  return {
+    calls,
+    ops: {
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    } as unknown as SheetOps,
+  }
+}
 
 describe('style coercion', () => {
   it('coerces legacy styles through current bounds and color rules', () => {
@@ -22,5 +33,18 @@ describe('style coercion', () => {
 
   it('does not expose invalid colors as React style props', () => {
     expect(styleToProps({ bg: 'red', fg: '#111' }).style).toEqual({ color: '#111' })
+  })
+
+  it('skips style writes when the normalized style is unchanged', () => {
+    const { ops, calls } = recordingOps()
+
+    updateStyleValues({ A1: { a: 'left' }, B1: { b: true } }, ops, ['A1', 'B1', 'C1'], { a: 'left' }, { rowCount: 1, colCount: 3 })
+
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'replace', path: '/styles/B1', value: { b: true, a: 'left' } },
+        { op: 'add', path: '/styles/C1', value: { a: 'left' } },
+      ]],
+    ])
   })
 })

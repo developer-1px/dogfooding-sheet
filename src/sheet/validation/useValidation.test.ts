@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'vitest'
-import { coerceLegacyValidationRules, checkboxConversionPatch, normalizeCheckboxValue } from './useValidation'
+import type { SheetOps } from '../schema'
+import { coerceLegacyValidationRules, checkboxConversionPatch, normalizeCheckboxValue, setListValidationRule } from './useValidation'
 import { MAX_CELL_TEXT_LENGTH } from '../cellValue'
 import { MAX_VALIDATION_OPTIONS } from '../schema'
+
+const recordingOps = () => {
+  const calls: unknown[] = []
+  return {
+    calls,
+    ops: {
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    } as unknown as SheetOps,
+  }
+}
 
 describe('checkbox validation conversion', () => {
   it('normalizes existing values for checkbox cells', () => {
@@ -53,5 +64,21 @@ describe('checkbox validation conversion', () => {
       type: 'list',
       options: Array.from({ length: MAX_VALIDATION_OPTIONS }, (_v, i) => `opt-${i}`),
     })
+  })
+
+  it('skips list rule writes when normalized options are unchanged', () => {
+    const { ops, calls } = recordingOps()
+
+    setListValidationRule({
+      A1: { type: 'list', options: ['open', 'closed'] },
+      B1: { type: 'checkbox' },
+    }, ops, ['A1', 'B1', 'C1'], [' open ', 'closed', 'open'], { rowCount: 1, colCount: 3 })
+
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'replace', path: '/validation/B1', value: { type: 'list', options: ['open', 'closed'] } },
+        { op: 'add', path: '/validation/C1', value: { type: 'list', options: ['open', 'closed'] } },
+      ]],
+    ])
   })
 })
