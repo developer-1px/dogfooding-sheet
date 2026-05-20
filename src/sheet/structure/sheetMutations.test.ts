@@ -165,6 +165,23 @@ describe('sheetMutations', () => {
     expect(calls).toEqual([])
   })
 
+  it('does not clear merges for a no-op sort', () => {
+    const { ops, calls } = recordingOps()
+    const state = sheet({
+      cells: {
+        A1: 'name', B1: 'rank',
+        A2: 'fast', B2: '1',
+        A3: 'mid', B3: '2',
+        A4: 'slow', B4: '3',
+      },
+      merges: [[0, 0, 0, 1]],
+    })
+
+    sheetMutations(state, ops).sortByCol('B', 'asc')
+
+    expect(calls).toEqual([])
+  })
+
   it('shifts larger hidden row and column lists without expanding intermediate arrays', () => {
     const hiddenRows = Array.from({ length: 1000 }, (_unused, row) => row)
 

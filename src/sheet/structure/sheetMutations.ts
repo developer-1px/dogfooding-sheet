@@ -9,6 +9,11 @@ const replaceIfChanged = (patch: Patch, path: string, current: unknown, next: un
   if (!isEqual(current, next)) patch.push({ op: 'replace', path, value: next })
 }
 
+interface StructuralPatch extends Partial<Sheet> {
+  cells: Sheet['cells']
+  clearMerges?: boolean
+}
+
 const rowAfterInsert = (row: number, atRow: number, rowCount: number): number | null =>
   row < atRow ? row : row + 1 < rowCount ? row + 1 : null
 
@@ -110,7 +115,7 @@ const cellsInBounds = (cells: Sheet['cells'], sheet: Pick<Sheet, 'rowCount' | 'c
 
 // Row/col mutations invalidate merge row/col indices. Clear merges defensively
 // and batch every moved sheet slice with the cells write so undo is atomic.
-const apply = (sheet: Sheet, ops: SheetOps, next: Partial<Sheet> & Pick<Sheet, 'cells'>) => {
+const apply = (sheet: Sheet, ops: SheetOps, next: StructuralPatch) => {
   const patch: Patch = []
   replaceIfChanged(patch, '/cells', sheet.cells, next.cells)
   replaceIfChanged(patch, '/notes', sheet.notes, next.notes ?? sheet.notes)
@@ -121,7 +126,7 @@ const apply = (sheet: Sheet, ops: SheetOps, next: Partial<Sheet> & Pick<Sheet, '
   replaceIfChanged(patch, '/hidden', sheet.hidden, next.hidden ?? sheet.hidden)
   replaceIfChanged(patch, '/colWidths', sheet.colWidths, next.colWidths ?? sheet.colWidths)
   replaceIfChanged(patch, '/rowHeights', sheet.rowHeights, next.rowHeights ?? sheet.rowHeights)
-  if (sheet.merges.length > 0) patch.push({ op: 'replace', path: '/merges', value: [] })
+  if (next.clearMerges && sheet.merges.length > 0) patch.push({ op: 'replace', path: '/merges', value: [] })
   applyPatch(ops, patch)
 }
 
@@ -166,6 +171,7 @@ const shiftedCellMetadataByCol = (sheet: Sheet, shiftCol: (col: string) => strin
 const insertRowPatch = (sheet: Sheet, atRow: number) => {
   const shiftRow = (row: number) => rowAfterInsert(row, atRow, sheet.rowCount)
   return {
+    clearMerges: true,
     cells: cellsInBounds(insertRowOp(sheet.cells, atRow, sheet.rowCount), sheet),
     ...shiftedCellMetadataByRow(sheet, shiftRow),
     rowHeights: shiftRowRecord(sheet.rowHeights, shiftRow),
@@ -176,6 +182,7 @@ const insertRowPatch = (sheet: Sheet, atRow: number) => {
 const deleteRowPatch = (sheet: Sheet, atRow: number) => {
   const shiftRow = (row: number) => rowAfterDelete(row, atRow)
   return {
+    clearMerges: true,
     cells: cellsInBounds(deleteRowOp(sheet.cells, atRow), sheet),
     ...shiftedCellMetadataByRow(sheet, shiftRow),
     rowHeights: shiftRowRecord(sheet.rowHeights, shiftRow),
@@ -186,6 +193,7 @@ const deleteRowPatch = (sheet: Sheet, atRow: number) => {
 const insertColPatch = (sheet: Sheet, atCol: number) => {
   const shiftCol = (col: string) => colAfterInsert(col, atCol, sheet.colCount)
   return {
+    clearMerges: true,
     cells: cellsInBounds(insertColOp(sheet.cells, atCol), sheet),
     ...shiftedCellMetadataByCol(sheet, shiftCol),
     condFormat: shiftCondFormat(sheet.condFormat, shiftCol),
@@ -197,6 +205,7 @@ const insertColPatch = (sheet: Sheet, atCol: number) => {
 const deleteColPatch = (sheet: Sheet, atCol: number) => {
   const shiftCol = (col: string) => colAfterDelete(col, atCol, sheet.colCount)
   return {
+    clearMerges: true,
     cells: cellsInBounds(deleteColOp(sheet.cells, atCol), sheet),
     ...shiftedCellMetadataByCol(sheet, shiftCol),
     condFormat: shiftCondFormat(sheet.condFormat, shiftCol),
@@ -209,11 +218,13 @@ const sortPatch = (sheet: Sheet, col: string, dir: 'asc' | 'desc') => {
   const opts = { col, dir, rowCount: sheet.rowCount, colCount: sheet.colCount }
   const fromRow = 1
   const rowMap = new Map<number, number>()
-  sortRowOrder(sheet.cells, opts).forEach((sourceRow, index) => {
+  const rowOrder = sortRowOrder(sheet.cells, opts)
+  rowOrder.forEach((sourceRow, index) => {
     rowMap.set(sourceRow, fromRow + index)
   })
   const shiftRow = (row: number) => rowMap.get(row) ?? row
   return {
+    clearMerges: rowOrder.some((sourceRow, index) => sourceRow !== fromRow + index),
     cells: cellsInBounds(sortByColumn(sheet.cells, opts), sheet),
     ...shiftedCellMetadataByRow(sheet, shiftRow),
     rowHeights: shiftRowRecord(sheet.rowHeights, shiftRow),
