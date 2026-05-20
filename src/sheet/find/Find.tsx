@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 import { cellIdToKey, type WriteCell, type Display, type Cells } from '../schema'
 import { useFind } from './useFind'
+import { replaceFindText } from './findRegex'
 
 interface Props {
   open: boolean
@@ -33,11 +34,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, s
 
   if (!open) return null
 
-  const sub = (s: string): string => {
-    if (regex) { try { return s.replace(new RegExp(q, caseSensitive ? 'g' : 'gi'), r) } catch { return s } }
-    if (caseSensitive) return s.split(q).join(r)
-    return s.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), r)
-  }
+  const sub = (s: string): string => replaceFindText(s, q, r, { caseSensitive, regex })
   const replaceOne = () => {
     if (!current || !q) return
     const k = cellIdToKey(current)

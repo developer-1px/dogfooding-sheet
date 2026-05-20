@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { cellKey, cellId, colIndex, type Cells, type Display } from '../schema'
+import { makeFindMatcher } from './findRegex'
 
 interface Args {
   query: string
@@ -18,9 +19,7 @@ export function useFind({ query, cells, display, onJump, caseSensitive = false, 
 
   const matches = useMemo(() => {
     if (!query) return []
-    const test: (s: string) => boolean = regex
-      ? (() => { try { const re = new RegExp(query, caseSensitive ? '' : 'i'); return (s) => re.test(s) } catch { return () => false } })()
-      : (() => { const fold = (s: string) => caseSensitive ? s : s.toLowerCase(); const needle = fold(query); return (s) => fold(s).includes(needle) })()
+    const test = makeFindMatcher(query, { caseSensitive, regex })
     const out: string[] = []
     for (let row = 0; row < rowCount; row++) {
       for (const c of colLetters) {
