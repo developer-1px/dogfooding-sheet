@@ -43,6 +43,11 @@ describe('evaluateCell', () => {
     expect(evaluateCell(cells({ A1: '=1/0' }), '=SUM(A1, 2)')).toBe('#DIV/0!')
   })
 
+  it('rejects oversized ranges before expanding refs', () => {
+    expect(evaluateCell({}, '=SUM(A1:A26001)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=IFERROR(SUM(A1:A26001), "too-large")')).toBe('too-large')
+  })
+
   it('AVERAGE / MIN / MAX / COUNT', () => {
     const c = cells({ A1: '4', A2: '8', A3: '6' })
     expect(evaluateCell(c, '=AVERAGE(A1:A3)')).toBe('6')
@@ -130,6 +135,9 @@ describe('refsInFormula', () => {
   it('expands ranges', () => {
     expect(refsInFormula('=SUM(A1:A3)')).toEqual(['A1', 'A2', 'A3'])
     expect(refsInFormula('=SUM($A$1:$A$3)')).toEqual(['A1', 'A2', 'A3'])
+  })
+  it('returns no highlights for oversized ranges', () => {
+    expect(refsInFormula('=SUM(A1:A26001)')).toEqual([])
   })
   it('returns empty for non-formulas', () => {
     expect(refsInFormula('hello')).toEqual([])

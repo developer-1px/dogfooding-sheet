@@ -1,10 +1,11 @@
 import type { Cells } from '../a1'
-import { ABS_A1_RE, FUNC_RE } from './parse'
+import { ABS_A1_RE, FUNC_RE, RangeLimitError } from './parse'
 import { dispatch, stripText, TM } from './dispatch'
 import { coerceNumber } from './coerce'
 import type { Ctx, EvalCell } from './args'
 
 const CYCLE_ERROR = '#CYCLE!'
+const VALUE_ERROR = '#VALUE!'
 const LAZY_FUNCTIONS = new Set(['IF', 'IFERROR', 'IFNA', 'CHOOSE', 'IFEMPTY', 'COALESCE', 'IFS', 'SWITCH'])
 
 class FormulaCycleError extends Error {}
@@ -16,6 +17,7 @@ const evalCellFactory = (cells: Cells, seen: Set<string>): EvalCell => (ref: str
     return evaluate(cells, cells[ref] ?? '', seen)
   } catch (error) {
     if (error instanceof FormulaCycleError) return CYCLE_ERROR
+    if (error instanceof RangeLimitError) return VALUE_ERROR
     throw error
   } finally {
     seen.delete(ref)
@@ -184,7 +186,21 @@ const replaceLazyCall = (expr: string, c: Ctx): string => {
 const createContext = (cells: Cells, seen: Set<string>) => {
   const evalCell = evalCellFactory(cells, seen)
   const numFromCell = numFromCellFactory(evalCell)
-  return { cells, seen, numFromCell, evalCell, evalRaw: (r: string) => evaluate(cells, r, seen) }
+  return {
+    cells,
+    seen,
+    numFromCell,
+    evalCell,
+    evalRaw: (r: string) => {
+      try {
+        return evaluate(cells, r, seen)
+      } catch (error) {
+        if (error instanceof FormulaCycleError) return CYCLE_ERROR
+        if (error instanceof RangeLimitError) return VALUE_ERROR
+        throw error
+      }
+    },
+  }
 }
 
 function evaluate(cells: Cells, raw: string, seen: Set<string> = new Set()): string {
@@ -223,6 +239,7 @@ export const evaluateCell = (cells: Cells, raw: string) => {
     return evaluate(cells, raw)
   } catch (error) {
     if (error instanceof FormulaCycleError) return CYCLE_ERROR
+    if (error instanceof RangeLimitError) return VALUE_ERROR
     throw error
   }
 }
