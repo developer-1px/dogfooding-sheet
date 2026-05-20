@@ -10,8 +10,18 @@ export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'no-targ
 export type ToolbarStyleFlag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
 export type ToolbarAlignment = CellStyle['a']
 
-export const targetCellKeys = (selectedIds: readonly string[], focusKey: string | null): string[] =>
-  (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map(cellIdToKey)
+export const targetCellKeys = (selectedIds: readonly string[], focusKey: string | null): string[] => {
+  const rawKeys = (selectedIds.length > 0 ? selectedIds.map(cellIdToKey) : focusKey ? [focusKey] : [])
+  const keys: string[] = []
+  const seen = new Set<string>()
+  for (const key of rawKeys) {
+    const parsed = parseA1(key)
+    if (!parsed || parsed.row < 0 || seen.has(key)) continue
+    seen.add(key)
+    keys.push(key)
+  }
+  return keys
+}
 
 export const validationOptionsFromCsv = (csv: string): string[] =>
   normalizeValidationOptions(csv.split(','))

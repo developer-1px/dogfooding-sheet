@@ -28,6 +28,11 @@ describe('toolbarActions', () => {
     expect(targetCellKeys([], null)).toEqual([])
   })
 
+  it('deduplicates and drops invalid toolbar target keys', () => {
+    expect(targetCellKeys(['r0-A', 'r0-A', 'bad-id', 'r1-B'], 'C3')).toEqual(['A1', 'B2'])
+    expect(targetCellKeys([], 'A0')).toEqual([])
+  })
+
   it('parses comma-separated validation options', () => {
     expect(validationOptionsFromCsv(' open,closed,  pending ,,')).toEqual(['open', 'closed', 'pending'])
     expect(validationOptionsFromCsv('open,open,' + 'x'.repeat(10_001))).toEqual(['open'])
