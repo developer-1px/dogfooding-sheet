@@ -40,7 +40,6 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
     hiddenRowSet,
     hiddenRows: hiddenRowsManual,
     hiddenCols,
-    hideRow,
   } = ctx
   const hiSet = new Set(highlightedIds)
   const { cellMenu, getCellCtxHandlers, onHeaderContextMenu, onRowHeaderContextMenu } = useGridContextMenu(ctx)
@@ -139,7 +138,6 @@ export function Grid({ ctx }: { ctx: SheetCtx }) {
             startEdit={startEdit}
             commitEdit={commitEdit}
             cancelEdit={cancelEdit}
-            hideRow={hideRow}
             styleOf={styleOf}
             noteOf={noteOf}
             rawOf={(k) => sheet.cells[k]}
