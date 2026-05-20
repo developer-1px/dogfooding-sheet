@@ -354,6 +354,17 @@ describe('Vector ops', () => {
     expect(evaluateCell(cells, '=SUMX2MY2(A1:A3, B1:B3)')).toBe('-63')
     expect(evaluateCell(cells, '=SUMX2PY2(A1:A3, B1:B3)')).toBe('91')
   })
+  it('handles max-size vector ranges without numeric side arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const lastB = `B${MAX_EXPANDED_REFS}`
+    const cells = { A1: '1', B1: '4', [last]: '2', [lastB]: '6' }
+
+    expect(evaluateCell(cells, `=DOTPROD(A1:${last}, B1:${lastB})`)).toBe('16')
+    expect(evaluateCell(cells, `=EUCLIDEAN(A1:${last}, B1:${lastB})`)).toBe('5')
+    expect(evaluateCell(cells, `=SUMXMY2(A1:${last}, B1:${lastB})`)).toBe('25')
+    expect(evaluateCell(cells, `=SUMX2MY2(A1:${last}, B1:${lastB})`)).toBe('-47')
+    expect(evaluateCell(cells, `=SUMX2PY2(A1:${last}, B1:${lastB})`)).toBe('57')
+  })
 })
 
 describe('RSQ', () => {
