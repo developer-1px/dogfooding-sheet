@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseCsv, exportCsv, importCsvInto } from './csv'
+import { parseCsv, exportCsv, importCsvInto, importCsvRowsInto } from './csv'
 
 describe('parseCsv', () => {
   it('parses simple rows', () => {
@@ -13,6 +13,12 @@ describe('parseCsv', () => {
   })
   it('handles CRLF', () => {
     expect(parseCsv('a,b\r\n1,2')).toEqual([['a', 'b'], ['1', '2']])
+  })
+  it('handles empty quoted fields', () => {
+    expect(parseCsv('"",x')).toEqual([['', 'x']])
+  })
+  it('rejects unterminated quoted fields', () => {
+    expect(() => parseCsv('a,"b')).toThrow('Invalid CSV')
   })
 })
 
@@ -35,6 +41,11 @@ describe('importCsvInto', () => {
   it('writes parsed cells via callback', () => {
     const written: Record<string, string> = {}
     importCsvInto('a,b\n1,2', (k, v) => { written[k] = v }, { rowCount: 20 })
+    expect(written).toEqual({ A1: 'a', B1: 'b', A2: '1', B2: '2' })
+  })
+  it('writes already parsed rows without reparsing', () => {
+    const written: Record<string, string> = {}
+    importCsvRowsInto([['a', 'b'], ['1', '2']], (k, v) => { written[k] = v }, { rowCount: 20 })
     expect(written).toEqual({ A1: 'a', B1: 'b', A2: '1', B2: '2' })
   })
 })

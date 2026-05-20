@@ -1,4 +1,4 @@
-import { exportCsv, importCsvInto, parseCsv } from '../lib/csv'
+import { exportCsv, importCsvRowsInto, parseCsv } from '../lib/csv'
 import type { Confirm } from './useConfirm'
 import { SheetSchema, colLettersFor, type Cells, type Display, type Sheet, type WriteCell, type WriteMany } from './schema'
 
@@ -22,6 +22,14 @@ export interface OverflowMenuItem {
 
 export interface DownloadFile {
   (name: string, content: string): void
+}
+
+export const MAX_IMPORT_FILE_BYTES = 5_000_000
+
+const readImportText = async (file: File): Promise<string | null> => {
+  if (typeof file.size === 'number' && file.size > MAX_IMPORT_FILE_BYTES) return null
+  const text = await file.text()
+  return text.length <= MAX_IMPORT_FILE_BYTES ? text : null
 }
 
 export const overflowMenuItems = (state: { showFormulas: boolean; showGridlines: boolean }): OverflowMenuItem[] => [
@@ -71,14 +79,16 @@ export async function importOverflowCsv({
   writeCell: WriteCell
   writeCells: WriteMany
 }): Promise<boolean> {
-  const text = await file.text()
-  try { parseCsv(text) } catch { return false }
+  const text = await readImportText(file)
+  if (text === null) return false
+  let rows: string[][]
+  try { rows = parseCsv(text) } catch { return false }
   const ok = await confirm({
     message: 'CSV 내용으로 셀을 채우시겠습니까? 기존 셀이 덮어써집니다. (실행 취소 가능)',
     confirmLabel: '가져오기',
   })
   if (!ok) return false
-  importCsvInto(text, writeCell, {
+  importCsvRowsInto(rows, writeCell, {
     rowCount: sheet.rowCount,
     colLetters: colLettersFor(sheet.colCount),
     writeMany: writeCells,
@@ -105,7 +115,8 @@ export async function importOverflowJson({
   confirm: Confirm
   resetSheet: (sheet: Sheet) => void
 }): Promise<boolean> {
-  const text = await file.text()
+  const text = await readImportText(file)
+  if (text === null) return false
   let parsed
   try {
     parsed = SheetSchema.safeParse(JSON.parse(text))

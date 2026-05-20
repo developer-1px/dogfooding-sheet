@@ -4,6 +4,7 @@ import {
   exportOverflowJson,
   importOverflowCsv,
   importOverflowJson,
+  MAX_IMPORT_FILE_BYTES,
   overflowMenuItemId,
   overflowMenuItems,
   runOverflowMenuCommand,
@@ -11,7 +12,7 @@ import {
 import { initialSheet, type Sheet } from './schema'
 import type { Confirm, ConfirmOptions } from './useConfirm'
 
-const textFile = (text: string): File => ({ text: () => Promise.resolve(text) }) as File
+const textFile = (text: string, size = text.length): File => ({ size, text: () => Promise.resolve(text) }) as File
 
 function confirmValue(value: boolean, prompts: ConfirmOptions[] = []): Confirm {
   return (opts) => {
@@ -70,6 +71,30 @@ describe('overflowMenuActions', () => {
     expect(writes).toEqual([])
   })
 
+  it('rejects malformed or oversized CSV before confirmation', async () => {
+    const writes: string[] = []
+    const prompts: ConfirmOptions[] = []
+
+    await expect(importOverflowCsv({
+      file: textFile('a,"b'),
+      confirm: confirmValue(true, prompts),
+      sheet: { rowCount: 20, colCount: 2 },
+      writeCell: (key, value) => writes.push(`cell:${key}:${value}`),
+      writeCells: (batch) => writes.push(`batch:${batch.length}`),
+    })).resolves.toBe(false)
+
+    await expect(importOverflowCsv({
+      file: textFile('a,b', MAX_IMPORT_FILE_BYTES + 1),
+      confirm: confirmValue(true, prompts),
+      sheet: { rowCount: 20, colCount: 2 },
+      writeCell: (key, value) => writes.push(`cell:${key}:${value}`),
+      writeCells: (batch) => writes.push(`batch:${batch.length}`),
+    })).resolves.toBe(false)
+
+    expect(prompts).toEqual([])
+    expect(writes).toEqual([])
+  })
+
   it('exports and imports JSON sheets', async () => {
     const downloads: Array<{ name: string; content: string }> = []
     const resets: Sheet[] = []
@@ -93,20 +118,28 @@ describe('overflowMenuActions', () => {
 
   it('skips invalid or rejected JSON imports', async () => {
     const resets: Sheet[] = []
+    const prompts: ConfirmOptions[] = []
 
     await expect(importOverflowJson({
       file: textFile('{bad'),
-      confirm: confirmValue(true),
+      confirm: confirmValue(true, prompts),
+      resetSheet: (sheet) => resets.push(sheet),
+    })).resolves.toBe(false)
+
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify(initialSheet), MAX_IMPORT_FILE_BYTES + 1),
+      confirm: confirmValue(true, prompts),
       resetSheet: (sheet) => resets.push(sheet),
     })).resolves.toBe(false)
 
     await expect(importOverflowJson({
       file: textFile(JSON.stringify(initialSheet)),
-      confirm: confirmValue(false),
+      confirm: confirmValue(false, prompts),
       resetSheet: (sheet) => resets.push(sheet),
     })).resolves.toBe(false)
 
     expect(resets).toEqual([])
+    expect(prompts).toHaveLength(1)
   })
 
   it('dispatches simple menu commands', async () => {

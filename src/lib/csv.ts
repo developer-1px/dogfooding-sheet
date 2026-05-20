@@ -35,30 +35,34 @@ export function parseCsv(text: string): string[][] {
   let cur: string[] = []
   let buf = ''
   let inQ = false
+  let quoteClosed = false
   for (let i = 0; i < text.length; i++) {
     const ch = text[i]
     if (inQ) {
       if (ch === '"') {
         if (text[i + 1] === '"') { buf += '"'; i++ }
-        else inQ = false
+        else { inQ = false; quoteClosed = true }
       } else buf += ch
     } else {
-      if (ch === '"') inQ = true
-      else if (ch === ',') { cur.push(buf); buf = '' }
+      if (quoteClosed && ch !== ',' && ch !== '\n' && ch !== '\r') throw new Error('Invalid CSV')
+      if (ch === '"') {
+        if (buf) buf += ch
+        else inQ = true
+      } else if (ch === ',') { cur.push(buf); buf = ''; quoteClosed = false }
       else if (ch === '\n' || ch === '\r') {
         if (ch === '\r' && text[i + 1] === '\n') i++
-        cur.push(buf); buf = ''
+        cur.push(buf); buf = ''; quoteClosed = false
         rows.push(cur); cur = []
       } else buf += ch
     }
   }
-  if (buf || cur.length) { cur.push(buf); rows.push(cur) }
+  if (inQ) throw new Error('Invalid CSV')
+  if (buf || cur.length || quoteClosed) { cur.push(buf); rows.push(cur) }
   return rows
 }
 
-export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
+export function importCsvRowsInto(rows: readonly (readonly string[])[], write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
   const colLetters = opts.colLetters ?? COL_LETTERS
-  const rows = parseCsv(text)
   const writes: Writes = []
   for (let r = 0; r < rows.length && r < opts.rowCount; r++) {
     for (let c = 0; c < rows[r].length && c < colLetters.length; c++) {
@@ -67,6 +71,10 @@ export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: 
   }
   if (writes.length === 0) return
   if (opts.writeMany) opts.writeMany(writes); else for (const [k, v] of writes) write(k, v)
+}
+
+export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
+  importCsvRowsInto(parseCsv(text), write, opts)
 }
 
 export function downloadFile(name: string, content: string) {
