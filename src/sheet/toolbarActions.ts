@@ -4,7 +4,7 @@ import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './formatting/useS
 import type { Filter } from './visibility/useFilter'
 import type { ValidationActions } from './validation/useValidation'
 import type { Ask } from './usePrompt'
-import { cellIdToKey, cellKey, parseA1, type Display, type WriteCell } from './schema'
+import { cellIdToKey, cellKey, normalizeValidationOptions, parseA1, type Display, type WriteCell } from './schema'
 
 export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'no-target'
 export type ToolbarStyleFlag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
@@ -14,7 +14,7 @@ export const targetCellKeys = (selectedIds: readonly string[], focusKey: string 
   (selectedIds.length > 0 ? selectedIds : focusKey ? [focusKey] : []).map(cellIdToKey)
 
 export const validationOptionsFromCsv = (csv: string): string[] =>
-  csv.split(',').map((s) => s.trim()).filter(Boolean)
+  normalizeValidationOptions(csv.split(','))
 
 export function applyToolbarAutoSum({
   focusKey,

@@ -32,7 +32,7 @@ const CellStyleSchema = z.object({
 })
 
 const COLOR_RE = /^#[0-9a-fA-F]{3,8}$/
-const MAX_VALIDATION_OPTIONS = 100
+export const MAX_VALIDATION_OPTIONS = 100
 
 export const normalizeSheetName = (name: string): string | null => {
   const trimmed = name.trim()
@@ -103,11 +103,11 @@ const sanitizeCellScopedRecord = <V>(
     return next === undefined ? [] : [[key, next]]
   }))
 
-const uniqueSafeStrings = (values: readonly string[]): string[] => {
+export const normalizeValidationOptions = (values: readonly unknown[]): string[] => {
   const out: string[] = []
   const seen = new Set<string>()
   for (const raw of values) {
-    const value = raw.trim()
+    const value = String(raw).trim()
     if (value === '' || !isSafeCellText(value) || seen.has(value)) continue
     seen.add(value)
     out.push(value)
@@ -122,7 +122,7 @@ const sanitizeValidation = (
 ): RawTabBundle['validation'] =>
   sanitizeCellScopedRecord(rules, bundle, (rule) => {
     if (rule.type === 'checkbox') return rule
-    const options = uniqueSafeStrings(rule.options)
+    const options = normalizeValidationOptions(rule.options)
     return options.length > 0 ? { type: 'list', options } : undefined
   })
 

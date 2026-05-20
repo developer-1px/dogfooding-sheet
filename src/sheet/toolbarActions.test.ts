@@ -30,6 +30,7 @@ describe('toolbarActions', () => {
 
   it('parses comma-separated validation options', () => {
     expect(validationOptionsFromCsv(' open,closed,  pending ,,')).toEqual(['open', 'closed', 'pending'])
+    expect(validationOptionsFromCsv('open,open,' + 'x'.repeat(10_001))).toEqual(['open'])
   })
 
   it('applies an auto-sum formula at the focused cell', () => {

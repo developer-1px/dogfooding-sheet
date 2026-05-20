@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { checkboxConversionPatch, normalizeCheckboxValue } from './useValidation'
+import { coerceLegacyValidationRules, checkboxConversionPatch, normalizeCheckboxValue } from './useValidation'
+import { MAX_CELL_TEXT_LENGTH } from '../cellValue'
+import { MAX_VALIDATION_OPTIONS } from '../schema'
 
 describe('checkbox validation conversion', () => {
   it('normalizes existing values for checkbox cells', () => {
@@ -21,5 +23,35 @@ describe('checkbox validation conversion', () => {
       { op: 'add', path: '/validation/C1', value: { type: 'checkbox' } },
       { op: 'add', path: '/cells/C1', value: 'FALSE' },
     ])
+  })
+
+  it('coerces legacy validation through current rule limits', () => {
+    const migrated = coerceLegacyValidationRules({
+      A1: { type: 'list', options: [' open ', 'open', '', 'x'.repeat(MAX_CELL_TEXT_LENGTH + 1), 'closed'] },
+      B1: { type: 'checkbox' },
+      C1: { type: 'unknown' },
+      C2: { type: 'list', options: [] },
+      Z99: { type: 'checkbox' },
+      'bad/key': { type: 'checkbox' },
+    }, { rowCount: 2, colCount: 2 })
+
+    expect(migrated).toEqual({
+      A1: { type: 'list', options: ['open', 'closed'] },
+      B1: { type: 'checkbox' },
+    })
+  })
+
+  it('caps legacy list options', () => {
+    const migrated = coerceLegacyValidationRules({
+      A1: {
+        type: 'list',
+        options: Array.from({ length: MAX_VALIDATION_OPTIONS + 10 }, (_v, i) => `opt-${i}`),
+      },
+    })
+
+    expect(migrated?.A1).toEqual({
+      type: 'list',
+      options: Array.from({ length: MAX_VALIDATION_OPTIONS }, (_v, i) => `opt-${i}`),
+    })
   })
 })
