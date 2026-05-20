@@ -143,6 +143,16 @@ describe('math functions', () => {
     expect(evaluateCell({}, '=HEX2OCT("F")')).toBe('17')
   })
 
+  it('base conversions reject invalid radices and digits', () => {
+    expect(evaluateCell({}, '=BASE(10, 2.5)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=BASE("x", 2)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=DECIMAL("10", 1)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=DECIMAL("102", 2)')).toBe('#NUM!')
+    expect(evaluateCell({}, '=BIN2DEC("102")')).toBe('#NUM!')
+    expect(evaluateCell({}, '=HEX2BIN("FG")')).toBe('#NUM!')
+    expect(evaluateCell({}, '=DEC2BIN("x")')).toBe('#NUM!')
+  })
+
   it('ROMAN / ARABIC round-trip', () => {
     expect(evaluateCell({}, '=ROMAN(1994)')).toBe('MCMXCIV')
     expect(evaluateCell({}, '=ARABIC("MCMXCIV")')).toBe('1994')

@@ -1,25 +1,49 @@
 import { wrap } from './marker'
 import { boundedPadStart } from './textLimit'
 
+const DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+const isValidRadix = (radix: number): boolean =>
+  Number.isInteger(radix) && radix >= 2 && radix <= 36
+
+const parseBaseInteger = (value: string, radix: number): number | null => {
+  if (!isValidRadix(radix)) return null
+  const text = value.trim().toUpperCase()
+  const body = text.replace(/^[+-]/, '')
+  if (body === '') return null
+  for (let i = 0; i < body.length; i++) {
+    const digit = DIGITS.indexOf(body[i])
+    if (digit < 0 || digit >= radix) return null
+  }
+  const n = parseInt(text, radix)
+  return Number.isFinite(n) ? n : null
+}
+
+const formatBaseInteger = (value: number, radix: number): string | null => {
+  if (!Number.isFinite(value) || !isValidRadix(radix)) return null
+  return Math.floor(value).toString(radix).toUpperCase()
+}
+
 export function dispatchBaseConv(F: string, argsT: string[], argsN: number[]): string | null {
   if (F === 'BASE') {
     const [n, base, minLen = 0] = argsN
-    if (base < 2 || base > 36) return wrap('#NUM!')
-    return wrap(boundedPadStart(Math.floor(n).toString(base).toUpperCase(), minLen, '0') ?? '#VALUE!')
+    const value = formatBaseInteger(n, base)
+    if (value === null) return wrap('#NUM!')
+    return wrap(boundedPadStart(value, minLen, '0') ?? '#VALUE!')
   }
-  if (F === 'DECIMAL') { const n = parseInt(argsT[0] ?? '', argsN[1]); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
-  if (F === 'HEX2DEC') { const n = parseInt(argsT[0] ?? '', 16); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
-  if (F === 'DEC2HEX') return wrap(Math.floor(argsN[0]).toString(16).toUpperCase())
-  if (F === 'BIN2HEX') { const n = parseInt(argsT[0] ?? '', 2); return Number.isFinite(n) ? wrap(n.toString(16).toUpperCase()) : wrap('#NUM!') }
-  if (F === 'HEX2BIN') { const n = parseInt(argsT[0] ?? '', 16); return Number.isFinite(n) ? wrap(n.toString(2)) : wrap('#NUM!') }
-  if (F === 'OCT2BIN') { const n = parseInt(argsT[0] ?? '', 8); return Number.isFinite(n) ? wrap(n.toString(2)) : wrap('#NUM!') }
-  if (F === 'OCT2HEX') { const n = parseInt(argsT[0] ?? '', 8); return Number.isFinite(n) ? wrap(n.toString(16).toUpperCase()) : wrap('#NUM!') }
-  if (F === 'BIN2OCT') { const n = parseInt(argsT[0] ?? '', 2); return Number.isFinite(n) ? wrap(n.toString(8)) : wrap('#NUM!') }
-  if (F === 'HEX2OCT') { const n = parseInt(argsT[0] ?? '', 16); return Number.isFinite(n) ? wrap(n.toString(8)) : wrap('#NUM!') }
-  if (F === 'OCT2DEC') { const n = parseInt(argsT[0] ?? '', 8); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
-  if (F === 'DEC2OCT') return wrap(Math.floor(argsN[0]).toString(8))
-  if (F === 'BIN2DEC') { const n = parseInt(argsT[0] ?? '', 2); return Number.isFinite(n) ? String(n) : wrap('#NUM!') }
-  if (F === 'DEC2BIN') return wrap(Math.floor(argsN[0]).toString(2))
+  if (F === 'DECIMAL') { const n = parseBaseInteger(argsT[0] ?? '', argsN[1]); return n === null ? wrap('#NUM!') : String(n) }
+  if (F === 'HEX2DEC') { const n = parseBaseInteger(argsT[0] ?? '', 16); return n === null ? wrap('#NUM!') : String(n) }
+  if (F === 'DEC2HEX') { const value = formatBaseInteger(argsN[0], 16); return value === null ? wrap('#NUM!') : wrap(value) }
+  if (F === 'BIN2HEX') { const n = parseBaseInteger(argsT[0] ?? '', 2); return n === null ? wrap('#NUM!') : wrap(n.toString(16).toUpperCase()) }
+  if (F === 'HEX2BIN') { const n = parseBaseInteger(argsT[0] ?? '', 16); return n === null ? wrap('#NUM!') : wrap(n.toString(2)) }
+  if (F === 'OCT2BIN') { const n = parseBaseInteger(argsT[0] ?? '', 8); return n === null ? wrap('#NUM!') : wrap(n.toString(2)) }
+  if (F === 'OCT2HEX') { const n = parseBaseInteger(argsT[0] ?? '', 8); return n === null ? wrap('#NUM!') : wrap(n.toString(16).toUpperCase()) }
+  if (F === 'BIN2OCT') { const n = parseBaseInteger(argsT[0] ?? '', 2); return n === null ? wrap('#NUM!') : wrap(n.toString(8)) }
+  if (F === 'HEX2OCT') { const n = parseBaseInteger(argsT[0] ?? '', 16); return n === null ? wrap('#NUM!') : wrap(n.toString(8)) }
+  if (F === 'OCT2DEC') { const n = parseBaseInteger(argsT[0] ?? '', 8); return n === null ? wrap('#NUM!') : String(n) }
+  if (F === 'DEC2OCT') { const value = formatBaseInteger(argsN[0], 8); return value === null ? wrap('#NUM!') : wrap(value) }
+  if (F === 'BIN2DEC') { const n = parseBaseInteger(argsT[0] ?? '', 2); return n === null ? wrap('#NUM!') : String(n) }
+  if (F === 'DEC2BIN') { const value = formatBaseInteger(argsN[0], 2); return value === null ? wrap('#NUM!') : wrap(value) }
   if (F === 'ROMAN') {
     let n = Math.floor(argsN[0])
     if (n < 0 || n > 3999) return wrap('#VALUE!')
