@@ -37,10 +37,21 @@ describe('surgical key-path undo (zod-crud audit fix)', () => {
 
   it('Cmd+X (cut) on multi-cell selection is a single undo entry', async () => {
     await act(async () => dom.root.render(createElement(App)))
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: () => Promise.resolve(),
+        readText: () => Promise.resolve(''),
+      },
+    })
     const apple = cellByText('Apple')!; const milk = cellByText('Milk')!
     act(() => click(apple))
     act(() => click(milk, { shiftKey: true }))
-    act(() => press('x', { ctrlKey: true }))
+    await act(async () => {
+      press('x', { ctrlKey: true })
+      await Promise.resolve()
+      await Promise.resolve()
+    })
     expect(cellByText('Apple')).toBeUndefined()
     expect(cellByText('Milk')).toBeUndefined()
     act(() => press('z', { ctrlKey: true }))

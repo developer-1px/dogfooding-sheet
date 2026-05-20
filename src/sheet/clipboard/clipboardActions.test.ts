@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { cellId, MAX_TSV_TEXT_LENGTH, rectToTsv } from '@spredsheet/grid'
-import { copyOrCut, pasteAt, pasteTsvAt, pasteTsvIntoSelection } from './clipboardActions'
+import { copyOrCut, cutSingleCell, pasteAt, pasteTsvAt, pasteTsvIntoSelection } from './clipboardActions'
 
 describe('rectToTsv / pasteTsv roundtrip', () => {
   it('serializes rect to tab-separated rows', () => {
@@ -36,7 +36,7 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
     expect(written).toEqual({ A1: 'x', B1: 'y', A2: 'x', B2: 'y' })
   })
 
-  it('does not clear cells when cut serialization exceeds the clipboard limit', () => {
+  it('does not clear cells when cut serialization exceeds the clipboard limit', async () => {
     let clipboardText = 'unchanged'
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -46,9 +46,47 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       },
     })
     const written: Record<string, string> = {}
-    copyOrCut([cellId('A', 0)], true, { A1: `${'x'.repeat(MAX_TSV_TEXT_LENGTH)}x` }, (k, v) => { written[k] = v })
+    await expect(copyOrCut([cellId('A', 0)], true, { A1: `${'x'.repeat(MAX_TSV_TEXT_LENGTH)}x` }, (k, v) => { written[k] = v })).resolves.toBe(false)
     expect(written).toEqual({})
     expect(clipboardText).toBe('unchanged')
+  })
+
+  it('does not clear cut cells when clipboard write fails', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: () => Promise.reject(new Error('denied')),
+        readText: () => Promise.reject(new Error('denied')),
+      },
+    })
+    const written: Record<string, string> = {}
+
+    await expect(copyOrCut([cellId('A', 0)], true, { A1: 'keep' }, (k, v) => { written[k] = v })).resolves.toBe(false)
+
+    expect(written).toEqual({})
+  })
+
+  it('clears cut cells only after clipboard write succeeds', async () => {
+    let clipboardText = ''
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (text: string) => { clipboardText = text; return Promise.resolve() },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    })
+    const writes: string[] = []
+
+    await expect(copyOrCut(
+      [cellId('A', 0), cellId('B', 0)],
+      true,
+      { A1: 'cut', B1: 'me' },
+      (key, value) => writes.push(`cell:${key}:${value}`),
+      (batch) => writes.push(`batch:${batch.map(([key, value]) => `${key}:${value}`).join('|')}`),
+    )).resolves.toBe(true)
+
+    expect(clipboardText).toBe('cut\tme')
+    expect(writes).toEqual(['batch:A1:|B1:'])
   })
 
   it('adjusts formula references when pasting an internal copy', async () => {
@@ -61,9 +99,8 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       },
     })
     const written: Record<string, string> = {}
-    copyOrCut([cellId('B', 1)], false, { B2: '=A1' }, (k, v) => { written[k] = v })
-    pasteAt('B3', { col: 'B', row: 2 }, 20, (k, v) => { written[k] = v })
-    await Promise.resolve()
+    await copyOrCut([cellId('B', 1)], false, { B2: '=A1' }, (k, v) => { written[k] = v })
+    await pasteAt('B3', { col: 'B', row: 2 }, 20, (k, v) => { written[k] = v })
     expect(written).toEqual({ B3: '=A2' })
   })
 
@@ -77,9 +114,8 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       },
     })
     const written: Record<string, string> = {}
-    copyOrCut([cellId('B', 1)], false, { B2: '=$A$1+A$1+$A1+A1' }, (k, v) => { written[k] = v })
-    pasteAt('C3', { col: 'C', row: 2 }, 20, (k, v) => { written[k] = v })
-    await Promise.resolve()
+    await copyOrCut([cellId('B', 1)], false, { B2: '=$A$1+A$1+$A1+A1' }, (k, v) => { written[k] = v })
+    await pasteAt('C3', { col: 'C', row: 2 }, 20, (k, v) => { written[k] = v })
     expect(written).toEqual({ C3: '=$A$1+B$1+$A2+B2' })
   })
 
@@ -93,8 +129,8 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       },
     })
     const written: Record<string, string> = {}
-    copyOrCut([cellId('B', 1)], false, { B2: '=A1' }, (k, v) => { written[k] = v })
-    pasteAt(
+    await copyOrCut([cellId('B', 1)], false, { B2: '=A1' }, (k, v) => { written[k] = v })
+    await pasteAt(
       'B3',
       { col: 'B', row: 2 },
       20,
@@ -103,7 +139,37 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       undefined,
       [cellId('B', 2), cellId('C', 2), cellId('B', 3), cellId('C', 3)],
     )
-    await Promise.resolve()
     expect(written).toEqual({ B3: '=A2', C3: '=B2', B4: '=A3', C4: '=B3' })
+  })
+
+  it('uses the internal clipboard when clipboard read fails', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: () => Promise.resolve(),
+        readText: () => Promise.reject(new Error('denied')),
+      },
+    })
+    const written: Record<string, string> = {}
+
+    await copyOrCut([cellId('B', 1)], false, { B2: '=A1' }, (k, v) => { written[k] = v })
+    await expect(pasteAt('B3', { col: 'B', row: 2 }, 20, (k, v) => { written[k] = v })).resolves.toBe(true)
+
+    expect(written).toEqual({ B3: '=A2' })
+  })
+
+  it('does not clear a single cut cell when clipboard write fails', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: () => Promise.reject(new Error('denied')),
+        readText: () => Promise.reject(new Error('denied')),
+      },
+    })
+    const written: Record<string, string> = {}
+
+    await expect(cutSingleCell('keep', 'A1', (k, v) => { written[k] = v })).resolves.toBe(false)
+
+    expect(written).toEqual({})
   })
 })
