@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import type { SheetOps } from '../schema'
 import { upsertKey } from '../../lib/dictOps'
+import { migrateLegacyKey } from '../../lib/legacyMigrate'
 import { ROW_HEIGHT_BOUNDS, clampResizeValue, storedResizeValue } from './resizeRules'
 
+const LEGACY_KEY = 'spreadsheet:rowheights:v1'
 export const DEFAULT_HEIGHT = 28
 export const MIN_HEIGHT = ROW_HEIGHT_BOUNDS.min
 
@@ -13,9 +15,26 @@ interface RowHeightBounds {
 const validRow = (row: number, bounds?: RowHeightBounds): boolean =>
   Number.isInteger(row) && row >= 0 && (bounds === undefined || row < bounds.rowCount)
 
+const validRowKey = (key: string, bounds?: RowHeightBounds): boolean =>
+  /^\d+$/.test(key) && validRow(Number(key), bounds)
+
 export const storedRowHeight = (height: number): number | undefined => {
   const normalized = Number.isFinite(height) ? storedResizeValue(height, ROW_HEIGHT_BOUNDS) : DEFAULT_HEIGHT
   return normalized === DEFAULT_HEIGHT ? undefined : normalized
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+export const coerceRowHeights = (raw: unknown, bounds?: RowHeightBounds): Record<string, number> | undefined => {
+  if (!isRecord(raw)) return undefined
+  const out: Record<string, number> = {}
+  for (const [row, value] of Object.entries(raw)) {
+    if (typeof value !== 'number' || !validRowKey(row, bounds)) continue
+    const height = storedRowHeight(value)
+    if (height !== undefined) out[row] = height
+  }
+  return Object.keys(out).length > 0 ? out : undefined
 }
 
 export const setRowHeightValue = (
@@ -30,9 +49,16 @@ export const setRowHeightValue = (
   upsertKey(ops, '/rowHeights', heights, String(row), stored)
 }
 
+const migrateLegacy = (heights: Record<string, number>, ops: SheetOps, bounds?: RowHeightBounds) =>
+  migrateLegacyKey(LEGACY_KEY, Object.keys(heights).length === 0, ops,
+    (raw) => coerceRowHeights(raw, bounds),
+    (o, v) => o.replace('/rowHeights', v),
+  )
+
 export function useRowHeights(heights: Record<string, number>, ops: SheetOps, bounds?: RowHeightBounds) {
   const [live, setLive] = useState<{ row: number; h: number } | null>(null)
-  useEffect(() => { /* migration slot kept for parity */ }, [])
+  const rowCount = bounds?.rowCount
+  useEffect(() => { migrateLegacy(heights, ops, rowCount === undefined ? undefined : { rowCount }) }, [heights, ops, rowCount])
 
   const heightOf = (row: number): number =>
     live && live.row === row ? live.h : (heights[String(row)] ?? DEFAULT_HEIGHT)

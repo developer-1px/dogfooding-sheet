@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SheetOps } from '../schema'
-import { DEFAULT_HEIGHT, MIN_HEIGHT, setRowHeightValue, storedRowHeight } from './useRowHeights'
+import { coerceRowHeights, DEFAULT_HEIGHT, MIN_HEIGHT, setRowHeightValue, storedRowHeight } from './useRowHeights'
 
 const recordingOps = () => {
   const calls: unknown[] = []
@@ -23,6 +23,16 @@ describe('row height writes', () => {
   it('rounds and clamps custom heights before storing them', () => {
     expect(storedRowHeight(31.6)).toBe(32)
     expect(storedRowHeight(1)).toBe(MIN_HEIGHT)
+  })
+
+  it('coerces legacy heights through row bounds and storage rules', () => {
+    expect(coerceRowHeights({
+      0: 12,
+      1: 28,
+      2: 44,
+      bad: 40,
+      3: 'tall',
+    }, { rowCount: 2 })).toEqual({ 0: MIN_HEIGHT })
   })
 
   it('writes only valid rows when bounds are provided', () => {
