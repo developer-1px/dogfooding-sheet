@@ -21,7 +21,7 @@ export interface OverflowMenuItem {
 }
 
 export interface DownloadFile {
-  (name: string, content: string): void
+  (name: string, content: string): boolean
 }
 
 export const MAX_IMPORT_FILE_BYTES = 5_000_000
@@ -63,11 +63,15 @@ export function exportOverflowCsv({
   display: Display
   sheet: Pick<Sheet, 'rowCount' | 'colCount'>
   downloadFile: DownloadFile
-}) {
-  downloadFile('sheet.csv', exportCsv((key) => display(key), {
-    rowCount: sheet.rowCount,
-    colLetters: colLettersFor(sheet.colCount),
-  }))
+}): boolean {
+  try {
+    return downloadFile('sheet.csv', exportCsv((key) => display(key), {
+      rowCount: sheet.rowCount,
+      colLetters: colLettersFor(sheet.colCount),
+    }))
+  } catch {
+    return false
+  }
 }
 
 export async function importOverflowCsv({
@@ -119,8 +123,12 @@ export function exportOverflowJson({
 }: {
   sheet: Sheet
   downloadFile: DownloadFile
-}) {
-  downloadFile('sheet.json', JSON.stringify(sheet, null, 2))
+}): boolean {
+  try {
+    return downloadFile('sheet.json', JSON.stringify(sheet, null, 2))
+  } catch {
+    return false
+  }
 }
 
 export async function importOverflowJson({
@@ -165,9 +173,9 @@ export interface OverflowMenuCommands {
   toggleShowGridlines: () => void
   insertLink: () => void
   print: () => void
-  exportCsv: () => void
+  exportCsv: () => boolean
   openCsvImport: () => void
-  exportJson: () => void
+  exportJson: () => boolean
   openJsonImport: () => void
   confirm: Confirm
   clearCellValues: (cells: Cells) => void
@@ -181,9 +189,9 @@ export async function runOverflowMenuCommand(id: OverflowMenuItemId, commands: O
     else if (id === 'show-gridlines') commands.toggleShowGridlines()
     else if (id === 'link') commands.insertLink()
     else if (id === 'print') commands.print()
-    else if (id === 'csv-export') commands.exportCsv()
+    else if (id === 'csv-export') return commands.exportCsv()
     else if (id === 'csv-import') commands.openCsvImport()
-    else if (id === 'json-export') commands.exportJson()
+    else if (id === 'json-export') return commands.exportJson()
     else if (id === 'json-import') commands.openJsonImport()
     else if (id === 'clear-values') {
       const ok = await commands.confirm({

@@ -39,10 +39,23 @@ describe('overflowMenuActions', () => {
     exportOverflowCsv({
       display: (key) => ({ A1: 'Item', B1: 'Qty', A2: 'Apple', B2: '3' })[key] ?? '',
       sheet: { rowCount: 20, colCount: 3 },
-      downloadFile: (name, content) => downloads.push(`${name}:${content}`),
+      downloadFile: (name, content) => { downloads.push(`${name}:${content}`); return true },
     })
 
     expect(downloads).toEqual(['sheet.csv:Item,Qty\nApple,3'])
+  })
+
+  it('reports export download failures', async () => {
+    expect(exportOverflowCsv({
+      display: () => '',
+      sheet: { rowCount: 1, colCount: 1 },
+      downloadFile: () => false,
+    })).toBe(false)
+
+    expect(exportOverflowJson({
+      sheet: initialSheet,
+      downloadFile: () => { throw new Error('blocked') },
+    })).toBe(false)
   })
 
   it('imports CSV after confirmation through batched writes', async () => {
@@ -173,7 +186,7 @@ describe('overflowMenuActions', () => {
 
     exportOverflowJson({
       sheet: initialSheet,
-      downloadFile: (name, content) => downloads.push({ name, content }),
+      downloadFile: (name, content) => { downloads.push({ name, content }); return true },
     })
 
     expect(downloads[0].name).toBe('sheet.json')
@@ -239,9 +252,9 @@ describe('overflowMenuActions', () => {
       toggleShowGridlines: () => calls.push('gridlines'),
       insertLink: () => calls.push('link'),
       print: () => calls.push('print'),
-      exportCsv: () => calls.push('csv-export'),
+      exportCsv: () => { calls.push('csv-export'); return true },
       openCsvImport: () => calls.push('csv-import'),
-      exportJson: () => calls.push('json-export'),
+      exportJson: () => { calls.push('json-export'); return true },
       openJsonImport: () => calls.push('json-import'),
       confirm: confirmValue(true),
       clearCellValues: () => calls.push('clear-values'),
@@ -268,9 +281,39 @@ describe('overflowMenuActions', () => {
       toggleShowGridlines: () => {},
       insertLink: () => {},
       print: () => { throw new Error('blocked') },
-      exportCsv: () => {},
+      exportCsv: () => true,
       openCsvImport: () => {},
-      exportJson: () => {},
+      exportJson: () => true,
+      openJsonImport: () => {},
+      confirm: confirmValue(true),
+      clearCellValues: () => {},
+      clearAllFormats: () => {},
+    })).resolves.toBe(false)
+
+    await expect(runOverflowMenuCommand('csv-export', {
+      openHelp: () => {},
+      toggleShowFormulas: () => {},
+      toggleShowGridlines: () => {},
+      insertLink: () => {},
+      print: () => {},
+      exportCsv: () => false,
+      openCsvImport: () => {},
+      exportJson: () => true,
+      openJsonImport: () => {},
+      confirm: confirmValue(true),
+      clearCellValues: () => {},
+      clearAllFormats: () => {},
+    })).resolves.toBe(false)
+
+    await expect(runOverflowMenuCommand('json-export', {
+      openHelp: () => {},
+      toggleShowFormulas: () => {},
+      toggleShowGridlines: () => {},
+      insertLink: () => {},
+      print: () => {},
+      exportCsv: () => true,
+      openCsvImport: () => {},
+      exportJson: () => false,
       openJsonImport: () => {},
       confirm: confirmValue(true),
       clearCellValues: () => {},
@@ -288,9 +331,9 @@ describe('overflowMenuActions', () => {
       toggleShowGridlines: () => {},
       insertLink: () => {},
       print: () => {},
-      exportCsv: () => {},
+      exportCsv: () => true,
       openCsvImport: () => {},
-      exportJson: () => {},
+      exportJson: () => true,
       openJsonImport: () => {},
       confirm: confirmValue(true, prompts),
       clearCellValues: (cells) => calls.push(`clear-values:${Object.keys(cells).length}`),
@@ -303,9 +346,9 @@ describe('overflowMenuActions', () => {
       toggleShowGridlines: () => {},
       insertLink: () => {},
       print: () => {},
-      exportCsv: () => {},
+      exportCsv: () => true,
       openCsvImport: () => {},
-      exportJson: () => {},
+      exportJson: () => true,
       openJsonImport: () => {},
       confirm: confirmValue(false, prompts),
       clearCellValues: (cells) => calls.push(`clear-values:${Object.keys(cells).length}`),
