@@ -8,6 +8,12 @@ const divZeroError = (): string => '#DIV/0!'
 const finiteResult = (value: number): string =>
   Number.isFinite(value) ? String(value) : numError()
 
+const meanPrefix = (values: readonly number[], count: number): number => {
+  let sum = 0
+  for (let i = 0; i < count; i++) sum += values[i]
+  return sum / count
+}
+
 /** FORECAST(x, known_y, known_x) — predict y for given x via linear regression. */
 export function forecast(x: number, yStr: string, xStr: string, numFromCell: NumFromCell): string {
   if (!Number.isFinite(x)) return valueError()
@@ -15,8 +21,8 @@ export function forecast(x: number, yStr: string, xStr: string, numFromCell: Num
   const X = collectRefs(xStr).map(numFromCell)
   const n = Math.min(Y.length, X.length)
   if (n === 0) return '#N/A'
-  const my = Y.slice(0, n).reduce((s, v) => s + v, 0) / n
-  const mx = X.slice(0, n).reduce((s, v) => s + v, 0) / n
+  const my = meanPrefix(Y, n)
+  const mx = meanPrefix(X, n)
   let cov = 0, vx = 0
   for (let i = 0; i < n; i++) { const dx = X[i] - mx; cov += dx * (Y[i] - my); vx += dx * dx }
   if (vx === 0) return divZeroError()
@@ -65,8 +71,8 @@ export function pairStat(F: 'COVAR' | 'CORREL' | 'RSQ' | 'SLOPE' | 'INTERCEPT', 
   const B = collectRefs(bStr).map(numFromCell)
   const n = Math.min(A.length, B.length)
   if (n === 0) return '#NUM!'
-  const ma = A.slice(0, n).reduce((s, x) => s + x, 0) / n
-  const mb = B.slice(0, n).reduce((s, x) => s + x, 0) / n
+  const ma = meanPrefix(A, n)
+  const mb = meanPrefix(B, n)
   let cov = 0, va = 0, vb = 0
   for (let i = 0; i < n; i++) {
     const da = A[i] - ma, db = B[i] - mb

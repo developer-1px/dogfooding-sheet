@@ -164,6 +164,16 @@ describe('SLOPE / INTERCEPT', () => {
     expect(evaluateCell(cells, '=SLOPE(A1:A4, B1:B4)')).toBe('2')
     expect(evaluateCell(cells, '=INTERCEPT(A1:A4, B1:B4)')).toBe('1')
   })
+
+  it('handles max-size paired ranges without mean slice arrays', () => {
+    const last = `A${MAX_EXPANDED_REFS}`
+    const lastX = `B${MAX_EXPANDED_REFS}`
+    const cells = { A1: '2', B1: '1', [last]: '4', [lastX]: '2' }
+
+    expect(evaluateCell(cells, `=SLOPE(A1:${last}, B1:${lastX})`)).toBe('2')
+    expect(evaluateCell(cells, `=INTERCEPT(A1:${last}, B1:${lastX})`)).toBe('0')
+    expect(evaluateCell(cells, `=FORECAST(3, A1:${last}, B1:${lastX})`)).toBe('6')
+  })
 })
 
 describe('COVAR / CORREL', () => {
