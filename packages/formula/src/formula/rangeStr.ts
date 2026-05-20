@@ -1,7 +1,7 @@
 import type { Cells } from '../a1'
 import type { EvalCell } from './args'
 import { collectRefs } from './parse'
-import { boundedJoin } from './textLimit'
+import { MAX_GENERATED_TEXT_LENGTH } from './textLimit'
 
 const valueError = (): string => '#VALUE!'
 const hasRangeArg = (value: string | undefined): value is string =>
@@ -10,7 +10,16 @@ const hasRangeArg = (value: string | undefined): value is string =>
 /** ARRAYTOTEXT(range, [sep=", "]) — flatten non-empty values to a separated string. */
 export function arrayToText(rangeStr: string | undefined, sep: string, _cells: Cells, evalCell: EvalCell): string {
   if (!hasRangeArg(rangeStr)) return valueError()
-  return boundedJoin(collectRefs(rangeStr).map(evalCell).filter((v) => v !== ''), sep) ?? valueError()
+  const out: string[] = []
+  let length = 0
+  for (const ref of collectRefs(rangeStr)) {
+    const value = evalCell(ref)
+    if (value === '') continue
+    length += value.length + (out.length > 0 ? sep.length : 0)
+    if (length > MAX_GENERATED_TEXT_LENGTH) return valueError()
+    out.push(value)
+  }
+  return out.join(sep)
 }
 
 export function strStat(F: 'MAXSTR' | 'MINSTR', rangeStr: string | undefined, _cells: Cells, evalCell: EvalCell): string {
