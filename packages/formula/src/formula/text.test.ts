@@ -242,6 +242,9 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=RANDSTRING(1000000000)')).toBe('#VALUE!')
     expect(evaluateCell({ A1: oversized }, '=LPAD(A1, 1, "0")')).toBe('#VALUE!')
     expect(evaluateCell({ A1: oversized }, '=RPAD(A1, 1, "0")')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: oversized }, '=MASK(A1, 1)')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: oversized }, '=TRUNCATE(A1, 20000)')).toBe('#VALUE!')
+    expect(evaluateCell({ A1: oversized }, '=REVERSE(A1)')).toBe('#VALUE!')
   })
   it('caps generated text from string assembly functions', () => {
     const cells = {
