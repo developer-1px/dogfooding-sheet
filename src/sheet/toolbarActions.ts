@@ -1,12 +1,12 @@
 import { autoSumFormula } from '@spredsheet/grid'
 import type { Format } from './formatting/formatTypes'
 import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './formatting/useStyles'
-import type { Filter } from './visibility/useFilter'
+import { normalizeFilterText, type Filter } from './visibility/useFilter'
 import type { ValidationActions } from './validation/useValidation'
 import type { Ask } from './usePrompt'
 import { cellIdToKey, cellKey, isSafeColor, normalizeValidationOptions, parseA1, type Display, type WriteCell } from './schema'
 
-export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'no-target'
+export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'invalid' | 'no-target'
 export type ToolbarStyleFlag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
 export type ToolbarAlignment = CellStyle['a']
 
@@ -61,11 +61,13 @@ export async function promptToolbarFilter({
 
   const text = await ask({ label: `${focus.col}열에서 찾을 값`, initial: filter?.text ?? '', submitLabel: '필터' })
   if (text === null) return 'cancelled'
-  if (text === '') {
+  const normalized = normalizeFilterText(text)
+  if (normalized === null) return 'invalid'
+  if (normalized === '') {
     clearFilter()
     return 'cleared'
   }
-  applyFilter(focus.col, text)
+  applyFilter(focus.col, normalized)
   return 'applied'
 }
 

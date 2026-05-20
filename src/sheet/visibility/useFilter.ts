@@ -1,14 +1,22 @@
 import { useState } from 'react'
 import { cellKey, type Display } from '../schema'
+import { isSafeCellText } from '../cellValue'
 
 export interface Filter { col: string; text: string }
+
+export const normalizeFilterText = (text: string): string | null => {
+  const value = text.trim()
+  if (value === '') return ''
+  return isSafeCellText(value) ? value.toLowerCase() : null
+}
 
 export function useFilter() {
   const [filter, setFilter] = useState<Filter | null>(null)
 
   const apply = (col: string, text: string) => {
-    if (!text) setFilter(null)
-    else setFilter({ col, text: text.toLowerCase() })
+    const normalized = normalizeFilterText(text)
+    if (normalized === '') setFilter(null)
+    else if (normalized !== null) setFilter({ col, text: normalized })
   }
 
   const clear = () => setFilter(null)

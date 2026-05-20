@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import { hiddenRows, matchesWildcard } from './useFilter'
+import { hiddenRows, matchesWildcard, normalizeFilterText } from './useFilter'
+import { MAX_CELL_TEXT_LENGTH } from '../cellValue'
+
+describe('normalizeFilterText', () => {
+  it('trims, lowercases, clears blank input, and rejects oversized input', () => {
+    expect(normalizeFilterText('  Bread  ')).toBe('bread')
+    expect(normalizeFilterText('   ')).toBe('')
+    expect(normalizeFilterText('x'.repeat(MAX_CELL_TEXT_LENGTH + 1))).toBeNull()
+  })
+})
 
 describe('hiddenRows', () => {
   const cells: Record<string, string> = { A1: 'Item', A2: 'Apple', A3: 'Bread', A4: 'Milk' }

@@ -13,6 +13,7 @@ import {
   validationOptionsFromCsv,
 } from './toolbarActions'
 import type { Ask, PromptOptions } from './usePrompt'
+import { MAX_CELL_TEXT_LENGTH } from './cellValue'
 
 function askValue(value: string | null, prompts: PromptOptions[] = []): Ask {
   return (opts) => {
@@ -61,7 +62,7 @@ describe('toolbarActions', () => {
     expect(calls).toEqual([])
   })
 
-  it('prompts for the focused column filter and applies, clears, or skips it', async () => {
+  it('prompts for the focused column filter and applies, clears, rejects, or skips it', async () => {
     const calls: string[] = []
     const prompts: PromptOptions[] = []
 
@@ -90,7 +91,23 @@ describe('toolbarActions', () => {
       clearFilter: () => calls.push('clear'),
     })).resolves.toBe('no-target')
 
-    expect(calls).toEqual(['apply:B:>1', 'clear'])
+    await expect(promptToolbarFilter({
+      ask: askValue(' '.repeat(3)),
+      focusKey: 'B2',
+      filter: null,
+      applyFilter: (col, text) => calls.push(`apply:${col}:${text}`),
+      clearFilter: () => calls.push('clear'),
+    })).resolves.toBe('cleared')
+
+    await expect(promptToolbarFilter({
+      ask: askValue('x'.repeat(MAX_CELL_TEXT_LENGTH + 1)),
+      focusKey: 'B2',
+      filter: null,
+      applyFilter: (col, text) => calls.push(`apply:${col}:${text}`),
+      clearFilter: () => calls.push('clear'),
+    })).resolves.toBe('invalid')
+
+    expect(calls).toEqual(['apply:B:>1', 'clear', 'clear'])
   })
 
   it('prompts for list validation and applies or clears the target keys', async () => {
