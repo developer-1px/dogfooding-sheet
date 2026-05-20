@@ -385,6 +385,10 @@ describe('XLOOKUP', () => {
     expect(evaluateCell(data, '=XLOOKUP("Bread", A1:A3, B1:B3, "n/a", "x")')).toBe('#VALUE!')
     expect(evaluateCell(data, '=XLOOKUP("Bread", A1:A3, B1:B3, "n/a", 0, "x")')).toBe('#VALUE!')
   })
+
+  it('rejects oversized lookup vectors before scanning', () => {
+    expect(evaluateCell({}, '=XLOOKUP("x", A1:A26001, B1:B26001)')).toBe('#VALUE!')
+  })
 })
 
 describe('XMATCH', () => {
@@ -414,6 +418,10 @@ describe('XMATCH', () => {
     expect(evaluateCell(data, '=XMATCH("Bread")')).toBe('#VALUE!')
     expect(evaluateCell(data, '=XMATCH("Bread", A1:A3, "x")')).toBe('#VALUE!')
     expect(evaluateCell(data, '=XMATCH("Bread", A1:A3, 0, "x")')).toBe('#VALUE!')
+  })
+
+  it('rejects oversized match vectors before scanning', () => {
+    expect(evaluateCell({}, '=XMATCH("x", A1:A26001)')).toBe('#VALUE!')
   })
 })
 
@@ -450,6 +458,11 @@ describe('VLOOKUP', () => {
     expect(evaluateCell(data, '=VLOOKUP("Apple", A1:B3, "x")')).toBe('#VALUE!')
     expect(evaluateCell(data, '=VLOOKUP("Apple", A1:B3, 1.5)')).toBe('#VALUE!')
   })
+
+  it('rejects oversized lookup tables before scanning', () => {
+    expect(evaluateCell({}, '=VLOOKUP("x", A1:A26001, 1, FALSE)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=HLOOKUP("x", A1:Z1001, 1, FALSE)')).toBe('#VALUE!')
+  })
 })
 
 describe('INDEX / MATCH', () => {
@@ -479,6 +492,10 @@ describe('INDEX / MATCH', () => {
     expect(evaluateCell(data, '=INDEX(A1:B3, 1.5, 1)')).toBe('#VALUE!')
     expect(evaluateCell(data, '=MATCH("Bread")')).toBe('#VALUE!')
     expect(evaluateCell(data, '=MATCH("Bread", A1:A3, "x")')).toBe('#VALUE!')
+  })
+
+  it('rejects oversized MATCH ranges before scanning', () => {
+    expect(evaluateCell({}, '=MATCH("x", A1:A26001, 0)')).toBe('#VALUE!')
   })
 })
 

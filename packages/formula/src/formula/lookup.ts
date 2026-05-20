@@ -1,8 +1,10 @@
 import type { EvalCell } from './args'
 import type { Cells } from '../a1'
+import type { Rect } from '../rect'
 import { parseRange, evalCell } from './rangeRect'
 import { coerceNumber } from './coerce'
 import { compileWildcardMatcher } from './criteriaMatch'
+import { isSafeArrayShape } from './arraySafety'
 
 
 export { parseRange }
@@ -19,6 +21,21 @@ const hasRangeArg = (value: string | undefined): value is string =>
 const integerArg = (value: number): number | null =>
   Number.isFinite(value) && Number.isInteger(value) ? value : null
 
+type SafeRange =
+  | { ok: true; range: Rect; rows: number; cols: number }
+  | { ok: false; error: '#REF!' | '#VALUE!' }
+
+const safeRange = (rangeStr: string | undefined): SafeRange => {
+  if (!hasRangeArg(rangeStr)) return { ok: false, error: '#VALUE!' }
+  const range = parseRange(rangeStr)
+  if (!range) return { ok: false, error: '#REF!' }
+  const rows = range.rMax - range.rMin + 1
+  const cols = range.cMax - range.cMin + 1
+  return isSafeArrayShape(rows, cols)
+    ? { ok: true, range, rows, cols }
+    : { ok: false, error: '#VALUE!' }
+}
+
 const compareLookupValues = (a: string, b: string): number => {
   const an = coerceNumber(a)
   const bn = coerceNumber(b)
@@ -27,11 +44,9 @@ const compareLookupValues = (a: string, b: string): number => {
 }
 
 const lookupVector = (rangeStr: string | undefined, cells: Cells, evalCellRef: EvalCell): { values: string[], rowMode: boolean } | string => {
-  if (!hasRangeArg(rangeStr)) return valueError()
-  const r = parseRange(rangeStr)
-  if (!r) return '#REF!'
-  const rows = r.rMax - r.rMin + 1
-  const cols = r.cMax - r.cMin + 1
+  const parsed = safeRange(rangeStr)
+  if (!parsed.ok) return parsed.error
+  const { range: r, rows, cols } = parsed
   if (rows > 1 && cols > 1) return '#VALUE!'
   const rowMode = rows > 1
   const len = rowMode ? rows : cols
@@ -69,8 +84,9 @@ export function vlookup(
   if (!hasArg(key) || !hasRangeArg(rangeStr)) return valueError()
   const colIndexArg = integerArg(colIdx)
   if (colIndexArg === null) return valueError()
-  const r = parseRange(rangeStr)
-  if (!r) return '#REF!'
+  const parsed = safeRange(rangeStr)
+  if (!parsed.ok) return parsed.error
+  const r = parsed.range
   const targetCol = r.cMin + colIndexArg - 1
   if (colIndexArg < 1) return valueError()
   if (targetCol > r.cMax) return '#REF!'
@@ -97,8 +113,9 @@ export function hlookup(
   if (!hasArg(key) || !hasRangeArg(rangeStr)) return valueError()
   const rowIndexArg = integerArg(rowIdx)
   if (rowIndexArg === null) return valueError()
-  const r = parseRange(rangeStr)
-  if (!r) return '#REF!'
+  const parsed = safeRange(rangeStr)
+  if (!parsed.ok) return parsed.error
+  const r = parsed.range
   const targetRow = r.rMin + rowIndexArg - 1
   if (rowIndexArg < 1) return valueError()
   if (targetRow > r.rMax) return '#REF!'
@@ -154,8 +171,9 @@ export function index(rangeStr: string | undefined, row: number, col: number, ce
 export function match(key: string | undefined, rangeStr: string | undefined, cells: Cells, evalCellRef: EvalCell, matchType = 1): string {
   if (!hasArg(key) || !hasRangeArg(rangeStr)) return valueError()
   if (!Number.isFinite(matchType) || !Number.isInteger(matchType)) return valueError()
-  const r = parseRange(rangeStr)
-  if (!r) return '#REF!'
+  const parsed = safeRange(rangeStr)
+  if (!parsed.ok) return parsed.error
+  const r = parsed.range
   let pos = 0
   let approximate = '#N/A'
   if (![1, 0, -1].includes(matchType)) return '#VALUE!'
