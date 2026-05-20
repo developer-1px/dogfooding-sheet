@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useJSONDocument } from 'zod-crud'
 import { SheetSchema, colLettersFor, type Writes } from './schema'
 import { loadInitial, saveSheet } from './storage'
-import { useShortcuts } from './useShortcuts'
 import { useFormats } from './formatting/useFormats'
-import { CLEAR_STYLE } from './formatting/useStyles'
 import { useStyles } from './formatting/useStyles'
 import { useFreeze } from './visibility/useFreeze'
 import { useFilter } from './visibility/useFilter'
@@ -12,16 +10,15 @@ import { useHidden } from './visibility/useHidden'
 import { useNotes } from './useNotes'
 import { useValidation } from './validation/useValidation'
 import { useCondFormat } from './formatting/useCondFormat'
-import { exportCsv, downloadFile } from '../lib/csv'
 import { sheetMutations } from './structure/sheetMutations'
 import { useFindState, highlightedIdsFor } from './find/useFindState'
 import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
-import { rowColAtFocus } from './structure/rowColAtFocus'
 import { useRowHeights } from './grid-view/useRowHeights'; import { DEFAULT_WIDTH } from './grid-view/useColWidths'; import { upsertKey } from '../lib/dictOps'; import { useMerges } from './structure/useMerges'; import { mergeSelection } from './structure/mergeSelection'; import { writeCellsBatch } from './writeCells'
 import { useFormulaPick } from './useFormulaPick'
 import { useSheetSelection } from './useSheetSelection'
 import { useSheetPresentation } from './useSheetPresentation'
+import { useSheetShortcutBindings } from './useSheetShortcutBindings'
 
 export type SheetCtx = ReturnType<typeof useSheet>
 
@@ -86,20 +83,17 @@ export function useSheet(opts: { openGoto?: () => void; openNote?: (key?: string
 
   const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops)
 
-  const toggle = (k: 'b' | 'i' | 'u' | 's') => styles.updateStyle(targetKeys(), { [k]: !(edit.focusKey && styles.styleOf(edit.focusKey)?.[k]) })
   const toggleShowFormulas = () => setShowFormulas((v) => !v)
 
-  useShortcuts({
-    editing: edit.editing, focusId: edit.focusId, sheet, rowCount, colLetters, ops, writeCell, writeCells,
-    startEdit: edit.startEdit, selectedIds,
+  useSheetShortcutBindings({
+    editing: edit.editing, focusId: edit.focusId, focusKey: edit.focusKey,
+    startEdit: edit.startEdit, sheet, rowCount, colLetters, ops, writeCell, writeCells,
+    selectedIds, setSelectedIds, setFocusId, setSelectAnchor, targetKeys,
     openFind: find.openFind, openReplace: find.openReplace,
-    openHelp: () => setHelpOpen(true), openGoto: opts.openGoto ?? (() => {}), insertLink: opts.openLink ?? (() => {}),
-    toggleBold: () => toggle('b'), toggleItalic: () => toggle('i'), toggleUnderline: () => toggle('u'), toggleStrike: () => toggle('s'),
-    clearFormat: () => styles.updateStyle(targetKeys(), CLEAR_STYLE),
-    saveCsv: () => downloadFile('sheet.csv', exportCsv(display, { rowCount, colLetters })),
-    setSelectedIds, setFocusId, setSelectAnchor, switchTab: tabFns.cycleTab, display, applyFormat: (f) => fmt.setFormat(targetKeys(), f), editNote: opts.openNote ?? (() => {}),
-    toggleShowFormulas, mergeSelection: () => mergeSelection(selectedIds, edit.focusId, merges),
-    ...rowColAtFocus(edit.focusKey, { insertRow, deleteRow, insertCol, deleteCol, hideRow: hidden.hideRow, hideCol: hidden.hideCol }), showAll: hidden.showAll,
+    openHelp: () => setHelpOpen(true), openGoto: opts.openGoto ?? (() => {}), insertLink: opts.openLink ?? (() => {}), editNote: opts.openNote ?? (() => {}),
+    updateStyle: styles.updateStyle, styleOf: styles.styleOf, setFormat: fmt.setFormat, display, toggleShowFormulas, cycleTab: tabFns.cycleTab,
+    insertRow, deleteRow, insertCol, deleteCol, hideRow: hidden.hideRow, hideCol: hidden.hideCol, showAll: hidden.showAll,
+    addMerge: merges.addMerge, unmergeAt: merges.unmergeAt,
   })
 
   return {
