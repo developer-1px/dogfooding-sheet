@@ -199,6 +199,8 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=LIKE("apple", "ap*")')).toBe('1')
     expect(evaluateCell({}, '=LIKE("apple", "a?ple")')).toBe('1')
     expect(evaluateCell({}, '=LIKE("apple", "ax*")')).toBe('0')
+    expect(evaluateCell({}, '=LIKE("a.b", "a.b")')).toBe('1')
+    expect(evaluateCell({}, '=LIKE("acb", "a.b")')).toBe('0')
   })
   it('SOUNDEX phonetic code', () => {
     expect(evaluateCell({}, '=SOUNDEX("Robert")')).toBe('R163')
@@ -207,6 +209,13 @@ describe('text functions', () => {
   it('LCS longest common subsequence length', () => {
     expect(evaluateCell({}, '=LCS("abcde", "ace")')).toBe('3')
     expect(evaluateCell({}, '=LCS("abc", "xyz")')).toBe('0')
+  })
+  it('rejects oversized text algorithm work', () => {
+    const a = 'a'.repeat(501)
+    const b = 'b'.repeat(501)
+
+    expect(evaluateCell({}, `=LCS("${a}", "${b}")`)).toBe('#VALUE!')
+    expect(evaluateCell({}, `=LEVENSHTEIN("${a}", "${b}")`)).toBe('#VALUE!')
   })
   it('LEVENSHTEIN edit distance', () => {
     expect(evaluateCell({}, '=LEVENSHTEIN("kitten", "sitting")')).toBe('3')
@@ -259,6 +268,14 @@ describe('text functions', () => {
   it('DICE bigram similarity', () => {
     expect(evaluateCell({}, '=DICE("night", "nacht")')).toBe('0.25')
     expect(Number(evaluateCell({}, '=DICE("hello", "hello")'))).toBeCloseTo(1)
+  })
+  it('rejects oversized linear text algorithm input', () => {
+    const text = 'a'.repeat(10001)
+
+    expect(evaluateCell({}, `=LIKE("${text}", "*")`)).toBe('#VALUE!')
+    expect(evaluateCell({}, `=HAMMING("${text}", "${text}")`)).toBe('#VALUE!')
+    expect(evaluateCell({}, `=DICE("${text}", "aa")`)).toBe('#VALUE!')
+    expect(evaluateCell({}, `=SOUNDEX("${text}")`)).toBe('#VALUE!')
   })
   it('EQUALCI case-insensitive equality', () => {
     expect(evaluateCell({}, '=EQUALCI("Hello", "hello")')).toBe('1')
