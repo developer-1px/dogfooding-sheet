@@ -4,7 +4,7 @@ import { dispatchTextCase } from './textCase'
 import { dispatchTextAlgo } from './textAlgo'
 import { dispatchTextOps } from './textOps'
 import { stringifyFormulaArray } from './arraySafety'
-import { MAX_GENERATED_TEXT_LENGTH, boundedJoin, boundedText } from './textLimit'
+import { MAX_GENERATED_TEXT_LENGTH, boundedJoin, boundedLength, boundedText } from './textLimit'
 
 const splitLiteral = (text: string, delimiter: string): string[] =>
   delimiter === '' ? [text] : text.split(delimiter)
@@ -85,6 +85,17 @@ const wrapBounded = (value: string): string => wrap(boundedText(value) ?? '#VALU
 const missingArg = (...values: readonly (string | undefined)[]): boolean =>
   values.some((value) => value === undefined)
 
+const optionalCount = (value: string | undefined, fallback: number): number | null =>
+  boundedLength(Number(value ?? String(fallback)))
+
+const requiredCount = (value: string | undefined): number | null =>
+  value === undefined ? null : boundedLength(Number(value))
+
+const requiredPosition = (value: string | undefined): number | null => {
+  const n = requiredCount(value)
+  return n !== null && n >= 1 ? n : null
+}
+
 const boundedSubstituteAll = (text: string, find: string, repl: string): string | null => {
   if (find === '') {
     const length = text.length === 0 ? 0 : text.length + (text.length - 1) * repl.length
@@ -127,14 +138,24 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'HYPERLINK') return wrapBounded(argsT[1] ? argsT[1] : (argsT[0] ?? ''))
   if (F === 'IMAGE') return wrapBounded(argsT[0] ?? '')
   if (F === 'LEN') return missingArg(argsT[0]) ? wrap('#VALUE!') : String(argsT[0].length)
-  if (F === 'LEFT') return missingArg(argsT[0]) ? wrap('#VALUE!') : wrap(argsT[0].slice(0, Number(argsT[1] ?? '1')))
-  if (F === 'RIGHT') return missingArg(argsT[0]) ? wrap('#VALUE!') : wrap(argsT[0].slice(-Number(argsT[1] ?? '1')))
+  if (F === 'LEFT') {
+    const count = optionalCount(argsT[1], 1)
+    return missingArg(argsT[0]) || count === null ? wrap('#VALUE!') : wrap(argsT[0].slice(0, count))
+  }
+  if (F === 'RIGHT') {
+    const count = optionalCount(argsT[1], 1)
+    return missingArg(argsT[0]) || count === null ? wrap('#VALUE!') : wrap(argsT[0].slice(-count))
+  }
   if (F === 'LASTCHAR') { const s = [...(argsT[0] ?? '')]; return wrap(s.length ? s[s.length - 1] : '') }
   if (F === 'FIRSTCHAR') { const s = [...(argsT[0] ?? '')]; return wrap(s.length ? s[0] : '') }
   if (F === 'CHARAT') return wrap([...(argsT[0] ?? '')][Math.floor(Number(argsT[1] ?? '0'))] ?? '')
   if (F === 'MID') {
     if (missingArg(argsT[0], argsT[1], argsT[2])) return wrap('#VALUE!')
-    return wrap(argsT[0].slice(Number(argsT[1]) - 1, Number(argsT[1]) - 1 + Number(argsT[2])))
+    const start = requiredPosition(argsT[1])
+    const count = requiredCount(argsT[2])
+    return start === null || count === null
+      ? wrap('#VALUE!')
+      : wrap(argsT[0].slice(start - 1, start - 1 + count))
   }
   if (F === 'TRIM') return missingArg(argsT[0]) ? wrap('#VALUE!') : wrap(argsT[0].trim())
   if (F === 'NORMALIZE') {
@@ -222,9 +243,11 @@ export function dispatchText(F: string, argsT: string[]): string | null {
   if (F === 'EQUALCI') return (argsT[0] ?? '').toLowerCase() === (argsT[1] ?? '').toLowerCase() ? '1' : '0'
   if (F === 'REPLACE') {
     if (missingArg(argsT[0], argsT[1], argsT[2])) return wrap('#VALUE!')
-    const start = Number(argsT[1]) - 1
-    const len = Number(argsT[2])
-    return wrap(boundedJoin([argsT[0].slice(0, start), argsT[3] ?? '', argsT[0].slice(start + len)]) ?? '#VALUE!')
+    const start = requiredPosition(argsT[1])
+    const len = requiredCount(argsT[2])
+    if (start === null || len === null) return wrap('#VALUE!')
+    const offset = start - 1
+    return wrap(boundedJoin([argsT[0].slice(0, offset), argsT[3] ?? '', argsT[0].slice(offset + len)]) ?? '#VALUE!')
   }
   return null
 }

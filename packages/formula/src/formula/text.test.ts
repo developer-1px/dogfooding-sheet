@@ -94,6 +94,14 @@ describe('text functions', () => {
     expect(evaluateCell({}, '=FIRSTCHAR("hi😀")')).toBe('h')
     expect(evaluateCell({}, '=LASTCHAR("hi😀")')).toBe('😀')
   })
+  it('rejects invalid text slice indexes instead of applying JS slice coercions', () => {
+    expect(evaluateCell({}, '=LEFT("abcdef", "x")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=RIGHT("abcdef", -1)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=MID("abcdef", 0, 2)')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=MID("abcdef", 2, "x")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=REPLACE("abcdef", 0, 2, "x")')).toBe('#VALUE!')
+    expect(evaluateCell({}, '=REPLACE("abcdef", 2, -1, "x")')).toBe('#VALUE!')
+  })
   it('TRIM removes whitespace', () => {
     expect(evaluateCell({}, '=TRIM("  hi  ")')).toBe('hi')
   })
