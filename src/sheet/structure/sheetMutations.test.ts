@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { COL_LETTERS, SheetSchema, initialSheet, type SheetOps } from '../schema'
-import { sheetMutations } from './sheetMutations'
+import { sheetMutations, sheetPatchValueEqual } from './sheetMutations'
 
 const recordingOps = () => {
   const calls: unknown[] = []
@@ -22,6 +22,17 @@ const hiddenPatchValue = (calls: unknown[]) => {
 }
 
 describe('sheetMutations', () => {
+  it('compares patch values structurally without depending on object key order', () => {
+    expect(sheetPatchValueEqual(
+      { B1: { type: 'list', options: ['x', 'y'] }, A1: { type: 'checkbox' } },
+      { A1: { type: 'checkbox' }, B1: { type: 'list', options: ['x', 'y'] } },
+    )).toBe(true)
+    expect(sheetPatchValueEqual(
+      { A1: { type: 'list', options: ['x', 'y'] } },
+      { A1: { type: 'list', options: ['y', 'x'] } },
+    )).toBe(false)
+  })
+
   it('moves row-scoped cell metadata with inserted rows', () => {
     const { ops, calls } = recordingOps()
     const state = sheet({
