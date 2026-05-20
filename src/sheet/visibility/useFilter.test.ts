@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { hiddenRows } from './useFilter'
+import { hiddenRows, matchesWildcard } from './useFilter'
 
 describe('hiddenRows', () => {
   const cells: Record<string, string> = { A1: 'Item', A2: 'Apple', A3: 'Bread', A4: 'Milk' }
@@ -34,5 +34,13 @@ describe('hiddenRows', () => {
     expect(hiddenRows({ col: 'A', text: '=Bread' }, 4, display).has(2)).toBe(false)
     expect(hiddenRows({ col: 'A', text: '<>Bread' }, 4, display).has(2)).toBe(true)
     expect(hiddenRows({ col: 'A', text: 'B*' }, 4, display).has(2)).toBe(false)
+  })
+
+  it('matches wildcard filters without regex syntax', () => {
+    expect(matchesWildcard('Bread', 'B*')).toBe(true)
+    expect(matchesWildcard('Bread', 'Br?ad')).toBe(true)
+    expect(matchesWildcard('Bread', '*read')).toBe(true)
+    expect(matchesWildcard('Bread', 'B.*')).toBe(false)
+    expect(matchesWildcard('B.read', 'B.*')).toBe(true)
   })
 })

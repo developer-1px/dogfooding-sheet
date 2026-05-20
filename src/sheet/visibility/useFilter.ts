@@ -28,8 +28,34 @@ const coerceNumber = (value: string): number => {
   return Number.isFinite(n) ? (percent ? n / 100 : n) : NaN
 }
 
-const wildcardToRegex = (s: string): RegExp =>
-  new RegExp('^' + s.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.') + '$', 'i')
+export const matchesWildcard = (value: string, pattern: string): boolean => {
+  const text = value.toLowerCase()
+  const query = pattern.toLowerCase()
+  let ti = 0
+  let pi = 0
+  let star = -1
+  let afterStar = 0
+
+  while (ti < text.length) {
+    if (query[pi] === '?' || query[pi] === text[ti]) {
+      ti++
+      pi++
+    } else if (query[pi] === '*') {
+      star = pi
+      afterStar = ti
+      pi++
+    } else if (star >= 0) {
+      pi = star + 1
+      afterStar++
+      ti = afterStar
+    } else {
+      return false
+    }
+  }
+
+  while (query[pi] === '*') pi++
+  return pi === query.length
+}
 
 export function matchesFilter(value: string, query: string): boolean {
   const v = value.trim()
@@ -48,7 +74,7 @@ export function matchesFilter(value: string, query: string): boolean {
     if (op === '>') return a > b
     if (op === '<') return a < b
   }
-  if (/[*?]/.test(q)) return wildcardToRegex(q).test(v)
+  if (/[*?]/.test(q)) return matchesWildcard(v, q)
   return v.toLowerCase().includes(q.toLowerCase())
 }
 
