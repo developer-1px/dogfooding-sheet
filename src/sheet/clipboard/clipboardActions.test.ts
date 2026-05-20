@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cellId, rectToTsv } from '@spredsheet/grid'
+import { cellId, MAX_TSV_TEXT_LENGTH, rectToTsv } from '@spredsheet/grid'
 import { copyOrCut, pasteAt, pasteTsvAt, pasteTsvIntoSelection } from './clipboardActions'
 
 describe('rectToTsv / pasteTsv roundtrip', () => {
@@ -34,6 +34,21 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       (k, v) => { written[k] = v },
     )
     expect(written).toEqual({ A1: 'x', B1: 'y', A2: 'x', B2: 'y' })
+  })
+
+  it('does not clear cells when cut serialization exceeds the clipboard limit', () => {
+    let clipboardText = 'unchanged'
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: (text: string) => { clipboardText = text; return Promise.resolve() },
+        readText: () => Promise.resolve(clipboardText),
+      },
+    })
+    const written: Record<string, string> = {}
+    copyOrCut([cellId('A', 0)], true, { A1: `${'x'.repeat(MAX_TSV_TEXT_LENGTH)}x` }, (k, v) => { written[k] = v })
+    expect(written).toEqual({})
+    expect(clipboardText).toBe('unchanged')
   })
 
   it('adjusts formula references when pasting an internal copy', async () => {

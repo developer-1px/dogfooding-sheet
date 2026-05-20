@@ -3,7 +3,7 @@ import type { Rect } from '../geometry/rect'
 
 export const MAX_TSV_TEXT_LENGTH = 5_000_000
 
-const isSafeTsvText = (tsv: string): boolean => tsv.length <= MAX_TSV_TEXT_LENGTH
+export const isSafeTsvText = (tsv: string): boolean => tsv.length <= MAX_TSV_TEXT_LENGTH
 
 const splitLimited = (value: string, separator: string, limit: number): string[] => {
   if (limit <= 0) return []
@@ -28,16 +28,27 @@ const splitTsvRows = (tsv: string, rowLimit: number): string[] =>
 const splitTsvCols = (row: string, colLimit: number): string[] =>
   splitLimited(row, '\t', colLimit)
 
-export function rectToTsv(rect: Rect, get: Display): string {
-  const rows: string[] = []
-  for (let r = rect.rMin; r <= rect.rMax; r++) {
-    const cols: string[] = []
-    for (let c = rect.cMin; c <= rect.cMax; c++) {
-      cols.push(get(cellKey(columnLabel(c), r)))
-    }
-    rows.push(cols.join('\t'))
+export function rectToTsvBounded(rect: Rect, get: Display, maxLength = MAX_TSV_TEXT_LENGTH): string | null {
+  const parts: string[] = []
+  let length = 0
+  const push = (value: string): boolean => {
+    length += value.length
+    if (length > maxLength) return false
+    parts.push(value)
+    return true
   }
-  return rows.join('\n')
+  for (let r = rect.rMin; r <= rect.rMax; r++) {
+    if (r > rect.rMin && !push('\n')) return null
+    for (let c = rect.cMin; c <= rect.cMax; c++) {
+      if (c > rect.cMin && !push('\t')) return null
+      if (!push(get(cellKey(columnLabel(c), r)))) return null
+    }
+  }
+  return parts.join('')
+}
+
+export function rectToTsv(rect: Rect, get: Display): string {
+  return rectToTsvBounded(rect, get) ?? ''
 }
 
 export function writesFromTsv(

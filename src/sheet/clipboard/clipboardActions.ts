@@ -1,5 +1,5 @@
 import { type Cells, type Writes, type WriteCell, type WriteMany, type CellRef } from '../schema'
-import { clearWritesForIds, internalClipboardFromTsv, rectFromIds, rectToTsv, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect, type GridInternalClipboard } from '@spredsheet/grid'
+import { clearWritesForIds, internalClipboardFromTsv, rectFromIds, rectToTsvBounded, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect, type GridInternalClipboard } from '@spredsheet/grid'
 
 let internalClipboard: GridInternalClipboard | null = null
 
@@ -15,8 +15,16 @@ export function copyOrCut(
   writeCells?: WriteMany,
 ): void {
   const rect = rectFromIds(ids)
-  const tsv = rect ? rectToTsv(rect, (k) => cells[k] ?? '') : ''
-  internalClipboard = rect ? internalClipboardFromTsv(cut, rect, tsv) : null
+  if (!rect) {
+    internalClipboard = null
+    return
+  }
+  const tsv = rectToTsvBounded(rect, (k) => cells[k] ?? '')
+  if (tsv === null) {
+    internalClipboard = null
+    return
+  }
+  internalClipboard = internalClipboardFromTsv(cut, rect, tsv)
   navigator.clipboard?.writeText(tsv).catch(() => {})
   if (!cut) return
   flush(clearWritesForIds(ids), writeCell, writeCells)

@@ -1,6 +1,7 @@
 import { cellKey, colIndex, columnLabel, parseCellId, type CellRef, type Writes } from '../coordinates/a1'
 import type { Rect } from '../geometry/rect'
 import { offsetFormulaRefs } from '../structure/formulaRefs'
+import { isSafeTsvText } from './tsv'
 
 const boundedCount = (maxExclusive: number | undefined, start: number): number => {
   if (maxExclusive === undefined) return Infinity
@@ -22,6 +23,7 @@ export interface GridInternalClipboard {
 }
 
 export function internalClipboardFromTsv(cut: boolean, rect: Rect, text: string): GridInternalClipboard {
+  if (!isSafeTsvText(text)) return { cut, rect, text: '', values: [] }
   return {
     cut,
     rect,
@@ -49,6 +51,7 @@ export function writesFromInternalClipboard(
   const colLimit = boundedCount(bounds.maxCol, c0)
   const maxRow = bounds.maxRow ?? Infinity
   const writes: Writes = []
+  if (clip.values.length === 0) return writes
   for (let r = 0; r < Math.min(clip.values.length, rowLimit); r++) {
     const row = clip.values[r]
     for (let c = 0; c < Math.min(row.length, colLimit); c++) {
@@ -75,6 +78,7 @@ export function writesFromInternalClipboardToRect(
   if (targetRMax < target.rMin || targetCMax < target.cMin) return []
   const maxRow = bounds.maxRow ?? Infinity
   const writes: Writes = []
+  if (clip.values.length === 0) return writes
   for (let r = target.rMin; r <= targetRMax; r++) {
     const sourceRowOffset = (r - target.rMin) % clip.values.length
     const row = clip.values[sourceRowOffset] ?? ['']

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, MAX_TSV_TEXT_LENGTH, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
+import { addMergeToList, applyFillWrites, buildMergeMap, cancelGridEdit, cellId, cellKey, clearGridSelection, clearWritesForIds, colIndex, columnLabel, columnLabels, commitGridEdit, createGridEditState, createGridSelectionState, cycleTrailingFormulaRef, deleteRow, extendSeries, fillDownWrites, fillRightWrites, fillSourceRect, fillTargetForCell, freezeFormulaWrites, homeEndTarget, idsBetween, idsForFormulaPick, idsInFillTarget, insertRow, internalClipboardFromTsv, isFillCorner, jumpToEdge, MAX_TSV_TEXT_LENGTH, mergeActionForSelection, moveCellIdByDelta, offsetFormulaRefs, pageTarget, rectFromIds, rectToTsv, rectToTsvBounded, refForFormulaPick, removeMergeAt, replaceTrailingFormulaRef, resolveCellRef, resolveGotoTarget, resolveRange, rowColActionAtFocus, selectionAddress, setGridSelectedIds, setGridSelectionFocus, sortByColumn, startGridEdit, tabTarget, targetGridIds, writesFromInternalClipboard, writesFromInternalClipboardToRect, writesFromTsv, writesFromTsvToRect } from './index'
 
 describe('@spredsheet/grid', () => {
   it('keeps A1 keys and DOM ids as pure coordinate transforms', () => {
@@ -171,7 +171,10 @@ describe('@spredsheet/grid', () => {
 
   it('converts TSV without touching the system clipboard', () => {
     const cells = { A1: 'name', B1: 'score', A2: 'Kim', B2: '10' }
+    const smallCells: Record<string, string> = { A1: 'A', B1: 'B' }
     expect(rectToTsv({ rMin: 0, rMax: 1, cMin: 0, cMax: 1 }, (k) => cells[k] ?? '')).toBe('name\tscore\nKim\t10')
+    expect(rectToTsvBounded({ rMin: 0, rMax: 0, cMin: 0, cMax: 1 }, (k) => smallCells[k] ?? '', 3)).toBe('A\tB')
+    expect(rectToTsvBounded({ rMin: 0, rMax: 0, cMin: 0, cMax: 1 }, (k) => smallCells[k] ?? '', 2)).toBeNull()
     expect(writesFromTsv('A\tB\nC\tD', { col: 'B', row: 1 }, { maxRow: 3, maxCol: 3 })).toEqual([
       ['B2', 'A'],
       ['C2', 'B'],
@@ -227,6 +230,14 @@ describe('@spredsheet/grid', () => {
       ['A1', ''],
       ['B2', ''],
     ])
+  })
+
+  it('rejects oversized internal clipboard text before parsing', () => {
+    const oversized = `${'x'.repeat(MAX_TSV_TEXT_LENGTH)}x`
+    const clip = internalClipboardFromTsv(false, { rMin: 0, rMax: 0, cMin: 0, cMax: 0 }, oversized)
+    expect(clip.text).toBe('')
+    expect(writesFromInternalClipboard(clip, { col: 'A', row: 0 }, { maxRow: 20, maxCol: 10 })).toEqual([])
+    expect(writesFromInternalClipboardToRect(clip, { rMin: 0, rMax: 1, cMin: 0, cMax: 1 }, { maxRow: 20, maxCol: 10 })).toEqual([])
   })
 
   it('clips internal clipboard writes to target bounds before offsetting formulas', () => {
