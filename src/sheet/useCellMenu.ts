@@ -6,6 +6,7 @@ import type { HiddenActions } from './visibility/useHidden'
 import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 import { copySingleCell, cutSingleCell, pasteSingleCell } from './clipboard/clipboardActions'
+import { columnRestoreControls, rowRestoreControls } from './grid-view/hiddenRestoreControls'
 
 interface Args extends SheetMutations, Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>, Pick<HiddenActions, 'hideRow' | 'hideCol' | 'showRow' | 'showCol'> {
   sheet: { cells: Cells }
@@ -46,16 +47,10 @@ export function useCellMenu(a: Args) {
     const p = parseCellId(cellId)
     if (!p) return []
     const row = p.row; const col = p.col; const k = cellKey(col, row)
-    const prevCol = a.colLetters[colIndex(col) - 1]
-    const nextCol = a.colLetters[colIndex(col) + 1]
-    const rowRevealItems: Array<MenuItem | 'separator'> = [
-      ...(a.hiddenRows.has(row - 1) ? [{ label: `${row}행 숨김 표시`, onClick: () => a.showRow(row - 1) }] : []),
-      ...(a.hiddenRows.has(row + 1) ? [{ label: `${row + 2}행 숨김 표시`, onClick: () => a.showRow(row + 1) }] : []),
-    ]
-    const colRevealItems: Array<MenuItem | 'separator'> = [
-      ...(prevCol && a.hiddenCols.has(prevCol) ? [{ label: `${prevCol}열 숨김 표시`, onClick: () => a.showCol(prevCol) }] : []),
-      ...(nextCol && a.hiddenCols.has(nextCol) ? [{ label: `${nextCol}열 숨김 표시`, onClick: () => a.showCol(nextCol) }] : []),
-    ]
+    const rowRevealItems: Array<MenuItem | 'separator'> = rowRestoreControls(row, a.hiddenRows)
+      .map((control) => ({ label: control.label, onClick: () => a.showRow(control.row) }))
+    const colRevealItems: Array<MenuItem | 'separator'> = columnRestoreControls(col, a.colLetters, a.hiddenCols)
+      .map((control) => ({ label: control.label, onClick: () => a.showCol(control.col) }))
     if (kind === 'row') return [
       { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
       { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
