@@ -57,6 +57,20 @@ describe('spreadsheet preview interactions', () => {
     expect(editor?.getAttribute('aria-label')).toBe('A1 편집')
   })
 
+  it('keeps the caret after the printable key that starts editing', async () => {
+    await act(async () => dom.root.render(createElement(App)))
+
+    const a5 = gridCells()[40]
+    act(() => mouseClick(a5))
+    act(() => press('H'))
+    await act(async () => { await Promise.resolve() })
+
+    const editor = document.querySelector<HTMLInputElement>('input.cell-input')
+    expect(editor?.value).toBe('H')
+    expect(editor?.selectionStart).toBe(1)
+    expect(editor?.selectionEnd).toBe(1)
+  })
+
   it('exposes merged cells with range and span metadata', async () => {
     await act(async () => dom.root.render(createElement(App)))
 

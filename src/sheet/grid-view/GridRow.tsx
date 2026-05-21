@@ -34,7 +34,7 @@ interface Props {
   draft: string
   setDraft: (v: string) => void
   setSelectedIds: (ids: string[]) => void
-  startEdit: (id: string) => void
+  startEdit: (id: string, initial?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
   commitEdit: (move?: { dRow: number; dCol: number }) => void
   cancelEdit: () => void
   onRowHeaderContextMenu: (e: React.MouseEvent) => void
@@ -135,7 +135,7 @@ export function GridRow(p: Props) {
             setDraft={p.setDraft}
             onCommit={p.commitEdit}
             onCancel={p.cancelEdit}
-            onStartEdit={() => p.startEdit(view.id)}
+            onStartEdit={() => p.startEdit(view.id, undefined, { caret: 'end' })}
             onMouseDown={(e) => p.onCellMouseDown(view.id, e)}
             onMouseEnter={(e) => p.onCellMouseEnter(view.id, e)}
             isFillCorner={view.fillCorner}

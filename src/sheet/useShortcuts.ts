@@ -34,7 +34,7 @@ export function useShortcuts(args: Args) {
       if (editing) return
       if (!focusId) return
       // F2/Enter — grid pattern emits editStart from cell.onKeyDown (see useSheetGrid).
-      if (isPrintable(e)) { startEdit(focusId, e.key); e.preventDefault(); e.stopPropagation() }
+      if (isPrintable(e)) { startEdit(focusId, e.key, { caret: 'end' }); e.preventDefault(); e.stopPropagation() }
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)

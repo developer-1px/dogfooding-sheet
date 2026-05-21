@@ -40,6 +40,7 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   const [state, setState] = useState(() => createGridEditState<string>('r0-A'))
   const inputRef = useRef<HTMLInputElement | null>(null)
   const selectRef = useRef<HTMLSelectElement | null>(null)
+  const pendingCaretMode = useRef<GridCaretMode | null>(null)
   const pendingFocusRestoreId = useRef<string | null>(null)
 
   const getValue = useCallback((id: string) => {
@@ -53,10 +54,18 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   }, [colLetters, rowCount])
 
   useEffect(() => {
-    if (state.editing === null) return
+    if (state.editing === null) {
+      pendingCaretMode.current = null
+      return
+    }
     const el = inputRef.current ?? selectRef.current
     el?.focus()
-    if (el instanceof HTMLInputElement) el.select()
+    const caret = pendingCaretMode.current
+    pendingCaretMode.current = null
+    if (!caret || !(el instanceof HTMLInputElement)) return
+    if (caret === 'select-all') el.select()
+    else if (caret === 'start') el.setSelectionRange(0, 0)
+    else el.setSelectionRange(el.value.length, el.value.length)
   }, [state.editing])
 
   useEffect(() => {
@@ -69,24 +78,13 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
     cell?.focus()
   }, [state.editing, state.focusId])
 
-  const applyCaret = (caret?: GridCaretMode) => {
-    if (!caret) return
-    queueMicrotask(() => {
-      const input = inputRef.current
-      if (!input) return
-      if (caret === 'select-all') input.select()
-      else if (caret === 'start') input.setSelectionRange(0, 0)
-      else input.setSelectionRange(input.value.length, input.value.length)
-    })
-  }
-
   const setFocusId = useCallback((id: string | null) => setState((s) => setGridFocus(s, id)), [])
   const setDraft = useCallback((draft: string) => setState((s) => setGridDraft(s, draft)), [])
 
   const startEdit = useCallback((id: string, initial?: string, opts?: { caret?: GridCaretMode }) => {
     const started = startGridEdit(state, id, initial ?? getValue(id), opts)
+    pendingCaretMode.current = started.caret ?? null
     setState(started.state)
-    applyCaret(started.caret)
   }, [getValue, state])
 
   const cancelEdit = useCallback((opts: CommitOptions = {}) => setState((s) => {
