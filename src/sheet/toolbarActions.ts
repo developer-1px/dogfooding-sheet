@@ -4,8 +4,8 @@ import { CLEAR_STYLE, type CellStyle, type StyleLookup } from './formatting/useS
 import { normalizeFilterText, type Filter } from './visibility/useFilter'
 import type { ValidationActions } from './validation/useValidation'
 import type { Ask } from './usePrompt'
-import type { Patch } from '../lib/dictOps'
-import { cellIdToKey, cellKey, isSafeColor, normalizeValidationOptions, parseA1, type Cells, type Display, type Sheet, type WriteCell } from './schema'
+import { cellIdToKey, cellKey, isSafeColor, normalizeValidationOptions, parseA1, type Display, type WriteCell } from './schema'
+export { clearAllFormatsPatch, clearCellValuesPatch } from './sheetClearPatches'
 
 export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'invalid' | 'no-target'
 export type ToolbarStyleFlag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
@@ -26,22 +26,6 @@ export const targetCellKeys = (selectedIds: readonly string[], focusKey: string 
 
 export const validationOptionsFromCsv = (csv: string): string[] =>
   normalizeValidationOptions(csv.split(','))
-
-const hasRecordEntries = (record: Record<string, unknown>): boolean =>
-  Object.keys(record).length > 0
-
-export const clearCellValuesPatch = (cells: Cells): Patch =>
-  hasRecordEntries(cells) ? [{ op: 'replace', path: '/cells', value: {} }] : []
-
-export const clearAllFormatsPatch = (
-  sheet: Pick<Sheet, 'styles' | 'formats' | 'condFormat'>,
-): Patch => {
-  const patch: Patch = []
-  if (hasRecordEntries(sheet.styles)) patch.push({ op: 'replace', path: '/styles', value: {} })
-  if (hasRecordEntries(sheet.formats)) patch.push({ op: 'replace', path: '/formats', value: {} })
-  if (sheet.condFormat.length > 0) patch.push({ op: 'replace', path: '/condFormat', value: [] })
-  return patch
-}
 
 export function applyToolbarAutoSum({
   focusKey,

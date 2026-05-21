@@ -1,19 +1,8 @@
 import { smartReturn, wrap } from './marker'
+import { allFiniteArgs, divZeroError, finiteResult, hasFiniteArgs, numError, valueError } from './mathResult'
+import { dispatchTrig } from './trigFns'
 
 const MAX_ROUND_DIGITS = 100
-
-const valueError = (): string => wrap('#VALUE!')
-const numError = (): string => wrap('#NUM!')
-const divZeroError = (): string => wrap('#DIV/0!')
-
-const hasFiniteArgs = (argsN: number[], required: number): boolean =>
-  argsN.length >= required && argsN.slice(0, required).every(Number.isFinite)
-
-const allFiniteArgs = (argsN: number[]): boolean =>
-  argsN.every(Number.isFinite)
-
-const finiteResult = (value: number): string =>
-  Number.isFinite(value) ? String(value) : numError()
 
 const boundedRoundDigits = (value: number): number | null =>
   Number.isInteger(value) && Math.abs(value) <= MAX_ROUND_DIGITS ? value : null
@@ -30,6 +19,7 @@ const roundHalfAwayFromZero = (n: number, digits = 0): number => {
 }
 
 export function dispatchMath(F: string, argsT: string[], argsN: number[]): string | null {
+  const trig = dispatchTrig(F, argsN); if (trig !== null) return trig
   if (F === 'ROUND') { const args = roundingArgs(argsN); return args ? finiteResult(roundHalfAwayFromZero(args[0], args[1])) : valueError() }
   if (F === 'ABS') return hasFiniteArgs(argsN, 1) ? String(Math.abs(argsN[0])) : valueError()
   if (F === 'FLOOR') {
@@ -170,46 +160,5 @@ export function dispatchMath(F: string, argsT: string[], argsN: number[]): strin
     const [n, d] = argsN; return d === 0 ? divZeroError() : finiteResult(Math.trunc(n / d))
   }
   if (F === 'SQRTPI') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.sqrt(argsN[0] * Math.PI)) : valueError()
-  if (F === 'SIN') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.sin(argsN[0])) : valueError()
-  if (F === 'COS') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.cos(argsN[0])) : valueError()
-  if (F === 'TAN') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.tan(argsN[0])) : valueError()
-  if (F === 'ASIN') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.asin(argsN[0])) : valueError()
-  if (F === 'ACOS') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.acos(argsN[0])) : valueError()
-  if (F === 'ATAN') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.atan(argsN[0])) : valueError()
-  if (F === 'ATAN2') return hasFiniteArgs(argsN, 2) ? finiteResult(Math.atan2(argsN[0], argsN[1])) : valueError()
-  if (F === 'SINH') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.sinh(argsN[0])) : valueError()
-  if (F === 'COSH') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.cosh(argsN[0])) : valueError()
-  if (F === 'TANH') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.tanh(argsN[0])) : valueError()
-  if (F === 'ASINH') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.asinh(argsN[0])) : valueError()
-  if (F === 'ACOSH') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.acosh(argsN[0])) : valueError()
-  if (F === 'ATANH') return hasFiniteArgs(argsN, 1) ? finiteResult(Math.atanh(argsN[0])) : valueError()
-  if (F === 'ACOT') {
-    if (!hasFiniteArgs(argsN, 1)) return valueError()
-    return finiteResult(argsN[0] === 0 ? Math.PI / 2 : Math.atan(1 / argsN[0]))
-  }
-  if (F === 'ACOTH') return hasFiniteArgs(argsN, 1) ? finiteResult(0.5 * Math.log((argsN[0] + 1) / (argsN[0] - 1))) : valueError()
-  if (F === 'SEC') {
-    if (!hasFiniteArgs(argsN, 1)) return valueError()
-    const d = Math.cos(argsN[0]); return d === 0 ? divZeroError() : finiteResult(1 / d)
-  }
-  if (F === 'CSC') {
-    if (!hasFiniteArgs(argsN, 1)) return valueError()
-    const d = Math.sin(argsN[0]); return d === 0 ? divZeroError() : finiteResult(1 / d)
-  }
-  if (F === 'COT') {
-    if (!hasFiniteArgs(argsN, 1)) return valueError()
-    const d = Math.tan(argsN[0]); return d === 0 ? divZeroError() : finiteResult(1 / d)
-  }
-  if (F === 'SECH') return hasFiniteArgs(argsN, 1) ? finiteResult(1 / Math.cosh(argsN[0])) : valueError()
-  if (F === 'CSCH') {
-    if (!hasFiniteArgs(argsN, 1)) return valueError()
-    const d = Math.sinh(argsN[0]); return d === 0 ? divZeroError() : finiteResult(1 / d)
-  }
-  if (F === 'COTH') {
-    if (!hasFiniteArgs(argsN, 1)) return valueError()
-    const d = Math.tanh(argsN[0]); return d === 0 ? divZeroError() : finiteResult(1 / d)
-  }
-  if (F === 'DEGREES') return hasFiniteArgs(argsN, 1) ? finiteResult(argsN[0] * 180 / Math.PI) : valueError()
-  if (F === 'RADIANS') return hasFiniteArgs(argsN, 1) ? finiteResult(argsN[0] * Math.PI / 180) : valueError()
   return null
 }
