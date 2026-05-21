@@ -1,7 +1,7 @@
 {
-  "name": "@spredsheet/grid-contract",
+  "name": "@spredsheet/selection-contract",
   "version": "0.0.0",
-  "description": "Zod-backed stable ARIA grid selection contract.",
+  "description": "Zod-backed stable contract for selectable descendants.",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -22,9 +22,6 @@
     "build": "pnpm run clean && tsc -p tsconfig.json",
     "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
-  },
-  "dependencies": {
-    "@spredsheet/grid": "workspace:*"
   },
   "peerDependencies": {
     "zod": "^4.0.0"
