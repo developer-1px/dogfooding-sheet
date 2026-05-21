@@ -7,3 +7,4 @@ being evaluated for public interactive-os promotion.
 | Candidate | Status | Source | Target package |
 |---|---|---|---|
 | Formula engine | Candidate | `packages/formula` | `@interactive-os/formula-engine` |
+| Editable grid | Contract seed | `packages/editable-grid` | `@interactive-os/editable-grid` |

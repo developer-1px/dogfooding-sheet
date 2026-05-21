@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm --dir packages/grid build && pnpm --dir packages/formula build && tsc -b && vite build",
+    "build": "pnpm --dir packages/grid build && pnpm --dir packages/formula build && pnpm --dir packages/editable-grid build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run && pnpm --dir packages/grid test && pnpm --dir packages/formula test",
+    "test": "vitest run && pnpm --dir packages/grid test && pnpm --dir packages/formula test && pnpm --dir packages/editable-grid test",
     "check": "pnpm lint && pnpm build && pnpm test"
   },
   "dependencies": {
