@@ -1,4 +1,5 @@
 import {
+  surfaceIntentOf,
   type SurfaceHostContract,
 } from './contract'
 import {
@@ -30,6 +31,7 @@ export function Surface<TValue = unknown, TMeta = unknown>({
     <div
       className={['surface', className].filter(Boolean).join(' ')}
       data-surface-contract={surface.contract}
+      data-surface-intent={surfaceIntentOf(surface)}
     >
       {surface.views.map((view) => {
         const render = registry.get(view.kind)

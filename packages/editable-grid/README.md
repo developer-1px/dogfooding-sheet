@@ -47,6 +47,7 @@ const LineSchema = z.object({
 const surface = defineEditableGridSurface({
   contract: EDITABLE_GRID_CONTRACT,
   kind: EDITABLE_GRID_KIND,
+  profile: 'database-table',
   schema: z.array(LineSchema),
   dataPath: '/lines',
   rowIdentity: { path: '/id' },
@@ -58,6 +59,16 @@ const surface = defineEditableGridSurface({
   capabilities: ['cell-edit', 'selection', 'keyboard', 'clipboard', 'validation', 'patch-output'],
 })
 ```
+
+## Table Families
+
+Use `profile` to state the table family:
+
+- `record-table`: simple rows and fields.
+- `database-table`: Airtable-like typed fields, options, relations, formulas,
+  and rollups.
+- `document-table`: Notion-like table blocks embedded in documents.
+- `spreadsheet-grid`: dense spreadsheet-style cells.
 
 ## Minimal Renderer
 

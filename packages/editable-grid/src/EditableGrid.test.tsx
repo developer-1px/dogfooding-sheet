@@ -15,6 +15,7 @@ const surface = defineEditableGridSurface({
       total: z.string().optional(),
     })),
   }),
+  profile: 'database-table',
   dataPath: '/lines',
   columns: [
     { id: 'name', path: '/name', label: 'Name' },
@@ -63,6 +64,7 @@ describe('EditableGrid', () => {
     try {
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-rowcount')).toBe('3')
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe('3')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.textContent)).toEqual(['Name', 'Qty', 'Total'])
       expect(gridCells().map((cell) => cell.textContent)).toEqual(['Apple', '3', '3.00', 'Bread', '2', '4.00'])
     } finally {

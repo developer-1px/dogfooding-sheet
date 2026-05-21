@@ -13,6 +13,10 @@ The reusable concept is:
 > a Zod-backed surface descriptor that chooses registered interaction islands
 > and routes their patch output back to the host document.
 
+The target is not a Google Sheets clone. The runtime must compose table families
+such as record tables, Airtable-like database tables, Notion-like document
+tables, and spreadsheet grids through the same descriptor system.
+
 ## Stable Interface
 
 - `SurfaceDescriptor`
@@ -20,6 +24,7 @@ The reusable concept is:
 - `SurfaceHostContract`
 - `SurfaceChange`
 - `SurfaceRegistry`
+- `SurfaceIntent`
 - `defineSurface`
 
 ## Invariants
@@ -29,6 +34,8 @@ The reusable concept is:
 - The surface runtime owns registry dispatch and view-level change routing.
 - State changes leave the surface as grouped patches tagged with `viewId`.
 - Persistence, undo history, network, and storage remain host responsibilities.
+- Surface intent is declared explicitly; table family is not derived from brand
+  names or visual styling.
 
 ## First Renderer
 

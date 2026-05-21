@@ -13,6 +13,20 @@ export type SurfaceViewKind =
   | typeof EDITABLE_GRID_KIND
   | (string & { readonly __surfaceViewKind?: never })
 
+export const SURFACE_INTENTS = [
+  'record-table',
+  'database-table',
+  'document-table',
+  'spreadsheet-grid',
+  'mixed-surface',
+] as const
+
+export type SurfaceCoreIntent = typeof SURFACE_INTENTS[number]
+
+export type SurfaceIntent =
+  | SurfaceCoreIntent
+  | (string & { readonly __surfaceIntent?: never })
+
 export interface SurfaceViewBase<TKind extends SurfaceViewKind = SurfaceViewKind, TMeta = unknown> {
   readonly id: string
   readonly kind: TKind
@@ -32,6 +46,7 @@ export type SurfaceView<TMeta = unknown> =
 
 export interface SurfaceDescriptor<TMeta = unknown> {
   readonly contract: typeof SURFACE_CONTRACT
+  readonly intent?: SurfaceIntent
   readonly schema: ZodType<unknown>
   readonly views: readonly SurfaceView<TMeta>[]
   readonly capabilities?: readonly string[]
@@ -76,6 +91,9 @@ export interface SurfaceValidationIssue {
 export const defineSurface = <TMeta = unknown>(
   surface: SurfaceDescriptor<TMeta>,
 ): SurfaceDescriptor<TMeta> => surface
+
+export const surfaceIntentOf = (surface: SurfaceDescriptor): SurfaceIntent =>
+  surface.intent ?? 'mixed-surface'
 
 export const surfaceChangeFromEditableGrid = (
   viewId: string,

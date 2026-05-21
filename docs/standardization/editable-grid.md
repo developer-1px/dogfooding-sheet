@@ -14,6 +14,15 @@ The reusable unit is not a spreadsheet clone. It is:
 > a Zod-backed editable grid island that generated UI can place inside a larger
 > surface and drive through declarative descriptors plus patch output.
 
+The same contract must cover multiple table families:
+
+- `record-table`: plain rows and fields.
+- `database-table`: Airtable-like records, typed fields, options, relations,
+  formulas, and rollups.
+- `document-table`: Notion-like document tables embedded in block surfaces.
+- `spreadsheet-grid`: spreadsheet-style dense cells when that behavior is
+  actually needed.
+
 ## Stable Interface
 
 The stable boundary is the one exported from `@spredsheet/editable-grid`:
@@ -23,6 +32,7 @@ The stable boundary is the one exported from `@spredsheet/editable-grid`:
 - `EditableGridHostContract`
 - `EditableGridPatch`
 - `EditableGridSelection`
+- `EditableGridProfile`
 - `JsonPointer`
 
 Everything else is allowed to evolve behind this boundary.
@@ -37,6 +47,7 @@ Everything else is allowed to evolve behind this boundary.
   tabs, toolbars, or spreadsheet-specific menus.
 - Selection state is serializable.
 - Capabilities are negotiated by string identifiers, not by new callback props.
+- Table family is declared by `profile`; it is not inferred from styling.
 
 ## Why This Matches Gen UI
 

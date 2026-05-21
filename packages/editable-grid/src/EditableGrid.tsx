@@ -2,6 +2,7 @@ import { useId, useMemo, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import {
   editableGridCellPath,
+  editableGridProfileOf,
   editableGridRows,
   readJsonPointer,
   type EditableGridAddress,
@@ -44,6 +45,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
   renderCell,
 }: EditableGridProps<TValue, TMeta>) {
   const gridId = useId()
+  const profile = editableGridProfileOf(surface)
   const rows = useMemo(() => editableGridRows(value, surface.dataPath), [surface.dataPath, value])
   const [localSelection, setLocalSelection] = useState<EditableGridSelection>({})
   const [editing, setEditing] = useState<EditableGridAddress | null>(null)
@@ -113,7 +115,8 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
       role="grid"
       aria-rowcount={rows.length + 1}
       aria-colcount={surface.columns.length}
-      className={['editable-grid', className].filter(Boolean).join(' ')}
+      data-editable-grid-profile={profile}
+      className={['editable-grid', `editable-grid--${profile}`, className].filter(Boolean).join(' ')}
     >
       <div role="row" className="editable-grid-row editable-grid-header-row">
         {surface.columns.map((column, columnIndex) => (

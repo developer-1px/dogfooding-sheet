@@ -13,6 +13,7 @@ import { Surface, SURFACE_CONTRACT, defineSurface } from '@spredsheet/surface'
 
 const surface = defineSurface({
   contract: SURFACE_CONTRACT,
+  intent: 'database-table',
   schema: InvoiceSchema,
   views: [
     { id: 'lines', kind: 'editable-grid', grid: lineGrid },
@@ -21,6 +22,10 @@ const surface = defineSurface({
 
 <Surface surface={surface} value={invoice} onChange={applyChange} />
 ```
+
+Surface intent is explicit. A generated UI can choose `record-table`,
+`database-table`, `document-table`, `spreadsheet-grid`, or a custom intent
+without changing the renderer protocol.
 
 ## Rules
 

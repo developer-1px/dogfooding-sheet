@@ -6,6 +6,19 @@ export const EDITABLE_GRID_KIND = 'editable-grid' as const
 export type JsonPointer = '' | `/${string}`
 export type EditableGridColumnId = string
 
+export const EDITABLE_GRID_PROFILES = [
+  'record-table',
+  'database-table',
+  'document-table',
+  'spreadsheet-grid',
+] as const
+
+export type EditableGridCoreProfile = typeof EDITABLE_GRID_PROFILES[number]
+
+export type EditableGridProfile =
+  | EditableGridCoreProfile
+  | (string & { readonly __editableGridProfile?: never })
+
 export type EditableGridCoreCapability =
   | 'cell-edit'
   | 'selection'
@@ -18,12 +31,40 @@ export type EditableGridCapability =
   | EditableGridCoreCapability
   | (string & { readonly __editableGridCapability?: never })
 
+export type EditableGridFieldType =
+  | 'text'
+  | 'number'
+  | 'checkbox'
+  | 'select'
+  | 'multi-select'
+  | 'date'
+  | 'person'
+  | 'relation'
+  | 'formula'
+  | 'rollup'
+  | (string & { readonly __editableGridFieldType?: never })
+
+export interface EditableGridFieldOption {
+  readonly value: string
+  readonly label?: string
+  readonly color?: string
+}
+
+export interface EditableGridField<TMeta = unknown> {
+  readonly type?: EditableGridFieldType
+  readonly options?: readonly EditableGridFieldOption[]
+  readonly formula?: string
+  readonly relation?: string
+  readonly meta?: TMeta
+}
+
 export interface EditableGridColumn<TMeta = unknown> {
   readonly id: EditableGridColumnId
   readonly path: JsonPointer
   readonly label?: string
   readonly component?: string
   readonly readonly?: boolean
+  readonly field?: EditableGridField<TMeta>
   readonly meta?: TMeta
 }
 
@@ -34,6 +75,7 @@ export interface EditableGridRowIdentity {
 export interface EditableGridSurface<TMeta = unknown> {
   readonly contract: typeof EDITABLE_GRID_CONTRACT
   readonly kind: typeof EDITABLE_GRID_KIND
+  readonly profile?: EditableGridProfile
   readonly schema: ZodType<unknown>
   readonly dataPath: JsonPointer
   readonly rowIdentity?: EditableGridRowIdentity
@@ -91,6 +133,9 @@ export interface EditableGridHostContract<TValue = unknown, TMeta = unknown> {
 export const defineEditableGridSurface = <TMeta = unknown>(
   surface: EditableGridSurface<TMeta>,
 ): EditableGridSurface<TMeta> => surface
+
+export const editableGridProfileOf = (surface: EditableGridSurface): EditableGridProfile =>
+  surface.profile ?? 'record-table'
 
 export const escapeJsonPointerSegment = (segment: string): string =>
   segment.replace(/~/g, '~0').replace(/\//g, '~1')

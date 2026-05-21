@@ -17,6 +17,7 @@ import {
 const lineGrid = defineEditableGridSurface({
   contract: EDITABLE_GRID_CONTRACT,
   kind: EDITABLE_GRID_KIND,
+  profile: 'database-table',
   schema: z.object({
     lines: z.array(z.object({
       name: z.string(),
@@ -32,6 +33,7 @@ const lineGrid = defineEditableGridSurface({
 
 const invoiceSurface = defineSurface({
   contract: SURFACE_CONTRACT,
+  intent: 'database-table',
   schema: z.object({
     lines: z.array(z.object({
       name: z.string(),
@@ -47,6 +49,43 @@ const value = {
   lines: [
     { name: 'Apple', qty: 3 },
     { name: 'Bread', qty: 2 },
+  ],
+}
+
+const documentTableGrid = defineEditableGridSurface({
+  contract: EDITABLE_GRID_CONTRACT,
+  kind: EDITABLE_GRID_KIND,
+  profile: 'document-table',
+  schema: z.object({
+    blocks: z.array(z.object({
+      title: z.string(),
+      owner: z.string(),
+    })),
+  }),
+  dataPath: '/blocks',
+  columns: [
+    { id: 'title', path: '/title', label: 'Title', field: { type: 'text' } },
+    { id: 'owner', path: '/owner', label: 'Owner', field: { type: 'person' } },
+  ],
+})
+
+const documentTableSurface = defineSurface({
+  contract: SURFACE_CONTRACT,
+  intent: 'document-table',
+  schema: z.object({
+    blocks: z.array(z.object({
+      title: z.string(),
+      owner: z.string(),
+    })),
+  }),
+  views: [
+    { id: 'tasks', kind: EDITABLE_GRID_KIND, grid: documentTableGrid },
+  ],
+})
+
+const documentValue = {
+  blocks: [
+    { title: 'Spec', owner: 'Ada' },
   ],
 }
 
@@ -111,8 +150,32 @@ describe('Surface', () => {
     const { host, root } = setup()
     try {
       expect(document.querySelector('.surface')?.getAttribute('data-surface-contract')).toBe(SURFACE_CONTRACT)
+      expect(document.querySelector('.surface')?.getAttribute('data-surface-intent')).toBe('database-table')
       expect(document.querySelector('[data-surface-view="lines"]')).toBeDefined()
+      expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect(gridCells().map((cell) => cell.textContent)).toEqual(['Apple', '3', 'Bread', '2'])
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('renders a Notion-like document table through the same runtime', () => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+    try {
+      act(() => {
+        root.render(createElement(Surface, {
+          surface: documentTableSurface,
+          value: documentValue,
+          onChange: vi.fn(),
+        }))
+      })
+
+      expect(document.querySelector('.surface')?.getAttribute('data-surface-intent')).toBe('document-table')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('document-table')
+      expect(gridCells().map((cell) => cell.textContent)).toEqual(['Spec', 'Ada'])
     } finally {
       cleanup(root, host)
     }

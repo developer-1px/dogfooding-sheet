@@ -5,6 +5,7 @@ import {
   EDITABLE_GRID_KIND,
   defineEditableGridSurface,
   editableGridCellPath,
+  editableGridProfileOf,
   editableGridRows,
   escapeJsonPointerSegment,
   joinJsonPointer,
@@ -34,7 +35,45 @@ describe('editable grid contract', () => {
 
     expect(surface.contract).toBe('interactive-os.editable-grid.v1')
     expect(surface.kind).toBe('editable-grid')
+    expect(editableGridProfileOf(surface)).toBe('record-table')
     expect(surface.columns[0]?.path).toBe('/name')
+  })
+
+  it('captures database and document table field intent without changing the renderer contract', () => {
+    const database = defineEditableGridSurface({
+      contract: EDITABLE_GRID_CONTRACT,
+      kind: EDITABLE_GRID_KIND,
+      profile: 'database-table',
+      schema: z.array(z.object({ status: z.string(), owner: z.string() })),
+      dataPath: '/records',
+      columns: [
+        {
+          id: 'status',
+          path: '/status',
+          field: {
+            type: 'select',
+            options: [
+              { value: 'todo', label: 'Todo' },
+              { value: 'done', label: 'Done' },
+            ],
+          },
+        },
+        { id: 'owner', path: '/owner', field: { type: 'person' } },
+      ],
+    })
+    const documentTable = defineEditableGridSurface({
+      contract: EDITABLE_GRID_CONTRACT,
+      kind: EDITABLE_GRID_KIND,
+      profile: 'document-table',
+      schema: z.array(z.object({ title: z.string() })),
+      dataPath: '/blocks',
+      columns: [{ id: 'title', path: '/title', field: { type: 'text' } }],
+    })
+
+    expect(editableGridProfileOf(database)).toBe('database-table')
+    expect(database.columns[0]?.field?.type).toBe('select')
+    expect(database.columns[0]?.field?.options?.[1]?.value).toBe('done')
+    expect(editableGridProfileOf(documentTable)).toBe('document-table')
   })
 
   it('uses RFC 6901 JSON Pointer paths for patch output', () => {
