@@ -23,7 +23,8 @@
       "@spredsheet/editable-grid/resize-rules": ["./packages/editable-grid/src/resizeRules.ts"],
       "@spredsheet/editable-grid": ["./packages/editable-grid/src/index.ts"],
       "@spredsheet/formula": ["./packages/formula/src/index.ts"],
-      "@spredsheet/grid": ["./packages/grid/src/index.ts"]
+      "@spredsheet/grid": ["./packages/grid/src/index.ts"],
+      "@spredsheet/surface": ["./packages/surface/src/index.ts"]
     },
 
     /* Linting */

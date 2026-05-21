@@ -39,6 +39,9 @@ importers:
       '@spredsheet/grid':
         specifier: workspace:*
         version: link:packages/grid
+      '@spredsheet/surface':
+        specifier: workspace:*
+        version: link:packages/surface
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -140,6 +143,37 @@ importers:
 
   packages/grid:
     devDependencies:
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.5
+        version: 4.1.7(@types/node@24.12.4)(@vitest/ui@4.1.7)(jsdom@29.1.1)(vite@8.0.13(@types/node@24.12.4))
+
+  packages/surface:
+    dependencies:
+      '@spredsheet/editable-grid':
+        specifier: workspace:*
+        version: link:../editable-grid
+      zod:
+        specifier: ^4.0.0
+        version: 4.4.3
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.15
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.15)
+      jsdom:
+        specifier: ^29.1.1
+        version: 29.1.1
+      react:
+        specifier: ^19.2.5
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.2.5
+        version: 19.2.6(react@19.2.6)
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
