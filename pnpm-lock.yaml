@@ -14,10 +14,10 @@ importers:
     dependencies:
       '@interactive-os/anyeditable':
         specifier: file:../editable/packages/anyeditable
-        version: file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.15)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
+        version: file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/legacy/aria-kernel(@types/react@19.2.15)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
       '@interactive-os/aria-kernel':
-        specifier: file:../aria-kernel/packages/aria-kernel
-        version: file:../aria-kernel/packages/aria-kernel(@types/react@19.2.15)(react@19.2.6)
+        specifier: file:../aria-kernel/legacy/aria-kernel
+        version: file:../aria-kernel/legacy/aria-kernel(@types/react@19.2.15)(react@19.2.6)
       '@interactive-os/devtools':
         specifier: file:../devtools
         version: file:../devtools(@babel/parser@7.29.3)(@babel/types@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vite@8.0.13(@types/node@24.12.4))
@@ -330,8 +330,8 @@ packages:
       zod-crud:
         optional: true
 
-  '@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel':
-    resolution: {directory: ../aria-kernel/packages/aria-kernel, type: directory}
+  '@interactive-os/aria-kernel@file:../aria-kernel/legacy/aria-kernel':
+    resolution: {directory: ../aria-kernel/legacy/aria-kernel, type: directory}
     peerDependencies:
       '@types/react': ^19.0.0
       react: ^19.0.0
@@ -1639,20 +1639,20 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@interactive-os/anyeditable@file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.15)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)':
+  '@interactive-os/anyeditable@file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/legacy/aria-kernel(@types/react@19.2.15)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)':
     dependencies:
       '@interactive-os/keyboard': file:../keyboard/packages/keyboard
       react: 19.2.6
     optionalDependencies:
-      '@interactive-os/aria-kernel': file:../aria-kernel/packages/aria-kernel(@types/react@19.2.15)(react@19.2.6)
+      '@interactive-os/aria-kernel': file:../aria-kernel/legacy/aria-kernel(@types/react@19.2.15)(react@19.2.6)
       zod: 4.4.3
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
-  '@interactive-os/aria-kernel@file:../aria-kernel/packages/aria-kernel(@types/react@19.2.15)(react@19.2.6)':
+  '@interactive-os/aria-kernel@file:../aria-kernel/legacy/aria-kernel(@types/react@19.2.15)(react@19.2.6)':
     dependencies:
+      '@interactive-os/collection-navigation': file:../keyboard-navigation/packages/collection-navigation
       '@interactive-os/intent': file:../intent/packages/intent(zod@4.4.3)
       '@interactive-os/keyboard': file:../keyboard/packages/keyboard
-      '@interactive-os/keyboard-navigation': '@interactive-os/collection-navigation@file:../keyboard-navigation/packages/collection-navigation'
       react: 19.2.6
       zod: 4.4.3
     optionalDependencies:
