@@ -142,6 +142,7 @@ describe('EditableGrid', () => {
           focus: { rowIndex: 0, columnId: 'qty' },
         }],
       })
+      expect(document.activeElement).toBe(first)
     } finally {
       cleanup(root, host)
     }

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useEditableGridDomFocus, type EditableGridCaretMode } from '@spredsheet/editable-grid/primitives'
 import {
   cancelGridEdit,
   commitGridEdit,
@@ -7,7 +8,6 @@ import {
   setGridDraft,
   setGridFocus,
   startGridEdit,
-  type GridCaretMode,
   type GridNavDir,
 } from '@spredsheet/grid'
 import { cellKey, parseCellId, type WriteCell, type Cells } from './schema'
@@ -38,10 +38,10 @@ const dirDelta: Record<GridNavDir, { dRow: number; dCol: number }> = {
 
 export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   const [state, setState] = useState(() => createGridEditState<string>('r0-A'))
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const selectRef = useRef<HTMLSelectElement | null>(null)
-  const pendingCaretMode = useRef<GridCaretMode | null>(null)
-  const pendingFocusRestoreId = useRef<string | null>(null)
+  const { editorRef, requestEditorCaret, requestCellFocusRestore } = useEditableGridDomFocus({
+    editingId: state.editing,
+    activeId: state.focusId,
+  })
 
   const getValue = useCallback((id: string) => {
     const p = parseCellId(id)
@@ -53,57 +53,32 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
     return moveCellIdByDelta(id, dRow, dCol, { rowCount, colLetters })
   }, [colLetters, rowCount])
 
-  useEffect(() => {
-    if (state.editing === null) {
-      pendingCaretMode.current = null
-      return
-    }
-    const el = inputRef.current ?? selectRef.current
-    el?.focus()
-    const caret = pendingCaretMode.current
-    pendingCaretMode.current = null
-    if (!caret || !(el instanceof HTMLInputElement)) return
-    if (caret === 'select-all') el.select()
-    else if (caret === 'start') el.setSelectionRange(0, 0)
-    else el.setSelectionRange(el.value.length, el.value.length)
-  }, [state.editing])
-
-  useEffect(() => {
-    if (state.editing !== null) return
-    const id = pendingFocusRestoreId.current
-    if (!id || typeof document === 'undefined') return
-    pendingFocusRestoreId.current = null
-    const cell = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
-      .find((el) => el.dataset.id === id)
-    cell?.focus()
-  }, [state.editing, state.focusId])
-
   const setFocusId = useCallback((id: string | null) => setState((s) => setGridFocus(s, id)), [])
   const setDraft = useCallback((draft: string) => setState((s) => setGridDraft(s, draft)), [])
 
-  const startEdit = useCallback((id: string, initial?: string, opts?: { caret?: GridCaretMode }) => {
+  const startEdit = useCallback((id: string, initial?: string, opts?: { caret?: EditableGridCaretMode }) => {
     const started = startGridEdit(state, id, initial ?? getValue(id), opts)
-    pendingCaretMode.current = started.caret ?? null
+    requestEditorCaret(started.caret)
     setState(started.state)
-  }, [getValue, state])
+  }, [getValue, requestEditorCaret, state])
 
   const cancelEdit = useCallback((opts: CommitOptions = {}) => setState((s) => {
     const canceled = cancelGridEdit(s)
-    if (opts.restoreFocus && s.editing !== null) pendingFocusRestoreId.current = canceled.focusId
+    if (opts.restoreFocus && s.editing !== null) requestCellFocusRestore(canceled.focusId)
     return canceled
-  }), [])
+  }), [requestCellFocusRestore])
 
   // Keep the existing sheet-level commitEdit({ dRow, dCol }) API while using the package edit engine.
   const commitEdit = useCallback((move?: { dRow: number; dCol: number }, opts: CommitOptions = {}) => setState((s) => {
     const dir = !move ? undefined : move.dRow > 0 ? 'down' : move.dRow < 0 ? 'up' : move.dCol > 0 ? 'right' : 'left'
     const committed = commitGridEdit(s, dir ? (id) => navigate(id, dir) : undefined)
-    if (opts.restoreFocus && s.editing !== null) pendingFocusRestoreId.current = committed.state.focusId
+    if (opts.restoreFocus && s.editing !== null) requestCellFocusRestore(committed.state.focusId)
     if (committed.write) {
       const p = parseCellId(committed.write.id)
       if (p) writeCell(cellKey(p.col, p.row), committed.write.value)
     }
     return committed.state
-  }), [navigate, writeCell])
+  }), [navigate, requestCellFocusRestore, writeCell])
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (e.key === 'Enter') {
@@ -116,20 +91,20 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   }, [cancelEdit, commitEdit])
 
   const inputProps = useMemo<InputProps>(() => ({
-    ref: inputRef,
+    ref: editorRef,
     value: state.draft,
     onChange: (e) => setDraft(e.currentTarget.value),
     onKeyDown,
     onBlur: () => commitEdit(),
-  }), [commitEdit, onKeyDown, setDraft, state.draft])
+  }), [commitEdit, editorRef, onKeyDown, setDraft, state.draft])
 
   const selectProps = useMemo<SelectProps>(() => ({
-    ref: selectRef,
+    ref: editorRef,
     value: state.draft,
     onChange: (e) => setDraft(e.currentTarget.value),
     onKeyDown,
     onBlur: () => commitEdit(),
-  }), [commitEdit, onKeyDown, setDraft, state.draft])
+  }), [commitEdit, editorRef, onKeyDown, setDraft, state.draft])
 
   const focusCell = state.focusId ? parseCellId(state.focusId) : null
   const focusKey = focusCell ? cellKey(focusCell.col, focusCell.row) : null

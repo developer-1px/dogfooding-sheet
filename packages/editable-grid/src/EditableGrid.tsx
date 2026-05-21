@@ -11,6 +11,16 @@ import {
   type EditableGridHostContract,
   type EditableGridSelection,
 } from './contract'
+import {
+  EditableGridCell,
+  EditableGridColumnHeader,
+  EditableGridInput,
+  EditableGridRoot,
+  EditableGridRow,
+  EditableGridSelect,
+  useEditableGridDomFocus,
+  type EditableGridCaretMode,
+} from './primitives'
 
 export interface EditableGridRenderCell {
   readonly address: EditableGridAddress
@@ -34,6 +44,12 @@ const formatCellValue = (value: unknown): string => {
 
 const sameAddress = (a: EditableGridAddress | undefined, b: EditableGridAddress): boolean =>
   !!a && a.rowIndex === b.rowIndex && a.columnId === b.columnId
+
+const addressDomId = (address: EditableGridAddress): string =>
+  `${address.rowIndex}:${address.columnId}`
+
+const getEditableGridCellId = (element: HTMLElement): string | null =>
+  element.dataset.editableGridCellId ?? null
 
 const fieldTypeOf = (column: EditableGridColumn): EditableGridFieldType =>
   column.field?.type ?? 'text'
@@ -86,6 +102,12 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
   const [editing, setEditing] = useState<EditableGridAddress | null>(null)
   const [draft, setDraft] = useState('')
   const activeSelection = selection ?? localSelection
+  const domFocus = useEditableGridDomFocus({
+    editingId: editing ? addressDomId(editing) : null,
+    activeId: activeSelection.focus ? addressDomId(activeSelection.focus) : null,
+    cellSelector: '[role="gridcell"][data-editable-grid-cell-id]',
+    getCellId: getEditableGridCellId,
+  })
 
   const setSelection = (next: EditableGridSelection) => {
     if (!selection) setLocalSelection(next)
@@ -96,16 +118,28 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
     setSelection({ focus: address, ranges: [{ anchor: address, focus: address }] })
   }
 
-  const startEdit = (address: EditableGridAddress, cellValue: unknown, column: EditableGridColumn) => {
+  const startEdit = (
+    address: EditableGridAddress,
+    cellValue: unknown,
+    column: EditableGridColumn,
+    opts: { caret?: EditableGridCaretMode } = {},
+  ) => {
     if (isReadonlyColumn(readonly, column) || fieldTypeOf(column) === 'checkbox') return
     focusCell(address)
+    domFocus.requestEditorCaret(opts.caret)
     setEditing(address)
     setDraft(formatCellValue(cellValue))
   }
 
-  const commitEdit = (address: EditableGridAddress, previousValue: unknown, column: EditableGridColumn) => {
+  const commitEdit = (
+    address: EditableGridAddress,
+    previousValue: unknown,
+    column: EditableGridColumn,
+    opts: { restoreFocus?: boolean } = {},
+  ) => {
     const nextSelection = { focus: address, ranges: [{ anchor: address, focus: address }] }
     const value = commitValueForField(draft, column)
+    if (opts.restoreFocus) domFocus.requestCellFocusRestore(addressDomId(address))
     onChange({
       patches: [{
         op: previousValue === undefined ? 'add' : 'replace',
@@ -116,6 +150,11 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
       selection: nextSelection,
     })
     setSelection(nextSelection)
+    setEditing(null)
+  }
+
+  const cancelEdit = (address: EditableGridAddress, opts: { restoreFocus?: boolean } = {}) => {
+    if (opts.restoreFocus) domFocus.requestCellFocusRestore(addressDomId(address))
     setEditing(null)
   }
 
@@ -155,7 +194,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
   ) => {
     if (event.key === 'Enter') {
       event.preventDefault()
-      startEdit(address, cellValue, column)
+      startEdit(address, cellValue, column, { caret: 'end' })
       return
     }
     if (event.key === 'ArrowUp') { event.preventDefault(); moveFocus(address, -1, 0) }
@@ -165,23 +204,22 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
   }
 
   return (
-    <div
+    <EditableGridRoot
       id={gridId}
-      role="grid"
-      aria-rowcount={rows.length + 1}
-      aria-colcount={surface.columns.length}
-      data-editable-grid-profile={profile}
-      className={['editable-grid', `editable-grid--${profile}`, className].filter(Boolean).join(' ')}
+      profile={profile}
+      rowCount={rows.length + 1}
+      colCount={surface.columns.length}
+      className={className}
     >
-      <div role="row" className="editable-grid-row editable-grid-header-row">
+      <EditableGridRow header>
         {surface.columns.map((column, columnIndex) => (
-          <div key={column.id} role="columnheader" aria-colindex={columnIndex + 1} className="editable-grid-header-cell">
+          <EditableGridColumnHeader key={column.id} colIndex={columnIndex + 1}>
             {column.label ?? column.id}
-          </div>
+          </EditableGridColumnHeader>
         ))}
-      </div>
+      </EditableGridRow>
       {rows.map((row, rowIndex) => (
-        <div key={rowIndex} role="row" aria-rowindex={rowIndex + 2} className="editable-grid-row">
+        <EditableGridRow key={rowIndex} rowIndex={rowIndex + 2}>
           {surface.columns.map((column, columnIndex) => {
             const address = { rowIndex, columnId: column.id }
             const cellValue = readJsonPointer(row, column.path)
@@ -189,49 +227,47 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
             const isEditing = sameAddress(editing ?? undefined, address)
             const fieldType = fieldTypeOf(column)
             return (
-              <div
+              <EditableGridCell
                 key={column.id}
-                role="gridcell"
-                aria-colindex={columnIndex + 1}
-                aria-selected={selected}
-                tabIndex={selected || (!activeSelection.focus && rowIndex === 0 && columnIndex === 0) ? 0 : -1}
-                className={['editable-grid-cell', selected ? 'selected' : '', isEditing ? 'editing' : ''].filter(Boolean).join(' ')}
+                cellId={addressDomId(address)}
+                colIndex={columnIndex + 1}
+                selected={selected}
+                editing={isEditing}
+                focusable={selected || (!activeSelection.focus && rowIndex === 0 && columnIndex === 0)}
                 onFocus={() => focusCell(address)}
                 onClick={() => focusCell(address)}
-                onDoubleClick={() => startEdit(address, cellValue, column)}
+                onDoubleClick={() => startEdit(address, cellValue, column, { caret: 'end' })}
                 onKeyDown={(event) => onCellKeyDown(event, address, cellValue, column)}
               >
                 {isEditing ? (
                   fieldType === 'select' ? (
-                    <select
-                      className="editable-grid-input"
+                    <EditableGridSelect
                       aria-label={`${column.label ?? column.id} 편집`}
                       value={draft}
-                      autoFocus
+                      ref={domFocus.editorRef}
                       onChange={(event) => setDraft(event.currentTarget.value)}
                       onBlur={() => commitEdit(address, cellValue, column)}
                       onKeyDown={(event) => {
-                        if (event.key === 'Enter') { event.preventDefault(); commitEdit(address, cellValue, column) }
-                        else if (event.key === 'Escape') { event.preventDefault(); setEditing(null) }
+                        if (event.key === 'Enter') { event.preventDefault(); commitEdit(address, cellValue, column, { restoreFocus: true }) }
+                        else if (event.key === 'Escape') { event.preventDefault(); cancelEdit(address, { restoreFocus: true }) }
                       }}
                     >
                       <option value="">-</option>
                       {column.field?.options?.map((option) => (
                         <option key={option.value} value={option.value}>{option.label ?? option.value}</option>
                       ))}
-                    </select>
+                    </EditableGridSelect>
                   ) : (
-                    <input
-                      className="editable-grid-input"
+                    <EditableGridInput
                       aria-label={`${column.label ?? column.id} 편집`}
                       type={fieldType === 'number' ? 'number' : fieldType === 'date' ? 'date' : 'text'}
                       value={draft}
-                      autoFocus
+                      ref={domFocus.editorRef}
                       onChange={(event) => setDraft(event.currentTarget.value)}
                       onBlur={() => commitEdit(address, cellValue, column)}
                       onKeyDown={(event) => {
-                        if (event.key === 'Enter') { event.preventDefault(); commitEdit(address, cellValue, column) }
-                        else if (event.key === 'Escape') { event.preventDefault(); setEditing(null) }
+                        if (event.key === 'Enter') { event.preventDefault(); commitEdit(address, cellValue, column, { restoreFocus: true }) }
+                        else if (event.key === 'Escape') { event.preventDefault(); cancelEdit(address, { restoreFocus: true }) }
                       }}
                     />
                   )
@@ -249,11 +285,11 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 ) : (
                   formatFieldValue(cellValue, column)
                 )}
-              </div>
+              </EditableGridCell>
             )
           })}
-        </div>
+        </EditableGridRow>
       ))}
-    </div>
+    </EditableGridRoot>
   )
 }

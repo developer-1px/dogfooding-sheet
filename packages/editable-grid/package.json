@@ -22,6 +22,11 @@
       "types": "./dist/contract.d.ts",
       "import": "./dist/contract.js"
     },
+    "./primitives": {
+      "development": "./src/primitives.ts",
+      "types": "./dist/primitives.d.ts",
+      "import": "./dist/primitives.js"
+    },
     "./resize-rules": {
       "development": "./src/resizeRules.ts",
       "types": "./dist/resizeRules.d.ts",

@@ -20,6 +20,7 @@ import {
   clampResizeValue,
   resizeValueForKey,
   storedResizeValue,
+  useEditableGridDomFocus,
 } from './index'
 
 describe('editable grid contract', () => {
@@ -37,6 +38,7 @@ describe('editable grid contract', () => {
     expect(surface.kind).toBe('editable-grid')
     expect(editableGridProfileOf(surface)).toBe('record-table')
     expect(surface.columns[0]?.path).toBe('/name')
+    expect(typeof useEditableGridDomFocus).toBe('function')
   })
 
   it('captures database and document table field intent without changing the renderer contract', () => {

@@ -1,5 +1,6 @@
 export * from './contract'
 export * from './cellDisplay'
 export * from './resizeRules'
+export * from './primitives'
 export { EditableGrid } from './EditableGrid'
 export type { EditableGridProps, EditableGridRenderCell } from './EditableGrid'
