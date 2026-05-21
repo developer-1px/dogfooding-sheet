@@ -71,7 +71,7 @@ describe('spreadsheet preview interactions', () => {
     expect(merged?.getAttribute('aria-colspan')).toBe('3')
   })
 
-  it('commits text typed directly after selecting an empty cell with the mouse', async () => {
+  it('commits text typed directly and restores cell focus after Enter', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
     const a5 = gridCells()[40]
@@ -81,7 +81,10 @@ describe('spreadsheet preview interactions', () => {
     act(() => mouseClick(a5))
     for (const key of 'Hello') act(() => typeKey(key))
     act(() => typeKey('Enter'))
+    await act(async () => { await Promise.resolve() })
 
     expect(a5.textContent).toContain('Hello')
+    expect(document.querySelector('input.cell-input')).toBeNull()
+    expect(document.activeElement).toBe(a5)
   })
 })

@@ -27,6 +27,7 @@ type SelectProps = Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onKeyDow
   ref?: React.Ref<HTMLSelectElement>
   onKeyDown?: React.KeyboardEventHandler<HTMLElement>
 }
+type CommitOptions = { restoreFocus?: boolean }
 
 const dirDelta: Record<GridNavDir, { dRow: number; dCol: number }> = {
   down: { dRow: 1, dCol: 0 },
@@ -39,6 +40,7 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   const [state, setState] = useState(() => createGridEditState<string>('r0-A'))
   const inputRef = useRef<HTMLInputElement | null>(null)
   const selectRef = useRef<HTMLSelectElement | null>(null)
+  const pendingFocusRestoreId = useRef<string | null>(null)
 
   const getValue = useCallback((id: string) => {
     const p = parseCellId(id)
@@ -56,6 +58,16 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
     el?.focus()
     if (el instanceof HTMLInputElement) el.select()
   }, [state.editing])
+
+  useEffect(() => {
+    if (state.editing !== null) return
+    const id = pendingFocusRestoreId.current
+    if (!id || typeof document === 'undefined') return
+    pendingFocusRestoreId.current = null
+    const cell = [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
+      .find((el) => el.dataset.id === id)
+    cell?.focus()
+  }, [state.editing, state.focusId])
 
   const applyCaret = (caret?: GridCaretMode) => {
     if (!caret) return
@@ -77,12 +89,17 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
     applyCaret(started.caret)
   }, [getValue, state])
 
-  const cancelEdit = useCallback(() => setState((s) => cancelGridEdit(s)), [])
+  const cancelEdit = useCallback((opts: CommitOptions = {}) => setState((s) => {
+    const canceled = cancelGridEdit(s)
+    if (opts.restoreFocus && s.editing !== null) pendingFocusRestoreId.current = canceled.focusId
+    return canceled
+  }), [])
 
   // Keep the existing sheet-level commitEdit({ dRow, dCol }) API while using the package edit engine.
-  const commitEdit = useCallback((move?: { dRow: number; dCol: number }) => setState((s) => {
+  const commitEdit = useCallback((move?: { dRow: number; dCol: number }, opts: CommitOptions = {}) => setState((s) => {
     const dir = !move ? undefined : move.dRow > 0 ? 'down' : move.dRow < 0 ? 'up' : move.dCol > 0 ? 'right' : 'left'
     const committed = commitGridEdit(s, dir ? (id) => navigate(id, dir) : undefined)
+    if (opts.restoreFocus && s.editing !== null) pendingFocusRestoreId.current = committed.state.focusId
     if (committed.write) {
       const p = parseCellId(committed.write.id)
       if (p) writeCell(cellKey(p.col, p.row), committed.write.value)
@@ -93,10 +110,10 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      commitEdit()
+      commitEdit(undefined, { restoreFocus: true })
     } else if (e.key === 'Escape') {
       e.preventDefault()
-      cancelEdit()
+      cancelEdit({ restoreFocus: true })
     }
   }, [cancelEdit, commitEdit])
 
