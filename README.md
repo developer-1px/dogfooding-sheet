@@ -2,7 +2,8 @@
 
 Browser-only spreadsheet built on top of two local packages — used as their dogfood:
 
-- **[`@p/aria-kernel`](https://github.com/developer-1px/aria-kernel)** — APG-conformant ARIA primitives (grid / dialog / menu / tabs / alertdialog).
+- **`@interactive-os/aria`** — current APG pattern runtime; grid focus/navigation uses this.
+- **`@interactive-os/aria-kernel`** — legacy gestures and remaining dialog/menu/tabs adapters during migration.
 - **[`zod-crud`](https://github.com/developer-1px/zod-crud)** — single-document JSON-Patch CRUD with undo/redo over a Zod schema.
 
 A 10-column × 20-row sheet with 200+ formulas, conditional formatting, validation, multiple tabs, and end-to-end undo. ~5k LOC under `src/`.
@@ -13,7 +14,8 @@ A 10-column × 20-row sheet with 200+ formulas, conditional formatting, validati
 src/sheet/useSheet.ts          ← root hook, exposes ctx
 src/sheet/schema.ts            ← single SSOT TabBundle + Sheet (zod)
 src/sheet/use{Notes,Styles,…}  ← thin readers/writers over ops.replace
-src/sheet/Tabs / Grid / …      ← consume aria-kernel patterns
+src/sheet/Grid                 ← consumes @interactive-os/aria grid pattern
+src/sheet/Tabs / dialogs / …   ← consume aria-kernel legacy adapters
 packages/formula/              ← internal formula package + standardization seed
 ```
 
@@ -36,7 +38,7 @@ Each tab owns its own `TabBundle` (cells + notes + styles + …). `tabActions.sw
 
 ### Native modal-free
 
-No `window.prompt` / `window.confirm` / `window.alert`. All interactions route through `usePrompt` / `useConfirm` hooks built on aria-kernel's `useDialogPattern` and `useAlertDialogPattern`.
+No `window.prompt` / `window.confirm` / `window.alert`. All interactions route through `usePrompt` / `useConfirm` hooks built on aria-kernel legacy dialog adapters.
 
 ## Dev
 

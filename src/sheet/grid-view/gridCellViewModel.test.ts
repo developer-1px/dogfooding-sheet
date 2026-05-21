@@ -1,15 +1,11 @@
-import type { GridCell } from '@interactive-os/aria-kernel/patterns'
+import type { SheetGridCell } from './gridTypes'
 import { describe, expect, it } from 'vitest'
 import { createGridCellViewModel, mergeRangeLabel } from './gridCellViewModel'
 
-const cell = (id: string, label = '', selected = false): GridCell => ({
+const cell = (id: string, label = '', selected = false): SheetGridCell => ({
   id,
   label,
   selected,
-  rowId: 'row',
-  rowIndex: 0,
-  colIndex: 0,
-  disabled: false,
 })
 
 describe('mergeRangeLabel', () => {

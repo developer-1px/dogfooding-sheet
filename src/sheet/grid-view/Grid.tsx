@@ -173,9 +173,9 @@ export function Grid({ ctx }: { ctx: GridController }) {
               }
               getCellHandlers(id).onMouseDown(e)
             }}
-            onCellMouseEnter={(id, e) => {
+            onCellMouseEnter={(id) => {
               if (fill.dragging) fill.onCellEnterDuringFill(id)
-              else getCellHandlers(id).onMouseEnter(e)
+              else getCellHandlers(id).onMouseEnter()
             }}
             onFillHandleMouseDown={fill.onHandleMouseDown}
             getCellCtxHandlers={getCellCtxHandlers}

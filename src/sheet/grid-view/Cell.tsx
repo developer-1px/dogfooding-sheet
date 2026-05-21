@@ -1,9 +1,9 @@
-import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 import { createCellDisplayModel, type CellContent } from '@spredsheet/editable-grid/cell-display'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
+import type { SheetGridItemProps } from './gridTypes'
 
 interface Props {
-  cellProps: ItemProps
+  cellProps: SheetGridItemProps
   address: string
   label: string
   selected: boolean

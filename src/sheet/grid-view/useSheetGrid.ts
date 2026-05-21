@@ -1,12 +1,11 @@
-import { useRef } from 'react'
-import { type UiEvent } from '@interactive-os/aria-kernel'
-import { useGridPattern } from '@interactive-os/aria-kernel/patterns'
-import { useGridDragSelectGesture } from '@interactive-os/aria-kernel/gesture'
-import { gridRectEvents } from '@interactive-os/aria-kernel/axes/gridMultiSelect'
-import type { NormalizedData } from '@interactive-os/aria-kernel'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { gridDefinition, reducePatternData, type Key, type PatternData, type PatternEvent, type PatternEventReason } from '@interactive-os/aria'
+import { useGridPattern } from '@interactive-os/aria/react'
+import { idsBetween } from '@spredsheet/grid'
+import type { SheetGridCell, SheetGridItemProps, SheetGridRow } from './gridTypes'
 
 interface Args {
-  data: NormalizedData
+  data: PatternData
   rowCount: number
   colCount: number
   setFocusId: (id: string) => void
@@ -16,72 +15,156 @@ interface Args {
   isEditing?: () => boolean
 }
 
-export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
-  const pendingAnchor = useRef<string | null>(null)
+const directionsByArrow: Record<string, Extract<PatternEvent, { type: 'navigate' }>['direction'] | undefined> = {
+  ArrowDown: 'down',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+  ArrowUp: 'up',
+}
 
-  const schedulePlainNavigateAnchor = (id: string) => {
-    pendingAnchor.current = id
-    queueMicrotask(() => {
-      if (pendingAnchor.current === id) {
-        setSelectAnchor(id)
-        pendingAnchor.current = null
-      }
-    })
+const toItemProps = (props: SheetGridItemProps | undefined, id?: string): SheetGridItemProps => ({
+  ...(props ?? {}),
+  ...(id ? { 'data-id': id } : {}),
+})
+
+const toSheetCell = (cell: { key: Key; value: string; state: { selected: boolean } }): SheetGridCell => ({
+  id: cell.key,
+  label: cell.value,
+  selected: cell.state.selected,
+})
+
+export function useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
+  const dragAnchor = useRef<string | null>(null)
+  const dragging = useRef(false)
+  const suppressNextSelect = useRef(false)
+  const [lastEventReason, setLastEventReason] = useState<PatternEventReason | undefined>(undefined)
+
+  useEffect(() => {
+    const stopDrag = () => { dragging.current = false }
+    window.addEventListener('mouseup', stopDrag)
+    return () => window.removeEventListener('mouseup', stopDrag)
+  }, [])
+
+  const dataWithLastReason = useMemo<PatternData>(() => ({
+    ...data,
+    state: {
+      ...data.state,
+      lastEventReason,
+    },
+  }), [data, lastEventReason])
+
+  const moveFocus = (id: string) => {
+    setFocusId(id)
+    setSelectedIds([])
+    setSelectAnchor(id)
   }
 
-  const onEvent = (e: UiEvent) => {
-    // Plain navigate (click/Arrow): selection cleared; the following select{anchor:true} re-locks anchor.
-    // Shift+Arrow navigate: no select{anchor:true} follows, so existing anchor is preserved.
-    if (e.type === 'navigate' && e.id) {
-      setFocusId(e.id)
-      setSelectedIds([])
-      schedulePlainNavigateAnchor(e.id)
+  const selectCell = (id: string) => {
+    setFocusId(id)
+    setSelectedIds([id])
+    setSelectAnchor(id)
+  }
+
+  const selectRange = (anchor: string, id: string) => {
+    setFocusId(id)
+    setSelectedIds(idsBetween(anchor, id))
+    setSelectAnchor(anchor)
+  }
+
+  const nextFocusFor = (event: Extract<PatternEvent, { type: 'navigate' }>) =>
+    reducePatternData(gridDefinition, dataWithLastReason, event).state?.activeKey ?? null
+
+  const onEvent = (event: PatternEvent) => {
+    setLastEventReason(event.meta?.reason)
+
+    if (event.type === 'navigate') {
+      const next = nextFocusFor(event)
+      if (next) moveFocus(next)
       return
     }
-    if (e.type === 'activate' && e.id) return
-    // aria-kernel#141 — Enter inside cell-input bubbles to grid root and matches the editable-mode
-    // chord, re-firing editStart and resetting draft. Guard until the kernel adds editable-guard.
-    if (e.type === 'editStart' && e.id) { if (isEditing?.()) return; startEdit?.(e.id, undefined, { caret: 'end' }); return }
-    if (e.type === 'select') {
-      pendingAnchor.current = null
-      // aria-kernel#142 — kernel signals new range anchor via select{anchor:true}; persist so
-      // subsequent Shift+Arrow extends from this point instead of silently using currentId.
-      if (e.anchor && e.ids?.[0]) setSelectAnchor(e.ids[0])
-      if (e.to === undefined) setSelectedIds(e.ids)
-      else if (e.to) setSelectedIds((p) => [...new Set([...p, ...e.ids])])
-      else setSelectedIds((p) => p.filter((id) => !e.ids.includes(id)))
+
+    if (event.type === 'focus') {
+      setFocusId(event.key)
+      return
+    }
+
+    if (event.type === 'select') {
+      if (suppressNextSelect.current) {
+        suppressNextSelect.current = false
+        return
+      }
+      const focus = event.extentKey ?? event.anchorKey ?? event.keys[0]
+      if (focus) setFocusId(focus)
+      setSelectedIds([...event.keys])
+      setSelectAnchor(event.anchorKey ?? focus ?? null)
+      return
+    }
+
+    if (event.type === 'editStart') {
+      if (isEditing?.()) return
+      startEdit?.(event.key, undefined, { caret: 'end' })
     }
   }
-  const grid = useGridPattern(data, onEvent, {
-    label: 'Spreadsheet',
-    rowCount: rowCount + 1,
-    colCount,
-    editable: true,
-    selectionMode: 'rect',
-    // Workaround aria-kernel#140 — built-in Backspace/Delete chord lacks an editable-guard,
-    // so it would PD keystrokes inside the cell-input. We re-implement remove at the global
-    // useShortcut layer (which DOES editable-guard).
-    disableBuiltinChords: true,
+
+  const grid = useGridPattern(dataWithLastReason, onEvent)
+  const headerRow = grid.rows[0]
+  const renderedRows = grid.rows.slice(1)
+  const rowPropsById = new Map<string, SheetGridItemProps>(
+    renderedRows.map((row) => [row.key, { ...row.rowProps, 'data-row-id': row.key }]),
+  )
+  const cells = [...(headerRow?.cells ?? []), ...renderedRows.flatMap((row) => row.cells)]
+  const cellPropsById = new Map<string, SheetGridItemProps>(
+    cells.map((cell) => [cell.key, toItemProps(cell.cellProps as SheetGridItemProps, cell.key)]),
+  )
+
+  const rootProps: SheetGridItemProps = {
+    ...(grid.gridProps as SheetGridItemProps),
+    onKeyDown: (event) => {
+      if (event.defaultPrevented) return
+      const active = dataWithLastReason.state?.activeKey
+      const direction = directionsByArrow[event.key]
+      if (event.shiftKey && direction && active) {
+        event.preventDefault()
+        const next = nextFocusFor({ type: 'navigate', direction, meta: { reason: 'keyboard' } })
+        const anchor = dataWithLastReason.state?.anchorKey ?? active
+        if (next) selectRange(anchor, next)
+        return
+      }
+      grid.gridProps.onKeyDown?.(event)
+    },
+  }
+
+  const rows: SheetGridRow[] = renderedRows.map((row) => ({
+    id: row.key,
+    cells: row.cells.map(toSheetCell),
+  }))
+
+  const getCellHandlers = (id: string) => ({
+    onMouseDown: (event: React.MouseEvent) => {
+      if (event.button !== 0) return
+      const anchor = dataWithLastReason.state?.anchorKey ?? dataWithLastReason.state?.activeKey
+      if (event.shiftKey && anchor) {
+        event.preventDefault()
+        suppressNextSelect.current = true
+        selectRange(anchor, id)
+        return
+      }
+      dragging.current = true
+      dragAnchor.current = id
+      selectCell(id)
+    },
+    onMouseEnter: () => {
+      if (!dragging.current || !dragAnchor.current) return
+      selectRange(dragAnchor.current, id)
+    },
   })
-  const drag = useGridDragSelectGesture(data, onEvent)
-  // Workaround aria-kernel#157 — useGridDragSelectGesture는 e.shiftKey를 무시함.
-  // Shift+Click rect 확장은 여기서 gridRectEvents로 직접 분기 (anchor = data.meta.selectAnchor ?? focus).
-  const getCellHandlers = (id: string) => {
-    const native = drag.getCellHandlers(id)
-    return {
-      onMouseDown: (e: React.MouseEvent) => {
-        if (e.shiftKey) {
-          const anchor = data.meta?.selectAnchor ?? data.meta?.focus
-          if (anchor) {
-            e.preventDefault()
-            for (const ev of gridRectEvents(data, anchor, id)) onEvent(ev)
-            return
-          }
-        }
-        native.onMouseDown(e)
-      },
-      onMouseEnter: native.onMouseEnter,
-    }
+
+  return {
+    rootProps,
+    rowProps: (id: string) => rowPropsById.get(id) ?? { role: 'row', 'data-row-id': id },
+    columnHeaderProps: (id: string) => cellPropsById.get(id) ?? { role: 'columnheader', 'data-id': id },
+    cellProps: (id: string) => cellPropsById.get(id) ?? { role: 'gridcell', tabIndex: -1, 'data-id': id },
+    rows,
+    getCellHandlers,
   }
-  return { ...grid, getCellHandlers }
 }

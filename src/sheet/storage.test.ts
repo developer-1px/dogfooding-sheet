@@ -17,17 +17,22 @@ const memoryStorage = (initial: Record<string, string> = {}) => {
 }
 
 describe('sheet storage', () => {
-  it('builds normalized grid data without an intermediate tree', () => {
+  it('builds ARIA grid pattern data without an intermediate tree', () => {
     const data = buildData((key) => `v:${key}`, 1000, ['A', 'B', 'C'])
 
-    expect(data.meta?.root?.slice(0, 4)).toEqual(['h-A', 'h-B', 'h-C', 'r0'])
-    expect(data.meta?.root?.at(-1)).toBe('r999')
-    expect(data.relationships.r0).toEqual(['r0-A', 'r0-B', 'r0-C'])
-    expect(data.relationships.r999).toEqual(['r999-A', 'r999-B', 'r999-C'])
-    expect(data.entities['h-A']).toEqual({ label: 'A' })
-    expect(data.entities.r999).toEqual({ label: '1000' })
-    expect(data.entities['r999-C']).toEqual({ label: 'v:C1000' })
-    expect(Object.keys(data.entities)).toHaveLength(4003)
+    expect(data.relations?.rowKeys?.slice(0, 4)).toEqual(['header', 'r0', 'r1', 'r2'])
+    expect(data.relations?.rowKeys?.at(-1)).toBe('r999')
+    expect(data.relations?.columnKeys).toEqual(['c-A', 'c-B', 'c-C'])
+    expect(data.relations?.cells?.slice(0, 3)).toEqual([
+      { rowKey: 'header', columnKey: 'c-A', cellKey: 'h-A' },
+      { rowKey: 'header', columnKey: 'c-B', cellKey: 'h-B' },
+      { rowKey: 'header', columnKey: 'c-C', cellKey: 'h-C' },
+    ])
+    expect(data.items['h-A']).toEqual({ label: 'A', kind: 'columnheader' })
+    expect(data.items.r999).toEqual({ label: '1000', kind: 'row' })
+    expect(data.items['r999-C']).toEqual({ label: 'v:C1000', kind: 'gridcell' })
+    expect(data.state?.valueByKey?.['r999-C']).toBe('v:C1000')
+    expect(Object.keys(data.items)).toHaveLength(4007)
   })
 
   it('loads a valid persisted sheet', () => {

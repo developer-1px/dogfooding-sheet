@@ -1,5 +1,5 @@
 import { SheetSchema, initialSheet, colLettersFor, ROW_COUNT, cellKey, cellId, moveCellIdByDelta, type Sheet } from './schema'
-import { type NormalizedData } from '@interactive-os/aria-kernel'
+import { type PatternData } from '@interactive-os/aria'
 import { readStoredJson, writeStoredJson, type KeyValueStorage } from '../lib/browserStorage'
 
 export const SHEET_STORAGE_KEY = 'spreadsheet:v1'
@@ -18,28 +18,55 @@ export const moveCellId = (id: string, dRow: number, dCol: number, rowCount = RO
   return moveCellIdByDelta(id, dRow, dCol, { rowCount, colLetters })
 }
 
-export function buildData(getCell: (k: string, col: string, row: number) => string, rowCount = ROW_COUNT, colLetters = colLettersFor(10)): NormalizedData {
-  const entities: NormalizedData['entities'] = {}
-  const relationships: NormalizedData['relationships'] = {}
-  const root: string[] = []
+export function buildData(getCell: (k: string, col: string, row: number) => string, rowCount = ROW_COUNT, colLetters = colLettersFor(10)): PatternData {
+  const items: PatternData['items'] = {}
+  const rowKeys: string[] = ['header']
+  const columnKeys = colLetters.map((col) => `c-${col}`)
+  const cells: NonNullable<NonNullable<PatternData['relations']>['cells']>[number][] = []
+  const rowIndexByKey: Record<string, number> = { header: 1 }
+  const columnIndexByKey: Record<string, number> = {}
+  const valueByKey: Record<string, string> = {}
+  const editableKeys: string[] = []
 
-  for (const col of colLetters) {
+  items.header = { label: 'Columns', kind: 'row' }
+  for (const [idx, col] of colLetters.entries()) {
+    const columnKey = columnKeys[idx]!
+    items[columnKey] = { label: col, kind: 'column' }
     const id = `h-${col}`
-    root.push(id)
-    entities[id] = { label: col }
+    items[id] = { label: col, kind: 'columnheader' }
+    cells.push({ rowKey: 'header', columnKey, cellKey: id })
+    rowIndexByKey[id] = 1
+    columnIndexByKey[id] = idx + 1
   }
   for (let row = 0; row < rowCount; row++) {
     const rowId = `r${row}`
-    const children: string[] = []
-    root.push(rowId)
-    entities[rowId] = { label: String(row + 1) }
-    relationships[rowId] = children
-    for (const col of colLetters) {
+    rowKeys.push(rowId)
+    items[rowId] = { label: String(row + 1), kind: 'row' }
+    rowIndexByKey[rowId] = row + 2
+    for (const [idx, col] of colLetters.entries()) {
+      const columnKey = columnKeys[idx]!
       const id = cellId(col, row)
-      children.push(id)
-      entities[id] = { label: getCell(cellKey(col, row), col, row) }
+      const value = getCell(cellKey(col, row), col, row)
+      items[id] = { label: value, kind: 'gridcell' }
+      cells.push({ rowKey: rowId, columnKey, cellKey: id })
+      rowIndexByKey[id] = row + 2
+      columnIndexByKey[id] = idx + 1
+      valueByKey[id] = value
+      editableKeys.push(id)
     }
   }
 
-  return { entities, relationships, meta: { root } }
+  return {
+    items,
+    relations: { rowKeys, columnKeys, cells },
+    state: {
+      rowCount: rowCount + 1,
+      colCount: colLetters.length,
+      rowIndexByKey,
+      columnIndexByKey,
+      valueByKey,
+      editableKeys,
+    },
+    refs: { label: 'Spreadsheet' },
+  }
 }

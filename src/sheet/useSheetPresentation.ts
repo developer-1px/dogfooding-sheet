@@ -33,8 +33,13 @@ export function useSheetPresentation({ cells, rowCount, colLetters, showFormulas
 
   const data = useMemo(() => {
     const next = buildData((key) => display(key), rowCount, colLetters)
-    next.meta = { ...next.meta, focus: focusId, selectAnchor: selectAnchor ?? undefined }
-    for (const id of selectedIds) next.entities[id] = { ...(next.entities[id] ?? {}), selected: true }
+    next.state = {
+      ...next.state,
+      activeKey: focusId,
+      anchorKey: selectAnchor,
+      extentKey: selectedIds.at(-1) ?? focusId,
+      selectedKeys: selectedIds,
+    }
     return next
   }, [colLetters, display, focusId, rowCount, selectAnchor, selectedIds])
 

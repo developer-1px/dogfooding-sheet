@@ -15,6 +15,9 @@ importers:
       '@interactive-os/anyeditable':
         specifier: file:../editable/packages/anyeditable
         version: file:../editable/packages/anyeditable(@interactive-os/aria-kernel@file:../aria-kernel/legacy/aria-kernel(@types/react@19.2.15)(react@19.2.6))(@interactive-os/keyboard@file:../keyboard/packages/keyboard)(react@19.2.6)(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))(zod@4.4.3)
+      '@interactive-os/aria':
+        specifier: file:../apg-patterns
+        version: file:../apg-patterns(react@19.2.6)
       '@interactive-os/aria-kernel':
         specifier: file:../aria-kernel/legacy/aria-kernel
         version: file:../aria-kernel/legacy/aria-kernel(@types/react@19.2.15)(react@19.2.6)
@@ -405,6 +408,15 @@ packages:
       react: ^19.0.0
     peerDependenciesMeta:
       '@types/react':
+        optional: true
+
+  '@interactive-os/aria@file:../apg-patterns':
+    resolution: {directory: ../apg-patterns, type: directory}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
         optional: true
 
   '@interactive-os/collection-navigation@file:../keyboard-navigation/packages/collection-navigation':
@@ -1725,6 +1737,12 @@ snapshots:
       zod: 4.4.3
     optionalDependencies:
       '@types/react': 19.2.15
+
+  '@interactive-os/aria@file:../apg-patterns(react@19.2.6)':
+    dependencies:
+      zod: 4.4.3
+    optionalDependencies:
+      react: 19.2.6
 
   '@interactive-os/collection-navigation@file:../keyboard-navigation/packages/collection-navigation': {}
 

@@ -6,15 +6,14 @@ import { createGridCellViewModel, type MergeAnchor } from './gridCellViewModel'
 import type { StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
-import type { GridCell } from '@interactive-os/aria-kernel/patterns'
-import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 import type { Rect } from '@spredsheet/grid'
+import type { SheetGridItemProps, SheetGridRow } from './gridTypes'
 
 interface Props {
   rIdx: number
-  rowItemProps: { id: string; cells: GridCell[] }
-  rowProps: ItemProps
-  cellPropsFor: (id: string) => ItemProps
+  rowItemProps: SheetGridRow
+  rowProps: SheetGridItemProps
+  cellPropsFor: (id: string) => SheetGridItemProps
   gridTemplate: string
   rowCls: string
   freezeCols: number

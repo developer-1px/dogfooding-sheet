@@ -1,4 +1,4 @@
-import type { NormalizedData } from '@interactive-os/aria-kernel'
+import type { PatternData } from '@interactive-os/aria'
 import type { GridSelectionUpdate } from '@spredsheet/grid'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
 import type { Display, Sheet, SheetOps, WriteCell, WriteMany } from '../schema'
@@ -37,7 +37,7 @@ export interface GridContextMenuController
 }
 
 export interface GridController extends GridContextMenuController {
-  data: NormalizedData
+  data: PatternData
   sheet: Sheet
   ops: SheetOps
   display: Display

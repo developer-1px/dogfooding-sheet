@@ -15,6 +15,8 @@ export default defineConfig({
       { find: /^@spredsheet\/surface$/, replacement: local('./packages/surface/src/index.ts') },
       { find: /^@aria\/engine$/, replacement: local('./src/interactive-os/devtoolsARIAShims.ts') },
       { find: /^@aria\/primitives$/, replacement: local('./src/interactive-os/devtoolsARIAShims.ts') },
+      { find: /^@interactive-os\/aria$/, replacement: local('./node_modules/@interactive-os/aria/dist/index.js') },
+      { find: /^@interactive-os\/aria\/react$/, replacement: local('./node_modules/@interactive-os/aria/dist/react.js') },
       { find: /^@interactive-os\/aria-kernel$/, replacement: local('./node_modules/@interactive-os/aria-kernel/dist/index.js') },
       { find: /^@interactive-os\/aria-kernel\/patterns$/, replacement: local('./node_modules/@interactive-os/aria-kernel/dist/patterns/index.js') },
       { find: /^@interactive-os\/aria-kernel\/gesture$/, replacement: local('./node_modules/@interactive-os/aria-kernel/dist/gesture/index.js') },

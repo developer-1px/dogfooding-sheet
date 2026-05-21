@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@interactive-os/anyeditable": "file:../editable/packages/anyeditable",
+    "@interactive-os/aria": "file:../apg-patterns",
     "@interactive-os/aria-kernel": "file:../aria-kernel/legacy/aria-kernel",
     "@interactive-os/devtools": "file:../devtools",
     "@interactive-os/document": "file:../document",

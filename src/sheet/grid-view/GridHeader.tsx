@@ -2,11 +2,11 @@ import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { selectAllHeaders, selectColumnHeader } from './headerSelection'
 import { columnRestoreControls } from './hiddenRestoreControls'
 import { COLUMN_WIDTH_BOUNDS, resizeValueForKey } from '@spredsheet/editable-grid/resize-rules'
-import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
+import type { SheetGridItemProps } from './gridTypes'
 
 interface Props {
   gridTemplate: string
-  columnHeaderProps: (id: string) => ItemProps
+  columnHeaderProps: (id: string) => SheetGridItemProps
   widthOf: (col: string) => number
   onResize: (col: string, w: number) => void
   onResizeEnd: (col: string, w: number) => void

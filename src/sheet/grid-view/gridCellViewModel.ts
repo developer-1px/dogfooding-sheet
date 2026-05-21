@@ -1,10 +1,10 @@
 import type { CSSProperties } from 'react'
-import type { GridCell } from '@interactive-os/aria-kernel/patterns'
 import { colIndex, isNumeric, type Rect } from '@spredsheet/grid'
 import { cellKey, parseCellId } from '../schema'
 import { styleToProps, type StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
+import type { SheetGridCell } from './gridTypes'
 
 export interface MergeAnchor {
   rows: number
@@ -14,7 +14,7 @@ export interface MergeAnchor {
 interface GridCellViewModelArgs {
   rowIndex: number
   colIndex: number
-  cell: GridCell
+  cell: SheetGridCell
   colLetters: readonly string[]
   hiddenCols: ReadonlySet<string>
   mergeAnchors: ReadonlyMap<string, MergeAnchor>

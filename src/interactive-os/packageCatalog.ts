@@ -9,6 +9,7 @@ export function interactiveOsPackages() {}
 const summary = docFor(CATALOG_SOURCE, 'interactiveOsPackages') ?? ''
 
 export const interactiveOsPackages = [
+  '@interactive-os/aria',
   '@interactive-os/aria-kernel',
   '@interactive-os/anyeditable',
   '@interactive-os/keyboard',
