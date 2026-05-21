@@ -70,6 +70,13 @@ Use `profile` to state the table family:
 - `document-table`: Notion-like table blocks embedded in documents.
 - `spreadsheet-grid`: dense spreadsheet-style cells.
 
+Field intent changes runtime behavior:
+
+- `select` renders option labels and commits option values.
+- `checkbox` commits boolean values directly.
+- `number` commits finite numeric values.
+- `formula` and `rollup` are treated as readonly derived fields.
+
 ## Minimal Renderer
 
 `EditableGrid` is the smallest reusable React island for the contract. It is

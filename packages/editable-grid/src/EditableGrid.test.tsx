@@ -32,6 +32,46 @@ const value = {
   ],
 }
 
+const databaseSurface = defineEditableGridSurface({
+  contract: EDITABLE_GRID_CONTRACT,
+  kind: EDITABLE_GRID_KIND,
+  profile: 'database-table',
+  schema: z.object({
+    records: z.array(z.object({
+      title: z.string(),
+      status: z.string(),
+      done: z.boolean(),
+      score: z.number(),
+      summary: z.string(),
+    })),
+  }),
+  dataPath: '/records',
+  columns: [
+    { id: 'title', path: '/title', label: 'Title', field: { type: 'text' } },
+    {
+      id: 'status',
+      path: '/status',
+      label: 'Status',
+      field: {
+        type: 'select',
+        options: [
+          { value: 'todo', label: 'Todo' },
+          { value: 'done', label: 'Done' },
+        ],
+      },
+    },
+    { id: 'done', path: '/done', label: 'Done', field: { type: 'checkbox' } },
+    { id: 'score', path: '/score', label: 'Score', field: { type: 'number' } },
+    { id: 'summary', path: '/summary', label: 'Summary', field: { type: 'formula', formula: '=title' } },
+  ],
+})
+
+const databaseValue = {
+  records: [
+    { title: 'Spec', status: 'todo', done: false, score: 3, summary: 'Spec / Todo' },
+  ],
+}
+
 function setup(onChange = vi.fn(), onSelectionChange = vi.fn()) {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const host = document.createElement('div')
@@ -41,6 +81,17 @@ function setup(onChange = vi.fn(), onSelectionChange = vi.fn()) {
     root.render(createElement(EditableGrid, { surface, value, onChange, onSelectionChange }))
   })
   return { host, root, onChange, onSelectionChange }
+}
+
+function setupDatabase(onChange = vi.fn()) {
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true
+  const host = document.createElement('div')
+  document.body.append(host)
+  const root = createRoot(host)
+  act(() => {
+    root.render(createElement(EditableGrid, { surface: databaseSurface, value: databaseValue, onChange }))
+  })
+  return { host, root, onChange }
 }
 
 const cleanup = (root: Root, host: HTMLElement) => {
@@ -56,6 +107,11 @@ const setInputValue = (input: HTMLInputElement, value: string) => {
   const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
   setter?.call(input, value)
   input.dispatchEvent(new Event('input', { bubbles: true }))
+}
+const setSelectValue = (select: HTMLSelectElement, value: string) => {
+  const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')?.set
+  setter?.call(select, value)
+  select.dispatchEvent(new Event('change', { bubbles: true }))
 }
 
 describe('EditableGrid', () => {
@@ -125,6 +181,91 @@ describe('EditableGrid', () => {
     try {
       const totalCell = gridCells()[2]
       act(() => totalCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+
+      expect(document.querySelector('.editable-grid-input')).toBeNull()
+      expect(onChange).not.toHaveBeenCalled()
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('renders database-table select fields by option label and commits option values', () => {
+    const { host, root, onChange } = setupDatabase()
+    try {
+      const statusCell = gridCells()[1]
+      expect(statusCell.textContent).toBe('Todo')
+
+      act(() => statusCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+      const select = document.querySelector<HTMLSelectElement>('select.editable-grid-input')
+      expect(select?.value).toBe('todo')
+
+      act(() => setSelectValue(select!, 'done'))
+      act(() => keyDown(select!, 'Enter'))
+
+      expect(onChange).toHaveBeenCalledWith({
+        patches: [{ op: 'replace', path: '/records/0/status', value: 'done' }],
+        source: 'cell-edit',
+        selection: {
+          focus: { rowIndex: 0, columnId: 'status' },
+          ranges: [{
+            anchor: { rowIndex: 0, columnId: 'status' },
+            focus: { rowIndex: 0, columnId: 'status' },
+          }],
+        },
+      })
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('commits checkbox and number fields with typed patch values', () => {
+    const { host, root, onChange } = setupDatabase()
+    try {
+      const doneCell = gridCells()[2]
+      const checkbox = doneCell.querySelector<HTMLInputElement>('input[type="checkbox"]')
+      expect(checkbox?.checked).toBe(false)
+
+      act(() => checkbox!.dispatchEvent(new MouseEvent('click', { bubbles: true })))
+      expect(onChange).toHaveBeenCalledWith({
+        patches: [{ op: 'replace', path: '/records/0/done', value: true }],
+        source: 'cell-edit',
+        selection: {
+          focus: { rowIndex: 0, columnId: 'done' },
+          ranges: [{
+            anchor: { rowIndex: 0, columnId: 'done' },
+            focus: { rowIndex: 0, columnId: 'done' },
+          }],
+        },
+      })
+
+      const scoreCell = gridCells()[3]
+      act(() => scoreCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+      const input = document.querySelector<HTMLInputElement>('input.editable-grid-input')
+      expect(input?.type).toBe('number')
+      act(() => setInputValue(input!, '5'))
+      act(() => keyDown(input!, 'Enter'))
+
+      expect(onChange).toHaveBeenCalledWith({
+        patches: [{ op: 'replace', path: '/records/0/score', value: 5 }],
+        source: 'cell-edit',
+        selection: {
+          focus: { rowIndex: 0, columnId: 'score' },
+          ranges: [{
+            anchor: { rowIndex: 0, columnId: 'score' },
+            focus: { rowIndex: 0, columnId: 'score' },
+          }],
+        },
+      })
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('treats formula and rollup fields as readonly table fields', () => {
+    const { host, root, onChange } = setupDatabase()
+    try {
+      const summaryCell = gridCells()[4]
+      act(() => summaryCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
 
       expect(document.querySelector('.editable-grid-input')).toBeNull()
       expect(onChange).not.toHaveBeenCalled()

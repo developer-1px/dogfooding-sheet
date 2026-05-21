@@ -23,6 +23,10 @@ The same contract must cover multiple table families:
 - `spreadsheet-grid`: spreadsheet-style dense cells when that behavior is
   actually needed.
 
+Typed field intent is part of the table contract, not app-specific decoration.
+`select`, `checkbox`, `number`, `person`, `relation`, `formula`, and `rollup`
+describe how generated UI should render and patch table cells.
+
 ## Stable Interface
 
 The stable boundary is the one exported from `@spredsheet/editable-grid`:
@@ -48,6 +52,8 @@ Everything else is allowed to evolve behind this boundary.
 - Selection state is serializable.
 - Capabilities are negotiated by string identifiers, not by new callback props.
 - Table family is declared by `profile`; it is not inferred from styling.
+- Field type is declared by `column.field.type`; renderers must not infer table
+  semantics from display text.
 
 ## Why This Matches Gen UI
 
