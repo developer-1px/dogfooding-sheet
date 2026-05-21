@@ -22,6 +22,7 @@
     "@spredsheet/editable-grid": "workspace:*",
     "@spredsheet/formula": "workspace:*",
     "@spredsheet/grid": "workspace:*",
+    "@spredsheet/selection-contract": "workspace:*",
     "@spredsheet/surface": "workspace:*",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

@@ -25,6 +25,7 @@
       "@spredsheet/editable-grid": ["./packages/editable-grid/src/index.ts"],
       "@spredsheet/formula": ["./packages/formula/src/index.ts"],
       "@spredsheet/grid": ["./packages/grid/src/index.ts"],
+      "@spredsheet/selection-contract": ["./packages/selection-contract/src/index.ts"],
       "@spredsheet/surface": ["./packages/surface/src/index.ts"]
     },
 

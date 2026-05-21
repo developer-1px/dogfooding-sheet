@@ -2,7 +2,7 @@ import { useShortcut } from '@interactive-os/aria-kernel/key'
 import { cellId, cellKey, parseCellId, type Sheet, type SheetOps, type WriteCell, type WriteMany, type Display } from './schema'
 import { copyOrCut, pasteAt } from './clipboard/clipboardActions'
 import { fillDown, fillRight } from './fill/fillDown'
-import { clearWritesForIds, freezeFormulaWrites, idsForAll, pad2, targetGridIds } from '@spredsheet/grid'
+import { clearWritesForIds, freezeFormulaWrites, idsForAll, pad2 } from '@spredsheet/grid'
 
 const insertNowOrToday = (focusId: string | null, withTime: boolean, writeCell: WriteCell) => {
   const p = focusId ? parseCellId(focusId) : null; if (!p) return
@@ -50,7 +50,8 @@ export interface GlobalShortcutCtx {
   mergeSelection?: () => void
 }
 
-const targetIds = (c: GlobalShortcutCtx) => targetGridIds({ focusId: c.focusId, selectedIds: c.selectedIds })
+const targetIds = (c: GlobalShortcutCtx) =>
+  c.selectedIds.length > 0 ? c.selectedIds : c.focusId ? [c.focusId] : []
 
 /** All modifier-bearing global shortcuts. Editable-guard handled per-call by aria-kernel. */
 export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {

@@ -1,5 +1,5 @@
 import type { PatternData } from '@interactive-os/aria'
-import type { GridSelectionUpdate } from '@spredsheet/grid'
+import type { SelectedIdsUpdate } from '@spredsheet/selection-contract'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
 import type { Display, Sheet, SheetOps, WriteCell, WriteMany } from '../schema'
 import type { StyleLookup } from '../formatting/useStyles'
@@ -21,7 +21,7 @@ export interface GridContextMenuController
   filter: Filter | null
   clearFilter: () => void
   setFocusId: (id: string) => void
-  setSelectedIds: (ids: GridSelectionUpdate<string>) => void
+  setSelectedIds: (ids: SelectedIdsUpdate<string>) => void
   setSelectAnchor: (id: string | null) => void
   rowCount: number
   writeCell: WriteCell

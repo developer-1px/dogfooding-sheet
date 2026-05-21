@@ -13,6 +13,7 @@ export default defineConfig({
       { find: /^@spredsheet\/editable-grid$/, replacement: local('./packages/editable-grid/src/index.ts') },
       { find: /^@spredsheet\/formula$/, replacement: local('./packages/formula/src/index.ts') },
       { find: /^@spredsheet\/grid$/, replacement: local('./packages/grid/src/index.ts') },
+      { find: /^@spredsheet\/selection-contract$/, replacement: local('./packages/selection-contract/src/index.ts') },
       { find: /^@spredsheet\/surface$/, replacement: local('./packages/surface/src/index.ts') },
       { find: /^@aria\/engine$/, replacement: local('./src/interactive-os/devtoolsARIAShims.ts') },
       { find: /^@aria\/primitives$/, replacement: local('./src/interactive-os/devtoolsARIAShims.ts') },

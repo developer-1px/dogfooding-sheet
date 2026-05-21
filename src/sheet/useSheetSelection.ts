@@ -1,12 +1,12 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
-  createGridSelectionState,
-  setGridSelectedIds,
-  setGridSelectionAnchor,
-  setGridSelectionFocus,
-  targetGridIds,
-  type GridSelectionUpdate,
-} from '@spredsheet/grid'
+  createSelectionBoundary,
+  createSelectionState,
+  setSelectedIds as setContractSelectedIds,
+  setSelectionAnchor,
+  setSelectionFocus,
+  type SelectedIdsUpdate,
+} from '@spredsheet/selection-contract'
 import { cellIdToKey } from './schema'
 
 interface FocusState {
@@ -16,27 +16,39 @@ interface FocusState {
 
 export function useSheetSelection(focus: FocusState) {
   const { focusId, setFocusId: setEditFocusId } = focus
-  const [selection, setSelection] = useState(() => createGridSelectionState<string>('r0-A'))
+  const [selectionState, setSelectionState] = useState(() =>
+    createSelectionState<string>({ multiselectable: true }))
+  const [selectionBoundary, setSelectionBoundary] = useState(() =>
+    createSelectionBoundary<string>('r0-A'))
 
-  const setSelectedIds = useCallback((ids: GridSelectionUpdate<string>) => {
-    setSelection((s) => setGridSelectedIds(s, ids))
+  const boundary = useMemo(
+    () => selectionBoundary.focusId === focusId
+      ? selectionBoundary
+      : setSelectionFocus(selectionBoundary, focusId),
+    [focusId, selectionBoundary],
+  )
+
+  const setSelectedIds = useCallback((update: SelectedIdsUpdate<string>) => {
+    setSelectionState((state) => setContractSelectedIds(state, update))
   }, [])
 
   const setSelectAnchor = useCallback((id: string | null) => {
-    setSelection((s) => setGridSelectionAnchor(s, id))
+    setSelectionBoundary((boundary) => setSelectionAnchor(boundary, id))
   }, [])
 
   const setFocusId = useCallback((id: string | null) => {
     setEditFocusId(id)
-    setSelection((s) => setGridSelectionFocus(s, id))
+    setSelectionBoundary((boundary) => setSelectionFocus(boundary, id))
   }, [setEditFocusId])
 
-  const targetIds = () => targetGridIds({ focusId, selectedIds: selection.selectedIds })
+  const selectedIds = useMemo(() => [...selectionState.selectedIds], [selectionState.selectedIds])
+  const targetIds = () =>
+    selectedIds.length > 0 ? selectedIds : boundary.focusId ? [boundary.focusId] : []
   const targetKeys = () => targetIds().map(cellIdToKey)
 
   return {
-    selectedIds: selection.selectedIds,
-    selectAnchor: selection.anchorId,
+    selectedIds,
+    selectAnchor: boundary.anchorId,
     setSelectedIds,
     setSelectAnchor,
     setFocusId,

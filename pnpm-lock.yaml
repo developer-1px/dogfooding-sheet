@@ -42,6 +42,9 @@ importers:
       '@spredsheet/grid':
         specifier: workspace:*
         version: link:packages/grid
+      '@spredsheet/selection-contract':
+        specifier: workspace:*
+        version: link:packages/selection-contract
       '@spredsheet/surface':
         specifier: workspace:*
         version: link:packages/surface

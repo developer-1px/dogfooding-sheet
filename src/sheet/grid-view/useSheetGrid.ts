@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { gridDefinition, reducePatternData, type Key, type PatternData, type PatternEvent, type PatternEventReason } from '@interactive-os/aria'
 import { useGridPattern } from '@interactive-os/aria/react'
 import { idsBetween } from '@spredsheet/grid'
+import type { SelectedIdsUpdate } from '@spredsheet/selection-contract'
 import type { SheetGridCell, SheetGridItemProps, SheetGridRow } from './gridTypes'
 
 interface Args {
@@ -9,7 +10,7 @@ interface Args {
   rowCount: number
   colCount: number
   setFocusId: (id: string) => void
-  setSelectedIds: (ids: string[] | ((prev: string[]) => string[])) => void
+  setSelectedIds: (ids: SelectedIdsUpdate<string>) => void
   setSelectAnchor: (id: string | null) => void
   startEdit?: (id: string, prefill?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
   isEditing?: () => boolean
