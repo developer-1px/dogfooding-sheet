@@ -19,6 +19,7 @@ The reusable unit is not a spreadsheet clone. It is:
 The stable boundary is the one exported from `@spredsheet/editable-grid`:
 
 - `EditableGridSurface`
+- `EditableGrid`
 - `EditableGridHostContract`
 - `EditableGridPatch`
 - `EditableGridSelection`
@@ -54,4 +55,3 @@ The contract can move toward `@interactive-os/editable-grid` after:
 - validation errors flow from Zod to cell state,
 - edits produce grouped `EditableGridPatch` values,
 - at least one non-spreadsheet surface uses the same contract.
-

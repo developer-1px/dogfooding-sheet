@@ -1,6 +1,6 @@
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
+import { createCellDisplayModel, type CellContent } from '@spredsheet/editable-grid/cell-display'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
-import { createCellDisplayModel, type CellContent } from './cellDisplay'
 
 interface Props {
   cellProps: ItemProps

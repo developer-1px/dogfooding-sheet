@@ -59,3 +59,17 @@ const surface = defineEditableGridSurface({
 })
 ```
 
+## Minimal Renderer
+
+`EditableGrid` is the smallest reusable React island for the contract. It is
+controlled by host data and emits grouped patches instead of owning persistence.
+
+```tsx
+import { EditableGrid } from '@spredsheet/editable-grid'
+
+<EditableGrid
+  surface={surface}
+  value={{ lines }}
+  onChange={(change) => applyPatches(change.patches)}
+/>
+```

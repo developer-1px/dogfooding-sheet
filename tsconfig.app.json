@@ -18,6 +18,9 @@
       "@aria/engine": ["./src/interactive-os/devtoolsARIAShims.ts"],
       "@aria/primitives": ["./src/interactive-os/devtoolsARIAShims.ts"],
       "@interactive-os/playground-catalog": ["../playground-catalog/src/index.d.mts"],
+      "@spredsheet/editable-grid/cell-display": ["./packages/editable-grid/src/cellDisplay.ts"],
+      "@spredsheet/editable-grid/contract": ["./packages/editable-grid/src/contract.ts"],
+      "@spredsheet/editable-grid": ["./packages/editable-grid/src/index.ts"],
       "@spredsheet/formula": ["./packages/formula/src/index.ts"],
       "@spredsheet/grid": ["./packages/grid/src/index.ts"]
     },

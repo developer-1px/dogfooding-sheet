@@ -11,6 +11,16 @@
       "development": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./cell-display": {
+      "development": "./src/cellDisplay.ts",
+      "types": "./dist/cellDisplay.d.ts",
+      "import": "./dist/cellDisplay.js"
+    },
+    "./contract": {
+      "development": "./src/contract.ts",
+      "types": "./dist/contract.d.ts",
+      "import": "./dist/contract.js"
     }
   },
   "files": [
@@ -24,9 +34,15 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
     "zod": "^4.0.0"
   },
+  "dependencies": {
+    "@spredsheet/grid": "workspace:*"
+  },
   "devDependencies": {
+    "@types/react": "^19.2.14",
+    "react": "^19.2.5",
     "typescript": "~6.0.2",
     "vitest": "^4.1.5"
   }

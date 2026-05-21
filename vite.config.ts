@@ -24,7 +24,11 @@ export default defineConfig({
   },
   resolve: {
     alias: [
+      { find: /^@spredsheet\/editable-grid\/cell-display$/, replacement: local('./packages/editable-grid/src/cellDisplay.ts') },
+      { find: /^@spredsheet\/editable-grid\/contract$/, replacement: local('./packages/editable-grid/src/contract.ts') },
+      { find: /^@spredsheet\/editable-grid$/, replacement: local('./packages/editable-grid/src/index.ts') },
       { find: /^@spredsheet\/formula$/, replacement: local('./packages/formula/src/index.ts') },
+      { find: /^@spredsheet\/grid$/, replacement: local('./packages/grid/src/index.ts') },
       { find: /^@aria\/engine$/, replacement: local('./src/interactive-os/devtoolsARIAShims.ts') },
       { find: /^@aria\/primitives$/, replacement: local('./src/interactive-os/devtoolsARIAShims.ts') },
       { find: /^@interactive-os\/aria-kernel$/, replacement: local('./node_modules/@interactive-os/aria-kernel/dist/index.js') },

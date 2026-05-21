@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { classifyCellContent, createCellDisplayModel, isErrorLabel } from './cellDisplay'
+import { classifyCellContent, createCellDisplayModel, isErrorLabel } from '@spredsheet/editable-grid/cell-display'
 
 describe('cell display classification', () => {
   it('classifies image URLs before generic links', () => {
