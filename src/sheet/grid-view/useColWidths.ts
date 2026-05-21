@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
+import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, clampResizeValue, storedResizeValue } from '@spredsheet/editable-grid/resize-rules'
 import { COL_LETTERS, colIndex, type SheetOps } from '../schema'
 import { upsertKey } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
-import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, clampResizeValue, storedResizeValue } from './resizeRules'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
 export const DEFAULT_WIDTH = DEFAULT_COLUMN_WIDTH

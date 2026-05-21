@@ -1,7 +1,7 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { selectRowHeader } from './headerSelection'
 import { rowRestoreControls } from './hiddenRestoreControls'
-import { ROW_HEIGHT_BOUNDS, resizeValueForKey } from './resizeRules'
+import { ROW_HEIGHT_BOUNDS, resizeValueForKey } from '@spredsheet/editable-grid/resize-rules'
 
 interface Props {
   rIdx: number

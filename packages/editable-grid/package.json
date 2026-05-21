@@ -21,6 +21,11 @@
       "development": "./src/contract.ts",
       "types": "./dist/contract.d.ts",
       "import": "./dist/contract.js"
+    },
+    "./resize-rules": {
+      "development": "./src/resizeRules.ts",
+      "types": "./dist/resizeRules.d.ts",
+      "import": "./dist/resizeRules.js"
     }
   },
   "files": [
@@ -42,7 +47,10 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^29.1.1",
     "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "typescript": "~6.0.2",
     "vitest": "^4.1.5"
   }

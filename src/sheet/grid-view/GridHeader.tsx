@@ -1,7 +1,7 @@
 import { useResizeGesture } from '@interactive-os/aria-kernel/gesture'
 import { selectAllHeaders, selectColumnHeader } from './headerSelection'
 import { columnRestoreControls } from './hiddenRestoreControls'
-import { COLUMN_WIDTH_BOUNDS, resizeValueForKey } from './resizeRules'
+import { COLUMN_WIDTH_BOUNDS, resizeValueForKey } from '@spredsheet/editable-grid/resize-rules'
 import type { ItemProps } from '@interactive-os/aria-kernel/patterns/types'
 
 interface Props {

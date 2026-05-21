@@ -12,6 +12,13 @@ import {
   classifyCellContent,
   createCellDisplayModel,
   isErrorLabel,
+  COLUMN_WIDTH_BOUNDS,
+  DEFAULT_COLUMN_WIDTH,
+  DEFAULT_ROW_HEIGHT,
+  ROW_HEIGHT_BOUNDS,
+  clampResizeValue,
+  resizeValueForKey,
+  storedResizeValue,
 } from './index'
 
 describe('editable grid contract', () => {
@@ -43,6 +50,25 @@ describe('editable grid contract', () => {
     expect(readJsonPointer(value, '/lines/1/name')).toBe('B/C')
     expect(readJsonPointer(value, '/lines/1/~0meta')).toBe(true)
     expect(editableGridRows(value, '/missing')).toEqual([])
+  })
+})
+
+describe('resize rules', () => {
+  it('clamps and stores reusable grid resize values', () => {
+    expect(clampResizeValue(1, COLUMN_WIDTH_BOUNDS)).toBe(40)
+    expect(clampResizeValue(999, COLUMN_WIDTH_BOUNDS)).toBe(400)
+    expect(clampResizeValue(1, ROW_HEIGHT_BOUNDS)).toBe(18)
+    expect(clampResizeValue(999, ROW_HEIGHT_BOUNDS)).toBe(999)
+    expect(storedResizeValue(120.6, COLUMN_WIDTH_BOUNDS)).toBe(121)
+    expect(DEFAULT_COLUMN_WIDTH).toBe(100)
+    expect(DEFAULT_ROW_HEIGHT).toBe(28)
+  })
+
+  it('maps keyboard resize keys by axis', () => {
+    expect(resizeValueForKey(100, 'ArrowLeft', false, 'x', COLUMN_WIDTH_BOUNDS)).toBe(90)
+    expect(resizeValueForKey(100, 'ArrowRight', true, 'x', COLUMN_WIDTH_BOUNDS)).toBe(150)
+    expect(resizeValueForKey(28, 'ArrowUp', false, 'y', ROW_HEIGHT_BOUNDS)).toBe(18)
+    expect(resizeValueForKey(28, 'ArrowRight', false, 'y', ROW_HEIGHT_BOUNDS)).toBeNull()
   })
 })
 

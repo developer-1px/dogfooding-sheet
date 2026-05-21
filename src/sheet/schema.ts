@@ -1,10 +1,10 @@
 import * as z from 'zod'
 import type { JSONOps } from 'zod-crud'
 import { COL_LETTERS as COLS, colIndex, normalizeMergeList, parseA1 } from '@spredsheet/grid'
+import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, storedResizeValue } from '@spredsheet/editable-grid/resize-rules'
 import { FORMAT_KEYS, normalizeStoredFormat } from './formatting/formatTypes'
 import { isSafeCellText, sanitizeCellRecord } from './cellValue'
 import { normalizeNoteText } from './noteText'
-import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, storedResizeValue } from './grid-view/resizeRules'
 
 export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, moveCellIdByDelta, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
 

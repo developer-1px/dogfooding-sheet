@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
+import { DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, clampResizeValue, storedResizeValue } from '@spredsheet/editable-grid/resize-rules'
 import type { SheetOps } from '../schema'
 import { upsertKey } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
-import { DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, clampResizeValue, storedResizeValue } from './resizeRules'
 
 const LEGACY_KEY = 'spreadsheet:rowheights:v1'
 export const DEFAULT_HEIGHT = DEFAULT_ROW_HEIGHT

@@ -26,6 +26,7 @@ export default defineConfig({
     alias: [
       { find: /^@spredsheet\/editable-grid\/cell-display$/, replacement: local('./packages/editable-grid/src/cellDisplay.ts') },
       { find: /^@spredsheet\/editable-grid\/contract$/, replacement: local('./packages/editable-grid/src/contract.ts') },
+      { find: /^@spredsheet\/editable-grid\/resize-rules$/, replacement: local('./packages/editable-grid/src/resizeRules.ts') },
       { find: /^@spredsheet\/editable-grid$/, replacement: local('./packages/editable-grid/src/index.ts') },
       { find: /^@spredsheet\/formula$/, replacement: local('./packages/formula/src/index.ts') },
       { find: /^@spredsheet\/grid$/, replacement: local('./packages/grid/src/index.ts') },
