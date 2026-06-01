@@ -89,6 +89,23 @@ describe('applyHiddenChange', () => {
 
     expect(calls).toEqual(['/hidden:{"rows":[2],"cols":[]}'])
   })
+
+  it('falls back to replacing the hidden object when delegation fails', () => {
+    const calls: string[] = []
+    const commandCalls: string[] = []
+    const commands: HiddenMutationCommands = {
+      hideRow: (row) => { commandCalls.push(`hideRow:${row}`); return false },
+      hideCol: () => false,
+      showRow: () => false,
+      showCol: () => false,
+      showAll: () => false,
+    }
+
+    expect(applyHiddenChange({ rows: [], cols: [] }, { type: 'hideRow', row: 2 }, opsWithReplaceCalls(calls), undefined, commands)).toBe(true)
+
+    expect(commandCalls).toEqual(['hideRow:2'])
+    expect(calls).toEqual(['/hidden:{"rows":[2],"cols":[]}'])
+  })
 })
 
 describe('coerceLegacyHidden', () => {

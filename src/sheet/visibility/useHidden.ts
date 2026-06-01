@@ -109,11 +109,11 @@ export function applyHiddenChange(
 ): boolean {
   const next = nextHiddenState(hidden, change, bounds)
   if (!next) return false
-  if (change.type === 'hideRow' && commands) return commands.hideRow(change.row)
-  if (change.type === 'hideCol' && commands) return commands.hideCol(change.col)
-  if (change.type === 'showRow' && commands) return commands.showRow(change.row)
-  if (change.type === 'showCol' && commands) return commands.showCol(change.col)
-  if (change.type === 'showAll' && commands) return commands.showAll()
+  if (change.type === 'hideRow' && commands?.hideRow(change.row)) return true
+  if (change.type === 'hideCol' && commands?.hideCol(change.col)) return true
+  if (change.type === 'showRow' && commands?.showRow(change.row)) return true
+  if (change.type === 'showCol' && commands?.showCol(change.col)) return true
+  if (change.type === 'showAll' && commands?.showAll()) return true
   ops.replace('/hidden', next)
   return true
 }
