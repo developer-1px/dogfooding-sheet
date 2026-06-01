@@ -70,7 +70,7 @@ export function useSheet(opts: SheetOptions = {}) {
   const tabs = useTabs(sheet.tabs, ops)
   const tabFns = tabActions(sheet, {
     replace: (path, value) => ops.replace(path, value),
-    replaceSheet: (next) => { ops.replace('', next) },
+    replaceSheet: (next) => { if (!applySheetReplacement(next, 'tab-action')) ops.replace('', next) },
     moveBefore: moveCollectionBefore,
     moveAfter: moveCollectionAfter,
     setTabColor: writeTabColor,

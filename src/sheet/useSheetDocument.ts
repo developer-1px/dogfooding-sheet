@@ -185,8 +185,8 @@ export function useSheetDocument() {
     const result = preview.preview([{ op: 'replace', path: '' as Pointer, value: next }])
     return result.ok ? result.value : null
   }
-  const applySheetReplacement = (next: Sheet): boolean =>
-    diff.apply(next, { label: 'json-import', origin: 'programmatic' }).ok
+  const applySheetReplacement = (next: Sheet, label = 'json-import'): boolean =>
+    diff.apply(next, { label, origin: 'programmatic' }).ok
   const writeTabColor = (name: string, color: string): boolean => {
     const pointer = appendSegment('/tabs/colors' as Pointer, name)
     if (sheet.tabs.colors[name] === undefined) return defaults.ensure('/tabs/colors' as Pointer, { [name]: color }).ok
