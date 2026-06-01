@@ -22,6 +22,14 @@ export interface HiddenActions {
   showAll: () => void
 }
 
+export interface HiddenMutationCommands {
+  hideRow: (row: number) => boolean
+  hideCol: (col: string) => boolean
+  showRow: (row: number) => boolean
+  showCol: (col: string) => boolean
+  showAll: () => boolean
+}
+
 const LEGACY_KEY = 'spreadsheet:hidden:v1'
 
 interface HiddenBounds {
@@ -92,22 +100,39 @@ export function nextHiddenState(hidden: HiddenState, change: HiddenChange, bound
   return { rows: [], cols: [] }
 }
 
-export function useHidden(hidden: HiddenState, ops: SheetOps, bounds?: HiddenBounds) {
+export function applyHiddenChange(
+  hidden: HiddenState,
+  change: HiddenChange,
+  ops: SheetOps,
+  bounds?: HiddenBounds,
+  commands?: HiddenMutationCommands,
+): boolean {
+  const next = nextHiddenState(hidden, change, bounds)
+  if (!next) return false
+  if (change.type === 'hideRow' && commands) return commands.hideRow(change.row)
+  if (change.type === 'hideCol' && commands) return commands.hideCol(change.col)
+  if (change.type === 'showRow' && commands) return commands.showRow(change.row)
+  if (change.type === 'showCol' && commands) return commands.showCol(change.col)
+  if (change.type === 'showAll' && commands) return commands.showAll()
+  ops.replace('/hidden', next)
+  return true
+}
+
+export function useHidden(hidden: HiddenState, ops: SheetOps, bounds?: HiddenBounds, commands?: HiddenMutationCommands) {
   const rowCount = bounds?.rowCount ?? MAX_ROW_COUNT
   const colCount = bounds?.colCount ?? MAX_COL_COUNT
   const current = useMemo(() => normalizeHiddenState(hidden, { rowCount, colCount }), [hidden, rowCount, colCount])
 
   useEffect(() => { migrateLegacy(current, ops, { rowCount, colCount }) }, [current, ops, rowCount, colCount])
 
-  const applyHiddenChange = (change: HiddenChange) => {
-    const next = nextHiddenState(current, change, { rowCount, colCount })
-    if (next) ops.replace('/hidden', next)
+  const apply = (change: HiddenChange) => {
+    applyHiddenChange(current, change, ops, { rowCount, colCount }, commands)
   }
-  const hideRow = (row: number) => applyHiddenChange({ type: 'hideRow', row })
-  const hideCol = (col: string) => applyHiddenChange({ type: 'hideCol', col })
-  const showRow = (row: number) => applyHiddenChange({ type: 'showRow', row })
-  const showCol = (col: string) => applyHiddenChange({ type: 'showCol', col })
-  const showAll = () => applyHiddenChange({ type: 'showAll' })
+  const hideRow = (row: number) => apply({ type: 'hideRow', row })
+  const hideCol = (col: string) => apply({ type: 'hideCol', col })
+  const showRow = (row: number) => apply({ type: 'showRow', row })
+  const showCol = (col: string) => apply({ type: 'showCol', col })
+  const showAll = () => apply({ type: 'showAll' })
 
   return {
     hidden: current,

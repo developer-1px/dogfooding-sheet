@@ -75,6 +75,9 @@ importers:
       '@zod-crud/search-replace':
         specifier: file:../zod-crud/packages/search-replace
         version: file:../zod-crud/packages/search-replace(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/set-membership':
+        specifier: file:../zod-crud/labs/extensions/set-membership
+        version: file:../zod-crud/labs/extensions/set-membership(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -854,6 +857,11 @@ packages:
 
   '@zod-crud/search-replace@file:../zod-crud/packages/search-replace':
     resolution: {directory: ../zod-crud/packages/search-replace, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/set-membership@file:../zod-crud/labs/extensions/set-membership':
+    resolution: {directory: ../zod-crud/labs/extensions/set-membership, type: directory}
     peerDependencies:
       zod-crud: ^1.0.0
 
@@ -2148,6 +2156,10 @@ snapshots:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   '@zod-crud/search-replace@file:../zod-crud/packages/search-replace(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/set-membership@file:../zod-crud/labs/extensions/set-membership(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 

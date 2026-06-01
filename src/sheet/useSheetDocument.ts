@@ -8,12 +8,14 @@ import { createDirtyState } from '@zod-crud/dirty-state'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
 import { createSearchReplace } from '@zod-crud/search-replace'
+import { createSetMembership } from '@zod-crud/set-membership'
 import { useJSONDocument } from 'zod-crud/react'
 import { appendSegment, type Pointer } from 'zod-crud'
 import { SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
 import { loadInitial, SHEET_STORAGE_KEY, sheetPersistenceCodec } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
 import type { ClipboardTextBridge } from './clipboard/clipboardActions'
+import type { HiddenMutationCommands } from './visibility/useHidden'
 
 export type SheetPersistenceStatus = 'saving' | 'saved' | 'error'
 
@@ -58,6 +60,7 @@ export function useSheetDocument() {
   const webClipboard = useMemo(() => createWebClipboard(doc, { codec: rawTextClipboardCodec }), [doc])
   const collection = useMemo(() => createCollection(doc), [doc])
   const preview = useMemo(() => createPatchPreview(SheetSchema, doc), [doc])
+  const membership = useMemo(() => createSetMembership(doc), [doc])
   const text = useMemo(() => createSearchReplace(doc), [doc])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
@@ -144,6 +147,13 @@ export function useSheetDocument() {
     clear.clearValues(['/cells' as Pointer]).ok
   const clearAllFormats = (): boolean =>
     clear.clearValues(['/styles' as Pointer, '/formats' as Pointer, '/condFormat' as Pointer]).ok
+  const hiddenMutations = useMemo<HiddenMutationCommands>(() => ({
+    hideRow: (row) => membership.add('/hidden/rows' as Pointer, row).ok,
+    hideCol: (col) => membership.add('/hidden/cols' as Pointer, col).ok,
+    showRow: (row) => membership.remove('/hidden/rows' as Pointer, row).ok,
+    showCol: (col) => membership.remove('/hidden/cols' as Pointer, col).ok,
+    showAll: () => clear.clearValues(['/hidden/rows' as Pointer, '/hidden/cols' as Pointer]).ok,
+  }), [clear, membership])
   const clipboardText = useMemo<ClipboardTextBridge>(() => ({
     async readText() {
       const result = await webClipboard.read()
@@ -166,6 +176,7 @@ export function useSheetDocument() {
     previewSheetReplacement,
     clearCellValues,
     clearAllFormats,
+    hiddenMutations,
     clipboardText,
     persistence,
   }

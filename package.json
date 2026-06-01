@@ -33,6 +33,7 @@
     "@zod-crud/patch-preview": "file:../zod-crud/packages/patch-preview",
     "@zod-crud/persist-web": "file:../zod-crud/packages/persist-web",
     "@zod-crud/search-replace": "file:../zod-crud/packages/search-replace",
+    "@zod-crud/set-membership": "file:../zod-crud/labs/extensions/set-membership",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zod": "^4.0.0",

@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { coerceLegacyHidden, nextHiddenState, normalizeHiddenState, type HiddenState } from './useHidden'
+import { applyHiddenChange, coerceLegacyHidden, nextHiddenState, normalizeHiddenState, type HiddenMutationCommands, type HiddenState } from './useHidden'
+import type { SheetOps } from '../schema'
+
+const ok = { ok: true as const }
+
+const opsWithReplaceCalls = (calls: string[]): SheetOps => ({
+  add: () => ok,
+  remove: () => ok,
+  replace: (path, value) => { calls.push(`${path}:${JSON.stringify(value)}`); return ok },
+  patch: () => ok,
+  undo: () => true,
+  redo: () => true,
+  canUndo: () => false,
+  canRedo: () => false,
+})
 
 describe('nextHiddenState', () => {
   const hidden: HiddenState = { rows: [1], cols: ['B'] }
@@ -43,6 +57,37 @@ describe('normalizeHiddenState', () => {
       rows: [0, 2],
       cols: ['B', 'A'],
     })
+  })
+})
+
+describe('applyHiddenChange', () => {
+  it('delegates hidden membership changes when commands are available', () => {
+    const calls: string[] = []
+    const opsCalls: string[] = []
+    const commands: HiddenMutationCommands = {
+      hideRow: (row) => { calls.push(`hideRow:${row}`); return true },
+      hideCol: (col) => { calls.push(`hideCol:${col}`); return true },
+      showRow: (row) => { calls.push(`showRow:${row}`); return true },
+      showCol: (col) => { calls.push(`showCol:${col}`); return true },
+      showAll: () => { calls.push('showAll'); return true },
+    }
+
+    expect(applyHiddenChange({ rows: [], cols: [] }, { type: 'hideRow', row: 2 }, opsWithReplaceCalls(opsCalls), undefined, commands)).toBe(true)
+    expect(applyHiddenChange({ rows: [], cols: [] }, { type: 'hideCol', col: 'B' }, opsWithReplaceCalls(opsCalls), undefined, commands)).toBe(true)
+    expect(applyHiddenChange({ rows: [2], cols: ['B'] }, { type: 'showRow', row: 2 }, opsWithReplaceCalls(opsCalls), undefined, commands)).toBe(true)
+    expect(applyHiddenChange({ rows: [2], cols: ['B'] }, { type: 'showCol', col: 'B' }, opsWithReplaceCalls(opsCalls), undefined, commands)).toBe(true)
+    expect(applyHiddenChange({ rows: [2], cols: ['B'] }, { type: 'showAll' }, opsWithReplaceCalls(opsCalls), undefined, commands)).toBe(true)
+
+    expect(calls).toEqual(['hideRow:2', 'hideCol:B', 'showRow:2', 'showCol:B', 'showAll'])
+    expect(opsCalls).toEqual([])
+  })
+
+  it('falls back to replacing the hidden object when no delegate exists', () => {
+    const calls: string[] = []
+
+    expect(applyHiddenChange({ rows: [], cols: [] }, { type: 'hideRow', row: 2 }, opsWithReplaceCalls(calls))).toBe(true)
+
+    expect(calls).toEqual(['/hidden:{"rows":[2],"cols":[]}'])
   })
 })
 

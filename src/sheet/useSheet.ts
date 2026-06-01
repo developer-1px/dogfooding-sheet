@@ -40,6 +40,7 @@ export function useSheet(opts: SheetOptions = {}) {
     previewSheetReplacement,
     clearCellValues,
     clearAllFormats,
+    hiddenMutations,
     clipboardText,
     persistence,
   } = useSheetDocument()
@@ -49,7 +50,7 @@ export function useSheet(opts: SheetOptions = {}) {
   const styles = useStyles(sheet.styles, ops, { rowCount, colCount: sheet.colCount })
   const freeze = useFreeze(sheet.freeze, ops, { rowCount, colCount: sheet.colCount })
   const filter = useFilter()
-  const hidden = useHidden(sheet.hidden, ops, { rowCount, colCount: sheet.colCount })
+  const hidden = useHidden(sheet.hidden, ops, { rowCount, colCount: sheet.colCount }, hiddenMutations)
   const notes = useNotes(sheet.notes, ops, { rowCount, colCount: sheet.colCount })
   const validation = useValidation(sheet.validation, sheet.cells, ops, { rowCount, colCount: sheet.colCount })
   const cond = useCondFormat(sheet.condFormat, ops, { colCount: sheet.colCount })
