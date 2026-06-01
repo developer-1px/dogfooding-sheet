@@ -27,7 +27,26 @@ const replaceIfChanged = (patch: Patch, path: string, current: unknown, next: un
   if (!sheetPatchValueEqual(current, next)) patch.push({ op: 'replace', path, value: next })
 }
 
-export const applyStructuralPatch = (sheet: Sheet, ops: SheetOps, next: StructuralPatch) => {
+export const structuralPatchSheet = (sheet: Sheet, next: StructuralPatch): Sheet => ({
+  ...sheet,
+  cells: next.cells,
+  notes: next.notes ?? sheet.notes,
+  styles: next.styles ?? sheet.styles,
+  formats: next.formats ?? sheet.formats,
+  validation: next.validation ?? sheet.validation,
+  condFormat: next.condFormat ?? sheet.condFormat,
+  hidden: next.hidden ?? sheet.hidden,
+  colWidths: next.colWidths ?? sheet.colWidths,
+  rowHeights: next.rowHeights ?? sheet.rowHeights,
+  merges: next.clearMerges ? [] : (next.merges ?? sheet.merges),
+})
+
+export const applyStructuralPatch = (
+  sheet: Sheet,
+  ops: SheetOps,
+  next: StructuralPatch,
+  applySheetDiff?: (nextSheet: Sheet) => boolean,
+) => {
   const patch: Patch = []
   replaceIfChanged(patch, '/cells', sheet.cells, next.cells)
   replaceIfChanged(patch, '/notes', sheet.notes, next.notes ?? sheet.notes)
@@ -39,6 +58,8 @@ export const applyStructuralPatch = (sheet: Sheet, ops: SheetOps, next: Structur
   replaceIfChanged(patch, '/colWidths', sheet.colWidths, next.colWidths ?? sheet.colWidths)
   replaceIfChanged(patch, '/rowHeights', sheet.rowHeights, next.rowHeights ?? sheet.rowHeights)
   if (next.clearMerges && sheet.merges.length > 0) patch.push({ op: 'replace', path: '/merges', value: [] })
+  if (patch.length === 0) return
+  if (applySheetDiff?.(structuralPatchSheet(sheet, next))) return
   applyPatch(ops, patch)
 }
 

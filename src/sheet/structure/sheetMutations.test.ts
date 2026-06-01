@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { COL_LETTERS, SheetSchema, initialSheet, type SheetOps } from '../schema'
+import { COL_LETTERS, SheetSchema, initialSheet, type Sheet, type SheetOps } from '../schema'
 import { sheetMutations, sheetPatchValueEqual } from './sheetMutations'
 
 const recordingOps = () => {
@@ -57,6 +57,47 @@ describe('sheetMutations', () => {
       { op: 'replace', path: '/hidden', value: { rows: [2], cols: ['B'] } },
       { op: 'replace', path: '/rowHeights', value: { '2': 42 } },
       { op: 'replace', path: '/merges', value: [] },
+    ]]])
+  })
+
+  it('delegates structural sheet application when a diff command is available', () => {
+    const { ops, calls } = recordingOps()
+    const delegated: Sheet[] = []
+    const state = sheet({
+      cells: { A1: 'head', A2: 'value' },
+      notes: { A2: 'note' },
+      merges: [[0, 0, 0, 1]],
+    })
+
+    sheetMutations(state, ops, {
+      appendRows: () => false,
+      appendCols: () => false,
+      applySheetDiff: (next) => { delegated.push(next); return true },
+    }).insertRow(1)
+
+    expect(delegated).toHaveLength(1)
+    expect(delegated[0]!.cells).toEqual({ A1: 'head', A3: 'value' })
+    expect(delegated[0]!.notes).toEqual({ A3: 'note' })
+    expect(delegated[0]!.merges).toEqual([])
+    expect(calls).toEqual([])
+  })
+
+  it('falls back to structural patches when diff delegation fails', () => {
+    const { ops, calls } = recordingOps()
+    const state = sheet({
+      cells: { A1: 'head', A2: 'value' },
+      notes: { A2: 'note' },
+    })
+
+    sheetMutations(state, ops, {
+      appendRows: () => false,
+      appendCols: () => false,
+      applySheetDiff: () => false,
+    }).insertRow(1)
+
+    expect(calls).toEqual([['patch', [
+      { op: 'replace', path: '/cells', value: { A1: 'head', A3: 'value' } },
+      { op: 'replace', path: '/notes', value: { A3: 'note' } },
     ]]])
   })
 

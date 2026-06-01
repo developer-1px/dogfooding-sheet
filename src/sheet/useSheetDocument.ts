@@ -224,7 +224,8 @@ export function useSheetDocument() {
   const countMutations = useMemo<SheetCountMutationCommands>(() => ({
     appendRows: (count) => incrementNumber.step('/rowCount' as Pointer, { step: count, max: MAX_ROW_COUNT }).ok,
     appendCols: (count) => incrementNumber.step('/colCount' as Pointer, { step: count, max: MAX_COL_COUNT }).ok,
-  }), [incrementNumber])
+    applySheetDiff: (next) => diff.apply(next, { label: 'sheet-structure', origin: 'programmatic' }).ok,
+  }), [diff, incrementNumber])
   const clipboardText = useMemo<ClipboardTextBridge>(() => ({
     async readText() {
       const result = await webClipboard.read()

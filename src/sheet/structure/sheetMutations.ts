@@ -26,23 +26,24 @@ export interface SheetMutations {
 export interface SheetCountMutationCommands {
   appendRows: (count: number) => boolean
   appendCols: (count: number) => boolean
+  applySheetDiff?: (next: Sheet) => boolean
 }
 
 export function sheetMutations(sheet: Sheet, ops: SheetOps, commands?: SheetCountMutationCommands): SheetMutations {
   return {
     insertRow: (atRow) => {
-      if (validRow(atRow, sheet.rowCount)) applyStructuralPatch(sheet, ops, insertRowPatch(sheet, atRow))
+      if (validRow(atRow, sheet.rowCount)) applyStructuralPatch(sheet, ops, insertRowPatch(sheet, atRow), commands?.applySheetDiff)
     },
     deleteRow: (atRow) => {
-      if (validRow(atRow, sheet.rowCount)) applyStructuralPatch(sheet, ops, deleteRowPatch(sheet, atRow))
+      if (validRow(atRow, sheet.rowCount)) applyStructuralPatch(sheet, ops, deleteRowPatch(sheet, atRow), commands?.applySheetDiff)
     },
     insertCol: (col) => {
       const atCol = validCol(col, sheet.colCount)
-      if (atCol !== null) applyStructuralPatch(sheet, ops, insertColPatch(sheet, atCol))
+      if (atCol !== null) applyStructuralPatch(sheet, ops, insertColPatch(sheet, atCol), commands?.applySheetDiff)
     },
     deleteCol: (col) => {
       const atCol = validCol(col, sheet.colCount)
-      if (atCol !== null) applyStructuralPatch(sheet, ops, deleteColPatch(sheet, atCol))
+      if (atCol !== null) applyStructuralPatch(sheet, ops, deleteColPatch(sheet, atCol), commands?.applySheetDiff)
     },
     appendRows: (count = 20) => {
       const next = appendedCount(sheet.rowCount, count, MAX_ROW_COUNT)
@@ -53,7 +54,7 @@ export function sheetMutations(sheet: Sheet, ops: SheetOps, commands?: SheetCoun
       if (next !== null && !commands?.appendCols(count)) ops.replace('/colCount', next)
     },
     sortByCol: (col, dir) => {
-      if (sheet.rowCount > 1 && validCol(col, sheet.colCount) !== null) applyStructuralPatch(sheet, ops, sortPatch(sheet, col, dir))
+      if (sheet.rowCount > 1 && validCol(col, sheet.colCount) !== null) applyStructuralPatch(sheet, ops, sortPatch(sheet, col, dir), commands?.applySheetDiff)
     },
   }
 }
