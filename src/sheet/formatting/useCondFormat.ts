@@ -17,6 +17,13 @@ export interface CondActions {
   clearCondRules: () => void
 }
 
+export interface CondMutationCommands {
+  addRule: (rule: CondRule) => boolean
+  replaceRule: (index: number, rule: CondRule) => boolean
+  removeRule: (index: number) => boolean
+  clearAll: () => boolean
+}
+
 export const matchRule = (rule: CondRule, displayed: string): boolean => {
   if (rule.op === 'contains') return displayed.toLowerCase().includes(rule.value.toLowerCase())
   if (rule.op === '=') return displayed === rule.value
@@ -48,30 +55,32 @@ const migrateLegacy = (rules: CondRule[], ops: SheetOps, bounds?: CondBounds) =>
 const sameCondRule = (a: CondRule, b: CondRule): boolean =>
   a.col === b.col && a.op === b.op && a.value === b.value && a.color === b.color
 
-export const setCondRule = (rules: readonly CondRule[], ops: SheetOps, rule: CondRule, bounds?: CondBounds): boolean => {
+export const setCondRule = (rules: readonly CondRule[], ops: SheetOps, rule: CondRule, bounds?: CondBounds, commands?: CondMutationCommands): boolean => {
   const normalized = normalizeCondRule(rule, { colCount: bounds?.colCount ?? MAX_COL_COUNT })
   if (!normalized) return false
   const idx = rules.findIndex((x) => x.col === normalized.col)
   if (idx >= 0) {
     if (sameCondRule(rules[idx], normalized)) return false
+    if (commands?.replaceRule(idx, normalized)) return true
     replaceValue(ops, `/condFormat/${idx}`, normalized)
   } else {
+    if (commands?.addRule(normalized)) return true
     addValue(ops, '/condFormat/-', normalized)
   }
   return true
 }
 
-export function useCondFormat(rules: CondRule[], ops: SheetOps, bounds?: CondBounds) {
+export function useCondFormat(rules: CondRule[], ops: SheetOps, bounds?: CondBounds, commands?: CondMutationCommands) {
   const colCount = bounds?.colCount ?? MAX_COL_COUNT
 
   useEffect(() => { migrateLegacy(rules, ops, { colCount }) }, [rules, ops, colCount])
 
-  const addRule = (r: CondRule) => { setCondRule(rules, ops, r, { colCount }) }
+  const addRule = (r: CondRule) => { setCondRule(rules, ops, r, { colCount }, commands) }
   const clearRule = (col: string) => {
     const idx = rules.findIndex((x) => x.col === col)
-    if (idx >= 0) removeValue(ops, `/condFormat/${idx}`)
+    if (idx >= 0 && !commands?.removeRule(idx)) removeValue(ops, `/condFormat/${idx}`)
   }
-  const clearAll = () => { if (rules.length) ops.replace('/condFormat', []) }
+  const clearAll = () => { if (rules.length && !commands?.clearAll()) ops.replace('/condFormat', []) }
 
   const bgFor = (col: string, displayed: string): string | undefined => {
     for (const r of rules) {

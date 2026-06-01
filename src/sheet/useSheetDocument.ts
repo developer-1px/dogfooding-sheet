@@ -22,6 +22,7 @@ import type { RecordMutationCommands } from '../lib/dictOps'
 import type { ClipboardTextBridge } from './clipboard/clipboardActions'
 import type { Format } from './formatting/useFormats'
 import type { CellStyle } from './formatting/useStyles'
+import type { CondMutationCommands, CondRule } from './formatting/useCondFormat'
 import type { SheetCountMutationCommands } from './structure/sheetMutations'
 import type { Rule } from './validation/useValidation'
 import type { FreezeMutationCommands } from './visibility/useFreeze'
@@ -200,6 +201,12 @@ export function useSheetDocument() {
     toggleRows: () => toggleValue.toggleValue('/freeze/rows' as Pointer, { values: [0, 1] }).ok,
     toggleCols: () => toggleValue.toggleValue('/freeze/cols' as Pointer, { values: [0, 1] }).ok,
   }), [toggleValue])
+  const condFormatMutations = useMemo<CondMutationCommands>(() => ({
+    addRule: (rule) => doc.insert('/condFormat/-' as Pointer, rule).ok,
+    replaceRule: (index, rule: CondRule) => batchUpdate.batchUpdate([appendSegment('/condFormat' as Pointer, index)], { value: rule }).ok,
+    removeRule: (index) => collection.deleteItems(appendSegment('/condFormat' as Pointer, index)).ok,
+    clearAll: () => clear.clearContents(['/condFormat' as Pointer]).ok,
+  }), [batchUpdate, clear, collection, doc])
   const countMutations = useMemo<SheetCountMutationCommands>(() => ({
     appendRows: (count) => incrementNumber.step('/rowCount' as Pointer, { step: count, max: MAX_ROW_COUNT }).ok,
     appendCols: (count) => incrementNumber.step('/colCount' as Pointer, { step: count, max: MAX_COL_COUNT }).ok,
@@ -229,6 +236,7 @@ export function useSheetDocument() {
     clearCellValues,
     clearAllFormats,
     recordMutations,
+    condFormatMutations,
     countMutations,
     freezeMutations,
     hiddenMutations,

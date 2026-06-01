@@ -79,4 +79,25 @@ describe('setCondRule', () => {
       ['add', '/condFormat/-', { col: 'B', op: 'contains', value: 'ok', color: '#abc' }],
     ])
   })
+
+  it('delegates add and replace commands when available', () => {
+    const { ops, calls } = recordingOps()
+    const delegated: unknown[] = []
+    const rules: CondRule[] = [{ col: 'A', op: '>', value: '1', color: '#fff' }]
+    const commands = {
+      addRule: (r: CondRule) => { delegated.push(['addRule', r]); return true },
+      replaceRule: (index: number, r: CondRule) => { delegated.push(['replaceRule', index, r]); return true },
+      removeRule: () => true,
+      clearAll: () => true,
+    }
+
+    expect(setCondRule(rules, ops, { col: 'A', op: '<', value: '2', color: '#000' }, undefined, commands)).toBe(true)
+    expect(setCondRule(rules, ops, { col: 'B', op: 'contains', value: 'ok', color: '#abc' }, undefined, commands)).toBe(true)
+
+    expect(delegated).toEqual([
+      ['replaceRule', 0, { col: 'A', op: '<', value: '2', color: '#000' }],
+      ['addRule', { col: 'B', op: 'contains', value: 'ok', color: '#abc' }],
+    ])
+    expect(calls).toEqual([])
+  })
 })
