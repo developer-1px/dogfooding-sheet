@@ -123,6 +123,43 @@ describe('sheetMutations', () => {
     ])
   })
 
+  it('delegates valid row and column appends when count commands are available', () => {
+    const { ops, calls } = recordingOps()
+    const delegated: unknown[] = []
+    const state = sheet({ rowCount: 4, colCount: 4 })
+    const mutations = sheetMutations(state, ops, {
+      appendRows: (count) => { delegated.push(['appendRows', count]); return true },
+      appendCols: (count) => { delegated.push(['appendCols', count]); return true },
+    })
+
+    mutations.appendRows(0)
+    mutations.appendRows(2)
+    mutations.appendCols(2)
+
+    expect(delegated).toEqual([
+      ['appendRows', 2],
+      ['appendCols', 2],
+    ])
+    expect(calls).toEqual([])
+  })
+
+  it('falls back to direct count replacement when append delegation fails', () => {
+    const { ops, calls } = recordingOps()
+    const state = sheet({ rowCount: 4, colCount: 4 })
+    const mutations = sheetMutations(state, ops, {
+      appendRows: () => false,
+      appendCols: () => false,
+    })
+
+    mutations.appendRows(2)
+    mutations.appendCols(2)
+
+    expect(calls).toEqual([
+      ['replace', '/rowCount', 6],
+      ['replace', '/colCount', 6],
+    ])
+  })
+
   it('sorts cell metadata with the data rows', () => {
     const { ops, calls } = recordingOps()
     const state = sheet({

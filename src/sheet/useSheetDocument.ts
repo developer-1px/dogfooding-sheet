@@ -7,6 +7,7 @@ import { createClearContents } from '@zod-crud/clear-contents'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
 import { createCollection } from '@zod-crud/collection'
 import { createDocumentDiff } from '@zod-crud/document-diff'
+import { createIncrementNumber } from '@zod-crud/increment-number'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
 import { createSearchReplace } from '@zod-crud/search-replace'
@@ -14,13 +15,14 @@ import { createToggleOption } from '@zod-crud/toggle-option'
 import { createToggleValue } from '@zod-crud/toggle-value'
 import { useJSONDocument } from 'zod-crud/react'
 import { appendSegment, type Pointer } from 'zod-crud'
-import { SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
+import { MAX_COL_COUNT, MAX_ROW_COUNT, SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
 import { loadInitial, SHEET_STORAGE_KEY, sheetPersistenceCodec } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
 import type { RecordMutationCommands } from '../lib/dictOps'
 import type { ClipboardTextBridge } from './clipboard/clipboardActions'
 import type { Format } from './formatting/useFormats'
 import type { CellStyle } from './formatting/useStyles'
+import type { SheetCountMutationCommands } from './structure/sheetMutations'
 import type { Rule } from './validation/useValidation'
 import type { FreezeMutationCommands } from './visibility/useFreeze'
 import type { HiddenMutationCommands } from './visibility/useHidden'
@@ -95,6 +97,7 @@ export function useSheetDocument() {
   const webClipboard = useMemo(() => createWebClipboard(doc, { codec: rawTextClipboardCodec }), [doc])
   const collection = useMemo(() => createCollection(doc), [doc])
   const diff = useMemo(() => createDocumentDiff(doc), [doc])
+  const incrementNumber = useMemo(() => createIncrementNumber(doc), [doc])
   const preview = useMemo(() => createPatchPreview(SheetSchema, doc), [doc])
   const toggleOption = useMemo(() => createToggleOption(doc), [doc])
   const toggleValue = useMemo(() => createToggleValue(doc), [doc])
@@ -197,6 +200,10 @@ export function useSheetDocument() {
     toggleRows: () => toggleValue.toggleValue('/freeze/rows' as Pointer, { values: [0, 1] }).ok,
     toggleCols: () => toggleValue.toggleValue('/freeze/cols' as Pointer, { values: [0, 1] }).ok,
   }), [toggleValue])
+  const countMutations = useMemo<SheetCountMutationCommands>(() => ({
+    appendRows: (count) => incrementNumber.step('/rowCount' as Pointer, { step: count, max: MAX_ROW_COUNT }).ok,
+    appendCols: (count) => incrementNumber.step('/colCount' as Pointer, { step: count, max: MAX_COL_COUNT }).ok,
+  }), [incrementNumber])
   const clipboardText = useMemo<ClipboardTextBridge>(() => ({
     async readText() {
       const result = await webClipboard.read()
@@ -222,6 +229,7 @@ export function useSheetDocument() {
     clearCellValues,
     clearAllFormats,
     recordMutations,
+    countMutations,
     freezeMutations,
     hiddenMutations,
     clipboardText,

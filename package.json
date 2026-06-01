@@ -32,6 +32,7 @@
     "@zod-crud/clipboard-web": "file:../zod-crud/packages/clipboard-web",
     "@zod-crud/collection": "file:../zod-crud/packages/collection",
     "@zod-crud/document-diff": "file:../zod-crud/labs/extensions/document-diff",
+    "@zod-crud/increment-number": "file:../zod-crud/labs/extensions/increment-number",
     "@zod-crud/patch-preview": "file:../zod-crud/packages/patch-preview",
     "@zod-crud/persist-web": "file:../zod-crud/packages/persist-web",
     "@zod-crud/search-replace": "file:../zod-crud/packages/search-replace",

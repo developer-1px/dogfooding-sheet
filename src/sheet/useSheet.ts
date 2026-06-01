@@ -43,6 +43,7 @@ export function useSheet(opts: SheetOptions = {}) {
     clearCellValues,
     clearAllFormats,
     recordMutations,
+    countMutations,
     freezeMutations,
     hiddenMutations,
     clipboardText,
@@ -105,7 +106,7 @@ export function useSheet(opts: SheetOptions = {}) {
     selectAnchor: selection.selectAnchor,
   })
 
-  const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops)
+  const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops, countMutations)
 
   useSheetShortcutBindings({
     editing: edit.editing,

@@ -72,6 +72,9 @@ importers:
       '@zod-crud/document-diff':
         specifier: file:../zod-crud/labs/extensions/document-diff
         version: file:../zod-crud/labs/extensions/document-diff(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/increment-number':
+        specifier: file:../zod-crud/labs/extensions/increment-number
+        version: file:../zod-crud/labs/extensions/increment-number(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/patch-preview':
         specifier: file:../zod-crud/packages/patch-preview
         version: file:../zod-crud/packages/patch-preview(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -861,6 +864,11 @@ packages:
 
   '@zod-crud/document-diff@file:../zod-crud/labs/extensions/document-diff':
     resolution: {directory: ../zod-crud/labs/extensions/document-diff, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/increment-number@file:../zod-crud/labs/extensions/increment-number':
+    resolution: {directory: ../zod-crud/labs/extensions/increment-number, type: directory}
     peerDependencies:
       zod-crud: ^1.0.0
 
@@ -2176,6 +2184,10 @@ snapshots:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   '@zod-crud/document-diff@file:../zod-crud/labs/extensions/document-diff(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/increment-number@file:../zod-crud/labs/extensions/increment-number(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 

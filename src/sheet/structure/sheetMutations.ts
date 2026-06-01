@@ -23,7 +23,12 @@ export interface SheetMutations {
   sortByCol: (col: string, dir: 'asc' | 'desc') => void
 }
 
-export function sheetMutations(sheet: Sheet, ops: SheetOps): SheetMutations {
+export interface SheetCountMutationCommands {
+  appendRows: (count: number) => boolean
+  appendCols: (count: number) => boolean
+}
+
+export function sheetMutations(sheet: Sheet, ops: SheetOps, commands?: SheetCountMutationCommands): SheetMutations {
   return {
     insertRow: (atRow) => {
       if (validRow(atRow, sheet.rowCount)) applyStructuralPatch(sheet, ops, insertRowPatch(sheet, atRow))
@@ -41,11 +46,11 @@ export function sheetMutations(sheet: Sheet, ops: SheetOps): SheetMutations {
     },
     appendRows: (count = 20) => {
       const next = appendedCount(sheet.rowCount, count, MAX_ROW_COUNT)
-      if (next !== null) ops.replace('/rowCount', next)
+      if (next !== null && !commands?.appendRows(count)) ops.replace('/rowCount', next)
     },
     appendCols: (count = 1) => {
       const next = appendedCount(sheet.colCount, count, MAX_COL_COUNT)
-      if (next !== null) ops.replace('/colCount', next)
+      if (next !== null && !commands?.appendCols(count)) ops.replace('/colCount', next)
     },
     sortByCol: (col, dir) => {
       if (sheet.rowCount > 1 && validCol(col, sheet.colCount) !== null) applyStructuralPatch(sheet, ops, sortPatch(sheet, col, dir))
