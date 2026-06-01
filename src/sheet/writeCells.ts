@@ -8,6 +8,7 @@ interface CellWriteBounds {
 }
 
 export type ReplaceExistingCells = (entries: Array<[string, string]>) => boolean
+export type EnsureMissingCells = (entries: Array<[string, string]>) => boolean
 
 const validCellKey = (key: string, bounds?: CellWriteBounds): boolean => {
   const ref = parseA1(key)
@@ -17,16 +18,17 @@ const validCellKey = (key: string, bounds?: CellWriteBounds): boolean => {
   return ref.row >= 0 && ref.row < bounds.rowCount && col >= 0 && col < bounds.colCount
 }
 
-export function writeSingleCell(ops: SheetOps, cells: Cells, key: string, value: string, bounds?: CellWriteBounds, replaceExisting?: ReplaceExistingCells): void {
+export function writeSingleCell(ops: SheetOps, cells: Cells, key: string, value: string, bounds?: CellWriteBounds, replaceExisting?: ReplaceExistingCells, ensureMissing?: EnsureMissingCells): void {
   if (!validCellKey(key, bounds)) return
   const normalized = normalizeCellWrite(value)
   if (normalized.type === 'reject') return
   if (replaceExisting && normalized.type === 'set' && cells[key] !== undefined && replaceExisting([[key, normalized.value]])) return
+  if (ensureMissing && normalized.type === 'set' && cells[key] === undefined && ensureMissing([[key, normalized.value]])) return
   upsertKey(ops, '/cells', cells, key, normalized.type === 'remove' ? undefined : normalized.value)
 }
 
 /** Batch multiple cell writes into a single ops.patch — atomic undo for fillDown/Right etc. */
-export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bounds?: CellWriteBounds, replaceExisting?: ReplaceExistingCells): void {
+export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bounds?: CellWriteBounds, replaceExisting?: ReplaceExistingCells, ensureMissing?: EnsureMissingCells): void {
   const entries: Array<[string, string | undefined]> = []
   for (const [k, v] of writes) {
     if (!validCellKey(k, bounds)) continue
@@ -40,6 +42,12 @@ export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bou
     latestEntries.length > 0 &&
     latestEntries.every((entry): entry is [string, string] => entry[1] !== undefined && cells[entry[0]] !== undefined) &&
     replaceExisting(latestEntries)
+  ) return
+  if (
+    ensureMissing &&
+    latestEntries.length > 0 &&
+    latestEntries.every((entry): entry is [string, string] => entry[1] !== undefined && cells[entry[0]] === undefined) &&
+    ensureMissing(latestEntries)
   ) return
   upsertKeys(ops, '/cells', cells, latestEntries)
 }

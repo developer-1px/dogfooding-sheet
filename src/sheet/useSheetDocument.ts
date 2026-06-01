@@ -125,8 +125,10 @@ export function useSheetDocument() {
     })
     return result.ok
   }
-  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, replaceExistingCells)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, replaceExistingCells)
+  const ensureMissingCells = (entries: Array<[string, string]>): boolean =>
+    defaults.ensure('/cells' as Pointer, Object.fromEntries(entries)).ok
+  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, replaceExistingCells, ensureMissingCells)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, replaceExistingCells, ensureMissingCells)
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {

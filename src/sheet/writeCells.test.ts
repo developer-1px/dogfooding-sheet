@@ -114,4 +114,35 @@ describe('cell write adapters', () => {
       ['patch', [{ op: 'add', path: '/cells/E1', value: 'new' }]],
     ])
   })
+
+  it('delegates missing value defaults when the batch can stay atomic', () => {
+    const { ops, calls } = recordingOps()
+    const ensured: Array<Array<[string, string]>> = []
+    const ensureMissing = (entries: Array<[string, string]>) => {
+      ensured.push(entries)
+      return true
+    }
+
+    writeSingleCell(ops, {}, 'A1', 'new', undefined, undefined, ensureMissing)
+    writeCellsBatch(ops, {}, [
+      ['B1', 'first'],
+      ['B1', 'last'],
+      ['C1', 'next'],
+    ], undefined, undefined, ensureMissing)
+    writeCellsBatch(ops, { D1: 'old' }, [
+      ['D1', 'new'],
+      ['E1', 'new'],
+    ], undefined, undefined, ensureMissing)
+
+    expect(ensured).toEqual([
+      [['A1', 'new']],
+      [['B1', 'last'], ['C1', 'next']],
+    ])
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'replace', path: '/cells/D1', value: 'new' },
+        { op: 'add', path: '/cells/E1', value: 'new' },
+      ]],
+    ])
+  })
 })
