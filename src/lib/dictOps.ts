@@ -11,6 +11,11 @@ type Equal<V> = (a: V, b: V) => boolean
 
 const defaultEqual = <V>(a: V, b: V): boolean => a === b
 
+export interface RecordMutationCommands<V> {
+  replaceExisting?: (entries: Array<[string, V]>) => boolean
+  ensureMissing?: (entries: Array<[string, V]>) => boolean
+}
+
 export function applyPatch(ops: PatchOps, patch: Patch): void {
   if (patch.length > 0) ops.patch(patch)
 }
@@ -42,13 +47,16 @@ export function upsertKey<V>(
   key: string,
   value: V | undefined,
   equal: Equal<V> = defaultEqual,
+  commands?: RecordMutationCommands<V>,
 ): void {
   const path = childPath(base, key)
   if (value === undefined) {
     if (current[key] !== undefined) removeValue(ops, path)
   } else if (current[key] === undefined) {
+    if (commands?.ensureMissing?.([[key, value]])) return
     addValue(ops, path, value)
   } else if (!equal(current[key], value)) {
+    if (commands?.replaceExisting?.([[key, value]])) return
     replaceValue(ops, path, value)
   }
 }
@@ -60,10 +68,24 @@ export function upsertKeys<V>(
   current: Record<string, V>,
   entries: Array<[string, V | undefined]>,
   equal: Equal<V> = defaultEqual,
+  commands?: RecordMutationCommands<V>,
 ): void {
   const patch: Patch = []
   const latest = new Map(entries)
-  for (const [key, value] of latest) {
+  const latestEntries = [...latest]
+  if (
+    commands?.replaceExisting &&
+    latestEntries.length > 0 &&
+    latestEntries.every((entry): entry is [string, V] => entry[1] !== undefined && current[entry[0]] !== undefined) &&
+    commands.replaceExisting(latestEntries)
+  ) return
+  if (
+    commands?.ensureMissing &&
+    latestEntries.length > 0 &&
+    latestEntries.every((entry): entry is [string, V] => entry[1] !== undefined && current[entry[0]] === undefined) &&
+    commands.ensureMissing(latestEntries)
+  ) return
+  for (const [key, value] of latestEntries) {
     const path = childPath(base, key)
     if (value === undefined) { if (current[key] !== undefined) patch.push({ op: 'remove', path }) }
     else if (current[key] === undefined) patch.push({ op: 'add', path, value })

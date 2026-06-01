@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { colIndex, parseA1, type SheetOps } from '../schema'
-import { upsertKeys } from '../../lib/dictOps'
+import { upsertKeys, type RecordMutationCommands } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 import { normalizeStoredFormat, type Format } from './formatTypes'
 
@@ -41,7 +41,7 @@ const migrateLegacy = (formats: Record<string, Format>, ops: SheetOps, bounds?: 
     (o, v) => o.replace('/formats', v),
   )
 
-export function useFormats(formats: Record<string, Format>, ops: SheetOps, bounds?: FormatBounds) {
+export function useFormats(formats: Record<string, Format>, ops: SheetOps, bounds?: FormatBounds, commands?: RecordMutationCommands<Format>) {
   const rowCount = bounds?.rowCount
   const colCount = bounds?.colCount
   useEffect(() => {
@@ -54,7 +54,7 @@ export function useFormats(formats: Record<string, Format>, ops: SheetOps, bound
     for (const key of keys) {
       if (validFormatKey(key, bounds)) entries.push([key, value])
     }
-    upsertKeys(ops, '/formats', formats, entries)
+    upsertKeys(ops, '/formats', formats, entries, undefined, commands)
   }
 
   return { setFormat, formatOf: (k: string): Format => formats[k] ?? 'plain' }

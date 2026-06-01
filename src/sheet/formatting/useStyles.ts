@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { colIndex, normalizeCellStyle, parseA1, type NormalizedCellStyle, type SheetOps } from '../schema'
-import { upsertKeys } from '../../lib/dictOps'
+import { upsertKeys, type RecordMutationCommands } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 export type StyleLookup = (k: string) => CellStyle | undefined
@@ -76,22 +76,23 @@ export const updateStyleValues = (
   keys: string[],
   patch: Partial<CellStyle>,
   bounds?: StyleBounds,
+  commands?: RecordMutationCommands<CellStyle>,
 ): void => {
   const entries: Array<[string, CellStyle | undefined]> = []
   for (const key of keys) {
     if (validStyleKey(key, bounds)) entries.push([key, merge(styles[key], patch)])
   }
-  upsertKeys(ops, '/styles', styles, entries, sameCellStyle)
+  upsertKeys(ops, '/styles', styles, entries, sameCellStyle, commands)
 }
 
-export function useStyles(styles: Record<string, CellStyle>, ops: SheetOps, bounds?: StyleBounds) {
+export function useStyles(styles: Record<string, CellStyle>, ops: SheetOps, bounds?: StyleBounds, commands?: RecordMutationCommands<CellStyle>) {
   const rowCount = bounds?.rowCount
   const colCount = bounds?.colCount
   useEffect(() => {
     migrateLegacy(styles, ops, rowCount !== undefined && colCount !== undefined ? { rowCount, colCount } : undefined)
   }, [styles, ops, rowCount, colCount])
 
-  const updateStyle = (keys: string[], patch: Partial<CellStyle>) => updateStyleValues(styles, ops, keys, patch, bounds)
+  const updateStyle = (keys: string[], patch: Partial<CellStyle>) => updateStyleValues(styles, ops, keys, patch, bounds, commands)
 
   return { updateStyle, styleOf: (k: string) => styles[k] }
 }

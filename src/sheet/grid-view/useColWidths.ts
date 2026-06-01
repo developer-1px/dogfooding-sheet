@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { COLUMN_WIDTH_BOUNDS, DEFAULT_COLUMN_WIDTH, clampResizeValue, storedResizeValue } from '@spredsheet/editable-grid/resize-rules'
 import { COL_LETTERS, colIndex, type SheetOps } from '../schema'
-import { upsertKey } from '../../lib/dictOps'
+import { upsertKey, type RecordMutationCommands } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:colwidths:v1'
@@ -43,9 +43,10 @@ export const setColumnWidth = (
   col: string,
   width: number,
   bounds?: ColumnWidthBounds,
+  commands?: RecordMutationCommands<number>,
 ) => {
   if (!validColumn(col, bounds)) return
-  upsertKey(ops, '/colWidths', widths, col, storedColumnWidth(width))
+  upsertKey(ops, '/colWidths', widths, col, storedColumnWidth(width), undefined, commands)
 }
 
 const migrateLegacy = (widths: Record<string, number>, ops: SheetOps, bounds?: ColumnWidthBounds) =>
@@ -54,7 +55,7 @@ const migrateLegacy = (widths: Record<string, number>, ops: SheetOps, bounds?: C
     (o, v) => o.replace('/colWidths', v),
   )
 
-export function useColWidths(widths: Record<string, number>, ops: SheetOps, bounds?: ColumnWidthBounds) {
+export function useColWidths(widths: Record<string, number>, ops: SheetOps, bounds?: ColumnWidthBounds, commands?: RecordMutationCommands<number>) {
   // Live drag overlay — useResizeGesture's onChange writes here; onEnd commits to ops.
   // Single liveWidth state suffices (only one column resized at a time).
   const [liveWidth, setLiveWidth] = useState<{ col: string; w: number } | null>(null)
@@ -72,7 +73,7 @@ export function useColWidths(widths: Record<string, number>, ops: SheetOps, boun
       const w = Math.ceil(ctx.measureText(s).width) + 16
       if (w > max) max = w
     }
-    setColumnWidth(ops, widths, col, clampResizeValue(max, COLUMN_WIDTH_BOUNDS), bounds)
+    setColumnWidth(ops, widths, col, clampResizeValue(max, COLUMN_WIDTH_BOUNDS), bounds, commands)
   }
 
   const widthOf = (col: string) =>
@@ -80,7 +81,7 @@ export function useColWidths(widths: Record<string, number>, ops: SheetOps, boun
 
   const onResize = (col: string, w: number) => { if (validColumn(col, bounds)) setLiveWidth({ col, w }) }
   const onResizeEnd = (col: string, w: number) => {
-    setColumnWidth(ops, widths, col, w, bounds)
+    setColumnWidth(ops, widths, col, w, bounds, commands)
     setLiveWidth(null)
   }
 

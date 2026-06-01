@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DEFAULT_ROW_HEIGHT, ROW_HEIGHT_BOUNDS, clampResizeValue, storedResizeValue } from '@spredsheet/editable-grid/resize-rules'
 import type { SheetOps } from '../schema'
-import { upsertKey } from '../../lib/dictOps'
+import { upsertKey, type RecordMutationCommands } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 const LEGACY_KEY = 'spreadsheet:rowheights:v1'
@@ -43,10 +43,11 @@ export const setRowHeightValue = (
   row: number,
   height: number | undefined,
   bounds?: RowHeightBounds,
+  commands?: RecordMutationCommands<number>,
 ) => {
   if (!validRow(row, bounds)) return
   const stored = height === undefined ? undefined : storedRowHeight(height)
-  upsertKey(ops, '/rowHeights', heights, String(row), stored)
+  upsertKey(ops, '/rowHeights', heights, String(row), stored, undefined, commands)
 }
 
 const migrateLegacy = (heights: Record<string, number>, ops: SheetOps, bounds?: RowHeightBounds) =>
@@ -55,7 +56,7 @@ const migrateLegacy = (heights: Record<string, number>, ops: SheetOps, bounds?: 
     (o, v) => o.replace('/rowHeights', v),
   )
 
-export function useRowHeights(heights: Record<string, number>, ops: SheetOps, bounds?: RowHeightBounds) {
+export function useRowHeights(heights: Record<string, number>, ops: SheetOps, bounds?: RowHeightBounds, commands?: RecordMutationCommands<number>) {
   const [live, setLive] = useState<{ row: number; h: number } | null>(null)
   const rowCount = bounds?.rowCount
   useEffect(() => { migrateLegacy(heights, ops, rowCount === undefined ? undefined : { rowCount }) }, [heights, ops, rowCount])
@@ -63,13 +64,13 @@ export function useRowHeights(heights: Record<string, number>, ops: SheetOps, bo
   const heightOf = (row: number): number =>
     live && live.row === row ? live.h : (heights[String(row)] ?? DEFAULT_HEIGHT)
   const setHeight = (row: number, h: number) => {
-    setRowHeightValue(ops, heights, row, h, bounds)
+    setRowHeightValue(ops, heights, row, h, bounds, commands)
   }
-  const resetRowHeight = (row: number) => setRowHeightValue(ops, heights, row, undefined, bounds)
+  const resetRowHeight = (row: number) => setRowHeightValue(ops, heights, row, undefined, bounds, commands)
 
   const onResize = (row: number, h: number) => { if (validRow(row, bounds)) setLive({ row, h: clampResizeValue(h, ROW_HEIGHT_BOUNDS) }) }
   const onResizeEnd = (row: number, h: number) => {
-    setRowHeightValue(ops, heights, row, h, bounds)
+    setRowHeightValue(ops, heights, row, h, bounds, commands)
     setLive(null)
   }
 

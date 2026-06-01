@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { colIndex, parseA1, type SheetOps } from './schema'
 import { migrateLegacyKey } from '../lib/legacyMigrate'
-import { upsertKey } from '../lib/dictOps'
+import { upsertKey, type RecordMutationCommands } from '../lib/dictOps'
 import { normalizeNoteText } from './noteText'
 import { isSafeCellText } from './cellValue'
 
@@ -48,7 +48,7 @@ const migrateLegacy = (notes: Record<string, string>, ops: SheetOps, bounds?: No
     (o, v) => o.replace('/notes', v),
   )
 
-export function useNotes(notes: Record<string, string>, ops: SheetOps, bounds?: NoteBounds) {
+export function useNotes(notes: Record<string, string>, ops: SheetOps, bounds?: NoteBounds, commands?: RecordMutationCommands<string>) {
   const rowCount = bounds?.rowCount
   const colCount = bounds?.colCount
   useEffect(() => {
@@ -57,7 +57,7 @@ export function useNotes(notes: Record<string, string>, ops: SheetOps, bounds?: 
 
   const setNote = (k: string, text: string) => {
     if (!validNoteKey(k, bounds)) return
-    upsertKey(ops, '/notes', notes, k, normalizedNote(text))
+    upsertKey(ops, '/notes', notes, k, normalizedNote(text), undefined, commands)
   }
 
   return { setNote, noteOf: (k: string) => notes[k] }

@@ -66,7 +66,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
     startEdit,
     isEditing: () => editing !== null,
   })
-  const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops, { colCount: ctx.colLetters.length })
+  const { gridTemplateFor, onResize, onResizeEnd, autoFit, widthOf } = useColWidths(ctx.sheet.colWidths, ctx.ops, { colCount: ctx.colLetters.length }, ctx.recordMutations.colWidths)
   function* columnSamples(c: string): IterableIterator<string> {
     for (let row = 0; row < ctx.rowCount; row++) yield ctx.display(cellKey(c, row))
   }

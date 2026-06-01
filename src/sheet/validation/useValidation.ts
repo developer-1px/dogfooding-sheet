@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { colIndex, normalizeValidationOptions, parseA1, type Cells, type SheetOps } from '../schema'
-import { applyPatch, upsertKeys, type Patch } from '../../lib/dictOps'
+import { applyPatch, upsertKeys, type Patch, type RecordMutationCommands } from '../../lib/dictOps'
 import { migrateLegacyKey } from '../../lib/legacyMigrate'
 
 export interface ListRule { type: 'list'; options: string[] }
@@ -96,22 +96,23 @@ export const setListValidationRule = (
   keys: string[],
   options: string[],
   bounds?: ValidationBounds,
+  commands?: RecordMutationCommands<Rule>,
 ): void => {
   const targetKeys = validKeys(keys, bounds)
   const normalized = normalizeValidationOptions(options)
   const value: Rule | undefined = normalized.length === 0 ? undefined : { type: 'list', options: normalized }
-  upsertKeys(ops, '/validation', rules, targetKeys.map((k) => [k, value]), sameValidationRule)
+  upsertKeys(ops, '/validation', rules, targetKeys.map((k) => [k, value]), sameValidationRule, commands)
 }
 
-export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: SheetOps, bounds?: ValidationBounds) {
+export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: SheetOps, bounds?: ValidationBounds, commands?: RecordMutationCommands<Rule>) {
   const rowCount = bounds?.rowCount
   const colCount = bounds?.colCount
   useEffect(() => {
     migrateLegacy(rules, ops, rowCount !== undefined && colCount !== undefined ? { rowCount, colCount } : undefined)
   }, [rules, ops, rowCount, colCount])
 
-  const setListRule = (keys: string[], options: string[]) => setListValidationRule(rules, ops, keys, options, bounds)
-  const clearRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, validKeys(keys, bounds).map((k) => [k, undefined]))
+  const setListRule = (keys: string[], options: string[]) => setListValidationRule(rules, ops, keys, options, bounds, commands)
+  const clearRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, validKeys(keys, bounds).map((k) => [k, undefined]), undefined, commands)
   const setCheckboxRule = (keys: string[]) => {
     const patch = checkboxConversionPatch(rules, cells, validKeys(keys, bounds))
     applyPatch(ops, patch)

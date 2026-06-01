@@ -10,6 +10,7 @@ import type { FreezeActions, FreezeState } from '../visibility/useFreeze'
 import type { HiddenActions } from '../visibility/useHidden'
 import type { SheetMutations } from '../structure/sheetMutations'
 import type { ClipboardTextBridge } from '../clipboard/clipboardActions'
+import type { SheetRecordMutationCommands } from '../useSheetDocument'
 
 export interface GridContextMenuController
   extends SheetMutations,
@@ -42,6 +43,7 @@ export interface GridController extends GridContextMenuController {
   data: PatternData
   sheet: Sheet
   ops: SheetOps
+  recordMutations: Pick<SheetRecordMutationCommands, 'colWidths'>
   display: Display
   writeCells: WriteMany
   toggleCheckboxCell: (key: string) => void

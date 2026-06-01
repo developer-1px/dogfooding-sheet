@@ -42,6 +42,7 @@ export function useSheet(opts: SheetOptions = {}) {
     applySheetReplacement,
     clearCellValues,
     clearAllFormats,
+    recordMutations,
     freezeMutations,
     hiddenMutations,
     clipboardText,
@@ -49,15 +50,15 @@ export function useSheet(opts: SheetOptions = {}) {
   } = useSheetDocument()
   const rowCount = sheet.rowCount
   const colLetters = colLettersFor(sheet.colCount)
-  const fmt = useFormats(sheet.formats, ops, { rowCount, colCount: sheet.colCount })
-  const styles = useStyles(sheet.styles, ops, { rowCount, colCount: sheet.colCount })
+  const fmt = useFormats(sheet.formats, ops, { rowCount, colCount: sheet.colCount }, recordMutations.formats)
+  const styles = useStyles(sheet.styles, ops, { rowCount, colCount: sheet.colCount }, recordMutations.styles)
   const freeze = useFreeze(sheet.freeze, ops, { rowCount, colCount: sheet.colCount }, freezeMutations)
   const filter = useFilter()
   const hidden = useHidden(sheet.hidden, ops, { rowCount, colCount: sheet.colCount }, hiddenMutations)
-  const notes = useNotes(sheet.notes, ops, { rowCount, colCount: sheet.colCount })
-  const validation = useValidation(sheet.validation, sheet.cells, ops, { rowCount, colCount: sheet.colCount })
+  const notes = useNotes(sheet.notes, ops, { rowCount, colCount: sheet.colCount }, recordMutations.notes)
+  const validation = useValidation(sheet.validation, sheet.cells, ops, { rowCount, colCount: sheet.colCount }, recordMutations.validation)
   const cond = useCondFormat(sheet.condFormat, ops, { colCount: sheet.colCount })
-  const layout = useSheetLayout(sheet, ops, opts)
+  const layout = useSheetLayout(sheet, ops, opts, recordMutations)
   const merges = useMerges(sheet.merges, ops, { rowCount, colCount: sheet.colCount })
   const find = useFindState()
   const viewState = useSheetViewState()
@@ -147,6 +148,7 @@ export function useSheet(opts: SheetOptions = {}) {
 
   return {
     sheet, ops, persistence, data,
+    recordMutations,
     ...edit,
     commitEdit, cancelEdit,
     writeCell, writeCells, toggleCheckboxCell, replaceCellsByQuery, replaceCellText, previewSheetReplacement, applySheetReplacement, clearCellValues, clearAllFormats, clipboardText, display,

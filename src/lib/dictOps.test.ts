@@ -93,4 +93,36 @@ describe('dictOps mutation adapter', () => {
       ]],
     ])
   })
+
+  it('delegates all-existing and all-missing set batches before local patch fallback', () => {
+    const calls: unknown[] = []
+    const ops = {
+      add: (path: never, value: never) => { calls.push(['add', path, value]) },
+      replace: (path: never, value: never) => { calls.push(['replace', path, value]) },
+      remove: (path: never) => { calls.push(['remove', path]) },
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    }
+    const delegated: unknown[] = []
+    const commands = {
+      replaceExisting: (entries: Array<[string, string]>) => { delegated.push(['replaceExisting', entries]); return true },
+      ensureMissing: (entries: Array<[string, string]>) => { delegated.push(['ensureMissing', entries]); return true },
+    }
+
+    upsertKey(ops, '/records', {}, 'A', 'new', undefined, commands)
+    upsertKeys(ops, '/records', { B: 'old' }, [['B', 'new']], undefined, commands)
+    upsertKeys(ops, '/records', {}, [['C', 'new']], undefined, commands)
+    upsertKeys(ops, '/records', { D: 'old' }, [['D', 'new'], ['E', 'new']], undefined, commands)
+
+    expect(delegated).toEqual([
+      ['ensureMissing', [['A', 'new']]],
+      ['replaceExisting', [['B', 'new']]],
+      ['ensureMissing', [['C', 'new']]],
+    ])
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'replace', path: '/records/D', value: 'new' },
+        { op: 'add', path: '/records/E', value: 'new' },
+      ]],
+    ])
+  })
 })

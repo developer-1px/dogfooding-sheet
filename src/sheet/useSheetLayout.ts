@@ -1,6 +1,7 @@
 import { setColumnWidth } from './grid-view/useColWidths'
 import { useRowHeights } from './grid-view/useRowHeights'
 import type { Sheet, SheetOps } from './schema'
+import type { SheetRecordMutationCommands } from './useSheetDocument'
 
 export interface SheetLayoutPrompts {
   promptRowHeight?: (row: number) => void
@@ -10,8 +11,8 @@ export interface SheetLayoutPrompts {
 
 const noop = () => {}
 
-export function useSheetLayout(sheet: Sheet, ops: SheetOps, prompts: SheetLayoutPrompts) {
-  const rowHeights = useRowHeights(sheet.rowHeights, ops, { rowCount: sheet.rowCount })
+export function useSheetLayout(sheet: Sheet, ops: SheetOps, prompts: SheetLayoutPrompts, recordMutations?: Pick<SheetRecordMutationCommands, 'rowHeights' | 'colWidths'>) {
+  const rowHeights = useRowHeights(sheet.rowHeights, ops, { rowCount: sheet.rowCount }, recordMutations?.rowHeights)
 
   return {
     rowHeightOf: rowHeights.heightOf,
@@ -23,7 +24,7 @@ export function useSheetLayout(sheet: Sheet, ops: SheetOps, prompts: SheetLayout
     promptColWidth: prompts.promptColWidth ?? noop,
     promptFilter: prompts.promptFilter ?? noop,
     setColWidth: (col: string, width: number) => {
-      setColumnWidth(ops, sheet.colWidths, col, width, { colCount: sheet.colCount })
+      setColumnWidth(ops, sheet.colWidths, col, width, { colCount: sheet.colCount }, recordMutations?.colWidths)
     },
   }
 }

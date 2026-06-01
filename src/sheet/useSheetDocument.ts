@@ -17,7 +17,11 @@ import { appendSegment, type Pointer } from 'zod-crud'
 import { SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
 import { loadInitial, SHEET_STORAGE_KEY, sheetPersistenceCodec } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
+import type { RecordMutationCommands } from '../lib/dictOps'
 import type { ClipboardTextBridge } from './clipboard/clipboardActions'
+import type { Format } from './formatting/useFormats'
+import type { CellStyle } from './formatting/useStyles'
+import type { Rule } from './validation/useValidation'
 import type { FreezeMutationCommands } from './visibility/useFreeze'
 import type { HiddenMutationCommands } from './visibility/useHidden'
 
@@ -28,6 +32,16 @@ export interface SheetPersistenceState {
   dirty: boolean
   savedAt: string | null
   error: string | null
+}
+
+export interface SheetRecordMutationCommands {
+  cells: RecordMutationCommands<string>
+  notes: RecordMutationCommands<string>
+  formats: RecordMutationCommands<Format>
+  styles: RecordMutationCommands<CellStyle>
+  validation: RecordMutationCommands<Rule>
+  rowHeights: RecordMutationCommands<number>
+  colWidths: RecordMutationCommands<number>
 }
 
 export type ReplaceCellValue = (value: string) => string
@@ -85,6 +99,27 @@ export function useSheetDocument() {
   const toggleOption = useMemo(() => createToggleOption(doc), [doc])
   const toggleValue = useMemo(() => createToggleValue(doc), [doc])
   const text = useMemo(() => createSearchReplace(doc), [doc])
+  const recordMutations = useMemo<SheetRecordMutationCommands>(() => {
+    const commandsFor = <V,>(base: Pointer): RecordMutationCommands<V> => ({
+      replaceExisting(entries) {
+        return batchUpdate.batchUpdate(entries.map(([key]) => appendSegment(base, key)), {
+          compute: (_current, _pointer, index) => entries[index]?.[1] as V,
+        }).ok
+      },
+      ensureMissing(entries) {
+        return defaults.ensure(base, Object.fromEntries(entries)).ok
+      },
+    })
+    return {
+      cells: commandsFor('/cells' as Pointer),
+      notes: commandsFor('/notes' as Pointer),
+      formats: commandsFor('/formats' as Pointer),
+      styles: commandsFor('/styles' as Pointer),
+      validation: commandsFor('/validation' as Pointer),
+      rowHeights: commandsFor('/rowHeights' as Pointer),
+      colWidths: commandsFor('/colWidths' as Pointer),
+    }
+  }, [batchUpdate, defaults])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
     remove: (path) => doc.delete(path as Pointer),
@@ -120,16 +155,8 @@ export function useSheetDocument() {
   }, [doc])
 
   const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
-  const replaceExistingCells = (entries: Array<[string, string]>): boolean => {
-    const result = batchUpdate.batchUpdate(entries.map(([key]) => cellValuePointer(key)), {
-      compute: (_current, _pointer, index) => entries[index]?.[1] ?? '',
-    })
-    return result.ok
-  }
-  const ensureMissingCells = (entries: Array<[string, string]>): boolean =>
-    defaults.ensure('/cells' as Pointer, Object.fromEntries(entries)).ok
-  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, replaceExistingCells, ensureMissingCells)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, replaceExistingCells, ensureMissingCells)
+  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing)
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
@@ -194,6 +221,7 @@ export function useSheetDocument() {
     applySheetReplacement,
     clearCellValues,
     clearAllFormats,
+    recordMutations,
     freezeMutations,
     hiddenMutations,
     clipboardText,
