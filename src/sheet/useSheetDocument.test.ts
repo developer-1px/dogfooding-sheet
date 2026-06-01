@@ -68,7 +68,7 @@ describe('useSheetDocument', () => {
     expect(document.querySelector('output')?.textContent).toBe('FALSE')
   })
 
-  it('keeps only sparse checkbox creation app-owned', () => {
+  it('delegates sparse checkbox creation to zod-crud defaults', () => {
     let doc!: ReturnType<typeof useSheetDocument>
 
     function Harness() {

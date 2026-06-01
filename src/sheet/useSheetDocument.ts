@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createAutoSave, type AutoSaveSnapshot } from '@zod-crud/autosave'
+import { createApplyDefaults } from '@zod-crud/apply-defaults'
 import { createBatchUpdate } from '@zod-crud/batch-update'
 import { createBulkEdit } from '@zod-crud/bulk-edit'
 import { createClearContents } from '@zod-crud/clear-contents'
@@ -72,6 +73,7 @@ export function useSheetDocument() {
   const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
   const { value: sheet } = doc
   const [persistence, setPersistence] = useState<SheetPersistenceState>(initialPersistenceState)
+  const defaults = useMemo(() => createApplyDefaults(doc), [doc])
   const batchUpdate = useMemo(() => createBatchUpdate(doc), [doc])
   const bulk = useMemo(() => createBulkEdit(doc), [doc])
   const clear = useMemo(() => createClearContents(doc), [doc])
@@ -137,10 +139,7 @@ export function useSheetDocument() {
     }).ok
   }
   const toggleCheckboxCell = (key: string): boolean => {
-    if (sheet.cells[key] === undefined) {
-      writeCell(key, 'TRUE')
-      return true
-    }
+    if (sheet.cells[key] === undefined) return defaults.ensure('/cells' as Pointer, { [key]: 'TRUE' }).ok
     return toggleValue.toggleValue(cellValuePointer(key), { values: ['TRUE', 'FALSE'] }).ok
   }
   const moveCollectionBefore = (source: string, target: string): boolean =>

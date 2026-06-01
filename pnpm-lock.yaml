@@ -48,6 +48,9 @@ importers:
       '@spredsheet/surface':
         specifier: workspace:*
         version: link:packages/surface
+      '@zod-crud/apply-defaults':
+        specifier: file:../zod-crud/labs/extensions/apply-defaults
+        version: file:../zod-crud/labs/extensions/apply-defaults(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/autosave':
         specifier: file:../zod-crud/labs/extensions/autosave
         version: file:../zod-crud/labs/extensions/autosave(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -820,6 +823,11 @@ packages:
 
   '@vitest/utils@4.1.7':
     resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
+
+  '@zod-crud/apply-defaults@file:../zod-crud/labs/extensions/apply-defaults':
+    resolution: {directory: ../zod-crud/labs/extensions/apply-defaults, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
 
   '@zod-crud/autosave@file:../zod-crud/labs/extensions/autosave':
     resolution: {directory: ../zod-crud/labs/extensions/autosave, type: directory}
@@ -2138,6 +2146,10 @@ snapshots:
       '@vitest/pretty-format': 4.1.7
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
+
+  '@zod-crud/apply-defaults@file:../zod-crud/labs/extensions/apply-defaults(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   '@zod-crud/autosave@file:../zod-crud/labs/extensions/autosave(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
