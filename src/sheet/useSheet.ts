@@ -69,7 +69,7 @@ export function useSheet(opts: SheetOptions = {}) {
   const viewState = useSheetViewState()
   const tabs = useTabs(sheet.tabs, ops)
   const tabFns = tabActions(sheet, {
-    replace: (path, value) => ops.replace(path, value),
+    replace: (_path, value) => { if (!applySheetReplacement({ ...sheet, tabs: value }, 'tabs-diff')) ops.replace('/tabs', value) },
     replaceSheet: (next) => { if (!applySheetReplacement(next, 'tab-action')) ops.replace('', next) },
     moveBefore: moveCollectionBefore,
     moveAfter: moveCollectionAfter,
