@@ -201,7 +201,9 @@ export function useSheetDocument() {
   const freezeMutations = useMemo<FreezeMutationCommands>(() => ({
     toggleRows: () => toggleValue.toggleValue('/freeze/rows' as Pointer, { values: [0, 1] }).ok,
     toggleCols: () => toggleValue.toggleValue('/freeze/cols' as Pointer, { values: [0, 1] }).ok,
-  }), [toggleValue])
+    setRows: (rows) => batchUpdate.batchUpdate(['/freeze/rows' as Pointer], { value: rows }).ok,
+    setCols: (cols) => batchUpdate.batchUpdate(['/freeze/cols' as Pointer], { value: cols }).ok,
+  }), [batchUpdate, toggleValue])
   const condFormatMutations = useMemo<CondMutationCommands>(() => ({
     addRule: (rule) => doc.insert('/condFormat/-' as Pointer, rule).ok,
     replaceRule: (index, rule: CondRule) => batchUpdate.batchUpdate([appendSegment('/condFormat' as Pointer, index)], { value: rule }).ok,

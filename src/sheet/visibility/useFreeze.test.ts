@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { SheetOps } from '../schema'
 import { coerceLegacyFreeze, setFreezeState } from './useFreeze'
 
@@ -42,6 +42,28 @@ describe('setFreezeState', () => {
 
     expect(calls).toEqual([
       ['replace', '/freeze', { rows: 2, cols: 2 }],
+    ])
+  })
+
+  it('delegates bounded freeze writes when a command succeeds', () => {
+    const { ops, calls } = recordingOps()
+    const command = vi.fn(() => true)
+
+    expect(setFreezeState(ops, { rows: 0, cols: 0 }, { rows: 5, cols: 1 }, { rowCount: 2, colCount: 2 }, command)).toBe(true)
+
+    expect(command).toHaveBeenCalledWith({ rows: 2, cols: 1 })
+    expect(calls).toEqual([])
+  })
+
+  it('falls back to replacing freeze state when a command fails', () => {
+    const { ops, calls } = recordingOps()
+    const command = vi.fn(() => false)
+
+    expect(setFreezeState(ops, { rows: 0, cols: 0 }, { rows: 1, cols: 0 }, undefined, command)).toBe(true)
+
+    expect(command).toHaveBeenCalledWith({ rows: 1, cols: 0 })
+    expect(calls).toEqual([
+      ['replace', '/freeze', { rows: 1, cols: 0 }],
     ])
   })
 })

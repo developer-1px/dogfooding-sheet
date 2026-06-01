@@ -14,6 +14,8 @@ export interface FreezeActions {
 export interface FreezeMutationCommands {
   toggleRows: () => boolean
   toggleCols: () => boolean
+  setRows: (rows: number) => boolean
+  setCols: (cols: number) => boolean
 }
 
 const LEGACY_KEY = 'spreadsheet:freeze:v1'
@@ -43,9 +45,16 @@ const migrateLegacy = (freeze: FreezeState, ops: SheetOps, bounds?: FreezeBounds
 const sameFreeze = (a: FreezeState, b: FreezeState): boolean =>
   a.rows === b.rows && a.cols === b.cols
 
-export const setFreezeState = (ops: SheetOps, freeze: FreezeState, next: FreezeState, bounds?: FreezeBounds): boolean => {
+export const setFreezeState = (
+  ops: SheetOps,
+  freeze: FreezeState,
+  next: FreezeState,
+  bounds?: FreezeBounds,
+  command?: (nextFreeze: FreezeState) => boolean,
+): boolean => {
   const nextFreeze = normalizeFreeze(next, defaultFreezeBounds(bounds))
   if (sameFreeze(normalizeFreeze(freeze, defaultFreezeBounds(bounds)), nextFreeze)) return false
+  if (command?.(nextFreeze)) return true
   ops.replace('/freeze', nextFreeze)
   return true
 }
@@ -57,7 +66,8 @@ export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBou
 
   useEffect(() => { migrateLegacy(current, ops, { rowCount, colCount }) }, [current, ops, rowCount, colCount])
 
-  const replaceFreeze = (next: FreezeState) => setFreezeState(ops, current, next, { rowCount, colCount })
+  const replaceFreeze = (next: FreezeState, command?: (nextFreeze: FreezeState) => boolean) =>
+    setFreezeState(ops, current, next, { rowCount, colCount }, command)
   const toggleRows = () => {
     if (commands?.toggleRows()) return
     replaceFreeze({ ...current, rows: current.rows ? 0 : 1 })
@@ -66,8 +76,8 @@ export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBou
     if (commands?.toggleCols()) return
     replaceFreeze({ ...current, cols: current.cols ? 0 : 1 })
   }
-  const setFreezeRows = (n: number) => replaceFreeze({ ...current, rows: n })
-  const setFreezeCols = (n: number) => replaceFreeze({ ...current, cols: n })
+  const setFreezeRows = (n: number) => replaceFreeze({ ...current, rows: n }, (next) => commands?.setRows(next.rows) ?? false)
+  const setFreezeCols = (n: number) => replaceFreeze({ ...current, cols: n }, (next) => commands?.setCols(next.cols) ?? false)
 
   return { freeze: current, toggleRows, toggleCols, setFreezeRows, setFreezeCols }
 }
