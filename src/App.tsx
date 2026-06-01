@@ -65,6 +65,7 @@ export default function App() {
         writeCell={ctx.writeCell}
         writeCells={ctx.writeCells}
         replaceCellsByQuery={ctx.replaceCellsByQuery}
+        replaceCellText={ctx.replaceCellText}
         skipIds={mergeHidden}
         rowCount={ctx.rowCount}
         colLetters={ctx.colLetters}

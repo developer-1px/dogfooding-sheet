@@ -3,8 +3,9 @@ import { createBulkEdit } from '@zod-crud/bulk-edit'
 import { createCollection } from '@zod-crud/collection'
 import { createDirtyState } from '@zod-crud/dirty-state'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
+import { createSearchReplace } from '@zod-crud/search-replace'
 import { useJSONDocument } from 'zod-crud/react'
-import type { Pointer } from 'zod-crud'
+import { appendSegment, type Pointer } from 'zod-crud'
 import { SheetSchema, type SheetOps, type Writes } from './schema'
 import { loadInitial, SHEET_STORAGE_KEY, sheetPersistenceCodec } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
@@ -19,6 +20,12 @@ export interface SheetPersistenceState {
 }
 
 export type ReplaceCellValue = (value: string) => string
+export interface ReplaceCellTextOptions {
+  keys: readonly string[]
+  search: string
+  replacement: string
+  caseSensitive?: boolean
+}
 
 const initialPersistenceState: SheetPersistenceState = {
   status: 'saved',
@@ -34,13 +41,14 @@ export function useSheetDocument() {
   const [persistence, setPersistence] = useState<SheetPersistenceState>(initialPersistenceState)
   const bulk = useMemo(() => createBulkEdit(doc), [doc])
   const collection = useMemo(() => createCollection(doc), [doc])
+  const text = useMemo(() => createSearchReplace(doc), [doc])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
     remove: (path) => doc.delete(path as Pointer),
     replace: (path, value) => doc.replace(path as Pointer, value),
     patch: (patch) => doc.patch(patch),
-    undo: () => doc.undo(),
-    redo: () => doc.redo(),
+    undo: () => doc.undo().ok,
+    redo: () => doc.redo().ok,
     canUndo: () => doc.canUndo().ok,
     canRedo: () => doc.canRedo().ok,
   }), [doc])
@@ -92,6 +100,15 @@ export function useSheetDocument() {
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds)
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
+  const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
+    if (keys.length === 0) return false
+    const pointers = new Set(keys.map((key) => appendSegment('/cells' as Pointer, key)))
+    return text.replaceAll(search, replacement, {
+      root: '/cells' as Pointer,
+      caseSensitive,
+      include: ({ pointer }) => pointers.has(pointer),
+    }).ok
+  }
   const moveCollectionBefore = (source: string, target: string): boolean =>
     collection.moveBefore(source as Pointer, target as Pointer).ok
   const moveCollectionAfter = (source: string, target: string): boolean =>
@@ -103,6 +120,7 @@ export function useSheetDocument() {
     writeCell,
     writeCells,
     replaceCellsByQuery,
+    replaceCellText,
     moveCollectionBefore,
     moveCollectionAfter,
     persistence,

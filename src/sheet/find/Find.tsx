@@ -14,12 +14,13 @@ interface Props {
   writeCell: WriteCell
   writeCells: WriteMany
   replaceCellsByQuery?: (jsonPath: string, replace: (value: string) => string) => boolean
+  replaceCellText?: (options: { keys: readonly string[]; search: string; replacement: string; caseSensitive?: boolean }) => boolean
   skipIds?: Set<string>
   rowCount: number
   colLetters: readonly string[]
 }
 
-export function Find({ open, mode, onClose, cells, display, onJump, writeCell, writeCells, replaceCellsByQuery, skipIds, rowCount, colLetters }: Props) {
+export function Find({ open, mode, onClose, cells, display, onJump, writeCell, writeCells, replaceCellsByQuery, replaceCellText, skipIds, rowCount, colLetters }: Props) {
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
   const [caseSensitive, setCS] = useState(false)
@@ -45,13 +46,17 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
   }
   const replaceAll = () => {
     if (!q) return
+    const keys: string[] = []
+    for (const id of matches) {
+      const k = cellIdToKey(id)
+      if (k) keys.push(k)
+    }
+    if (keys.length === 0) return
+    if (!regex && replaceCellText?.({ keys, search: q, replacement: r, caseSensitive })) return
     const jsonPath = rawCellTextJsonPath(q, { caseSensitive, regex })
     if (jsonPath && replaceCellsByQuery?.(jsonPath, sub)) return
     const writes: Writes = []
-    for (const id of matches) {
-      const k = cellIdToKey(id)
-      if (k) writes.push([k, sub(cells[k] ?? '')])
-    }
+    for (const k of keys) writes.push([k, sub(cells[k] ?? '')])
     if (writes.length > 0) writeCells(writes)
   }
 
