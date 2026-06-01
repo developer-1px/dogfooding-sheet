@@ -40,6 +40,8 @@ export function useSheet(opts: SheetOptions = {}) {
     moveCollectionAfter,
     previewSheetReplacement,
     applySheetReplacement,
+    writeTabColor,
+    clearTabColor,
     clearCellValues,
     clearAllFormats,
     recordMutations,
@@ -71,6 +73,8 @@ export function useSheet(opts: SheetOptions = {}) {
     replaceSheet: (next) => { ops.replace('', next) },
     moveBefore: moveCollectionBefore,
     moveAfter: moveCollectionAfter,
+    setTabColor: writeTabColor,
+    clearTabColor,
   })
 
   const edit = useEditState({ cells: sheet.cells, writeCell, rowCount, colLetters })

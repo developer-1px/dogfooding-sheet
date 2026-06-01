@@ -31,6 +31,8 @@ export interface TabActionOps extends TabsStateOps {
   replaceSheet(sheet: Sheet): void
   moveBefore?(source: string, target: string): boolean
   moveAfter?(source: string, target: string): boolean
+  setTabColor?(name: string, color: string): boolean
+  clearTabColor?(name: string): boolean
 }
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
@@ -175,8 +177,12 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
     const colors = { ...state.colors }
     if (color) {
       if (!isSafeTabColor(color)) return
+      if (ops.setTabColor?.(name, color)) return
       colors[name] = color
-    } else delete colors[name]
+    } else {
+      if (ops.clearTabColor?.(name)) return
+      delete colors[name]
+    }
     replaceTabs({ ...state, colors })
   }
   const reorderTab = (from: string, to: string) => {

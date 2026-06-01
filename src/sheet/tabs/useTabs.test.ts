@@ -21,13 +21,21 @@ interface Stub {
   root?: Sheet
   replace?: { path: string; value: unknown }
   move?: { kind: 'before' | 'after'; source: string; target: string }
+  color?: string[]
 }
-const stubOps = (s: Stub) => ({
-  replace: (path: '/tabs', value: Sheet['tabs']) => { s.replace = { path, value } },
-  replaceSheet: (value: Sheet) => { s.root = value },
-  moveBefore: (source: string, target: string) => { s.move = { kind: 'before', source, target }; return true },
-  moveAfter: (source: string, target: string) => { s.move = { kind: 'after', source, target }; return true },
-}) satisfies TabActionOps
+const stubOps = (s: Stub, colorResult?: boolean) => {
+  const ops: TabActionOps = {
+    replace: (path: '/tabs', value: Sheet['tabs']) => { s.replace = { path, value } },
+    replaceSheet: (value: Sheet) => { s.root = value },
+    moveBefore: (source: string, target: string) => { s.move = { kind: 'before', source, target }; return true },
+    moveAfter: (source: string, target: string) => { s.move = { kind: 'after', source, target }; return true },
+  }
+  if (colorResult !== undefined) {
+    ops.setTabColor = (name, color) => { (s.color ??= []).push(`set:${name}:${color}`); return colorResult }
+    ops.clearTabColor = (name) => { (s.color ??= []).push(`clear:${name}`); return colorResult }
+  }
+  return ops
+}
 
 describe('tabActions', () => {
   it('switchTab swaps active, snapshots current bundle, hydrates target', () => {
@@ -146,6 +154,36 @@ describe('tabActions', () => {
     const c: Stub = {}
     tabActions(sheet, stubOps(c)).setTabColor('Sheet1', '#ff0000')
     expect((c.replace!.value as Sheet['tabs']).colors.Sheet1).toBe('#ff0000')
+  })
+
+  it('delegates tab color set and clear when commands are available', () => {
+    const base = make()
+    const set: Stub = {}
+    tabActions(base, stubOps(set, true)).setTabColor('Sheet1', '#ff0000')
+
+    const sheet: Sheet = { ...base, tabs: { ...base.tabs, colors: { Sheet1: '#ff0000' } } }
+    const clear: Stub = {}
+    tabActions(sheet, stubOps(clear, true)).setTabColor('Sheet1', '')
+
+    expect(set.color).toEqual(['set:Sheet1:#ff0000'])
+    expect(clear.color).toEqual(['clear:Sheet1'])
+    expect(set.replace).toBeUndefined()
+    expect(clear.replace).toBeUndefined()
+  })
+
+  it('falls back to replacing tabs when tab color delegation fails', () => {
+    const base = make()
+    const set: Stub = {}
+    tabActions(base, stubOps(set, false)).setTabColor('Sheet1', '#ff0000')
+
+    const sheet: Sheet = { ...base, tabs: { ...base.tabs, colors: { Sheet1: '#ff0000' } } }
+    const clear: Stub = {}
+    tabActions(sheet, stubOps(clear, false)).setTabColor('Sheet1', '')
+
+    expect(set.color).toEqual(['set:Sheet1:#ff0000'])
+    expect((set.replace!.value as Sheet['tabs']).colors.Sheet1).toBe('#ff0000')
+    expect(clear.color).toEqual(['clear:Sheet1'])
+    expect((clear.replace!.value as Sheet['tabs']).colors.Sheet1).toBeUndefined()
   })
 
   it('skips tab color writes when the color state is unchanged', () => {

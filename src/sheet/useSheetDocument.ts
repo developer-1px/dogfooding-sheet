@@ -187,6 +187,13 @@ export function useSheetDocument() {
   }
   const applySheetReplacement = (next: Sheet): boolean =>
     diff.apply(next, { label: 'json-import', origin: 'programmatic' }).ok
+  const writeTabColor = (name: string, color: string): boolean => {
+    const pointer = appendSegment('/tabs/colors' as Pointer, name)
+    if (sheet.tabs.colors[name] === undefined) return defaults.ensure('/tabs/colors' as Pointer, { [name]: color }).ok
+    return batchUpdate.batchUpdate([pointer], { value: color }).ok
+  }
+  const clearTabColor = (name: string): boolean =>
+    doc.delete(appendSegment('/tabs/colors' as Pointer, name)).ok
   const clearCellValues = (): boolean =>
     clear.clearContents(['/cells' as Pointer]).ok
   const clearAllFormats = (): boolean =>
@@ -240,6 +247,8 @@ export function useSheetDocument() {
     moveCollectionAfter,
     previewSheetReplacement,
     applySheetReplacement,
+    writeTabColor,
+    clearTabColor,
     clearCellValues,
     clearAllFormats,
     recordMutations,
