@@ -48,6 +48,9 @@ importers:
       '@spredsheet/surface':
         specifier: workspace:*
         version: link:packages/surface
+      '@zod-crud/autosave':
+        specifier: file:../zod-crud/labs/extensions/autosave
+        version: file:../zod-crud/labs/extensions/autosave(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/batch-update':
         specifier: file:../zod-crud/labs/extensions/batch-update
         version: file:../zod-crud/labs/extensions/batch-update(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -63,9 +66,6 @@ importers:
       '@zod-crud/collection':
         specifier: file:../zod-crud/packages/collection
         version: file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
-      '@zod-crud/dirty-state':
-        specifier: file:../zod-crud/packages/dirty-state
-        version: file:../zod-crud/packages/dirty-state(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/document-diff':
         specifier: file:../zod-crud/labs/extensions/document-diff
         version: file:../zod-crud/labs/extensions/document-diff(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -821,6 +821,11 @@ packages:
   '@vitest/utils@4.1.7':
     resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
 
+  '@zod-crud/autosave@file:../zod-crud/labs/extensions/autosave':
+    resolution: {directory: ../zod-crud/labs/extensions/autosave, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
   '@zod-crud/batch-update@file:../zod-crud/labs/extensions/batch-update':
     resolution: {directory: ../zod-crud/labs/extensions/batch-update, type: directory}
     peerDependencies:
@@ -843,11 +848,6 @@ packages:
 
   '@zod-crud/collection@file:../zod-crud/packages/collection':
     resolution: {directory: ../zod-crud/packages/collection, type: directory}
-    peerDependencies:
-      zod-crud: ^1.0.0
-
-  '@zod-crud/dirty-state@file:../zod-crud/packages/dirty-state':
-    resolution: {directory: ../zod-crud/packages/dirty-state, type: directory}
     peerDependencies:
       zod-crud: ^1.0.0
 
@@ -2139,6 +2139,10 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
+  '@zod-crud/autosave@file:../zod-crud/labs/extensions/autosave(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
   '@zod-crud/batch-update@file:../zod-crud/labs/extensions/batch-update(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
@@ -2156,10 +2160,6 @@ snapshots:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   '@zod-crud/collection@file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
-    dependencies:
-      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
-
-  '@zod-crud/dirty-state@file:../zod-crud/packages/dirty-state(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 

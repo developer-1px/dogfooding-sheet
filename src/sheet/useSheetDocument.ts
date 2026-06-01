@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createAutoSave, type AutoSaveSnapshot } from '@zod-crud/autosave'
 import { createBatchUpdate } from '@zod-crud/batch-update'
 import { createBulkEdit } from '@zod-crud/bulk-edit'
 import { createClearContents } from '@zod-crud/clear-contents'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
 import { createCollection } from '@zod-crud/collection'
-import { createDirtyState } from '@zod-crud/dirty-state'
 import { createDocumentDiff } from '@zod-crud/document-diff'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
@@ -51,6 +51,22 @@ const rawTextClipboardCodec: WebClipboardCodec = {
   decode: (text) => ({ payload: text, source: null, sources: null }),
 }
 
+const persistenceErrorMessage = (error: unknown): string | null => {
+  if (error == null) return null
+  return error instanceof Error ? error.message : String(error)
+}
+
+const persistenceFromAutoSave = (snapshot: AutoSaveSnapshot): SheetPersistenceState => ({
+  status: snapshot.state === 'error'
+    ? 'error'
+    : snapshot.pending || snapshot.saving
+      ? 'saving'
+      : 'saved',
+  dirty: snapshot.pending || snapshot.saving || snapshot.state === 'error',
+  savedAt: snapshot.lastSavedAt,
+  error: persistenceErrorMessage(snapshot.error),
+})
+
 export function useSheetDocument() {
   const initial = useMemo(() => loadInitial(), [])
   const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
@@ -78,44 +94,25 @@ export function useSheetDocument() {
   }), [doc])
 
   useEffect(() => {
-    const dirty = createDirtyState(doc)
     const store = createDocumentPersistence(doc, {
       key: SHEET_STORAGE_KEY,
       codec: sheetPersistenceCodec,
     })
-    const stopDirty = dirty.subscribe((snapshot) => {
-      setPersistence((current) => ({
-        ...current,
-        dirty: snapshot.dirty,
-        status: snapshot.dirty ? 'saving' : current.status,
-        error: snapshot.dirty ? null : current.error,
-      }))
-    })
-    const stopStore = store.watch({
+    const autosave = createAutoSave(doc, {
       immediate: true,
-      onSave(result) {
-        if (result.ok) {
-          const snapshot = dirty.markClean()
-          setPersistence({
-            status: 'saved',
-            dirty: snapshot.dirty,
-            savedAt: result.savedAt,
-            error: null,
-          })
-        } else {
-          setPersistence((current) => ({
-            ...current,
-            status: 'error',
-            dirty: dirty.isDirty(),
-            error: result.reason,
-          }))
-        }
+      async save() {
+        const result = await store.save()
+        if (!result.ok) throw new Error(result.reason)
+        return { savedAt: result.savedAt }
       },
     })
+    setPersistence(persistenceFromAutoSave(autosave.current()))
+    const stopAutoSave = autosave.subscribe((snapshot) => {
+      setPersistence(persistenceFromAutoSave(snapshot))
+    })
     return () => {
-      stopStore()
-      stopDirty()
-      dirty.dispose()
+      stopAutoSave()
+      autosave.dispose()
     }
   }, [doc])
 
