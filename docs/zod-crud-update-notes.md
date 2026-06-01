@@ -1,6 +1,6 @@
 # zod-crud update notes
 
-Date: 2026-05-22
+Date: 2026-06-01
 
 ## Current State
 
@@ -8,7 +8,8 @@ Date: 2026-05-22
 
 - Good: document state and undo/redo are already backed by zod-crud.
 - Good: `dictOps` now favors surgical key patches instead of whole-dict replacement.
-- App-owned: grid selection, TSV/browser clipboard, formulas, visibility, and sheet UI commands.
+- Good: `useSheetDocument` composes official and lab zod-crud extensions for persistence, dirty state, collection movement, text replace, existing-value batch set, and whole-record clear.
+- App-owned: visual grid selection, DOM focus, keyboard policy, TSV parsing, formula semantics, sparse record upsert fallback, and structural row/column shifts.
 
 Current usage is broadly valid.
 
@@ -33,18 +34,25 @@ The final zod-crud shape is document-facade based:
 2. Keep grid selection outside zod-crud.
    Translate grid selection to JSON Pointers only when applying document mutations or model clipboard operations.
 
-3. Keep TSV/system clipboard outside zod-crud.
+3. Keep TSV parsing outside zod-crud unless a dedicated grid clipboard adapter appears.
    zod-crud clipboard is a headless JSON payload buffer; table text/html formats are spreadsheet adapters.
 
 4. Consider `doc.commit(..., { selection })` later only if sheet model selection needs to be stored with history.
 
-5. Track upstream support type exports.
-   Once zod-crud exports all public support types, `SheetOps` typing can become cleaner.
+5. Track upstream support type exports and result shapes.
+   `doc.undo()` and `doc.redo()` now return capability-style Results at the top-level document surface; local boolean UI contracts should read `.ok`.
+
+## Dogfood Issue Map
+
+- Tracking: https://github.com/developer-1px/zod-crud/issues/140
+- Sparse record upsert gap: https://github.com/developer-1px/zod-crud/issues/141
+- Sparse-record grid paste/fill gap: https://github.com/developer-1px/zod-crud/issues/142
+- Regex search-replace pressure: https://github.com/developer-1px/zod-crud/issues/143
 
 ## Suggested Local Work Items
 
-- Keep expanding surgical patch helpers for styles, formats, validation, hidden rows/cols, and cell metadata.
-- Add undo tests that prove one cell/metadata edit reverts only that intended edit.
+- Keep moving app-owned patch helpers behind zod-crud extension commands where a matching concept exists.
+- Keep undo tests that prove one cell/metadata edit reverts only that intended edit.
 - Avoid imports from zod-crud private subpaths.
 
 ## Verification
