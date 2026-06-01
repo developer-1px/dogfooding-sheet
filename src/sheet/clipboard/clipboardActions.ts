@@ -3,20 +3,45 @@ import { clearWritesForIds, internalClipboardFromTsv, rectFromIds, rectToTsvBoun
 
 let internalClipboard: GridInternalClipboard | null = null
 
-const writeClipboardText = async (text: string): Promise<boolean> => {
+export interface ClipboardTextBridge {
+  readText(): Promise<string | null>
+  writeText(text: string): Promise<boolean>
+}
+
+const defaultClipboardText: ClipboardTextBridge = {
+  async writeText(text) {
+    try {
+      if (!navigator.clipboard) return false
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      return false
+    }
+  },
+  async readText() {
+    try {
+      if (!navigator.clipboard) return null
+      return await navigator.clipboard.readText()
+    } catch {
+      return null
+    }
+  },
+}
+
+const resolveClipboardText = (clipboard?: ClipboardTextBridge): ClipboardTextBridge =>
+  clipboard ?? defaultClipboardText
+
+const writeClipboardText = async (text: string, clipboard?: ClipboardTextBridge): Promise<boolean> => {
   try {
-    if (!navigator.clipboard) return false
-    await navigator.clipboard.writeText(text)
-    return true
+    return await resolveClipboardText(clipboard).writeText(text)
   } catch {
     return false
   }
 }
 
-const readClipboardText = async (): Promise<string | null> => {
+const readClipboardText = async (clipboard?: ClipboardTextBridge): Promise<string | null> => {
   try {
-    if (!navigator.clipboard) return null
-    return await navigator.clipboard.readText()
+    return await resolveClipboardText(clipboard).readText()
   } catch {
     return null
   }
@@ -37,6 +62,7 @@ export function copyOrCut(
   ids: string[], cut: boolean, cells: Cells,
   writeCell: WriteCell,
   writeCells?: WriteMany,
+  clipboard?: ClipboardTextBridge,
 ): Promise<boolean> {
   const rect = rectFromIds(ids)
   if (!rect) {
@@ -50,7 +76,7 @@ export function copyOrCut(
   }
   const nextClipboard = internalClipboardFromTsv(cut, rect, tsv)
   internalClipboard = nextClipboard
-  return writeClipboardText(tsv).then((ok) => {
+  return writeClipboardText(tsv, clipboard).then((ok) => {
     if (!ok) {
       if (cut && internalClipboard === nextClipboard) internalClipboard = null
       return false
@@ -92,6 +118,7 @@ export function pasteAt(
   writeCells?: WriteMany,
   maxCol?: number,
   selectedIds: string[] = [],
+  clipboard?: ClipboardTextBridge,
 ): Promise<boolean> {
   const pasteInternal = (): boolean => {
     if (!internalClipboard) return false
@@ -101,7 +128,7 @@ export function pasteAt(
       : writesFromInternalClipboard(internalClipboard, p, { maxRow, maxCol }), writeCell, writeCells)
   }
 
-  return readClipboardText().then((t) => {
+  return readClipboardText(clipboard).then((t) => {
     if (t === null) return pasteInternal()
     if (internalClipboard && internalClipboard.text === t) return pasteInternal()
     if (selectedIds.length > 1) return pasteTsvIntoSelection(t, selectedIds, p, writeCell, { maxRow, maxCol, writeMany: writeCells })
@@ -110,19 +137,19 @@ export function pasteAt(
   })
 }
 
-export function copySingleCell(value: string): Promise<boolean> {
-  return writeClipboardText(value)
+export function copySingleCell(value: string, clipboard?: ClipboardTextBridge): Promise<boolean> {
+  return writeClipboardText(value, clipboard)
 }
 
-export function cutSingleCell(value: string, key: string, writeCell: WriteCell): Promise<boolean> {
-  return copySingleCell(value).then((ok) => {
+export function cutSingleCell(value: string, key: string, writeCell: WriteCell, clipboard?: ClipboardTextBridge): Promise<boolean> {
+  return copySingleCell(value, clipboard).then((ok) => {
     if (!ok) return false
     return flush([[key, '']], writeCell)
   })
 }
 
-export function pasteSingleCell(key: string, writeCell: WriteCell): Promise<boolean> {
-  return readClipboardText().then((text) => {
+export function pasteSingleCell(key: string, writeCell: WriteCell, clipboard?: ClipboardTextBridge): Promise<boolean> {
+  return readClipboardText(clipboard).then((text) => {
     if (text === null) return false
     return flush([[key, text]], writeCell)
   })

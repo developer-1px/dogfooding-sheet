@@ -44,7 +44,7 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions, CondAc
   colCount: number
 }
 
-export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, clearCellValues, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats, mergeSelection, rowCount, colCount }: Props) {
+export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, resetSheet, previewSheetReplacement, clearCellValues, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats, mergeSelection, rowCount, colCount }: Props) {
   const focus = focusKey ? parseA1(focusKey) : null
   const focusRow = focus?.row
   const focusRowLabel = focusRow !== undefined ? `${focusRow + 1}행` : '현재 행'
@@ -83,7 +83,7 @@ export function Toolbar({ display, writeCell, writeCells, focusKey, selectedIds,
       <button onClick={convertToCheckbox} title="체크박스로 변환">☑체크</button>
       <CondFmtButtons col={focus?.col ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
       <FormatButtons apply={applyF} current={focusKey ? formatOf(focusKey) : 'plain'} />
-      <OverflowMenu display={display} writeCell={writeCell} writeCells={writeCells} openHelp={openHelp} insertLink={insertLink} sheet={sheet} resetSheet={resetSheet} clearCellValues={clearCellValues} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} showGridlines={showGridlines} toggleShowGridlines={toggleShowGridlines} clearAllFormats={clearAllFormats} />
+      <OverflowMenu display={display} writeCell={writeCell} writeCells={writeCells} openHelp={openHelp} insertLink={insertLink} sheet={sheet} resetSheet={resetSheet} previewSheetReplacement={previewSheetReplacement} clearCellValues={clearCellValues} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} showGridlines={showGridlines} toggleShowGridlines={toggleShowGridlines} clearAllFormats={clearAllFormats} />
     </>
   )
 }

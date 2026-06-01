@@ -14,6 +14,7 @@ export function useGridContextMenu(ctx: GridContextMenuController) {
     clearFilter: ctx.clearFilter,
     setFocusId: ctx.setFocusId,
     writeCell: ctx.writeCell,
+    clipboardText: ctx.clipboardText,
     insertRow: ctx.insertRow,
     deleteRow: ctx.deleteRow,
     insertCol: ctx.insertCol,

@@ -215,6 +215,36 @@ describe('overflowMenuActions', () => {
     expect(resets[0].cells.A1).toBe('Item')
   })
 
+  it('previews JSON replacements before confirmation and reset', async () => {
+    const prompts: ConfirmOptions[] = []
+    const resets: Sheet[] = []
+
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify(initialSheet)),
+      confirm: confirmValue(true, prompts),
+      previewSheetReplacement: (sheet) => ({ ...sheet, cells: { A1: 'Previewed' } }),
+      resetSheet: (sheet) => resets.push(sheet),
+    })).resolves.toBe(true)
+
+    expect(prompts).toHaveLength(1)
+    expect(resets[0].cells).toEqual({ A1: 'Previewed' })
+  })
+
+  it('rejects JSON imports when preview rejects the root replacement', async () => {
+    const prompts: ConfirmOptions[] = []
+    const resets: Sheet[] = []
+
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify(initialSheet)),
+      confirm: confirmValue(true, prompts),
+      previewSheetReplacement: () => null,
+      resetSheet: (sheet) => resets.push(sheet),
+    })).resolves.toBe(false)
+
+    expect(prompts).toEqual([])
+    expect(resets).toEqual([])
+  })
+
   it('does not build a download when JSON export exceeds the export limit', () => {
     const downloads: string[] = []
 

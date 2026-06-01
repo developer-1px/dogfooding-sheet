@@ -98,10 +98,12 @@ export function exportOverflowJson({
 export async function importOverflowJson({
   file,
   confirm,
+  previewSheetReplacement,
   resetSheet,
 }: {
   file: File
   confirm: Confirm
+  previewSheetReplacement?: (sheet: Sheet) => Sheet | null
   resetSheet: (sheet: Sheet) => void
 }): Promise<boolean> {
   const text = await readImportText(file)
@@ -113,6 +115,8 @@ export async function importOverflowJson({
     return false
   }
   if (!parsed.success) return false
+  const replacement = previewSheetReplacement ? previewSheetReplacement(parsed.data) : parsed.data
+  if (replacement === null) return false
   let ok: boolean
   try {
     ok = await confirm({
@@ -124,7 +128,7 @@ export async function importOverflowJson({
   }
   if (!ok) return false
   try {
-    resetSheet(parsed.data)
+    resetSheet(replacement)
   } catch {
     return false
   }

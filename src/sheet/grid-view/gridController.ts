@@ -9,6 +9,7 @@ import type { Filter } from '../visibility/useFilter'
 import type { FreezeActions, FreezeState } from '../visibility/useFreeze'
 import type { HiddenActions } from '../visibility/useHidden'
 import type { SheetMutations } from '../structure/sheetMutations'
+import type { ClipboardTextBridge } from '../clipboard/clipboardActions'
 
 export interface GridContextMenuController
   extends SheetMutations,
@@ -25,6 +26,7 @@ export interface GridContextMenuController
   setSelectAnchor: (id: string | null) => void
   rowCount: number
   writeCell: WriteCell
+  clipboardText?: ClipboardTextBridge
   noteOf: NoteLookup
   setNote: (k: string, text: string) => void
   editNote: (key?: string) => void

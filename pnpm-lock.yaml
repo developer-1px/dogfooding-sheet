@@ -57,12 +57,18 @@ importers:
       '@zod-crud/clear-values':
         specifier: file:../zod-crud/labs/extensions/clear-values
         version: file:../zod-crud/labs/extensions/clear-values(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/clipboard-web':
+        specifier: file:../zod-crud/packages/clipboard-web
+        version: file:../zod-crud/packages/clipboard-web(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/collection':
         specifier: file:../zod-crud/packages/collection
         version: file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/dirty-state':
         specifier: file:../zod-crud/packages/dirty-state
         version: file:../zod-crud/packages/dirty-state(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/patch-preview':
+        specifier: file:../zod-crud/packages/patch-preview
+        version: file:../zod-crud/packages/patch-preview(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/persist-web':
         specifier: file:../zod-crud/packages/persist-web
         version: file:../zod-crud/packages/persist-web(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -821,6 +827,11 @@ packages:
     peerDependencies:
       zod-crud: ^1.0.0
 
+  '@zod-crud/clipboard-web@file:../zod-crud/packages/clipboard-web':
+    resolution: {directory: ../zod-crud/packages/clipboard-web, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
   '@zod-crud/collection@file:../zod-crud/packages/collection':
     resolution: {directory: ../zod-crud/packages/collection, type: directory}
     peerDependencies:
@@ -828,6 +839,11 @@ packages:
 
   '@zod-crud/dirty-state@file:../zod-crud/packages/dirty-state':
     resolution: {directory: ../zod-crud/packages/dirty-state, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/patch-preview@file:../zod-crud/packages/patch-preview':
+    resolution: {directory: ../zod-crud/packages/patch-preview, type: directory}
     peerDependencies:
       zod-crud: ^1.0.0
 
@@ -2111,11 +2127,19 @@ snapshots:
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
+  '@zod-crud/clipboard-web@file:../zod-crud/packages/clipboard-web(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
   '@zod-crud/collection@file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   '@zod-crud/dirty-state@file:../zod-crud/packages/dirty-state(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/patch-preview@file:../zod-crud/packages/patch-preview(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 

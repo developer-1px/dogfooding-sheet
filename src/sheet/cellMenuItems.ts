@@ -4,7 +4,7 @@ import type { FreezeActions, FreezeState } from './visibility/useFreeze'
 import type { HiddenActions } from './visibility/useHidden'
 import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
-import { copySingleCell, cutSingleCell, pasteSingleCell } from './clipboard/clipboardActions'
+import { copySingleCell, cutSingleCell, pasteSingleCell, type ClipboardTextBridge } from './clipboard/clipboardActions'
 import { columnRestoreControls, rowRestoreControls } from './grid-view/hiddenRestoreControls'
 
 export type CellMenuKind = 'cell' | 'row' | 'col'
@@ -21,6 +21,7 @@ export interface CellMenuActions
   filterCol: string | null
   clearFilter: () => void
   writeCell: WriteCell
+  clipboardText?: ClipboardTextBridge
   noteOf: NoteLookup
   setNote: (k: string, text: string) => void
   editNote: (key?: string) => void
@@ -81,9 +82,9 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
   const note = a.noteOf(key)
 
   return [
-    { label: '잘라내기', onClick: () => cutSingleCell(a.sheet.cells[key] ?? '', key, a.writeCell) },
-    { label: '복사', onClick: () => copySingleCell(a.sheet.cells[key] ?? '') },
-    { label: '붙여넣기', onClick: () => pasteSingleCell(key, a.writeCell) },
+    { label: '잘라내기', onClick: () => cutSingleCell(a.sheet.cells[key] ?? '', key, a.writeCell, a.clipboardText) },
+    { label: '복사', onClick: () => copySingleCell(a.sheet.cells[key] ?? '', a.clipboardText) },
+    { label: '붙여넣기', onClick: () => pasteSingleCell(key, a.writeCell, a.clipboardText) },
     { label: '지우기', onClick: () => a.writeCell(key, '') },
     'separator',
     { label: note ? '노트 편집' : '노트 추가', onClick: () => a.editNote(key) },

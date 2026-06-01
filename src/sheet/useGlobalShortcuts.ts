@@ -1,6 +1,7 @@
 import { useShortcut } from '@interactive-os/aria-kernel/key'
 import { cellId, cellKey, parseCellId, type Sheet, type SheetOps, type WriteCell, type WriteMany, type Display } from './schema'
 import { copyOrCut, pasteAt } from './clipboard/clipboardActions'
+import type { ClipboardTextBridge } from './clipboard/clipboardActions'
 import { fillDown, fillRight } from './fill/fillDown'
 import { clearWritesForIds, freezeFormulaWrites, idsForAll, pad2 } from '@spredsheet/grid'
 
@@ -21,6 +22,7 @@ export interface GlobalShortcutCtx {
   ops: SheetOps
   writeCell: WriteCell
   writeCells: WriteMany
+  clipboardText?: ClipboardTextBridge
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
   setSelectAnchor: (id: string | null) => void
@@ -100,9 +102,9 @@ export function useGlobalShortcuts(get: () => GlobalShortcutCtx) {
   useShortcut('Backspace', clearFocused)
   useShortcut('Delete', clearFocused)
 
-  useShortcut('mod+c', () => { const c = get(); copyOrCut(targetIds(c), false, c.sheet.cells, c.writeCell) })
-  useShortcut('mod+x', () => { const c = get(); copyOrCut(targetIds(c), true, c.sheet.cells, c.writeCell, c.writeCells) })
-  useShortcut('mod+v', () => { const c = get(); if (!c.focusId) return; const p = parseCellId(c.focusId); if (!p) return; pasteAt(cellKey(p.col, p.row), p, c.rowCount, c.writeCell, c.writeCells, c.colLetters.length, c.selectedIds) })
+  useShortcut('mod+c', () => { const c = get(); copyOrCut(targetIds(c), false, c.sheet.cells, c.writeCell, undefined, c.clipboardText) })
+  useShortcut('mod+x', () => { const c = get(); copyOrCut(targetIds(c), true, c.sheet.cells, c.writeCell, c.writeCells, c.clipboardText) })
+  useShortcut('mod+v', () => { const c = get(); if (!c.focusId) return; const p = parseCellId(c.focusId); if (!p) return; pasteAt(cellKey(p.col, p.row), p, c.rowCount, c.writeCell, c.writeCells, c.colLetters.length, c.selectedIds, c.clipboardText) })
   useShortcut('mod+d', () => { const c = get(); if (c.selectedIds.length > 1) fillDown(c.selectedIds, c.sheet.cells, c.writeCell, c.writeCells) })
   useShortcut('mod+r', () => { const c = get(); if (c.selectedIds.length > 1) fillRight(c.selectedIds, c.sheet.cells, c.writeCell, c.writeCells) })
 }

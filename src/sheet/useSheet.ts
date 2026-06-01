@@ -37,8 +37,10 @@ export function useSheet(opts: SheetOptions = {}) {
     replaceCellText,
     moveCollectionBefore,
     moveCollectionAfter,
+    previewSheetReplacement,
     clearCellValues,
     clearAllFormats,
+    clipboardText,
     persistence,
   } = useSheetDocument()
   const rowCount = sheet.rowCount
@@ -111,6 +113,7 @@ export function useSheet(opts: SheetOptions = {}) {
     ops,
     writeCell,
     writeCells,
+    clipboardText,
     selectedIds,
     setSelectedIds,
     setFocusId,
@@ -142,7 +145,7 @@ export function useSheet(opts: SheetOptions = {}) {
     sheet, ops, persistence, data,
     ...edit,
     commitEdit, cancelEdit,
-    writeCell, writeCells, replaceCellsByQuery, replaceCellText, clearCellValues, clearAllFormats, display,
+    writeCell, writeCells, replaceCellsByQuery, replaceCellText, previewSheetReplacement, clearCellValues, clearAllFormats, clipboardText, display,
     selectedIds, setSelectedIds, setFocusId, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     formulaPickActive: formulaPick.formulaPickActive,

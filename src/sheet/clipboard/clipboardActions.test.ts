@@ -172,6 +172,25 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
     expect(written).toEqual({ B3: '=A2' })
   })
 
+  it('can use an injected text clipboard bridge', async () => {
+    let clipboardText = ''
+    const bridge = {
+      readText: () => Promise.resolve(clipboardText),
+      writeText: (text: string) => {
+        clipboardText = text
+        return Promise.resolve(true)
+      },
+    }
+    const written: Record<string, string> = {}
+
+    await expect(copyOrCut([cellId('A', 0), cellId('B', 0)], false, { A1: 'left', B1: 'right' }, (k, v) => { written[k] = v }, undefined, bridge)).resolves.toBe(true)
+    expect(clipboardText).toBe('left\tright')
+
+    clipboardText = 'external'
+    await expect(pasteAt('C3', { col: 'C', row: 2 }, 20, (k, v) => { written[k] = v }, undefined, undefined, [], bridge)).resolves.toBe(true)
+    expect(written).toEqual({ C3: 'external' })
+  })
+
   it('does not clear a single cut cell when clipboard write fails', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,

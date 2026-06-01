@@ -5,6 +5,7 @@ import { CLEAR_STYLE, type CellStyle } from './formatting/useStyles'
 import { rowColAtFocus } from './structure/rowColAtFocus'
 import { mergeSelection } from './structure/mergeSelection'
 import { useShortcuts } from './useShortcuts'
+import type { ClipboardTextBridge } from './clipboard/clipboardActions'
 
 interface Args {
   editing: string | null
@@ -17,6 +18,7 @@ interface Args {
   ops: SheetOps
   writeCell: WriteCell
   writeCells: WriteMany
+  clipboardText?: ClipboardTextBridge
   selectedIds: string[]
   setSelectedIds: (ids: string[]) => void
   setFocusId: (id: string) => void
@@ -59,6 +61,7 @@ export function useSheetShortcutBindings(args: Args) {
     ops: args.ops,
     writeCell: args.writeCell,
     writeCells: args.writeCells,
+    clipboardText: args.clipboardText,
     startEdit: args.startEdit,
     selectedIds: args.selectedIds,
     openFind: args.openFind,
