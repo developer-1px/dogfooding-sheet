@@ -67,9 +67,12 @@ export function useSheet(opts: SheetOptions = {}) {
   const merges = useMerges(sheet.merges, ops, { rowCount, colCount: sheet.colCount }, mergeMutations)
   const find = useFindState()
   const viewState = useSheetViewState()
-  const tabs = useTabs(sheet.tabs, ops)
+  const tabsOps = {
+    replace: (_path: '/tabs', value: typeof sheet.tabs) => { if (!applySheetReplacement({ ...sheet, tabs: value }, 'tabs-diff')) ops.replace('/tabs', value) },
+  }
+  const tabs = useTabs(sheet.tabs, tabsOps)
   const tabFns = tabActions(sheet, {
-    replace: (_path, value) => { if (!applySheetReplacement({ ...sheet, tabs: value }, 'tabs-diff')) ops.replace('/tabs', value) },
+    replace: tabsOps.replace,
     replaceSheet: (next) => { if (!applySheetReplacement(next, 'tab-action')) ops.replace('', next) },
     moveBefore: moveCollectionBefore,
     moveAfter: moveCollectionAfter,
