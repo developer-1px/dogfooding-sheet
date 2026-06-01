@@ -44,6 +44,7 @@ export interface GridController extends GridContextMenuController {
   ops: SheetOps
   display: Display
   writeCells: WriteMany
+  toggleCheckboxCell: (key: string) => void
   showGridlines: boolean
   rowHeightOf: (row: number) => number
   onRowResize: (row: number, height: number) => void

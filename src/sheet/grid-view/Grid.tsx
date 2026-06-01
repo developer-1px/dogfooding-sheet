@@ -32,6 +32,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
     highlightedIds,
     sheet,
     writeCell,
+    toggleCheckboxCell,
     styleOf,
     noteOf,
     ruleOf,
@@ -146,7 +147,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
             noteOf={noteOf}
             rawOf={(k) => sheet.cells[k]}
             ruleOf={ruleOf}
-            writeCell={writeCell}
+            toggleCheckboxCell={toggleCheckboxCell}
             condBgOf={condBgOf}
             hiSet={hiSet}
             previewIds={previewIds}

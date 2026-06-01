@@ -10,6 +10,7 @@ import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
 import { createSearchReplace } from '@zod-crud/search-replace'
 import { createToggleOption } from '@zod-crud/toggle-option'
+import { createToggleValue } from '@zod-crud/toggle-value'
 import { useJSONDocument } from 'zod-crud/react'
 import { appendSegment, type Pointer } from 'zod-crud'
 import { SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
@@ -63,6 +64,7 @@ export function useSheetDocument() {
   const diff = useMemo(() => createDocumentDiff(doc), [doc])
   const preview = useMemo(() => createPatchPreview(SheetSchema, doc), [doc])
   const toggleOption = useMemo(() => createToggleOption(doc), [doc])
+  const toggleValue = useMemo(() => createToggleValue(doc), [doc])
   const text = useMemo(() => createSearchReplace(doc), [doc])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
@@ -137,6 +139,13 @@ export function useSheetDocument() {
       include: ({ pointer }) => pointers.has(pointer),
     }).ok
   }
+  const toggleCheckboxCell = (key: string): boolean => {
+    if (sheet.cells[key] === undefined) {
+      writeCell(key, 'TRUE')
+      return true
+    }
+    return toggleValue.toggleValue(cellValuePointer(key), { values: ['TRUE', 'FALSE'] }).ok
+  }
   const moveCollectionBefore = (source: string, target: string): boolean =>
     collection.moveBefore(source as Pointer, target as Pointer).ok
   const moveCollectionAfter = (source: string, target: string): boolean =>
@@ -173,6 +182,7 @@ export function useSheetDocument() {
     ops,
     writeCell,
     writeCells,
+    toggleCheckboxCell,
     replaceCellsByQuery,
     replaceCellText,
     moveCollectionBefore,
