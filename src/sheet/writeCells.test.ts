@@ -89,4 +89,29 @@ describe('cell write adapters', () => {
       ]],
     ])
   })
+
+  it('delegates existing value replacements before falling back to patch upserts', () => {
+    const { ops, calls } = recordingOps()
+    const delegated: Array<Array<[string, string]>> = []
+    const replaceExisting = (entries: Array<[string, string]>) => {
+      delegated.push(entries)
+      return true
+    }
+
+    writeSingleCell(ops, { A1: 'old' }, 'A1', 'next', undefined, replaceExisting)
+    writeCellsBatch(ops, { B1: 'old', C1: 'old' }, [
+      ['B1', 'first'],
+      ['B1', 'last'],
+      ['C1', 'next'],
+    ], undefined, replaceExisting)
+    writeCellsBatch(ops, { D1: 'old' }, [['E1', 'new']], undefined, replaceExisting)
+
+    expect(delegated).toEqual([
+      [['A1', 'next']],
+      [['B1', 'last'], ['C1', 'next']],
+    ])
+    expect(calls).toEqual([
+      ['patch', [{ op: 'add', path: '/cells/E1', value: 'new' }]],
+    ])
+  })
 })

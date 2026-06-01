@@ -7,6 +7,8 @@ interface CellWriteBounds {
   colCount: number
 }
 
+export type ReplaceExistingCells = (entries: Array<[string, string]>) => boolean
+
 const validCellKey = (key: string, bounds?: CellWriteBounds): boolean => {
   const ref = parseA1(key)
   if (!ref) return false
@@ -15,15 +17,16 @@ const validCellKey = (key: string, bounds?: CellWriteBounds): boolean => {
   return ref.row >= 0 && ref.row < bounds.rowCount && col >= 0 && col < bounds.colCount
 }
 
-export function writeSingleCell(ops: SheetOps, cells: Cells, key: string, value: string, bounds?: CellWriteBounds): void {
+export function writeSingleCell(ops: SheetOps, cells: Cells, key: string, value: string, bounds?: CellWriteBounds, replaceExisting?: ReplaceExistingCells): void {
   if (!validCellKey(key, bounds)) return
   const normalized = normalizeCellWrite(value)
   if (normalized.type === 'reject') return
+  if (replaceExisting && normalized.type === 'set' && cells[key] !== undefined && replaceExisting([[key, normalized.value]])) return
   upsertKey(ops, '/cells', cells, key, normalized.type === 'remove' ? undefined : normalized.value)
 }
 
 /** Batch multiple cell writes into a single ops.patch — atomic undo for fillDown/Right etc. */
-export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bounds?: CellWriteBounds): void {
+export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bounds?: CellWriteBounds, replaceExisting?: ReplaceExistingCells): void {
   const entries: Array<[string, string | undefined]> = []
   for (const [k, v] of writes) {
     if (!validCellKey(k, bounds)) continue
@@ -31,5 +34,12 @@ export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bou
     if (normalized.type === 'reject') continue
     entries.push([k, normalized.type === 'remove' ? undefined : normalized.value])
   }
-  upsertKeys(ops, '/cells', cells, entries)
+  const latestEntries = [...new Map(entries)]
+  if (
+    replaceExisting &&
+    latestEntries.length > 0 &&
+    latestEntries.every((entry): entry is [string, string] => entry[1] !== undefined && cells[entry[0]] !== undefined) &&
+    replaceExisting(latestEntries)
+  ) return
+  upsertKeys(ops, '/cells', cells, latestEntries)
 }

@@ -48,9 +48,15 @@ importers:
       '@spredsheet/surface':
         specifier: workspace:*
         version: link:packages/surface
+      '@zod-crud/batch-set':
+        specifier: file:../zod-crud/labs/extensions/batch-set
+        version: file:../zod-crud/labs/extensions/batch-set(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/bulk-edit':
         specifier: file:../zod-crud/packages/bulk-edit
         version: file:../zod-crud/packages/bulk-edit(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/clear-values':
+        specifier: file:../zod-crud/labs/extensions/clear-values
+        version: file:../zod-crud/labs/extensions/clear-values(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/collection':
         specifier: file:../zod-crud/packages/collection
         version: file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -800,8 +806,18 @@ packages:
   '@vitest/utils@4.1.7':
     resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
 
+  '@zod-crud/batch-set@file:../zod-crud/labs/extensions/batch-set':
+    resolution: {directory: ../zod-crud/labs/extensions/batch-set, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
   '@zod-crud/bulk-edit@file:../zod-crud/packages/bulk-edit':
     resolution: {directory: ../zod-crud/packages/bulk-edit, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/clear-values@file:../zod-crud/labs/extensions/clear-values':
+    resolution: {directory: ../zod-crud/labs/extensions/clear-values, type: directory}
     peerDependencies:
       zod-crud: ^1.0.0
 
@@ -2083,7 +2099,15 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
+  '@zod-crud/batch-set@file:../zod-crud/labs/extensions/batch-set(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
   '@zod-crud/bulk-edit@file:../zod-crud/packages/bulk-edit(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/clear-values@file:../zod-crud/labs/extensions/clear-values(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 

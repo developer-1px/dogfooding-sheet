@@ -10,8 +10,6 @@ import type { Filter } from './visibility/useFilter'
 import type { HiddenActions } from './visibility/useHidden'
 import type { ValidationActions } from './validation/useValidation'
 import type { CondActions } from './formatting/useCondFormat'
-import { applyPatch } from '../lib/dictOps'
-import { clearAllFormatsPatch, clearCellValuesPatch } from './toolbarActions'
 
 interface SheetToolbarController
   extends SheetMutations,
@@ -41,6 +39,8 @@ interface SheetToolbarController
   toggleShowFormulas: () => void
   showGridlines: boolean
   toggleShowGridlines: () => void
+  clearCellValues: () => boolean
+  clearAllFormats: () => boolean
   mergeSelection: () => void
   rowCount: number
   colCount: number
@@ -84,7 +84,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       clearCondRules={ctx.clearCondRules}
       sheet={ctx.sheet}
       resetSheet={(s) => ctx.ops.replace('', s)}
-      clearCellValues={() => applyPatch(ctx.ops, clearCellValuesPatch(ctx.sheet.cells))}
+      clearCellValues={ctx.clearCellValues}
       undo={() => ctx.ops.undo()}
       redo={() => ctx.ops.redo()}
       canUndo={ctx.ops.canUndo()}
@@ -93,7 +93,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       toggleShowFormulas={ctx.toggleShowFormulas}
       showGridlines={ctx.showGridlines}
       toggleShowGridlines={ctx.toggleShowGridlines}
-      clearAllFormats={() => applyPatch(ctx.ops, clearAllFormatsPatch(ctx.sheet))}
+      clearAllFormats={ctx.clearAllFormats}
       mergeSelection={ctx.mergeSelection}
       rowCount={ctx.rowCount}
       colCount={ctx.colCount}

@@ -37,6 +37,8 @@ export function useSheet(opts: SheetOptions = {}) {
     replaceCellText,
     moveCollectionBefore,
     moveCollectionAfter,
+    clearCellValues,
+    clearAllFormats,
     persistence,
   } = useSheetDocument()
   const rowCount = sheet.rowCount
@@ -140,7 +142,7 @@ export function useSheet(opts: SheetOptions = {}) {
     sheet, ops, persistence, data,
     ...edit,
     commitEdit, cancelEdit,
-    writeCell, writeCells, replaceCellsByQuery, replaceCellText, display,
+    writeCell, writeCells, replaceCellsByQuery, replaceCellText, clearCellValues, clearAllFormats, display,
     selectedIds, setSelectedIds, setFocusId, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     formulaPickActive: formulaPick.formulaPickActive,

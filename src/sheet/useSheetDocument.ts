@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createBatchSet } from '@zod-crud/batch-set'
 import { createBulkEdit } from '@zod-crud/bulk-edit'
+import { createClearValues } from '@zod-crud/clear-values'
 import { createCollection } from '@zod-crud/collection'
 import { createDirtyState } from '@zod-crud/dirty-state'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
@@ -34,12 +36,17 @@ const initialPersistenceState: SheetPersistenceState = {
   error: null,
 }
 
+const cellValuePointer = (key: string): Pointer =>
+  appendSegment('/cells' as Pointer, key)
+
 export function useSheetDocument() {
   const initial = useMemo(() => loadInitial(), [])
   const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
   const { value: sheet } = doc
   const [persistence, setPersistence] = useState<SheetPersistenceState>(initialPersistenceState)
+  const batchSet = useMemo(() => createBatchSet(doc), [doc])
   const bulk = useMemo(() => createBulkEdit(doc), [doc])
+  const clear = useMemo(() => createClearValues(doc), [doc])
   const collection = useMemo(() => createCollection(doc), [doc])
   const text = useMemo(() => createSearchReplace(doc), [doc])
   const ops = useMemo<SheetOps>(() => ({
@@ -96,13 +103,19 @@ export function useSheetDocument() {
   }, [doc])
 
   const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
-  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds)
+  const replaceExistingCells = (entries: Array<[string, string]>): boolean => {
+    const result = batchSet.batchSet(entries.map(([key]) => cellValuePointer(key)), {
+      compute: (_current, _pointer, index) => entries[index]?.[1] ?? '',
+    })
+    return result.ok
+  }
+  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, replaceExistingCells)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, replaceExistingCells)
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
     if (keys.length === 0) return false
-    const pointers = new Set(keys.map((key) => appendSegment('/cells' as Pointer, key)))
+    const pointers = new Set(keys.map(cellValuePointer))
     return text.replaceAll(search, replacement, {
       root: '/cells' as Pointer,
       caseSensitive,
@@ -113,6 +126,10 @@ export function useSheetDocument() {
     collection.moveBefore(source as Pointer, target as Pointer).ok
   const moveCollectionAfter = (source: string, target: string): boolean =>
     collection.moveAfter(source as Pointer, target as Pointer).ok
+  const clearCellValues = (): boolean =>
+    clear.clearValues(['/cells' as Pointer]).ok
+  const clearAllFormats = (): boolean =>
+    clear.clearValues(['/styles' as Pointer, '/formats' as Pointer, '/condFormat' as Pointer]).ok
 
   return {
     sheet,
@@ -123,6 +140,8 @@ export function useSheetDocument() {
     replaceCellText,
     moveCollectionBefore,
     moveCollectionAfter,
+    clearCellValues,
+    clearAllFormats,
     persistence,
   }
 }
