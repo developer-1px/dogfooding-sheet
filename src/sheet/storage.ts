@@ -1,18 +1,58 @@
+import {
+  defaultDocumentPersistenceCodec,
+  type DocumentPersistenceCodec,
+  type DocumentPersistencePayload,
+} from '@zod-crud/persist-web'
 import { SheetSchema, initialSheet, colLettersFor, ROW_COUNT, cellKey, cellId, moveCellIdByDelta, type Sheet } from './schema'
 import { type PatternData } from '@interactive-os/aria'
-import { readStoredJson, writeStoredJson, type KeyValueStorage } from '../lib/browserStorage'
+import { getBrowserStorage, MAX_STORED_JSON_LENGTH, readStoredJson, type KeyValueStorage } from '../lib/browserStorage'
 
 export const SHEET_STORAGE_KEY = 'spreadsheet:v1'
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const storedSheetValue = (raw: unknown): unknown => {
+  if (isRecord(raw) && raw.kind === 'zod-crud.persistence+json' && raw.version === 1 && 'value' in raw) {
+    return raw.value
+  }
+  return raw
+}
+
+export const sheetPersistenceCodec: DocumentPersistenceCodec = {
+  encode(input: DocumentPersistencePayload): string {
+    const text = defaultDocumentPersistenceCodec.encode(input)
+    if (text.length > MAX_STORED_JSON_LENGTH) throw new Error('persisted sheet is too large')
+    return text
+  },
+  decode(text: string): DocumentPersistencePayload {
+    const payload = defaultDocumentPersistenceCodec.decode(text)
+    const parsed = SheetSchema.safeParse(payload.value)
+    if (!parsed.success) throw new Error('persisted sheet is invalid')
+    return { ...payload, value: parsed.data }
+  },
+}
 
 export const loadInitial = (storage?: KeyValueStorage | null): Sheet => {
   const raw = readStoredJson(SHEET_STORAGE_KEY, storage)
   if (raw === undefined) return initialSheet
-  const parsed = SheetSchema.safeParse(raw)
+  const parsed = SheetSchema.safeParse(storedSheetValue(raw))
   return parsed.success ? parsed.data : initialSheet
 }
 
-export const saveSheet = (sheet: Sheet, storage?: KeyValueStorage | null): void =>
-  writeStoredJson(SHEET_STORAGE_KEY, sheet, storage)
+export const saveSheet = (sheet: Sheet, storage: KeyValueStorage | null = getBrowserStorage()): void => {
+  if (!storage) return
+  try {
+    const text = sheetPersistenceCodec.encode({
+      value: sheet,
+      selection: null,
+      savedAt: new Date().toISOString(),
+    })
+    storage.setItem(SHEET_STORAGE_KEY, text)
+  } catch {
+    // Storage can be unavailable or over quota; persistence must not break editing.
+  }
+}
 
 export const moveCellId = (id: string, dRow: number, dCol: number, rowCount = ROW_COUNT, colLetters: readonly string[] = colLettersFor(10)): string | null => {
   return moveCellIdByDelta(id, dRow, dCol, { rowCount, colLetters })

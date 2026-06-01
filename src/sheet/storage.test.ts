@@ -80,7 +80,7 @@ describe('sheet storage', () => {
   it('saves best effort without throwing on quota failures', () => {
     const { storage, values } = memoryStorage()
     saveSheet(initialSheet, storage)
-    expect(JSON.parse(values.get(SHEET_STORAGE_KEY) ?? '{}')).toEqual(initialSheet)
+    expect(JSON.parse(values.get(SHEET_STORAGE_KEY) ?? '{}').value).toEqual(initialSheet)
 
     const failing: KeyValueStorage = {
       getItem: () => null,

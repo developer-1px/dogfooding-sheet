@@ -22,6 +22,19 @@ export const makeFindMatcher = (
   }
 }
 
+const escapeRegexLiteral = (text: string): string =>
+  text.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&')
+
+export const rawCellTextJsonPath = (
+  query: string,
+  { caseSensitive = false, regex = false }: FindTextOptions = {},
+): string | null => {
+  if (!query || !caseSensitive) return null
+  const pattern = regex ? query : escapeRegexLiteral(query)
+  if (!compileSafeRegex(pattern, '')) return null
+  return `$.cells[?search(@, ${JSON.stringify(pattern)})]`
+}
+
 const replaceLiteral = (text: string, query: string, replacement: string, caseSensitive: boolean): string | null => {
   const haystack = caseSensitive ? text : text.toLowerCase()
   const needle = caseSensitive ? query : query.toLowerCase()

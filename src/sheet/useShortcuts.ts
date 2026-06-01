@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { isEditableTarget, isPrintable } from '@interactive-os/keyboard'
-import type { JSONOps } from 'zod-crud'
-import type { Sheet } from './schema'
+import type { Sheet, SheetOps } from './schema'
 import { handleNavigation } from './selection/shortcutsNav'
 import { useGlobalShortcuts, type GlobalShortcutCtx } from './useGlobalShortcuts'
 
@@ -12,8 +11,7 @@ interface Args extends GlobalShortcutCtx {
   startEdit: (id: string, prefill?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
 }
 // Re-export for callers that already import the surface from this module.
-export type { Sheet }
-export type { JSONOps }
+export type { Sheet, SheetOps }
 
 export function useShortcuts(args: Args) {
   const ref = useRef(args)

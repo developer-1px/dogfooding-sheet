@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { appendSegment, type Pointer } from 'zod-crud'
 import {
   MAX_SHEET_TABS,
   SheetSchema,
@@ -28,6 +29,8 @@ interface TabsStateOps {
 
 export interface TabActionOps extends TabsStateOps {
   replaceSheet(sheet: Sheet): void
+  moveBefore?(source: string, target: string): boolean
+  moveAfter?(source: string, target: string): boolean
 }
 
 const LEGACY_KEY = 'spreadsheet:tabs:v1'
@@ -92,6 +95,9 @@ const uniqueName = (order: string[]): string | null => {
   while (names.has(`Sheet${n}`)) n++
   return normalizeSheetName(`Sheet${n}`)
 }
+
+const tabOrderItemPath = (index: number): string =>
+  appendSegment('/tabs/order' as Pointer, index)
 
 export function tabActions(sheet: Sheet, ops: TabActionOps) {
   const state = sheet.tabs
@@ -176,6 +182,10 @@ export function tabActions(sheet: Sheet, ops: TabActionOps) {
   const reorderTab = (from: string, to: string) => {
     const fi = state.order.indexOf(from), ti = state.order.indexOf(to)
     if (fi < 0 || ti < 0 || fi === ti) return
+    const source = tabOrderItemPath(fi)
+    const target = tabOrderItemPath(ti)
+    if (fi < ti && ops.moveAfter?.(source, target)) return
+    if (fi > ti && ops.moveBefore?.(source, target)) return
     const next = state.order.filter((n) => n !== from)
     next.splice(ti, 0, from)
     replaceTabs({ ...state, order: next })

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { makeFindMatcher, replaceFindText } from './findRegex'
+import { makeFindMatcher, rawCellTextJsonPath, replaceFindText } from './findRegex'
 
 describe('find regex helpers', () => {
   it('matches literal text without compiling it as a regex', () => {
@@ -36,5 +36,12 @@ describe('find regex helpers', () => {
     const replacement = 'x'.repeat(10001)
 
     expect(replaceFindText('a', 'a', replacement)).toBe('a')
+  })
+
+  it('builds zod-crud JSONPath only for case-sensitive raw-cell searches', () => {
+    expect(rawCellTextJsonPath('a.b', { caseSensitive: true })).toBe('$.cells[?search(@, "a\\\\.b")]')
+    expect(rawCellTextJsonPath('\\d+', { caseSensitive: true, regex: true })).toBe('$.cells[?search(@, "\\\\d+")]')
+    expect(rawCellTextJsonPath('a.b')).toBeNull()
+    expect(rawCellTextJsonPath('(', { caseSensitive: true, regex: true })).toBeNull()
   })
 })

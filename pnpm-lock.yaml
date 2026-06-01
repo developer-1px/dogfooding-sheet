@@ -48,6 +48,18 @@ importers:
       '@spredsheet/surface':
         specifier: workspace:*
         version: link:packages/surface
+      '@zod-crud/bulk-edit':
+        specifier: file:../zod-crud/packages/bulk-edit
+        version: file:../zod-crud/packages/bulk-edit(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/collection':
+        specifier: file:../zod-crud/packages/collection
+        version: file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/dirty-state':
+        specifier: file:../zod-crud/packages/dirty-state
+        version: file:../zod-crud/packages/dirty-state(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/persist-web':
+        specifier: file:../zod-crud/packages/persist-web
+        version: file:../zod-crud/packages/persist-web(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       react:
         specifier: ^19.2.5
         version: 19.2.6
@@ -784,6 +796,26 @@ packages:
 
   '@vitest/utils@4.1.7':
     resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
+
+  '@zod-crud/bulk-edit@file:../zod-crud/packages/bulk-edit':
+    resolution: {directory: ../zod-crud/packages/bulk-edit, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/collection@file:../zod-crud/packages/collection':
+    resolution: {directory: ../zod-crud/packages/collection, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/dirty-state@file:../zod-crud/packages/dirty-state':
+    resolution: {directory: ../zod-crud/packages/dirty-state, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/persist-web@file:../zod-crud/packages/persist-web':
+    resolution: {directory: ../zod-crud/packages/persist-web, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2042,6 +2074,22 @@ snapshots:
       '@vitest/pretty-format': 4.1.7
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
+
+  '@zod-crud/bulk-edit@file:../zod-crud/packages/bulk-edit(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/collection@file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/dirty-state@file:../zod-crud/packages/dirty-state(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/persist-web@file:../zod-crud/packages/persist-web(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   acorn-jsx@5.3.2(acorn@8.16.0):
     dependencies:

@@ -28,7 +28,16 @@ export interface SheetOptions extends SheetLayoutPrompts {
 }
 
 export function useSheet(opts: SheetOptions = {}) {
-  const { sheet, ops, writeCell, writeCells } = useSheetDocument()
+  const {
+    sheet,
+    ops,
+    writeCell,
+    writeCells,
+    replaceCellsByQuery,
+    moveCollectionBefore,
+    moveCollectionAfter,
+    persistence,
+  } = useSheetDocument()
   const rowCount = sheet.rowCount
   const colLetters = colLettersFor(sheet.colCount)
   const fmt = useFormats(sheet.formats, ops, { rowCount, colCount: sheet.colCount })
@@ -47,6 +56,8 @@ export function useSheet(opts: SheetOptions = {}) {
   const tabFns = tabActions(sheet, {
     replace: (path, value) => ops.replace(path, value),
     replaceSheet: (next) => { ops.replace('', next) },
+    moveBefore: moveCollectionBefore,
+    moveAfter: moveCollectionAfter,
   })
 
   const edit = useEditState({ cells: sheet.cells, writeCell, rowCount, colLetters })
@@ -125,10 +136,10 @@ export function useSheet(opts: SheetOptions = {}) {
   })
 
   return {
-    sheet, ops, data,
+    sheet, ops, persistence, data,
     ...edit,
     commitEdit, cancelEdit,
-    writeCell, writeCells, display,
+    writeCell, writeCells, replaceCellsByQuery, display,
     selectedIds, setSelectedIds, setFocusId, setSelectAnchor,
     highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
     formulaPickActive: formulaPick.formulaPickActive,

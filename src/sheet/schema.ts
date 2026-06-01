@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import type { JSONOps } from 'zod-crud'
+import type { JSONCapabilityResult, JSONPatchOperation, JSONResult } from 'zod-crud'
 import { MAX_SHEET_TABS } from './sheetLimits'
 import { isSafeSheetName, isSafeTabColor } from './sheetStyleModel'
 import {
@@ -55,7 +55,12 @@ export const SheetSchema = z.preprocess(sanitizeRawTabBundleInput, RawSheetShape
   tabs,
 }))
 export type Sheet = z.infer<typeof SheetSchema>
-export type SheetOps = JSONOps<Sheet> & {
+type SheetEditResult = JSONResult | Exclude<JSONCapabilityResult, { ok: true }>
+export interface SheetOps {
+  add(path: string, value: unknown): SheetEditResult
+  remove(path: string): SheetEditResult
+  replace(path: string, value: unknown): SheetEditResult
+  patch(patch: ReadonlyArray<JSONPatchOperation>): JSONResult
   undo(): boolean
   redo(): boolean
   canUndo(): boolean

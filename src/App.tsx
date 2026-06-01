@@ -53,7 +53,7 @@ export default function App() {
         reorderTab={ctx.reorderTab}
         confirm={confirm}
       />
-      <StatusBar selectedIds={ctx.selectedIds} focusId={ctx.focusId} rowCount={ctx.rowCount} colCount={ctx.colLetters.length} display={ctx.display} parseId={parseCellId} />
+      <StatusBar selectedIds={ctx.selectedIds} focusId={ctx.focusId} rowCount={ctx.rowCount} colCount={ctx.colLetters.length} display={ctx.display} parseId={parseCellId} persistence={ctx.persistence} />
       <HelpDialog open={ctx.helpOpen} onClose={() => ctx.setHelpOpen(false)} />
       <Find
         open={ctx.findOpen}
@@ -64,6 +64,7 @@ export default function App() {
         onJump={(id) => { ctx.setFocusId(id); ctx.setSelectedIds([id]) }}
         writeCell={ctx.writeCell}
         writeCells={ctx.writeCells}
+        replaceCellsByQuery={ctx.replaceCellsByQuery}
         skipIds={mergeHidden}
         rowCount={ctx.rowCount}
         colLetters={ctx.colLetters}

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import type { JSONOps } from 'zod-crud'
 import { addValue, applyPatch, removeValue, replaceValue, upsertKey, upsertKeys, type Patch } from './dictOps'
 
 describe('dictOps mutation adapter', () => {
@@ -41,12 +40,11 @@ describe('dictOps mutation adapter', () => {
       remove: (path: never) => { calls.push(['remove', path]) },
       patch: (patch: never) => { calls.push(['patch', patch]) },
     }
-    const typedOps = ops as unknown as JSONOps<{ records: Record<string, string> }>
 
-    upsertKey(typedOps, '/records', {}, 'a/b~c', 'new')
-    upsertKey(typedOps, '/records', { 'a/b~c': 'old' }, 'a/b~c', 'next')
-    upsertKey(typedOps, '/records', { 'a/b~c': 'old' }, 'a/b~c', undefined)
-    upsertKeys(typedOps, '/records', { 'a/b~c': 'old' }, [['a/b~c', 'next']])
+    upsertKey(ops, '/records', {}, 'a/b~c', 'new')
+    upsertKey(ops, '/records', { 'a/b~c': 'old' }, 'a/b~c', 'next')
+    upsertKey(ops, '/records', { 'a/b~c': 'old' }, 'a/b~c', undefined)
+    upsertKeys(ops, '/records', { 'a/b~c': 'old' }, [['a/b~c', 'next']])
 
     expect(calls).toEqual([
       ['add', '/records/a~1b~0c', 'new'],
@@ -61,9 +59,8 @@ describe('dictOps mutation adapter', () => {
     const ops = {
       patch: (patch: never) => { calls.push(['patch', patch]) },
     }
-    const typedOps = ops as unknown as JSONOps<{ records: Record<string, string> }>
 
-    upsertKeys(typedOps, '/records', { A: 'old', B: 'old' }, [
+    upsertKeys(ops, '/records', { A: 'old', B: 'old' }, [
       ['A', 'first'],
       ['A', 'last'],
       ['B', undefined],
@@ -83,10 +80,9 @@ describe('dictOps mutation adapter', () => {
     const ops = {
       patch: (patch: never) => { calls.push(['patch', patch]) },
     }
-    const typedOps = ops as unknown as JSONOps<{ records: Record<string, { value: string }> }>
     const equalByValue = (a: { value: string }, b: { value: string }) => a.value === b.value
 
-    upsertKeys(typedOps, '/records', { A: { value: 'same' }, B: { value: 'old' } }, [
+    upsertKeys(ops, '/records', { A: { value: 'same' }, B: { value: 'old' } }, [
       ['A', { value: 'same' }],
       ['B', { value: 'new' }],
     ], equalByValue)

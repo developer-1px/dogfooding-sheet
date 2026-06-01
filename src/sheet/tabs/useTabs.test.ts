@@ -17,10 +17,16 @@ const make = (): Sheet => ({
   },
 })
 
-interface Stub { root?: Sheet; replace?: { path: string; value: unknown } }
+interface Stub {
+  root?: Sheet
+  replace?: { path: string; value: unknown }
+  move?: { kind: 'before' | 'after'; source: string; target: string }
+}
 const stubOps = (s: Stub) => ({
   replace: (path: '/tabs', value: Sheet['tabs']) => { s.replace = { path, value } },
   replaceSheet: (value: Sheet) => { s.root = value },
+  moveBefore: (source: string, target: string) => { s.move = { kind: 'before', source, target }; return true },
+  moveAfter: (source: string, target: string) => { s.move = { kind: 'after', source, target }; return true },
 }) satisfies TabActionOps
 
 describe('tabActions', () => {
@@ -111,7 +117,23 @@ describe('tabActions', () => {
     expect(s.replace).toBeUndefined()
 
     tabActions(sheet, stubOps(s)).reorderTab('Sheet2', 'Sheet1')
-    expect((s.replace!.value as Sheet['tabs']).order).toEqual(['Sheet2', 'Sheet1'])
+    expect(s.move).toEqual({ kind: 'before', source: '/tabs/order/1', target: '/tabs/order/0' })
+  })
+
+  it('uses collection after-move when reordering a tab forward', () => {
+    const sheet: Sheet = {
+      ...make(),
+      tabs: {
+        ...make().tabs,
+        order: ['Sheet1', 'Sheet2', 'Sheet3'],
+        saved: { Sheet1: blankBundle(), Sheet2: blankBundle(), Sheet3: blankBundle() },
+      },
+    }
+    const s: Stub = {}
+
+    tabActions(sheet, stubOps(s)).reorderTab('Sheet1', 'Sheet3')
+
+    expect(s.move).toEqual({ kind: 'after', source: '/tabs/order/0', target: '/tabs/order/2' })
   })
 
   it('accepts normalized tab names and colors', () => {

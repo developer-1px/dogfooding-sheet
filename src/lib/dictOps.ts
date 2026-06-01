@@ -1,45 +1,42 @@
-import type { JSONOps } from 'zod-crud'
+import { appendSegment, type JSONPatchOperation, type Pointer } from 'zod-crud'
 
 /** JSON-patch ops accepted by `ops.patch()`. Value typed loosely; site narrows as needed. */
-export type Patch = Array<{ op: 'add' | 'replace' | 'remove'; path: string; value?: unknown }>
+export type Patch = Array<Extract<JSONPatchOperation, { op: 'add' | 'replace' | 'remove' }>>
 
-interface PatchOps { patch(patch: never): unknown }
-interface AddOps { add(path: never, value: never): unknown }
-interface ReplaceOps { replace(path: never, value: never): unknown }
-interface RemoveOps { remove(path: never): unknown }
+interface PatchOps { patch(patch: ReadonlyArray<JSONPatchOperation>): unknown }
+interface AddOps { add(path: string, value: unknown): unknown }
+interface ReplaceOps { replace(path: string, value: unknown): unknown }
+interface RemoveOps { remove(path: string): unknown }
 type Equal<V> = (a: V, b: V) => boolean
 
 const defaultEqual = <V>(a: V, b: V): boolean => a === b
 
 export function applyPatch(ops: PatchOps, patch: Patch): void {
-  if (patch.length > 0) ops.patch(patch as never)
+  if (patch.length > 0) ops.patch(patch)
 }
 
 export function addValue<V>(ops: AddOps, path: string, value: V): void {
-  ops.add(path as never, value as never)
+  ops.add(path, value)
 }
 
 export function replaceValue<V>(ops: ReplaceOps, path: string, value: V): void {
-  ops.replace(path as never, value as never)
+  ops.replace(path, value)
 }
 
 export function removeValue(ops: RemoveOps, path: string): void {
-  ops.remove(path as never)
+  ops.remove(path)
 }
 
-const escapePathSegment = (segment: string): string =>
-  segment.replace(/~/g, '~0').replace(/\//g, '~1')
-
 const childPath = (base: string, key: string): string =>
-  `${base}/${escapePathSegment(key)}`
+  appendSegment(base as Pointer, key)
 
 /**
  * Surgical add/replace/remove for one key inside a dict-record stored in the SSOT doc.
  * Per zod-crud guidance — avoids `ops.replace('/path', { ...all, [k]: v })` anti-pattern
  * that collapses every key into one history entry.
  */
-export function upsertKey<T, V>(
-  ops: JSONOps<T>,
+export function upsertKey<V>(
+  ops: AddOps & ReplaceOps & RemoveOps,
   base: string,
   current: Record<string, V>,
   key: string,
@@ -57,8 +54,8 @@ export function upsertKey<T, V>(
 }
 
 /** Batch multiple key writes into a single ops.patch — atomic undo. */
-export function upsertKeys<T, V>(
-  ops: JSONOps<T>,
+export function upsertKeys<V>(
+  ops: PatchOps,
   base: string,
   current: Record<string, V>,
   entries: Array<[string, V | undefined]>,

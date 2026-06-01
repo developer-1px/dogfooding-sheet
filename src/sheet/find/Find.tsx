@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 import { cellIdToKey, type WriteCell, type WriteMany, type Display, type Cells, type Writes } from '../schema'
 import { useFind } from './useFind'
-import { replaceFindText } from './findRegex'
+import { rawCellTextJsonPath, replaceFindText } from './findRegex'
 
 interface Props {
   open: boolean
@@ -13,12 +13,13 @@ interface Props {
   onJump: (cellId: string) => void
   writeCell: WriteCell
   writeCells: WriteMany
+  replaceCellsByQuery?: (jsonPath: string, replace: (value: string) => string) => boolean
   skipIds?: Set<string>
   rowCount: number
   colLetters: readonly string[]
 }
 
-export function Find({ open, mode, onClose, cells, display, onJump, writeCell, writeCells, skipIds, rowCount, colLetters }: Props) {
+export function Find({ open, mode, onClose, cells, display, onJump, writeCell, writeCells, replaceCellsByQuery, skipIds, rowCount, colLetters }: Props) {
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
   const [caseSensitive, setCS] = useState(false)
@@ -44,6 +45,8 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
   }
   const replaceAll = () => {
     if (!q) return
+    const jsonPath = rawCellTextJsonPath(q, { caseSensitive, regex })
+    if (jsonPath && replaceCellsByQuery?.(jsonPath, sub)) return
     const writes: Writes = []
     for (const id of matches) {
       const k = cellIdToKey(id)
