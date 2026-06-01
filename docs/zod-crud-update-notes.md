@@ -8,8 +8,8 @@ Date: 2026-06-02
 
 - Good: document state and undo/redo are already backed by zod-crud.
 - Good: `dictOps` now favors surgical key patches instead of whole-dict replacement.
-- Good: `useSheetDocument` composes official and lab zod-crud extensions for autosave/persistence, collection movement, text replace, existing-value batch update, sparse default insertion, sparse record replacements, tab color record edits, tab sheet diff apply, structural sheet diff apply, conditional-format item edits, merge append/delete edits, bounded count increments, freeze count updates/toggles, whole-record clear contents, import patch preview/diff apply, browser text clipboard access, hidden row/column option toggles, and checkbox value toggles.
-- App-owned: visual grid selection, DOM focus, keyboard policy, TSV parsing, formula semantics, mixed sparse record upsert/remove fallback, overlapping merge normalization, and structural row/column shift calculations.
+- Good: `useSheetDocument` composes official and lab zod-crud extensions for autosave/persistence, collection movement, text replace, existing-value batch update, sparse default insertion, sparse record replacements, mixed sparse record diff application, tab color record edits, tab sheet diff apply, structural sheet diff apply, conditional-format item edits, merge append/delete edits, bounded count increments, freeze count updates/toggles, whole-record clear contents, import patch preview/diff apply, browser text clipboard access, hidden row/column option toggles, and checkbox value toggles.
+- App-owned: visual grid selection, DOM focus, keyboard policy, TSV parsing, formula semantics, checkbox conversion across cells plus validation, overlapping merge normalization, and structural row/column shift calculations.
 
 Current usage is broadly valid.
 
@@ -54,7 +54,7 @@ The final zod-crud shape is document-facade based:
 ## Suggested Local Work Items
 
 - Keep moving app-owned patch helpers behind zod-crud extension commands where a matching feature concept exists.
-- Keep mixed sparse record write fallback app-owned until sparse record upsert support exists.
+- Keep checkbox conversion fallback app-owned until a sparse multi-record upsert command exists.
 - Keep undo tests that prove one cell/metadata edit reverts only that intended edit.
 - Avoid imports from zod-crud private subpaths.
 

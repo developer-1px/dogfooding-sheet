@@ -114,6 +114,10 @@ export function useSheetDocument() {
       ensureMissing(entries) {
         return defaults.ensure(base, Object.fromEntries(entries)).ok
       },
+      applyRecordDiff(next) {
+        const field = base.slice(1) as keyof Sheet
+        return diff.apply({ ...sheet, [field]: next } as Sheet, { label: `record-diff:${String(field)}`, origin: 'programmatic' }).ok
+      },
     })
     return {
       cells: commandsFor('/cells' as Pointer),
@@ -124,7 +128,7 @@ export function useSheetDocument() {
       rowHeights: commandsFor('/rowHeights' as Pointer),
       colWidths: commandsFor('/colWidths' as Pointer),
     }
-  }, [batchUpdate, defaults])
+  }, [batchUpdate, defaults, diff, sheet])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
     remove: (path) => doc.delete(path as Pointer),
@@ -161,7 +165,7 @@ export function useSheetDocument() {
 
   const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
   const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.applyRecordDiff)
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {

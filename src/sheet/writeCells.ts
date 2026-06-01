@@ -9,6 +9,7 @@ interface CellWriteBounds {
 
 export type ReplaceExistingCells = (entries: Array<[string, string]>) => boolean
 export type EnsureMissingCells = (entries: Array<[string, string]>) => boolean
+export type ApplyCellRecordDiff = (next: Cells) => boolean
 
 const validCellKey = (key: string, bounds?: CellWriteBounds): boolean => {
   const ref = parseA1(key)
@@ -28,7 +29,15 @@ export function writeSingleCell(ops: SheetOps, cells: Cells, key: string, value:
 }
 
 /** Batch multiple cell writes into a single ops.patch — atomic undo for fillDown/Right etc. */
-export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bounds?: CellWriteBounds, replaceExisting?: ReplaceExistingCells, ensureMissing?: EnsureMissingCells): void {
+export function writeCellsBatch(
+  ops: SheetOps,
+  cells: Cells,
+  writes: Writes,
+  bounds?: CellWriteBounds,
+  replaceExisting?: ReplaceExistingCells,
+  ensureMissing?: EnsureMissingCells,
+  applyRecordDiff?: ApplyCellRecordDiff,
+): void {
   const entries: Array<[string, string | undefined]> = []
   for (const [k, v] of writes) {
     if (!validCellKey(k, bounds)) continue
@@ -49,5 +58,5 @@ export function writeCellsBatch(ops: SheetOps, cells: Cells, writes: Writes, bou
     latestEntries.every((entry): entry is [string, string] => entry[1] !== undefined && cells[entry[0]] === undefined) &&
     ensureMissing(latestEntries)
   ) return
-  upsertKeys(ops, '/cells', cells, latestEntries)
+  upsertKeys(ops, '/cells', cells, latestEntries, undefined, { replaceExisting, ensureMissing, applyRecordDiff })
 }

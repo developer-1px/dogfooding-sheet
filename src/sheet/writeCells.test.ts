@@ -145,4 +145,18 @@ describe('cell write adapters', () => {
       ]],
     ])
   })
+
+  it('delegates mixed batch cell writes through a record diff command', () => {
+    const { ops, calls } = recordingOps()
+    const diffed: unknown[] = []
+
+    writeCellsBatch(ops, { A1: 'old', C1: 'drop' }, [
+      ['A1', 'new'],
+      ['B1', 'added'],
+      ['C1', ''],
+    ], undefined, undefined, undefined, (next) => { diffed.push(next); return true })
+
+    expect(diffed).toEqual([{ A1: 'new', B1: 'added' }])
+    expect(calls).toEqual([])
+  })
 })

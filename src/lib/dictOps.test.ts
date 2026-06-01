@@ -125,4 +125,46 @@ describe('dictOps mutation adapter', () => {
       ]],
     ])
   })
+
+  it('delegates mixed record batches through a record diff command', () => {
+    const calls: unknown[] = []
+    const ops = {
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    }
+    const diffed: unknown[] = []
+
+    upsertKeys(ops, '/records', { A: 'old', B: 'drop' }, [
+      ['A', 'new'],
+      ['B', undefined],
+      ['C', 'added'],
+    ], undefined, {
+      applyRecordDiff: (next) => { diffed.push(next); return true },
+    })
+
+    expect(diffed).toEqual([{ A: 'new', C: 'added' }])
+    expect(calls).toEqual([])
+  })
+
+  it('falls back to local patching when record diff delegation fails', () => {
+    const calls: unknown[] = []
+    const ops = {
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    }
+
+    upsertKeys(ops, '/records', { A: 'old', B: 'drop' }, [
+      ['A', 'new'],
+      ['B', undefined],
+      ['C', 'added'],
+    ], undefined, {
+      applyRecordDiff: () => false,
+    })
+
+    expect(calls).toEqual([
+      ['patch', [
+        { op: 'replace', path: '/records/A', value: 'new' },
+        { op: 'remove', path: '/records/B' },
+        { op: 'add', path: '/records/C', value: 'added' },
+      ]],
+    ])
+  })
 })
