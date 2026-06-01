@@ -18,6 +18,7 @@ import { SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
 import { loadInitial, SHEET_STORAGE_KEY, sheetPersistenceCodec } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
 import type { ClipboardTextBridge } from './clipboard/clipboardActions'
+import type { FreezeMutationCommands } from './visibility/useFreeze'
 import type { HiddenMutationCommands } from './visibility/useHidden'
 
 export type SheetPersistenceStatus = 'saving' | 'saved' | 'error'
@@ -165,6 +166,10 @@ export function useSheetDocument() {
     showCol: (col) => toggleOption.remove('/hidden/cols' as Pointer, col).ok,
     showAll: () => clear.clearContents(['/hidden/rows' as Pointer, '/hidden/cols' as Pointer]).ok,
   }), [clear, toggleOption])
+  const freezeMutations = useMemo<FreezeMutationCommands>(() => ({
+    toggleRows: () => toggleValue.toggleValue('/freeze/rows' as Pointer, { values: [0, 1] }).ok,
+    toggleCols: () => toggleValue.toggleValue('/freeze/cols' as Pointer, { values: [0, 1] }).ok,
+  }), [toggleValue])
   const clipboardText = useMemo<ClipboardTextBridge>(() => ({
     async readText() {
       const result = await webClipboard.read()
@@ -189,6 +194,7 @@ export function useSheetDocument() {
     applySheetReplacement,
     clearCellValues,
     clearAllFormats,
+    freezeMutations,
     hiddenMutations,
     clipboardText,
     persistence,

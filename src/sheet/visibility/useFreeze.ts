@@ -11,6 +11,11 @@ export interface FreezeActions {
   setFreezeCols: (n: number) => void
 }
 
+export interface FreezeMutationCommands {
+  toggleRows: () => boolean
+  toggleCols: () => boolean
+}
+
 const LEGACY_KEY = 'spreadsheet:freeze:v1'
 
 interface FreezeBounds {
@@ -45,7 +50,7 @@ export const setFreezeState = (ops: SheetOps, freeze: FreezeState, next: FreezeS
   return true
 }
 
-export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBounds) {
+export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBounds, commands?: FreezeMutationCommands) {
   const rowCount = bounds?.rowCount ?? MAX_ROW_COUNT
   const colCount = bounds?.colCount ?? MAX_COL_COUNT
   const current = useMemo(() => normalizeFreeze(freeze, { rowCount, colCount }), [freeze, rowCount, colCount])
@@ -53,8 +58,14 @@ export function useFreeze(freeze: FreezeState, ops: SheetOps, bounds?: FreezeBou
   useEffect(() => { migrateLegacy(current, ops, { rowCount, colCount }) }, [current, ops, rowCount, colCount])
 
   const replaceFreeze = (next: FreezeState) => setFreezeState(ops, current, next, { rowCount, colCount })
-  const toggleRows = () => replaceFreeze({ ...current, rows: current.rows ? 0 : 1 })
-  const toggleCols = () => replaceFreeze({ ...current, cols: current.cols ? 0 : 1 })
+  const toggleRows = () => {
+    if (commands?.toggleRows()) return
+    replaceFreeze({ ...current, rows: current.rows ? 0 : 1 })
+  }
+  const toggleCols = () => {
+    if (commands?.toggleCols()) return
+    replaceFreeze({ ...current, cols: current.cols ? 0 : 1 })
+  }
   const setFreezeRows = (n: number) => replaceFreeze({ ...current, rows: n })
   const setFreezeCols = (n: number) => replaceFreeze({ ...current, cols: n })
 

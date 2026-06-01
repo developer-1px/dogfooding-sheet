@@ -42,6 +42,7 @@ export function useSheet(opts: SheetOptions = {}) {
     applySheetReplacement,
     clearCellValues,
     clearAllFormats,
+    freezeMutations,
     hiddenMutations,
     clipboardText,
     persistence,
@@ -50,7 +51,7 @@ export function useSheet(opts: SheetOptions = {}) {
   const colLetters = colLettersFor(sheet.colCount)
   const fmt = useFormats(sheet.formats, ops, { rowCount, colCount: sheet.colCount })
   const styles = useStyles(sheet.styles, ops, { rowCount, colCount: sheet.colCount })
-  const freeze = useFreeze(sheet.freeze, ops, { rowCount, colCount: sheet.colCount })
+  const freeze = useFreeze(sheet.freeze, ops, { rowCount, colCount: sheet.colCount }, freezeMutations)
   const filter = useFilter()
   const hidden = useHidden(sheet.hidden, ops, { rowCount, colCount: sheet.colCount }, hiddenMutations)
   const notes = useNotes(sheet.notes, ops, { rowCount, colCount: sheet.colCount })
