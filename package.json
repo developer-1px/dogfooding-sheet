@@ -29,6 +29,7 @@
     "@zod-crud/clear-values": "file:../zod-crud/labs/extensions/clear-values",
     "@zod-crud/clipboard-web": "file:../zod-crud/packages/clipboard-web",
     "@zod-crud/collection": "file:../zod-crud/packages/collection",
+    "@zod-crud/cycle": "file:../zod-crud/labs/extensions/cycle",
     "@zod-crud/dirty-state": "file:../zod-crud/packages/dirty-state",
     "@zod-crud/patch-preview": "file:../zod-crud/packages/patch-preview",
     "@zod-crud/persist-web": "file:../zod-crud/packages/persist-web",

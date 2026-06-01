@@ -8,7 +8,7 @@ Date: 2026-06-02
 
 - Good: document state and undo/redo are already backed by zod-crud.
 - Good: `dictOps` now favors surgical key patches instead of whole-dict replacement.
-- Good: `useSheetDocument` composes official and lab zod-crud extensions for persistence, dirty state, collection movement, text replace, existing-value batch set, whole-record clear, import patch preview, browser text clipboard access, and hidden row/column membership.
+- Good: `useSheetDocument` composes official and lab zod-crud extensions for persistence, dirty state, collection movement, text replace, existing-value batch set, whole-record clear, import patch preview, browser text clipboard access, hidden row/column membership, and existing checkbox value cycling.
 - App-owned: visual grid selection, DOM focus, keyboard policy, TSV parsing, formula semantics, sparse record add/remove fallback, and structural row/column shifts.
 
 Current usage is broadly valid.

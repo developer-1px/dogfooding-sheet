@@ -4,6 +4,7 @@ import { createBulkEdit } from '@zod-crud/bulk-edit'
 import { createClearValues } from '@zod-crud/clear-values'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
 import { createCollection } from '@zod-crud/collection'
+import { createCycle } from '@zod-crud/cycle'
 import { createDirtyState } from '@zod-crud/dirty-state'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
@@ -49,6 +50,8 @@ const rawTextClipboardCodec: WebClipboardCodec = {
   decode: (text) => ({ payload: text, source: null, sources: null }),
 }
 
+const checkboxCycleValues = ['TRUE', 'FALSE'] as const
+
 export function useSheetDocument() {
   const initial = useMemo(() => loadInitial(), [])
   const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
@@ -59,6 +62,7 @@ export function useSheetDocument() {
   const clear = useMemo(() => createClearValues(doc), [doc])
   const webClipboard = useMemo(() => createWebClipboard(doc, { codec: rawTextClipboardCodec }), [doc])
   const collection = useMemo(() => createCollection(doc), [doc])
+  const cycle = useMemo(() => createCycle(doc), [doc])
   const preview = useMemo(() => createPatchPreview(SheetSchema, doc), [doc])
   const membership = useMemo(() => createSetMembership(doc), [doc])
   const text = useMemo(() => createSearchReplace(doc), [doc])
@@ -124,6 +128,13 @@ export function useSheetDocument() {
   }
   const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, replaceExistingCells)
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, replaceExistingCells)
+  const toggleCheckboxCell = (key: string): boolean => {
+    if (sheet.cells[key] === undefined) {
+      writeCell(key, 'TRUE')
+      return true
+    }
+    return cycle.cycle(cellValuePointer(key), { values: checkboxCycleValues }).ok
+  }
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
@@ -169,6 +180,7 @@ export function useSheetDocument() {
     ops,
     writeCell,
     writeCells,
+    toggleCheckboxCell,
     replaceCellsByQuery,
     replaceCellText,
     moveCollectionBefore,

@@ -63,6 +63,9 @@ importers:
       '@zod-crud/collection':
         specifier: file:../zod-crud/packages/collection
         version: file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
+      '@zod-crud/cycle':
+        specifier: file:../zod-crud/labs/extensions/cycle
+        version: file:../zod-crud/labs/extensions/cycle(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/dirty-state':
         specifier: file:../zod-crud/packages/dirty-state
         version: file:../zod-crud/packages/dirty-state(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -837,6 +840,11 @@ packages:
 
   '@zod-crud/collection@file:../zod-crud/packages/collection':
     resolution: {directory: ../zod-crud/packages/collection, type: directory}
+    peerDependencies:
+      zod-crud: ^1.0.0
+
+  '@zod-crud/cycle@file:../zod-crud/labs/extensions/cycle':
+    resolution: {directory: ../zod-crud/labs/extensions/cycle, type: directory}
     peerDependencies:
       zod-crud: ^1.0.0
 
@@ -2140,6 +2148,10 @@ snapshots:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 
   '@zod-crud/collection@file:../zod-crud/packages/collection(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
+    dependencies:
+      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
+
+  '@zod-crud/cycle@file:../zod-crud/labs/extensions/cycle(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 

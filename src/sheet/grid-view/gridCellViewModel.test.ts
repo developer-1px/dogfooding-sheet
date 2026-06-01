@@ -100,7 +100,7 @@ describe('createGridCellViewModel', () => {
     })
   })
 
-  it('derives checkbox toggle state from raw cell data', () => {
+  it('derives checkbox state from validation rules', () => {
     const view = createGridCellViewModel({
       rowIndex: 0,
       colIndex: 0,
@@ -123,7 +123,6 @@ describe('createGridCellViewModel', () => {
     })
 
     expect(view?.checkbox).toBe(true)
-    expect(view?.nextCheckboxValue).toBe('FALSE')
   })
 
   it('uses a precomputed fill source rect for fill-corner state', () => {

@@ -26,6 +26,7 @@ export interface GridContextMenuController
   setSelectAnchor: (id: string | null) => void
   rowCount: number
   writeCell: WriteCell
+  toggleCheckboxCell: (key: string) => boolean
   clipboardText?: ClipboardTextBridge
   noteOf: NoteLookup
   setNote: (k: string, text: string) => void
