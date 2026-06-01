@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { createBatchSet } from '@zod-crud/batch-set'
+import { createBatchUpdate } from '@zod-crud/batch-update'
 import { createBulkEdit } from '@zod-crud/bulk-edit'
-import { createClearValues } from '@zod-crud/clear-values'
+import { createClearContents } from '@zod-crud/clear-contents'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
 import { createCollection } from '@zod-crud/collection'
-import { createCycle } from '@zod-crud/cycle'
 import { createDirtyState } from '@zod-crud/dirty-state'
+import { createDocumentDiff } from '@zod-crud/document-diff'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
 import { createSearchReplace } from '@zod-crud/search-replace'
-import { createSetMembership } from '@zod-crud/set-membership'
+import { createToggleOption } from '@zod-crud/toggle-option'
 import { useJSONDocument } from 'zod-crud/react'
 import { appendSegment, type Pointer } from 'zod-crud'
 import { SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
@@ -50,21 +50,19 @@ const rawTextClipboardCodec: WebClipboardCodec = {
   decode: (text) => ({ payload: text, source: null, sources: null }),
 }
 
-const checkboxCycleValues = ['TRUE', 'FALSE'] as const
-
 export function useSheetDocument() {
   const initial = useMemo(() => loadInitial(), [])
   const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
   const { value: sheet } = doc
   const [persistence, setPersistence] = useState<SheetPersistenceState>(initialPersistenceState)
-  const batchSet = useMemo(() => createBatchSet(doc), [doc])
+  const batchUpdate = useMemo(() => createBatchUpdate(doc), [doc])
   const bulk = useMemo(() => createBulkEdit(doc), [doc])
-  const clear = useMemo(() => createClearValues(doc), [doc])
+  const clear = useMemo(() => createClearContents(doc), [doc])
   const webClipboard = useMemo(() => createWebClipboard(doc, { codec: rawTextClipboardCodec }), [doc])
   const collection = useMemo(() => createCollection(doc), [doc])
-  const cycle = useMemo(() => createCycle(doc), [doc])
+  const diff = useMemo(() => createDocumentDiff(doc), [doc])
   const preview = useMemo(() => createPatchPreview(SheetSchema, doc), [doc])
-  const membership = useMemo(() => createSetMembership(doc), [doc])
+  const toggleOption = useMemo(() => createToggleOption(doc), [doc])
   const text = useMemo(() => createSearchReplace(doc), [doc])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
@@ -121,20 +119,13 @@ export function useSheetDocument() {
 
   const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
   const replaceExistingCells = (entries: Array<[string, string]>): boolean => {
-    const result = batchSet.batchSet(entries.map(([key]) => cellValuePointer(key)), {
+    const result = batchUpdate.batchUpdate(entries.map(([key]) => cellValuePointer(key)), {
       compute: (_current, _pointer, index) => entries[index]?.[1] ?? '',
     })
     return result.ok
   }
   const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, replaceExistingCells)
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, replaceExistingCells)
-  const toggleCheckboxCell = (key: string): boolean => {
-    if (sheet.cells[key] === undefined) {
-      writeCell(key, 'TRUE')
-      return true
-    }
-    return cycle.cycle(cellValuePointer(key), { values: checkboxCycleValues }).ok
-  }
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
@@ -154,17 +145,19 @@ export function useSheetDocument() {
     const result = preview.preview([{ op: 'replace', path: '' as Pointer, value: next }])
     return result.ok ? result.value : null
   }
+  const applySheetReplacement = (next: Sheet): boolean =>
+    diff.apply(next, { label: 'json-import', origin: 'programmatic' }).ok
   const clearCellValues = (): boolean =>
-    clear.clearValues(['/cells' as Pointer]).ok
+    clear.clearContents(['/cells' as Pointer]).ok
   const clearAllFormats = (): boolean =>
-    clear.clearValues(['/styles' as Pointer, '/formats' as Pointer, '/condFormat' as Pointer]).ok
+    clear.clearContents(['/styles' as Pointer, '/formats' as Pointer, '/condFormat' as Pointer]).ok
   const hiddenMutations = useMemo<HiddenMutationCommands>(() => ({
-    hideRow: (row) => membership.add('/hidden/rows' as Pointer, row).ok,
-    hideCol: (col) => membership.add('/hidden/cols' as Pointer, col).ok,
-    showRow: (row) => membership.remove('/hidden/rows' as Pointer, row).ok,
-    showCol: (col) => membership.remove('/hidden/cols' as Pointer, col).ok,
-    showAll: () => clear.clearValues(['/hidden/rows' as Pointer, '/hidden/cols' as Pointer]).ok,
-  }), [clear, membership])
+    hideRow: (row) => toggleOption.add('/hidden/rows' as Pointer, row).ok,
+    hideCol: (col) => toggleOption.add('/hidden/cols' as Pointer, col).ok,
+    showRow: (row) => toggleOption.remove('/hidden/rows' as Pointer, row).ok,
+    showCol: (col) => toggleOption.remove('/hidden/cols' as Pointer, col).ok,
+    showAll: () => clear.clearContents(['/hidden/rows' as Pointer, '/hidden/cols' as Pointer]).ok,
+  }), [clear, toggleOption])
   const clipboardText = useMemo<ClipboardTextBridge>(() => ({
     async readText() {
       const result = await webClipboard.read()
@@ -180,12 +173,12 @@ export function useSheetDocument() {
     ops,
     writeCell,
     writeCells,
-    toggleCheckboxCell,
     replaceCellsByQuery,
     replaceCellText,
     moveCollectionBefore,
     moveCollectionAfter,
     previewSheetReplacement,
+    applySheetReplacement,
     clearCellValues,
     clearAllFormats,
     hiddenMutations,

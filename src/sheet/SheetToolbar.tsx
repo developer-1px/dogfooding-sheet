@@ -36,6 +36,7 @@ interface SheetToolbarController
   sheet: Sheet
   ops: Pick<SheetOps, 'replace' | 'undo' | 'redo' | 'canUndo' | 'canRedo' | 'patch'>
   previewSheetReplacement: (sheet: Sheet) => Sheet | null
+  applySheetReplacement: (sheet: Sheet) => boolean
   showFormulas: boolean
   toggleShowFormulas: () => void
   showGridlines: boolean
@@ -84,8 +85,8 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       addCondRule={ctx.addCondRule}
       clearCondRules={ctx.clearCondRules}
       sheet={ctx.sheet}
-      resetSheet={(s) => ctx.ops.replace('', s)}
       previewSheetReplacement={ctx.previewSheetReplacement}
+      applySheetReplacement={ctx.applySheetReplacement}
       clearCellValues={ctx.clearCellValues}
       undo={() => ctx.ops.undo()}
       redo={() => ctx.ops.redo()}

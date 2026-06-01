@@ -1,4 +1,5 @@
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
+import { type WriteCell } from '../schema'
 import { Cell } from './Cell'
 import { RowHeader } from './RowHeader'
 import { createGridCellViewModel, type MergeAnchor } from './gridCellViewModel'
@@ -45,7 +46,7 @@ interface Props {
   noteOf: NoteLookup
   rawOf: NoteLookup
   ruleOf: RuleLookup
-  toggleCheckboxCell: (key: string) => boolean
+  writeCell: WriteCell
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
   previewIds: Set<string>
@@ -128,7 +129,7 @@ export function GridRow(p: Props) {
             tooltip={view.tooltip}
             validationOptions={view.validationOptions}
             isCheckbox={view.checkbox}
-            onCheckboxToggle={() => p.toggleCheckboxCell(view.address)}
+            onCheckboxToggle={() => p.writeCell(view.address, view.nextCheckboxValue)}
             editing={p.editing === view.id}
             draft={p.draft}
             setDraft={p.setDraft}

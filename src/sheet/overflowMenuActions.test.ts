@@ -230,6 +230,31 @@ describe('overflowMenuActions', () => {
     expect(resets[0].cells).toEqual({ A1: 'Previewed' })
   })
 
+  it('can apply JSON replacements through a delegated apply command', async () => {
+    const prompts: ConfirmOptions[] = []
+    const calls: string[] = []
+
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify(initialSheet)),
+      confirm: confirmValue(true, prompts),
+      previewSheetReplacement: (sheet) => ({ ...sheet, cells: { A1: 'Previewed' } }),
+      applySheetReplacement: (sheet) => { calls.push(sheet.cells.A1 ?? ''); return true },
+      resetSheet: () => { throw new Error('should not reset') },
+    })).resolves.toBe(true)
+
+    expect(prompts).toHaveLength(1)
+    expect(calls).toEqual(['Previewed'])
+  })
+
+  it('reports delegated JSON apply failures', async () => {
+    await expect(importOverflowJson({
+      file: textFile(JSON.stringify(initialSheet)),
+      confirm: confirmValue(true),
+      applySheetReplacement: () => false,
+      resetSheet: () => { throw new Error('should not reset') },
+    })).resolves.toBe(false)
+  })
+
   it('rejects JSON imports when preview rejects the root replacement', async () => {
     const prompts: ConfirmOptions[] = []
     const resets: Sheet[] = []

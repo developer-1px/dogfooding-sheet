@@ -8,7 +8,7 @@ Date: 2026-06-02
 
 - Good: document state and undo/redo are already backed by zod-crud.
 - Good: `dictOps` now favors surgical key patches instead of whole-dict replacement.
-- Good: `useSheetDocument` composes official and lab zod-crud extensions for persistence, dirty state, collection movement, text replace, existing-value batch set, whole-record clear, import patch preview, browser text clipboard access, hidden row/column membership, and existing checkbox value cycling.
+- Good: `useSheetDocument` composes official and lab zod-crud extensions for persistence, dirty state, collection movement, text replace, existing-value batch update, whole-record clear contents, import patch preview/diff apply, browser text clipboard access, and hidden row/column option toggles.
 - App-owned: visual grid selection, DOM focus, keyboard policy, TSV parsing, formula semantics, sparse record add/remove fallback, and structural row/column shifts.
 
 Current usage is broadly valid.
@@ -49,10 +49,12 @@ The final zod-crud shape is document-facade based:
 - Sparse-record grid paste/fill gap: https://github.com/developer-1px/zod-crud/issues/142
 - Regex search-replace pressure: https://github.com/developer-1px/zod-crud/issues/143
 - Feature-level package naming pressure: https://github.com/developer-1px/zod-crud/issues/144
+- Feature rename invalid identifier blocker: https://github.com/developer-1px/zod-crud/issues/145
 
 ## Suggested Local Work Items
 
 - Keep moving app-owned patch helpers behind zod-crud extension commands where a matching feature concept exists.
+- Re-enable checkbox value cycling through `@zod-crud/toggle-value` after #145 is fixed.
 - Keep undo tests that prove one cell/metadata edit reverts only that intended edit.
 - Avoid imports from zod-crud private subpaths.
 

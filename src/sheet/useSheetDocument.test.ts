@@ -48,26 +48,4 @@ describe('useSheetDocument', () => {
     expect(getItem.mock.calls.filter(([key]) => key === SHEET_STORAGE_KEY)).toHaveLength(1)
   })
 
-  it('delegates existing checkbox value toggles and falls back for sparse cells', () => {
-    let doc!: ReturnType<typeof useSheetDocument>
-
-    function Harness() {
-      doc = useSheetDocument()
-      return createElement('output', null, `${doc.sheet.cells.A1 ?? ''}|${doc.sheet.cells.E5 ?? ''}`)
-    }
-
-    act(() => root!.render(createElement(Harness)))
-
-    act(() => doc.writeCell('A1', 'FALSE'))
-    expect(document.querySelector('output')?.textContent).toBe('FALSE|')
-
-    act(() => { expect(doc.toggleCheckboxCell('A1')).toBe(true) })
-    expect(document.querySelector('output')?.textContent).toBe('TRUE|')
-
-    act(() => { expect(doc.toggleCheckboxCell('A1')).toBe(true) })
-    expect(document.querySelector('output')?.textContent).toBe('FALSE|')
-
-    act(() => { expect(doc.toggleCheckboxCell('E5')).toBe(true) })
-    expect(document.querySelector('output')?.textContent).toBe('FALSE|TRUE')
-  })
 })

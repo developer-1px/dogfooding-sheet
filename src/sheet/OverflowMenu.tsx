@@ -21,8 +21,8 @@ export interface OverflowProps {
   openHelp: () => void
   insertLink: () => void
   sheet: Sheet
-  resetSheet: (s: Sheet) => void
   previewSheetReplacement?: (sheet: Sheet) => Sheet | null
+  applySheetReplacement: (sheet: Sheet) => boolean
   clearCellValues: () => boolean
   confirm: Confirm
   showFormulas: boolean
@@ -32,13 +32,13 @@ export interface OverflowProps {
   clearAllFormats: () => boolean
 }
 
-export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, previewSheetReplacement, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
+export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => exportOverflowCsv({ display, sheet, downloadFile })
   const importCsvFile = (file: File) => importOverflowCsv({ file, confirm, sheet, writeCell, writeCells })
   const exportJson = () => exportOverflowJson({ sheet, downloadFile })
-  const importJson = (file: File) => importOverflowJson({ file, confirm, previewSheetReplacement, resetSheet })
+  const importJson = (file: File) => importOverflowJson({ file, confirm, previewSheetReplacement, applySheetReplacement })
 
   const items = useMemo(() => overflowMenuItems({ showFormulas, showGridlines }), [showFormulas, showGridlines])
   const data = fromList(items.map(({ id, label }) => ({ id, label })))

@@ -49,6 +49,7 @@ export interface GridCellViewModel {
   tooltip?: string
   validationOptions?: string[]
   checkbox: boolean
+  nextCheckboxValue: 'TRUE' | 'FALSE'
   fillCorner: boolean
   previewing: boolean
 }
@@ -101,6 +102,7 @@ export function createGridCellViewModel(args: GridCellViewModelArgs): GridCellVi
     tooltip: raw?.startsWith('=') ? raw : undefined,
     validationOptions: rule?.type === 'list' ? rule.options : undefined,
     checkbox: rule?.type === 'checkbox',
+    nextCheckboxValue: raw === 'TRUE' ? 'FALSE' : 'TRUE',
     fillCorner: !!parsed && !!args.fillSourceRect && parsed.row === args.fillSourceRect.rMax && colIndex(parsed.col) === args.fillSourceRect.cMax,
     previewing: args.previewIds.has(args.cell.id),
   }
