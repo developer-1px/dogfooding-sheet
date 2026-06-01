@@ -15,16 +15,23 @@ Current usage is broadly valid.
 
 ## Changelog Impact
 
-The final zod-crud shape is document-facade based:
+The current zod-crud shape is document-facade based:
 
 - `doc.patch`
 - `doc.load`
-- `doc.history.undo/redo`
+- `doc.undo()/redo()`
 - `doc.canUndo()/canRedo()`
 - `JSONPatchOperation`
 - `JSONResult`
 
 `doc.ops` is not public. A local `SheetOps` wrapper is acceptable if it only wraps public API.
+
+Unreleased local zod-crud changes already reflected here:
+
+- Lab package renames used by `spredsheet`: `batch-set` -> `batch-update`, `clear-values` -> `clear-contents`, `cycle` -> `toggle-value`, `ensure-fields` -> `apply-defaults`, `number-step` -> `increment-number`, and `set-membership` -> `toggle-option`.
+- Other renamed labs are not currently imported by the app: `coerce` -> `convert-type`, `collection-sort` -> `sort-items`, `computed-fields` -> `calculated-fields`, `convert-node-kind` -> `convert-block-type`, `fill-empty` -> `fill-blanks`, `forward-fill` -> `fill-down`, `grid-paste` -> `paste-cells`, `limit` -> `limit-items`, `move-selection` -> `move-selected`, `pad` -> `pad-text`, `paste-compatible` -> `paste-special`, `presence-cursors` -> `live-cursors`, `reindex` -> `renumber-items`, `slugify` -> `generate-slug`, `swap` -> `swap-items`, `text-transform` -> `change-case`, `truncate` -> `trim-text`, and `wrap-unwrap` -> `wrap-selection`.
+- Default document error execution is now non-throwing (`strict: false`); this app already consumes result objects.
+- Extension failure diagnostics use result-level `reason`; this app reads `.reason` for persistence/autosave failures.
 
 ## Improvement Direction
 
