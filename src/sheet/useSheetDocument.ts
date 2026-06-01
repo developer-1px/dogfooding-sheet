@@ -23,6 +23,7 @@ import type { ClipboardTextBridge } from './clipboard/clipboardActions'
 import type { Format } from './formatting/useFormats'
 import type { CellStyle } from './formatting/useStyles'
 import type { CondMutationCommands, CondRule } from './formatting/useCondFormat'
+import type { MergeMutationCommands } from './structure/useMerges'
 import type { SheetCountMutationCommands } from './structure/sheetMutations'
 import type { Rule } from './validation/useValidation'
 import type { FreezeMutationCommands } from './visibility/useFreeze'
@@ -207,6 +208,10 @@ export function useSheetDocument() {
     removeRule: (index) => collection.deleteItems(appendSegment('/condFormat' as Pointer, index)).ok,
     clearAll: () => clear.clearContents(['/condFormat' as Pointer]).ok,
   }), [batchUpdate, clear, collection, doc])
+  const mergeMutations = useMemo<MergeMutationCommands>(() => ({
+    addMerge: (merge) => doc.insert('/merges/-' as Pointer, merge).ok,
+    removeMerge: (index) => collection.deleteItems(appendSegment('/merges' as Pointer, index)).ok,
+  }), [collection, doc])
   const countMutations = useMemo<SheetCountMutationCommands>(() => ({
     appendRows: (count) => incrementNumber.step('/rowCount' as Pointer, { step: count, max: MAX_ROW_COUNT }).ok,
     appendCols: (count) => incrementNumber.step('/colCount' as Pointer, { step: count, max: MAX_COL_COUNT }).ok,
@@ -237,6 +242,7 @@ export function useSheetDocument() {
     clearAllFormats,
     recordMutations,
     condFormatMutations,
+    mergeMutations,
     countMutations,
     freezeMutations,
     hiddenMutations,

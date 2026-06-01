@@ -1,11 +1,16 @@
 import { describe, it, expect, vi } from 'vitest'
 import type { SheetOps } from '../schema'
-import { buildMergeMap, useMerges } from './useMerges'
+import { buildMergeMap, useMerges, type MergeMutationCommands } from './useMerges'
 
 const makeOps = () => {
   const replace = vi.fn()
   return { replace } as unknown as SheetOps & { replace: typeof replace }
 }
+
+const makeCommands = (result = true) => ({
+  addMerge: vi.fn(() => result),
+  removeMerge: vi.fn(() => result),
+}) satisfies MergeMutationCommands
 
 describe('buildMergeMap', () => {
   it('empty merges → empty maps', () => {
@@ -40,10 +45,45 @@ describe('buildMergeMap', () => {
 
   it('adds merges through bounded normalized state', () => {
     const ops = makeOps()
-    const actions = useMerges([[0, 0, 0, 1], [1, 1, 1, 1]], ops, { rowCount: 2, colCount: 3 })
+    const commands = makeCommands()
+    const actions = useMerges([[0, 0, 0, 1], [1, 1, 1, 1]], ops, { rowCount: 2, colCount: 3 }, commands)
 
     actions.addMerge([0, 0, 1, 2])
 
+    expect(commands.addMerge).not.toHaveBeenCalled()
+    expect(ops.replace).toHaveBeenCalledWith('/merges', [[0, 0, 1, 2]])
+  })
+
+  it('delegates a non-overlapping merge append', () => {
+    const ops = makeOps()
+    const commands = makeCommands()
+    const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 2 }, commands)
+
+    actions.addMerge([1, 1, 0, 1])
+
+    expect(commands.addMerge).toHaveBeenCalledWith([1, 1, 0, 1])
+    expect(ops.replace).not.toHaveBeenCalled()
+  })
+
+  it('falls back to replacing the merge list when append delegation fails', () => {
+    const ops = makeOps()
+    const commands = makeCommands(false)
+    const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 2 }, commands)
+
+    actions.addMerge([1, 1, 0, 1])
+
+    expect(commands.addMerge).toHaveBeenCalledWith([1, 1, 0, 1])
+    expect(ops.replace).toHaveBeenCalledWith('/merges', [[0, 0, 0, 1], [1, 1, 0, 1]])
+  })
+
+  it('keeps overlapping merge adds as whole-list replacements', () => {
+    const ops = makeOps()
+    const commands = makeCommands()
+    const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 3 }, commands)
+
+    actions.addMerge([0, 0, 1, 2])
+
+    expect(commands.addMerge).not.toHaveBeenCalled()
     expect(ops.replace).toHaveBeenCalledWith('/merges', [[0, 0, 1, 2]])
   })
 
@@ -72,6 +112,28 @@ describe('buildMergeMap', () => {
 
     actions.unmergeAt(0, 1)
 
+    expect(ops.replace).toHaveBeenCalledWith('/merges', [])
+  })
+
+  it('delegates removing a single merge by index', () => {
+    const ops = makeOps()
+    const commands = makeCommands()
+    const actions = useMerges([[0, 0, 0, 1], [1, 1, 0, 1]], ops, { rowCount: 2, colCount: 2 }, commands)
+
+    actions.unmergeAt(1, 1)
+
+    expect(commands.removeMerge).toHaveBeenCalledWith(1)
+    expect(ops.replace).not.toHaveBeenCalled()
+  })
+
+  it('falls back to replacing the merge list when remove delegation fails', () => {
+    const ops = makeOps()
+    const commands = makeCommands(false)
+    const actions = useMerges([[0, 0, 0, 1]], ops, { rowCount: 2, colCount: 2 }, commands)
+
+    actions.unmergeAt(0, 1)
+
+    expect(commands.removeMerge).toHaveBeenCalledWith(0)
     expect(ops.replace).toHaveBeenCalledWith('/merges', [])
   })
 })

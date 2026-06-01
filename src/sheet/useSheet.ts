@@ -44,6 +44,7 @@ export function useSheet(opts: SheetOptions = {}) {
     clearAllFormats,
     recordMutations,
     condFormatMutations,
+    mergeMutations,
     countMutations,
     freezeMutations,
     hiddenMutations,
@@ -61,7 +62,7 @@ export function useSheet(opts: SheetOptions = {}) {
   const validation = useValidation(sheet.validation, sheet.cells, ops, { rowCount, colCount: sheet.colCount }, recordMutations.validation)
   const cond = useCondFormat(sheet.condFormat, ops, { colCount: sheet.colCount }, condFormatMutations)
   const layout = useSheetLayout(sheet, ops, opts, recordMutations)
-  const merges = useMerges(sheet.merges, ops, { rowCount, colCount: sheet.colCount })
+  const merges = useMerges(sheet.merges, ops, { rowCount, colCount: sheet.colCount }, mergeMutations)
   const find = useFindState()
   const viewState = useSheetViewState()
   const tabs = useTabs(sheet.tabs, ops)
