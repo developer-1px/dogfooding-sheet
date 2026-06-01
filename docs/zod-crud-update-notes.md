@@ -1,6 +1,6 @@
 # zod-crud update notes
 
-Date: 2026-06-01
+Date: 2026-06-02
 
 ## Current State
 
@@ -8,8 +8,8 @@ Date: 2026-06-01
 
 - Good: document state and undo/redo are already backed by zod-crud.
 - Good: `dictOps` now favors surgical key patches instead of whole-dict replacement.
-- Good: `useSheetDocument` composes official and lab zod-crud extensions for persistence, dirty state, collection movement, text replace, existing-value batch set, and whole-record clear.
-- App-owned: visual grid selection, DOM focus, keyboard policy, TSV parsing, formula semantics, sparse record upsert fallback, and structural row/column shifts.
+- Good: `useSheetDocument` composes official and lab zod-crud extensions for persistence, dirty state, collection movement, text replace, existing-value batch set, whole-record clear, import patch preview, browser text clipboard access, and hidden row/column membership.
+- App-owned: visual grid selection, DOM focus, keyboard policy, TSV parsing, formula semantics, sparse record add/remove fallback, and structural row/column shifts.
 
 Current usage is broadly valid.
 
@@ -35,7 +35,7 @@ The final zod-crud shape is document-facade based:
    Translate grid selection to JSON Pointers only when applying document mutations or model clipboard operations.
 
 3. Keep TSV parsing outside zod-crud unless a dedicated grid clipboard adapter appears.
-   zod-crud clipboard is a headless JSON payload buffer; table text/html formats are spreadsheet adapters.
+   zod-crud clipboard-web owns browser text clipboard access; table text/html formats are spreadsheet adapters.
 
 4. Consider `doc.commit(..., { selection })` later only if sheet model selection needs to be stored with history.
 
@@ -48,16 +48,17 @@ The final zod-crud shape is document-facade based:
 - Sparse record upsert gap: https://github.com/developer-1px/zod-crud/issues/141
 - Sparse-record grid paste/fill gap: https://github.com/developer-1px/zod-crud/issues/142
 - Regex search-replace pressure: https://github.com/developer-1px/zod-crud/issues/143
+- Feature-level package naming pressure: https://github.com/developer-1px/zod-crud/issues/144
 
 ## Suggested Local Work Items
 
-- Keep moving app-owned patch helpers behind zod-crud extension commands where a matching concept exists.
+- Keep moving app-owned patch helpers behind zod-crud extension commands where a matching feature concept exists.
 - Keep undo tests that prove one cell/metadata edit reverts only that intended edit.
 - Avoid imports from zod-crud private subpaths.
 
 ## Verification
 
 ```sh
-npm -C ../spredsheet run typecheck
-npm -C ../spredsheet test
+pnpm exec tsc -b --pretty false
+pnpm test
 ```

@@ -312,8 +312,8 @@ describe('overflowMenuActions', () => {
       exportJson: () => { calls.push('json-export'); return true },
       openJsonImport: () => calls.push('json-import'),
       confirm: confirmValue(true),
-      clearCellValues: () => calls.push('clear-values'),
-      clearAllFormats: () => calls.push('clear-formats'),
+      clearCellValues: () => { calls.push('clear-values'); return true },
+      clearAllFormats: () => { calls.push('clear-formats'); return true },
     }
 
     await runOverflowMenuCommand('help', commands)
@@ -341,8 +341,8 @@ describe('overflowMenuActions', () => {
       exportJson: () => true,
       openJsonImport: () => {},
       confirm: confirmValue(true),
-      clearCellValues: () => {},
-      clearAllFormats: () => {},
+      clearCellValues: () => true,
+      clearAllFormats: () => true,
     })).resolves.toBe(false)
 
     await expect(runOverflowMenuCommand('csv-export', {
@@ -356,8 +356,8 @@ describe('overflowMenuActions', () => {
       exportJson: () => true,
       openJsonImport: () => {},
       confirm: confirmValue(true),
-      clearCellValues: () => {},
-      clearAllFormats: () => {},
+      clearCellValues: () => true,
+      clearAllFormats: () => true,
     })).resolves.toBe(false)
 
     await expect(runOverflowMenuCommand('json-export', {
@@ -371,8 +371,8 @@ describe('overflowMenuActions', () => {
       exportJson: () => false,
       openJsonImport: () => {},
       confirm: confirmValue(true),
-      clearCellValues: () => {},
-      clearAllFormats: () => {},
+      clearCellValues: () => true,
+      clearAllFormats: () => true,
     })).resolves.toBe(false)
   })
 
@@ -391,8 +391,8 @@ describe('overflowMenuActions', () => {
       exportJson: () => true,
       openJsonImport: () => {},
       confirm: confirmValue(true, prompts),
-      clearCellValues: (cells) => calls.push(`clear-values:${Object.keys(cells).length}`),
-      clearAllFormats: () => calls.push('clear-formats'),
+      clearCellValues: () => { calls.push('clear-values'); return true },
+      clearAllFormats: () => { calls.push('clear-formats'); return true },
     })).resolves.toBe(true)
 
     await expect(runOverflowMenuCommand('clear-formats', {
@@ -406,12 +406,12 @@ describe('overflowMenuActions', () => {
       exportJson: () => true,
       openJsonImport: () => {},
       confirm: confirmValue(false, prompts),
-      clearCellValues: (cells) => calls.push(`clear-values:${Object.keys(cells).length}`),
-      clearAllFormats: () => calls.push('clear-formats'),
+      clearCellValues: () => { calls.push('clear-values'); return true },
+      clearAllFormats: () => { calls.push('clear-formats'); return true },
     })).resolves.toBe(false)
 
     expect(prompts.map((prompt) => prompt.confirmLabel)).toEqual(['지우기', '지우기'])
     expect(prompts[0].message).toContain('셀 값')
-    expect(calls).toEqual(['clear-values:0'])
+    expect(calls).toEqual(['clear-values'])
   })
 })

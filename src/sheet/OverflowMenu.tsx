@@ -3,7 +3,7 @@ import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuButtonPattern } from '@interactive-os/aria-kernel/patterns'
 import { downloadFile } from '../lib/downloadFile'
 import type { Confirm } from './useConfirm'
-import type { Cells, Display, Sheet, WriteCell, WriteMany } from './schema'
+import type { Display, Sheet, WriteCell, WriteMany } from './schema'
 import {
   exportOverflowCsv,
   exportOverflowJson,
@@ -23,13 +23,13 @@ export interface OverflowProps {
   sheet: Sheet
   resetSheet: (s: Sheet) => void
   previewSheetReplacement?: (sheet: Sheet) => Sheet | null
-  clearCellValues: (cells: Cells) => void
+  clearCellValues: () => boolean
   confirm: Confirm
   showFormulas: boolean
   toggleShowFormulas: () => void
   showGridlines: boolean
   toggleShowGridlines: () => void
-  clearAllFormats: () => void
+  clearAllFormats: () => boolean
 }
 
 export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, resetSheet, previewSheetReplacement, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {

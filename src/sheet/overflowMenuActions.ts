@@ -1,5 +1,4 @@
 import type { Confirm } from './useConfirm'
-import type { Cells } from './schema'
 
 export {
   MAX_IMPORT_FILE_BYTES,
@@ -61,8 +60,8 @@ export interface OverflowMenuCommands {
   exportJson: () => boolean
   openJsonImport: () => void
   confirm: Confirm
-  clearCellValues: (cells: Cells) => void
-  clearAllFormats: () => void
+  clearCellValues: () => boolean
+  clearAllFormats: () => boolean
 }
 
 export async function runOverflowMenuCommand(id: OverflowMenuItemId, commands: OverflowMenuCommands): Promise<boolean> {
@@ -82,14 +81,14 @@ export async function runOverflowMenuCommand(id: OverflowMenuItemId, commands: O
         confirmLabel: '지우기',
       })
       if (!ok) return false
-      commands.clearCellValues({})
+      return commands.clearCellValues()
     } else if (id === 'clear-formats') {
       const ok = await commands.confirm({
         message: '모든 셀 서식·스타일·조건부 서식을 지우시겠습니까? (실행 취소 가능)',
         confirmLabel: '지우기',
       })
       if (!ok) return false
-      commands.clearAllFormats()
+      return commands.clearAllFormats()
     }
     return true
   } catch {
