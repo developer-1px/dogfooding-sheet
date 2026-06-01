@@ -25,7 +25,7 @@ import type { CellStyle } from './formatting/useStyles'
 import type { CondMutationCommands, CondRule } from './formatting/useCondFormat'
 import type { MergeMutationCommands } from './structure/useMerges'
 import type { SheetCountMutationCommands } from './structure/sheetMutations'
-import type { Rule } from './validation/useValidation'
+import type { Rule, ValidationMutationCommands } from './validation/useValidation'
 import type { FreezeMutationCommands } from './visibility/useFreeze'
 import type { HiddenMutationCommands } from './visibility/useHidden'
 
@@ -43,7 +43,7 @@ export interface SheetRecordMutationCommands {
   notes: RecordMutationCommands<string>
   formats: RecordMutationCommands<Format>
   styles: RecordMutationCommands<CellStyle>
-  validation: RecordMutationCommands<Rule>
+  validation: ValidationMutationCommands
   rowHeights: RecordMutationCommands<number>
   colWidths: RecordMutationCommands<number>
 }
@@ -124,7 +124,12 @@ export function useSheetDocument() {
       notes: commandsFor('/notes' as Pointer),
       formats: commandsFor('/formats' as Pointer),
       styles: commandsFor('/styles' as Pointer),
-      validation: commandsFor('/validation' as Pointer),
+      validation: {
+        ...commandsFor<Rule>('/validation' as Pointer),
+        applyCheckboxConversion(next) {
+          return diff.apply({ ...sheet, cells: next.cells, validation: next.validation }, { label: 'checkbox-conversion', origin: 'programmatic' }).ok
+        },
+      },
       rowHeights: commandsFor('/rowHeights' as Pointer),
       colWidths: commandsFor('/colWidths' as Pointer),
     }

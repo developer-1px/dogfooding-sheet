@@ -14,6 +14,15 @@ export interface ValidationActions {
   clearRule: (keys: string[]) => void
 }
 
+export interface CheckboxConversionState {
+  cells: Cells
+  validation: Record<string, Rule>
+}
+
+export interface ValidationMutationCommands extends RecordMutationCommands<Rule> {
+  applyCheckboxConversion?: (next: CheckboxConversionState) => boolean
+}
+
 interface ValidationBounds {
   rowCount: number
   colCount: number
@@ -59,6 +68,25 @@ export function checkboxConversionPatch(rules: Record<string, Rule>, cells: Cell
   return patch
 }
 
+export function checkboxConversionState(rules: Record<string, Rule>, cells: Cells, keys: string[]): CheckboxConversionState | null {
+  let validation: Record<string, Rule> | null = null
+  let nextCells: Cells | null = null
+  for (const key of keys) {
+    if (rules[key] === undefined || rules[key]?.type !== 'checkbox') {
+      validation ??= { ...rules }
+      validation[key] = { type: 'checkbox' }
+    }
+
+    const value = normalizeCheckboxValue(cells[key])
+    if (cells[key] === undefined || cells[key] !== value) {
+      nextCells ??= { ...cells }
+      nextCells[key] = value
+    }
+  }
+  if (!validation && !nextCells) return null
+  return { validation: validation ?? rules, cells: nextCells ?? cells }
+}
+
 const LEGACY_KEY = 'spreadsheet:validation:v1'
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -96,7 +124,7 @@ export const setListValidationRule = (
   keys: string[],
   options: string[],
   bounds?: ValidationBounds,
-  commands?: RecordMutationCommands<Rule>,
+  commands?: ValidationMutationCommands,
 ): void => {
   const targetKeys = validKeys(keys, bounds)
   const normalized = normalizeValidationOptions(options)
@@ -104,7 +132,22 @@ export const setListValidationRule = (
   upsertKeys(ops, '/validation', rules, targetKeys.map((k) => [k, value]), sameValidationRule, commands)
 }
 
-export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: SheetOps, bounds?: ValidationBounds, commands?: RecordMutationCommands<Rule>) {
+export const setCheckboxValidationRule = (
+  rules: Record<string, Rule>,
+  cells: Cells,
+  ops: SheetOps,
+  keys: string[],
+  bounds?: ValidationBounds,
+  commands?: ValidationMutationCommands,
+): void => {
+  const targetKeys = validKeys(keys, bounds)
+  const next = checkboxConversionState(rules, cells, targetKeys)
+  if (!next) return
+  if (commands?.applyCheckboxConversion?.(next)) return
+  applyPatch(ops, checkboxConversionPatch(rules, cells, targetKeys))
+}
+
+export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: SheetOps, bounds?: ValidationBounds, commands?: ValidationMutationCommands) {
   const rowCount = bounds?.rowCount
   const colCount = bounds?.colCount
   useEffect(() => {
@@ -113,10 +156,7 @@ export function useValidation(rules: Record<string, Rule>, cells: Cells, ops: Sh
 
   const setListRule = (keys: string[], options: string[]) => setListValidationRule(rules, ops, keys, options, bounds, commands)
   const clearRule = (keys: string[]) => upsertKeys(ops, '/validation', rules, validKeys(keys, bounds).map((k) => [k, undefined]), undefined, commands)
-  const setCheckboxRule = (keys: string[]) => {
-    const patch = checkboxConversionPatch(rules, cells, validKeys(keys, bounds))
-    applyPatch(ops, patch)
-  }
+  const setCheckboxRule = (keys: string[]) => setCheckboxValidationRule(rules, cells, ops, keys, bounds, commands)
 
   return { setListRule, setCheckboxRule, clearRule, ruleOf: (k: string): Rule | undefined => rules[k] }
 }

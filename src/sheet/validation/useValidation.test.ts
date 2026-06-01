@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SheetOps } from '../schema'
-import { coerceLegacyValidationRules, checkboxConversionPatch, normalizeCheckboxValue, setListValidationRule } from './useValidation'
+import { coerceLegacyValidationRules, checkboxConversionPatch, normalizeCheckboxValue, setCheckboxValidationRule, setListValidationRule } from './useValidation'
 import { MAX_CELL_TEXT_LENGTH } from '../cellValue'
 import { MAX_VALIDATION_OPTIONS } from '../schema'
 
@@ -34,6 +34,44 @@ describe('checkbox validation conversion', () => {
       { op: 'add', path: '/validation/C1', value: { type: 'checkbox' } },
       { op: 'add', path: '/cells/C1', value: 'FALSE' },
     ])
+  })
+
+  it('delegates checkbox conversion through a validation command', () => {
+    const { ops, calls } = recordingOps()
+    const delegated: unknown[] = []
+
+    setCheckboxValidationRule(
+      { A1: { type: 'list', options: ['x'] } },
+      { A1: 'yes' },
+      ops,
+      ['A1', 'B1'],
+      undefined,
+      { applyCheckboxConversion: (next) => { delegated.push(next); return true } },
+    )
+
+    expect(delegated).toEqual([{
+      validation: { A1: { type: 'checkbox' }, B1: { type: 'checkbox' } },
+      cells: { A1: 'TRUE', B1: 'FALSE' },
+    }])
+    expect(calls).toEqual([])
+  })
+
+  it('falls back to an atomic patch when checkbox conversion delegation fails', () => {
+    const { ops, calls } = recordingOps()
+
+    setCheckboxValidationRule(
+      { A1: { type: 'list', options: ['x'] } },
+      { A1: 'yes' },
+      ops,
+      ['A1'],
+      undefined,
+      { applyCheckboxConversion: () => false },
+    )
+
+    expect(calls).toEqual([['patch', [
+      { op: 'replace', path: '/validation/A1', value: { type: 'checkbox' } },
+      { op: 'replace', path: '/cells/A1', value: 'TRUE' },
+    ]]])
   })
 
   it('coerces legacy validation through current rule limits', () => {
