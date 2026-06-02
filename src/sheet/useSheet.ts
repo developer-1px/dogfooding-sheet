@@ -131,6 +131,7 @@ export function useSheet(opts: SheetOptions = {}) {
     writeCell,
     writeCells,
     writeCellRange,
+    fillCellRange,
     clipboardText,
     selectedIds,
     setSelectedIds,

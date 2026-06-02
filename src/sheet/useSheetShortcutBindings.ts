@@ -1,6 +1,6 @@
 import { exportCsvBounded, MAX_CSV_EXPORT_LENGTH } from '../lib/csv'
 import { downloadFile } from '../lib/downloadFile'
-import type { Sheet, SheetOps, WriteCell, WriteCellRange, WriteMany, Display } from './schema'
+import type { FillCellRange, Sheet, SheetOps, WriteCell, WriteCellRange, WriteMany, Display } from './schema'
 import { CLEAR_STYLE, type CellStyle } from './formatting/useStyles'
 import { rowColAtFocus } from './structure/rowColAtFocus'
 import { mergeSelection } from './structure/mergeSelection'
@@ -19,6 +19,7 @@ interface Args {
   writeCell: WriteCell
   writeCells: WriteMany
   writeCellRange: WriteCellRange
+  fillCellRange: FillCellRange
   clipboardText?: ClipboardTextBridge
   selectedIds: string[]
   setSelectedIds: (ids: string[]) => void
@@ -63,6 +64,7 @@ export function useSheetShortcutBindings(args: Args) {
     writeCell: args.writeCell,
     writeCells: args.writeCells,
     writeCellRange: args.writeCellRange,
+    fillCellRange: args.fillCellRange,
     clipboardText: args.clipboardText,
     startEdit: args.startEdit,
     selectedIds: args.selectedIds,

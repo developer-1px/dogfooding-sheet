@@ -1,21 +1,25 @@
-import { fillDownWrites, fillRightWrites, type Cells, type Writes, type WriteCell, type WriteMany } from '@spredsheet/grid'
+import { idsInRect, rectFromIds, type Rect } from '@spredsheet/grid'
+import type { FillCellRange } from '../schema'
 
-const flush = (writes: Writes, write: WriteCell, writeMany?: WriteMany): boolean => {
-  try {
-    if (writes.length === 0) return true
-    if (writeMany) writeMany(writes); else for (const [k, v] of writes) write(k, v)
-    return true
-  } catch {
-    return false
-  }
+const selectedRect = (selectedIds: string[]): Rect | null => {
+  if (selectedIds.length < 2) return null
+  const rect = rectFromIds(selectedIds)
+  if (!rect) return null
+  const ids = idsInRect(rect)
+  const selected = new Set(selectedIds)
+  return ids.length === selected.size && ids.every((id) => selected.has(id)) ? rect : null
 }
 
 /** Copy top-most selected cell per column down into rest of selection (Cmd+D). */
-export function fillDown(selectedIds: string[], cells: Cells, write: WriteCell, writeMany?: WriteMany): boolean {
-  return flush(fillDownWrites(selectedIds, cells), write, writeMany)
+export function fillDown(selectedIds: string[], fillCellRange: FillCellRange): boolean {
+  const rect = selectedRect(selectedIds)
+  if (!rect || rect.rMin === rect.rMax) return false
+  return fillCellRange({ ...rect, rMax: rect.rMin }, rect)
 }
 
 /** Mirror of fillDown: copy left-most cell per row rightward within selection. */
-export function fillRight(selectedIds: string[], cells: Cells, write: WriteCell, writeMany?: WriteMany): boolean {
-  return flush(fillRightWrites(selectedIds, cells), write, writeMany)
+export function fillRight(selectedIds: string[], fillCellRange: FillCellRange): boolean {
+  const rect = selectedRect(selectedIds)
+  if (!rect || rect.cMin === rect.cMax) return false
+  return fillCellRange({ ...rect, cMax: rect.cMin }, rect)
 }
