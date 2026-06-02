@@ -1,6 +1,11 @@
 import { createCellDisplayModel, type CellContent } from '@spredsheet/editable-grid/cell-display'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
+import { ContenteditableCellEditor } from './ContenteditableCellEditor'
 import type { SheetGridItemProps } from './gridTypes'
+
+interface CommitOptions {
+  readonly restoreFocus?: boolean
+}
 
 interface Props {
   cellProps: SheetGridItemProps
@@ -16,8 +21,8 @@ interface Props {
   editing: boolean
   draft: string
   setDraft: (v: string) => void
-  onCommit: (move?: { dRow: number; dCol: number }) => void
-  onCancel: () => void
+  onCommit: (draft: string, opts?: CommitOptions) => void
+  onCancel: (opts?: CommitOptions) => void
   onStartEdit: () => void
   onMouseDown: (e: React.MouseEvent) => void
   onMouseEnter: (e: React.MouseEvent) => void
@@ -65,14 +70,6 @@ export function Cell(p: Props) {
     note: p.note,
     tooltip: p.tooltip,
   })
-  const inputProps = {
-    ...p.inputProps,
-    'aria-label': display.editLabel,
-    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
-      p.onFormulaPickKeyDown(e)
-      if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
-    },
-  }
   const textareaProps = {
     ...p.inputProps,
     'aria-label': display.editLabel,
@@ -118,7 +115,16 @@ export function Cell(p: Props) {
         ) : (
           p.styleClass.split(' ').includes('wrap')
             ? <textarea className="cell-input wrap-input" {...textareaProps} />
-            : <input className="cell-input" {...inputProps} />
+            : (
+              <ContenteditableCellEditor
+                ariaLabel={display.editLabel}
+                draft={p.draft}
+                setDraft={p.setDraft}
+                onCommit={p.onCommit}
+                onCancel={p.onCancel}
+                onKeyDown={p.onFormulaPickKeyDown}
+              />
+            )
         )
       ) : (
         <>

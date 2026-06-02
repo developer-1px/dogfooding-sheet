@@ -76,8 +76,9 @@
 .cell-input {
   position: absolute; inset: 0; width: 100%; padding: 4px 6px;
   font: inherit; outline: none; background: #fff;
-  border: 2px solid #1a73e8;
+  border: 2px solid #1a73e8; box-sizing: border-box;
 }
+.cell-input[contenteditable="true"] { display: block; white-space: nowrap; overflow: hidden; text-align: inherit; }
 
 .header-cell.active, .grid-row.active-row > .row-header { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
 .corner-cell.selected-header, .header-cell.selected-header, .row-header.selected-header { background: #d2e3fc; color: #174ea6; font-weight: 600; }

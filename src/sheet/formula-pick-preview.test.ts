@@ -2,7 +2,7 @@ import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
 import { cycleTrailingFormulaRef } from './selection/formulaPick'
-import { cells as gridCells, keyDown, mouseClick, setInputValue, setupReactDOM } from './test-utils'
+import { cellEditor, cells as gridCells, keyDown, mouseClick, setContenteditableText, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -13,8 +13,8 @@ const startFormulaEdit = async () => {
   act(() => mouseClick(a1))
   act(() => keyDown(a1, 'F2'))
 
-  const input = document.querySelector<HTMLInputElement>('input.cell-input')!
-  act(() => setInputValue(input, '='))
+  const input = cellEditor()!
+  act(() => setContenteditableText(input, '='))
   return input
 }
 
@@ -32,7 +32,7 @@ describe('formula reference picking', () => {
 
     act(() => keyDown(input, 'ArrowRight'))
 
-    expect(input.value).toBe('=B1')
+    expect(input.textContent).toBe('=B1')
     expect(document.querySelector<HTMLElement>('.cell.selected')?.textContent).toContain('Qty')
   })
 
@@ -42,7 +42,7 @@ describe('formula reference picking', () => {
     act(() => keyDown(input, 'ArrowRight'))
     act(() => keyDown(input, 'ArrowDown', { shiftKey: true }))
 
-    expect(input.value).toBe('=B1:B2')
+    expect(input.textContent).toBe('=B1:B2')
     expect([...document.querySelectorAll<HTMLElement>('.cell.selected')]).toHaveLength(2)
   })
 
@@ -52,8 +52,8 @@ describe('formula reference picking', () => {
 
     act(() => mouseClick(b2))
 
-    expect(document.querySelector<HTMLInputElement>('input.cell-input')).toBe(input)
-    expect(input.value).toBe('=B2')
+    expect(cellEditor()).toBe(input)
+    expect(input.textContent).toBe('=B2')
   })
 
   it('cycles the picked reference with F4 while editing a formula', async () => {
@@ -63,6 +63,6 @@ describe('formula reference picking', () => {
     act(() => keyDown(input, 'F4'))
     act(() => keyDown(input, 'F4'))
 
-    expect(input.value).toBe('=B$1')
+    expect(input.textContent).toBe('=B$1')
   })
 })

@@ -12,6 +12,11 @@ import type { SheetMutations } from '../structure/sheetMutations'
 import type { ClipboardTextBridge } from '../clipboard/clipboardActions'
 import type { SheetRecordMutationCommands } from '../useSheetDocument'
 
+interface CommitOptions {
+  readonly restoreFocus?: boolean
+  readonly draft?: string
+}
+
 export interface GridContextMenuController
   extends SheetMutations,
   Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>,
@@ -59,8 +64,8 @@ export interface GridController extends GridContextMenuController {
   draft: string
   setDraft: (draft: string) => void
   startEdit: (id: string, initial?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
-  commitEdit: (move?: { dRow: number; dCol: number }) => void
-  cancelEdit: () => void
+  commitEdit: (move?: { dRow: number; dCol: number }, opts?: CommitOptions) => void
+  cancelEdit: (opts?: { restoreFocus?: boolean }) => void
   inputProps: InputProps
   selectProps: SelectProps
   highlightedIds: string[]

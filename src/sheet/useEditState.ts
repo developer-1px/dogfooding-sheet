@@ -27,7 +27,7 @@ type SelectProps = Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onKeyDow
   ref?: React.Ref<HTMLSelectElement>
   onKeyDown?: React.KeyboardEventHandler<HTMLElement>
 }
-type CommitOptions = { restoreFocus?: boolean }
+type CommitOptions = { restoreFocus?: boolean; draft?: string }
 
 const dirDelta: Record<GridNavDir, { dRow: number; dCol: number }> = {
   down: { dRow: 1, dCol: 0 },
@@ -71,7 +71,8 @@ export function useEditState({ cells, writeCell, rowCount, colLetters }: Args) {
   // Keep the existing sheet-level commitEdit({ dRow, dCol }) API while using the package edit engine.
   const commitEdit = useCallback((move?: { dRow: number; dCol: number }, opts: CommitOptions = {}) => setState((s) => {
     const dir = !move ? undefined : move.dRow > 0 ? 'down' : move.dRow < 0 ? 'up' : move.dCol > 0 ? 'right' : 'left'
-    const committed = commitGridEdit(s, dir ? (id) => navigate(id, dir) : undefined)
+    const editState = opts.draft === undefined ? s : setGridDraft(s, opts.draft)
+    const committed = commitGridEdit(editState, dir ? (id) => navigate(id, dir) : undefined)
     if (opts.restoreFocus && s.editing !== null) requestCellFocusRestore(committed.state.focusId)
     if (committed.write) {
       const p = parseCellId(committed.write.id)

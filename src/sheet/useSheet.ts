@@ -87,18 +87,18 @@ export function useSheet(opts: SheetOptions = {}) {
   const { selectedIds, setSelectedIds, setFocusId, setSelectAnchor, targetKeys } = selection
   const formulaPick = useFormulaPick({ edit, rowCount, colLetters, setSelectedIds, setSelectAnchor })
 
-  const commitEdit = (move?: { dRow: number; dCol: number }) => {
+  const commitEdit = (move?: { dRow: number; dCol: number }, opts?: { restoreFocus?: boolean; draft?: string }) => {
     const wasPicking = formulaPick.formulaPickActive
-    edit.commitEdit(move)
+    edit.commitEdit(move, opts)
     if (wasPicking) {
       formulaPick.clearFormulaPick()
       setSelectedIds([])
     }
   }
 
-  const cancelEdit = () => {
+  const cancelEdit = (opts?: { restoreFocus?: boolean }) => {
     const wasPicking = formulaPick.formulaPickActive
-    edit.cancelEdit()
+    edit.cancelEdit(opts)
     if (wasPicking) {
       formulaPick.clearFormulaPick()
       setSelectedIds([])

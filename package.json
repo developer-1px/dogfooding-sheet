@@ -38,6 +38,7 @@
     "@zod-crud/sparse-record": "file:../zod-crud/labs/extensions/sparse-record",
     "@zod-crud/toggle-option": "file:../zod-crud/labs/extensions/toggle-option",
     "@zod-crud/toggle-value": "file:../zod-crud/labs/extensions/toggle-value",
+    "nano-edit": "file:../nano-edit",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "zod": "^4.0.0",

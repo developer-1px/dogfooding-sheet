@@ -8,6 +8,11 @@ import type { RuleLookup } from '../validation/useValidation'
 import type { Rect } from '@spredsheet/grid'
 import type { SheetGridItemProps, SheetGridRow } from './gridTypes'
 
+interface CommitOptions {
+  readonly restoreFocus?: boolean
+  readonly draft?: string
+}
+
 interface Props {
   rIdx: number
   rowItemProps: SheetGridRow
@@ -34,8 +39,8 @@ interface Props {
   setDraft: (v: string) => void
   setSelectedIds: (ids: string[]) => void
   startEdit: (id: string, initial?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
-  commitEdit: (move?: { dRow: number; dCol: number }) => void
-  cancelEdit: () => void
+  commitEdit: (move?: { dRow: number; dCol: number }, opts?: CommitOptions) => void
+  cancelEdit: (opts?: { restoreFocus?: boolean }) => void
   onRowHeaderContextMenu: (e: React.MouseEvent) => void
   heightOf: (row: number) => number
   onResize: (row: number, h: number) => void
@@ -132,7 +137,7 @@ export function GridRow(p: Props) {
             editing={p.editing === view.id}
             draft={p.draft}
             setDraft={p.setDraft}
-            onCommit={p.commitEdit}
+            onCommit={(draft, opts) => p.commitEdit(undefined, { ...opts, draft })}
             onCancel={p.cancelEdit}
             onStartEdit={() => p.startEdit(view.id, undefined, { caret: 'end' })}
             onMouseDown={(e) => p.onCellMouseDown(view.id, e)}

@@ -24,6 +24,22 @@ export const setInputValue = (input: HTMLInputElement, value: string): void => {
   input.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
+export const cellEditor = (): HTMLElement | null =>
+  document.querySelector<HTMLElement>('[data-nano-inline-edit="true"]')
+
+export const setContenteditableText = (editor: HTMLElement, value: string): void => {
+  editor.textContent = value
+  editor.dispatchEvent(new Event('input', { bubbles: true }))
+}
+
+export const contenteditableSelectionOffset = (editor: HTMLElement): number | null => {
+  const selection = window.getSelection()
+  if (!selection || selection.rangeCount === 0) return null
+  const range = selection.getRangeAt(0)
+  if (!editor.contains(range.startContainer)) return null
+  return range.startOffset
+}
+
 /** All grid cells currently rendered in the DOM, in document order. */
 export const cells = (): HTMLElement[] =>
   [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
