@@ -1,7 +1,7 @@
 import { exportCsvBounded, importCsvRowsInto, MAX_CSV_EXPORT_LENGTH, parseCsv } from '../lib/csv'
 import { MAX_JSON_STRINGIFY_LENGTH, stringifyJsonBounded } from '../lib/jsonStringify'
 import type { Confirm } from './useConfirm'
-import { SheetSchema, colLettersFor, type Display, type Sheet, type WriteCell, type WriteMany } from './schema'
+import { SheetSchema, colLettersFor, type Display, type Sheet, type WriteCell, type WriteCellRange, type WriteMany } from './schema'
 import type { DownloadFile } from './overflowMenuActions'
 
 export const MAX_IMPORT_FILE_BYTES = 5_000_000
@@ -43,12 +43,14 @@ export async function importOverflowCsv({
   sheet,
   writeCell,
   writeCells,
+  writeCellRange,
 }: {
   file: File
   confirm: Confirm
   sheet: Pick<Sheet, 'rowCount' | 'colCount'>
   writeCell: WriteCell
   writeCells: WriteMany
+  writeCellRange?: WriteCellRange
 }): Promise<boolean> {
   const text = await readImportText(file)
   if (text === null) return false
@@ -73,6 +75,7 @@ export async function importOverflowCsv({
       rowCount: sheet.rowCount,
       colLetters: colLettersFor(sheet.colCount),
       writeMany: writeCells,
+      writeRange: writeCellRange,
     })
   } catch {
     return false

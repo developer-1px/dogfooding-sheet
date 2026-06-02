@@ -88,4 +88,39 @@ describe('importCsvInto', () => {
     importCsvRowsInto([['a', 'b'], ['1', '2']], (k, v) => { written[k] = v }, { rowCount: 20 })
     expect(written).toEqual({ A1: 'a', B1: 'b', A2: '1', B2: '2' })
   })
+
+  it('delegates rectangular parsed rows to a range writer', () => {
+    const written: Record<string, string> = {}
+    const ranges: unknown[] = []
+
+    importCsvRowsInto([['a', 'b'], ['1', '2']], (k, v) => { written[k] = v }, {
+      rowCount: 20,
+      writeRange: (range, matrix) => {
+        ranges.push({ range, matrix })
+        return true
+      },
+    })
+
+    expect(ranges).toEqual([{
+      range: { rMin: 0, rMax: 1, cMin: 0, cMax: 1 },
+      matrix: [['a', 'b'], ['1', '2']],
+    }])
+    expect(written).toEqual({})
+  })
+
+  it('falls back to writes for ragged parsed rows', () => {
+    const written: Record<string, string> = {}
+    const ranges: unknown[] = []
+
+    importCsvRowsInto([['a', 'b'], ['1']], (k, v) => { written[k] = v }, {
+      rowCount: 20,
+      writeRange: (range, matrix) => {
+        ranges.push({ range, matrix })
+        return true
+      },
+    })
+
+    expect(ranges).toEqual([])
+    expect(written).toEqual({ A1: 'a', B1: 'b', A2: '1' })
+  })
 })

@@ -88,6 +88,44 @@ describe('overflowMenuActions', () => {
     expect(writes).toEqual(['batch:A1:a|B1:b|A2:1|B2:2'])
   })
 
+  it('imports rectangular CSV through a delegated range writer when available', async () => {
+    const writes: string[] = []
+    const ranges: unknown[] = []
+
+    await expect(importOverflowCsv({
+      file: textFile('a,b\n1,2'),
+      confirm: confirmValue(true),
+      sheet: { rowCount: 20, colCount: 2 },
+      writeCell: (key, value) => writes.push(`cell:${key}:${value}`),
+      writeCells: (batch) => writes.push(`batch:${batch.length}`),
+      writeCellRange: (range, matrix) => {
+        ranges.push({ range, matrix })
+        return true
+      },
+    })).resolves.toBe(true)
+
+    expect(ranges).toEqual([{
+      range: { rMin: 0, rMax: 1, cMin: 0, cMax: 1 },
+      matrix: [['a', 'b'], ['1', '2']],
+    }])
+    expect(writes).toEqual([])
+  })
+
+  it('falls back to batched writes when CSV range delegation fails', async () => {
+    const writes: string[] = []
+
+    await expect(importOverflowCsv({
+      file: textFile('a,b\n1,2'),
+      confirm: confirmValue(true),
+      sheet: { rowCount: 20, colCount: 2 },
+      writeCell: (key, value) => writes.push(`cell:${key}:${value}`),
+      writeCells: (batch) => writes.push(`batch:${batch.map(([key, value]) => `${key}:${value}`).join('|')}`),
+      writeCellRange: () => false,
+    })).resolves.toBe(true)
+
+    expect(writes).toEqual(['batch:A1:a|B1:b|A2:1|B2:2'])
+  })
+
   it('imports only cells inside the sheet dimensions', async () => {
     const writes: string[] = []
 

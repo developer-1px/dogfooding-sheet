@@ -3,7 +3,7 @@ import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuButtonPattern } from '@interactive-os/aria-kernel/patterns'
 import { downloadFile } from '../lib/downloadFile'
 import type { Confirm } from './useConfirm'
-import type { Display, Sheet, WriteCell, WriteMany } from './schema'
+import type { Display, Sheet, WriteCell, WriteCellRange, WriteMany } from './schema'
 import {
   exportOverflowCsv,
   exportOverflowJson,
@@ -18,6 +18,7 @@ export interface OverflowProps {
   display: Display
   writeCell: WriteCell
   writeCells: WriteMany
+  writeCellRange: WriteCellRange
   openHelp: () => void
   insertLink: () => void
   sheet: Sheet
@@ -32,11 +33,11 @@ export interface OverflowProps {
   clearAllFormats: () => boolean
 }
 
-export function OverflowMenu({ display, writeCell, writeCells, openHelp, insertLink, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
+export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, openHelp, insertLink, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => exportOverflowCsv({ display, sheet, downloadFile })
-  const importCsvFile = (file: File) => importOverflowCsv({ file, confirm, sheet, writeCell, writeCells })
+  const importCsvFile = (file: File) => importOverflowCsv({ file, confirm, sheet, writeCell, writeCells, writeCellRange })
   const exportJson = () => exportOverflowJson({ sheet, downloadFile })
   const importJson = (file: File) => importOverflowJson({ file, confirm, previewSheetReplacement, applySheetReplacement })
 

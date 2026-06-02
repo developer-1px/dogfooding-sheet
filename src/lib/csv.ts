@@ -1,4 +1,4 @@
-import { COL_LETTERS, cellKey, type Writes, type WriteCell, type WriteMany, type Display } from '@spredsheet/grid'
+import { COL_LETTERS, cellKey, type Rect, type Writes, type WriteCell, type WriteMany, type Display } from '@spredsheet/grid'
 
 const CSV_NEEDS_QUOTE = /[",\n\r]/
 export const MAX_CSV_EXPORT_LENGTH = 5_000_000
@@ -49,6 +49,15 @@ export function exportCsv(get: Display, opts: ExportOpts): string {
 export interface ParseCsvOptions {
   maxRows?: number
   maxCols?: number
+}
+
+type WriteCellRange = (range: Rect, matrix: readonly (readonly string[])[]) => boolean
+
+interface ImportCsvOptions {
+  rowCount: number
+  colLetters?: readonly string[]
+  writeMany?: WriteMany
+  writeRange?: WriteCellRange
 }
 
 const boundedLimit = (value: number | undefined): number =>
@@ -111,19 +120,35 @@ export function parseCsv(text: string, opts: ParseCsvOptions = {}): string[][] {
   return rows
 }
 
-export function importCsvRowsInto(rows: readonly (readonly string[])[], write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
+const boundedRows = (rows: readonly (readonly string[])[], opts: Required<Pick<ImportCsvOptions, 'rowCount' | 'colLetters'>>): string[][] =>
+  rows.slice(0, opts.rowCount).map((row) => row.slice(0, opts.colLetters.length))
+
+const rectangularRange = (matrix: readonly (readonly string[])[]): { range: Rect; matrix: string[][] } | null => {
+  const width = matrix[0]?.length
+  if (width === undefined || width === 0 || matrix.length === 0) return null
+  if (!matrix.every((row) => row.length === width)) return null
+  return {
+    range: { rMin: 0, rMax: matrix.length - 1, cMin: 0, cMax: width - 1 },
+    matrix: matrix.map((row) => [...row]),
+  }
+}
+
+export function importCsvRowsInto(rows: readonly (readonly string[])[], write: WriteCell, opts: ImportCsvOptions) {
   const colLetters = opts.colLetters ?? COL_LETTERS
+  const matrix = boundedRows(rows, { rowCount: opts.rowCount, colLetters })
+  const rectangular = rectangularRange(matrix)
+  if (rectangular && opts.writeRange?.(rectangular.range, rectangular.matrix)) return
   const writes: Writes = []
-  for (let r = 0; r < rows.length && r < opts.rowCount; r++) {
-    for (let c = 0; c < rows[r].length && c < colLetters.length; c++) {
-      writes.push([cellKey(colLetters[c], r), rows[r][c]])
+  for (let r = 0; r < matrix.length; r++) {
+    for (let c = 0; c < matrix[r].length; c++) {
+      writes.push([cellKey(colLetters[c], r), matrix[r][c]])
     }
   }
   if (writes.length === 0) return
   if (opts.writeMany) opts.writeMany(writes); else for (const [k, v] of writes) write(k, v)
 }
 
-export function importCsvInto(text: string, write: WriteCell, opts: { rowCount: number; colLetters?: readonly string[]; writeMany?: WriteMany }) {
+export function importCsvInto(text: string, write: WriteCell, opts: ImportCsvOptions) {
   const colLetters = opts.colLetters ?? COL_LETTERS
   importCsvRowsInto(parseCsv(text, { maxRows: opts.rowCount, maxCols: colLetters.length }), write, {
     ...opts,

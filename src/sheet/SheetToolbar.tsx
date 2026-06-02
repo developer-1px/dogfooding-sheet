@@ -1,7 +1,7 @@
 import { Toolbar } from './Toolbar'
 import type { Ask } from './usePrompt'
 import type { Confirm } from './useConfirm'
-import type { Display, Sheet, SheetOps, WriteCell, WriteMany } from './schema'
+import type { Display, Sheet, SheetOps, WriteCell, WriteCellRange, WriteMany } from './schema'
 import type { Format, FormatLookup } from './formatting/useFormats'
 import type { CellStyle, StyleLookup } from './formatting/useStyles'
 import type { SheetMutations } from './structure/sheetMutations'
@@ -20,6 +20,7 @@ interface SheetToolbarController
   display: Display
   writeCell: WriteCell
   writeCells: WriteMany
+  writeCellRange: WriteCellRange
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], format: Format) => void
@@ -54,6 +55,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       display={ctx.display}
       writeCell={ctx.writeCell}
       writeCells={ctx.writeCells}
+      writeCellRange={ctx.writeCellRange}
       focusKey={ctx.focusKey}
       selectedIds={ctx.selectedIds}
       setFormat={ctx.setFormat}
