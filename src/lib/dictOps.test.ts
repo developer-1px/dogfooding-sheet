@@ -94,39 +94,7 @@ describe('dictOps mutation adapter', () => {
     ])
   })
 
-  it('delegates all-existing and all-missing set batches before local patch fallback', () => {
-    const calls: unknown[] = []
-    const ops = {
-      add: (path: never, value: never) => { calls.push(['add', path, value]) },
-      replace: (path: never, value: never) => { calls.push(['replace', path, value]) },
-      remove: (path: never) => { calls.push(['remove', path]) },
-      patch: (patch: never) => { calls.push(['patch', patch]) },
-    }
-    const delegated: unknown[] = []
-    const commands = {
-      replaceExisting: (entries: Array<[string, string]>) => { delegated.push(['replaceExisting', entries]); return true },
-      ensureMissing: (entries: Array<[string, string]>) => { delegated.push(['ensureMissing', entries]); return true },
-    }
-
-    upsertKey(ops, '/records', {}, 'A', 'new', undefined, commands)
-    upsertKeys(ops, '/records', { B: 'old' }, [['B', 'new']], undefined, commands)
-    upsertKeys(ops, '/records', {}, [['C', 'new']], undefined, commands)
-    upsertKeys(ops, '/records', { D: 'old' }, [['D', 'new'], ['E', 'new']], undefined, commands)
-
-    expect(delegated).toEqual([
-      ['ensureMissing', [['A', 'new']]],
-      ['replaceExisting', [['B', 'new']]],
-      ['ensureMissing', [['C', 'new']]],
-    ])
-    expect(calls).toEqual([
-      ['patch', [
-        { op: 'replace', path: '/records/D', value: 'new' },
-        { op: 'add', path: '/records/E', value: 'new' },
-      ]],
-    ])
-  })
-
-  it('delegates sparse entry intents before specialized fallbacks', () => {
+  it('delegates sparse entry intents before local patch fallback', () => {
     const calls: unknown[] = []
     const ops = {
       add: (path: never, value: never) => { calls.push(['add', path, value]) },
@@ -137,9 +105,6 @@ describe('dictOps mutation adapter', () => {
     const edited: unknown[] = []
     const commands = {
       editEntries: (entries: Array<[string, string | undefined]>) => { edited.push(entries); return true },
-      replaceExisting: () => { calls.push('replaceExisting'); return true },
-      ensureMissing: () => { calls.push('ensureMissing'); return true },
-      applyRecordDiff: () => { calls.push('applyRecordDiff'); return true },
     }
 
     upsertKey(ops, '/records', {}, 'A', 'new', undefined, commands)
@@ -156,26 +121,7 @@ describe('dictOps mutation adapter', () => {
     expect(calls).toEqual([])
   })
 
-  it('delegates mixed record batches through a record diff command', () => {
-    const calls: unknown[] = []
-    const ops = {
-      patch: (patch: never) => { calls.push(['patch', patch]) },
-    }
-    const diffed: unknown[] = []
-
-    upsertKeys(ops, '/records', { A: 'old', B: 'drop' }, [
-      ['A', 'new'],
-      ['B', undefined],
-      ['C', 'added'],
-    ], undefined, {
-      applyRecordDiff: (next) => { diffed.push(next); return true },
-    })
-
-    expect(diffed).toEqual([{ A: 'new', C: 'added' }])
-    expect(calls).toEqual([])
-  })
-
-  it('falls back to local patching when record diff delegation fails', () => {
+  it('falls back to local patching when sparse entry delegation fails', () => {
     const calls: unknown[] = []
     const ops = {
       patch: (patch: never) => { calls.push(['patch', patch]) },
@@ -186,7 +132,7 @@ describe('dictOps mutation adapter', () => {
       ['B', undefined],
       ['C', 'added'],
     ], undefined, {
-      applyRecordDiff: () => false,
+      editEntries: () => false,
     })
 
     expect(calls).toEqual([

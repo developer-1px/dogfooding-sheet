@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createAutoSave, type AutoSaveSnapshot } from '@zod-crud/autosave'
-import { createApplyDefaults } from '@zod-crud/apply-defaults'
 import { createBatchUpdate } from '@zod-crud/batch-update'
 import { createBulkEdit } from '@zod-crud/bulk-edit'
 import { createClearContents } from '@zod-crud/clear-contents'
@@ -106,7 +105,6 @@ export function useSheetDocument() {
   const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
   const { value: sheet } = doc
   const [persistence, setPersistence] = useState<SheetPersistenceState>(initialPersistenceState)
-  const defaults = useMemo(() => createApplyDefaults(doc), [doc])
   const batchUpdate = useMemo(() => createBatchUpdate(doc), [doc])
   const bulk = useMemo(() => createBulkEdit(doc), [doc])
   const clear = useMemo(() => createClearContents(doc), [doc])
@@ -140,18 +138,6 @@ export function useSheetDocument() {
             : undefined,
         }, { label: `sparse-record:${String(field)}`, origin: 'programmatic' }).ok
       },
-      replaceExisting(entries) {
-        return batchUpdate.batchUpdate(entries.map(([key]) => appendSegment(base, key)), {
-          compute: (_current, _pointer, index) => entries[index]?.[1] as V,
-        }).ok
-      },
-      ensureMissing(entries) {
-        return defaults.ensure(base, Object.fromEntries(entries)).ok
-      },
-      applyRecordDiff(next) {
-        const field = base.slice(1) as keyof Sheet
-        return diff.apply({ ...sheet, [field]: next } as Sheet, { label: `record-diff:${String(field)}`, origin: 'programmatic' }).ok
-      },
     })
     return {
       cells: commandsFor('/cells' as Pointer),
@@ -170,7 +156,7 @@ export function useSheetDocument() {
       rowHeights: commandsFor('/rowHeights' as Pointer),
       colWidths: commandsFor('/colWidths' as Pointer),
     }
-  }, [batchUpdate, defaults, diff, sheet, sparseRecord])
+  }, [sparseRecord])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
     remove: (path) => doc.delete(path as Pointer),
@@ -206,8 +192,8 @@ export function useSheetDocument() {
   }, [doc])
 
   const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
-  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.editEntries)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.applyRecordDiff, recordMutations.cells.editEntries)
+  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, recordMutations.cells.editEntries)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.editEntries)
   const writeCellRange: WriteCellRange = (range, matrix) => {
     for (const row of matrix) {
       for (const value of row) {
@@ -245,7 +231,7 @@ export function useSheetDocument() {
   const toggleCheckboxCell = (key: string): boolean => {
     if (sheet.cells[key] === undefined) {
       if (recordMutations.cells.editEntries?.([[key, 'TRUE']])) return true
-      return defaults.ensure('/cells' as Pointer, { [key]: 'TRUE' }).ok
+      return doc.insert(cellValuePointer(key), 'TRUE').ok
     }
     return toggleValue.toggleValue(cellValuePointer(key), { values: ['TRUE', 'FALSE'] }).ok
   }
@@ -262,7 +248,7 @@ export function useSheetDocument() {
   const writeTabColor = (name: string, color: string): boolean => {
     const pointer = appendSegment('/tabs/colors' as Pointer, name)
     if (sparseRecord.edit({ root: '/tabs/colors' as Pointer, set: { [name]: color } }, undefined, { label: 'tab-color', origin: 'programmatic' }).ok) return true
-    if (sheet.tabs.colors[name] === undefined) return defaults.ensure('/tabs/colors' as Pointer, { [name]: color }).ok
+    if (sheet.tabs.colors[name] === undefined) return doc.insert(pointer, color).ok
     return batchUpdate.batchUpdate([pointer], { value: color }).ok
   }
   const clearTabColor = (name: string): boolean =>

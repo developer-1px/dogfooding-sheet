@@ -15,9 +15,6 @@ export type RecordEditEntries<V> = (entries: Array<[string, V | undefined]>, equ
 
 export interface RecordMutationCommands<V> {
   editEntries?: RecordEditEntries<V>
-  replaceExisting?: (entries: Array<[string, V]>) => boolean
-  ensureMissing?: (entries: Array<[string, V]>) => boolean
-  applyRecordDiff?: (next: Record<string, V>) => boolean
 }
 
 export function applyPatch(ops: PatchOps, patch: Patch): void {
@@ -58,10 +55,8 @@ export function upsertKey<V>(
   if (value === undefined) {
     if (current[key] !== undefined) removeValue(ops, path)
   } else if (current[key] === undefined) {
-    if (commands?.ensureMissing?.([[key, value]])) return
     addValue(ops, path, value)
   } else if (!equal(current[key], value)) {
-    if (commands?.replaceExisting?.([[key, value]])) return
     replaceValue(ops, path, value)
   }
 }
@@ -79,34 +74,17 @@ export function upsertKeys<V>(
   const latest = new Map(entries)
   const latestEntries = [...latest]
   if (latestEntries.length > 0 && commands?.editEntries?.(latestEntries, equal)) return
-  if (
-    commands?.replaceExisting &&
-    latestEntries.length > 0 &&
-    latestEntries.every((entry): entry is [string, V] => entry[1] !== undefined && current[entry[0]] !== undefined) &&
-    commands.replaceExisting(latestEntries)
-  ) return
-  if (
-    commands?.ensureMissing &&
-    latestEntries.length > 0 &&
-    latestEntries.every((entry): entry is [string, V] => entry[1] !== undefined && current[entry[0]] === undefined) &&
-    commands.ensureMissing(latestEntries)
-  ) return
-  const nextRecord: Record<string, V> | null = commands?.applyRecordDiff ? { ...current } : null
   for (const [key, value] of latestEntries) {
     const path = childPath(base, key)
     if (value === undefined) {
       if (current[key] !== undefined) {
         patch.push({ op: 'remove', path })
-        if (nextRecord) delete nextRecord[key]
       }
     } else if (current[key] === undefined) {
       patch.push({ op: 'add', path, value })
-      if (nextRecord) nextRecord[key] = value
     } else if (!equal(current[key], value)) {
       patch.push({ op: 'replace', path, value })
-      if (nextRecord) nextRecord[key] = value
     }
   }
-  if (patch.length > 0 && nextRecord && commands?.applyRecordDiff?.(nextRecord)) return
   applyPatch(ops, patch)
 }

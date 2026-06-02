@@ -7,9 +7,6 @@ interface CellWriteBounds {
   colCount: number
 }
 
-export type ReplaceExistingCells = (entries: Array<[string, string]>) => boolean
-export type EnsureMissingCells = (entries: Array<[string, string]>) => boolean
-export type ApplyCellRecordDiff = (next: Cells) => boolean
 export type EditCellEntries = RecordEditEntries<string>
 
 const validCellKey = (key: string, bounds?: CellWriteBounds): boolean => {
@@ -26,14 +23,12 @@ export function writeSingleCell(
   key: string,
   value: string,
   bounds?: CellWriteBounds,
-  replaceExisting?: ReplaceExistingCells,
-  ensureMissing?: EnsureMissingCells,
   editEntries?: EditCellEntries,
 ): void {
   if (!validCellKey(key, bounds)) return
   const normalized = normalizeCellWrite(value)
   if (normalized.type === 'reject') return
-  upsertKey(ops, '/cells', cells, key, normalized.type === 'remove' ? undefined : normalized.value, undefined, { editEntries, replaceExisting, ensureMissing })
+  upsertKey(ops, '/cells', cells, key, normalized.type === 'remove' ? undefined : normalized.value, undefined, { editEntries })
 }
 
 /** Batch multiple cell writes into a single ops.patch — atomic undo for fillDown/Right etc. */
@@ -42,9 +37,6 @@ export function writeCellsBatch(
   cells: Cells,
   writes: Writes,
   bounds?: CellWriteBounds,
-  replaceExisting?: ReplaceExistingCells,
-  ensureMissing?: EnsureMissingCells,
-  applyRecordDiff?: ApplyCellRecordDiff,
   editEntries?: EditCellEntries,
 ): void {
   const entries: Array<[string, string | undefined]> = []
@@ -55,5 +47,5 @@ export function writeCellsBatch(
     entries.push([k, normalized.type === 'remove' ? undefined : normalized.value])
   }
   const latestEntries = [...new Map(entries)]
-  upsertKeys(ops, '/cells', cells, latestEntries, undefined, { editEntries, replaceExisting, ensureMissing, applyRecordDiff })
+  upsertKeys(ops, '/cells', cells, latestEntries, undefined, { editEntries })
 }

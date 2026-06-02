@@ -24,7 +24,6 @@
     "@spredsheet/grid": "workspace:*",
     "@spredsheet/selection-contract": "workspace:*",
     "@spredsheet/surface": "workspace:*",
-    "@zod-crud/apply-defaults": "file:../zod-crud/labs/extensions/apply-defaults",
     "@zod-crud/autosave": "file:../zod-crud/labs/extensions/autosave",
     "@zod-crud/batch-update": "file:../zod-crud/labs/extensions/batch-update",
     "@zod-crud/bulk-edit": "file:../zod-crud/packages/bulk-edit",

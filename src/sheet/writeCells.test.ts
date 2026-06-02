@@ -90,103 +90,25 @@ describe('cell write adapters', () => {
     ])
   })
 
-  it('delegates existing value replacements before falling back to patch upserts', () => {
-    const { ops, calls } = recordingOps()
-    const delegated: Array<Array<[string, string]>> = []
-    const replaceExisting = (entries: Array<[string, string]>) => {
-      delegated.push(entries)
-      return true
-    }
-
-    writeSingleCell(ops, { A1: 'old' }, 'A1', 'next', undefined, replaceExisting)
-    writeCellsBatch(ops, { B1: 'old', C1: 'old' }, [
-      ['B1', 'first'],
-      ['B1', 'last'],
-      ['C1', 'next'],
-    ], undefined, replaceExisting)
-    writeCellsBatch(ops, { D1: 'old' }, [['E1', 'new']], undefined, replaceExisting)
-
-    expect(delegated).toEqual([
-      [['A1', 'next']],
-      [['B1', 'last'], ['C1', 'next']],
-    ])
-    expect(calls).toEqual([
-      ['patch', [{ op: 'add', path: '/cells/E1', value: 'new' }]],
-    ])
-  })
-
-  it('delegates missing value defaults when the batch can stay atomic', () => {
-    const { ops, calls } = recordingOps()
-    const ensured: Array<Array<[string, string]>> = []
-    const ensureMissing = (entries: Array<[string, string]>) => {
-      ensured.push(entries)
-      return true
-    }
-
-    writeSingleCell(ops, {}, 'A1', 'new', undefined, undefined, ensureMissing)
-    writeCellsBatch(ops, {}, [
-      ['B1', 'first'],
-      ['B1', 'last'],
-      ['C1', 'next'],
-    ], undefined, undefined, ensureMissing)
-    writeCellsBatch(ops, { D1: 'old' }, [
-      ['D1', 'new'],
-      ['E1', 'new'],
-    ], undefined, undefined, ensureMissing)
-
-    expect(ensured).toEqual([
-      [['A1', 'new']],
-      [['B1', 'last'], ['C1', 'next']],
-    ])
-    expect(calls).toEqual([
-      ['patch', [
-        { op: 'replace', path: '/cells/D1', value: 'new' },
-        { op: 'add', path: '/cells/E1', value: 'new' },
-      ]],
-    ])
-  })
-
-  it('delegates normalized sparse cell intents before older write commands', () => {
+  it('delegates normalized sparse cell intents before local patch fallback', () => {
     const { ops, calls } = recordingOps()
     const edited: Array<Array<[string, string | undefined]>> = []
-    const replaceExisting = () => {
-      calls.push(['replaceExisting'])
-      return true
-    }
-    const ensureMissing = () => {
-      calls.push(['ensureMissing'])
-      return true
-    }
     const editEntries = (entries: Array<[string, string | undefined]>) => {
       edited.push(entries)
       return true
     }
 
-    writeSingleCell(ops, { A1: 'old' }, 'A1', 'next', undefined, replaceExisting, ensureMissing, editEntries)
+    writeSingleCell(ops, { A1: 'old' }, 'A1', 'next', undefined, editEntries)
     writeCellsBatch(ops, { B1: 'old', C1: 'drop' }, [
       ['B1', 'new'],
       ['C1', ''],
       ['D1', 'added'],
-    ], undefined, replaceExisting, ensureMissing, undefined, editEntries)
+    ], undefined, editEntries)
 
     expect(edited).toEqual([
       [['A1', 'next']],
       [['B1', 'new'], ['C1', undefined], ['D1', 'added']],
     ])
-    expect(calls).toEqual([])
-  })
-
-  it('delegates mixed batch cell writes through a record diff command', () => {
-    const { ops, calls } = recordingOps()
-    const diffed: unknown[] = []
-
-    writeCellsBatch(ops, { A1: 'old', C1: 'drop' }, [
-      ['A1', 'new'],
-      ['B1', 'added'],
-      ['C1', ''],
-    ], undefined, undefined, undefined, (next) => { diffed.push(next); return true })
-
-    expect(diffed).toEqual([{ A1: 'new', B1: 'added' }])
     expect(calls).toEqual([])
   })
 })
