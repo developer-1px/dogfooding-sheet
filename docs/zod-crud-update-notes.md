@@ -65,6 +65,17 @@ Unreleased local zod-crud changes already reflected here:
 - Keep undo tests that prove one cell/metadata edit reverts only that intended edit.
 - Avoid imports from zod-crud private subpaths.
 
+## Additional Lab Audit
+
+Follow-up audit on 2026-06-02 checked whether more zod-crud labs can replace the remaining app-owned grid edit code.
+
+- `@zod-crud/fill-series`, `@zod-crud/fill-down`, and `@zod-crud/paste-cells` are real delegation candidates for array-of-record editors, but they do not directly fit this app's sparse `cells: Record<A1, string>` model. Using them here would require a larger adapter than the app-owned grid write helpers they replace.
+- `@zod-crud/fill-blanks` fills existing empty slots and explicitly does not add absent fields. That is adjacent to sparse cell editing but does not cover sparse record upsert.
+- `@zod-crud/form-draft` fits temporary invalid form input, not the current cell patch planning gap. The active cell editor already delegates draft/commit/cancel behavior to `@spredsheet/grid`.
+- The confirmed upstream gap remains sparse record entry mutation: declare set/remove/no-op intentions for keys under sparse record roots while zod-crud plans add/replace/remove patches atomically.
+
+Latest upstream update: https://github.com/developer-1px/zod-crud/issues/141#issuecomment-4597900574
+
 ## Verification
 
 ```sh
