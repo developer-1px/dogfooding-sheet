@@ -12,6 +12,10 @@ describe('formulaReferenceDecorationsFor', () => {
     expect(refs.byId.get('r0-B')).toEqual({ index: 0, token: 'B1:B2', className: 'formula-ref formula-ref-0' })
     expect(refs.byId.get('r1-B')).toEqual({ index: 0, token: 'B1:B2', className: 'formula-ref formula-ref-0' })
     expect(refs.byId.get('r0-A')).toEqual({ index: 1, token: 'A1', className: 'formula-ref formula-ref-1' })
+    expect(refs.text).toEqual([
+      { index: 0, token: 'B1:B2', className: 'formula-ref formula-ref-0', from: 5, to: 10 },
+      { index: 1, token: 'A1', className: 'formula-ref formula-ref-1', from: 12, to: 14 },
+    ])
   })
 
   it('ignores non-formulas and out-of-bounds references', () => {

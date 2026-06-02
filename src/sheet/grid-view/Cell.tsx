@@ -1,6 +1,6 @@
 import { createCellDisplayModel, type CellContent } from '@spredsheet/editable-grid/cell-display'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
-import type { FormulaReferenceCellDecoration } from '../selection/formulaReferenceDecorations'
+import type { FormulaReferenceCellDecoration, FormulaReferenceTextDecoration } from '../selection/formulaReferenceDecorations'
 import { ContenteditableCellEditor } from './ContenteditableCellEditor'
 import type { SheetGridItemProps } from './gridTypes'
 
@@ -35,6 +35,7 @@ interface Props {
   styleClass: string
   styleInline: React.CSSProperties
   formulaReference?: FormulaReferenceCellDecoration
+  formulaReferenceText: readonly FormulaReferenceTextDecoration[]
   note?: string
   tooltip?: string
   validationOptions?: string[]
@@ -127,6 +128,7 @@ export function Cell(p: Props) {
                 ariaLabel={display.editLabel}
                 draft={p.draft}
                 setDraft={p.setDraft}
+                textDecorations={p.formulaReferenceText}
                 onCommit={p.onCommit}
                 onCancel={p.onCancel}
                 onKeyDown={p.onFormulaPickKeyDown}

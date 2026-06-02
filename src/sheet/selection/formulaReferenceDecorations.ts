@@ -6,9 +6,15 @@ export interface FormulaReferenceCellDecoration {
   readonly className: string
 }
 
+export interface FormulaReferenceTextDecoration extends FormulaReferenceCellDecoration {
+  readonly from: number
+  readonly to: number
+}
+
 export interface FormulaReferenceDecorations {
   readonly highlightedIds: string[]
   readonly byId: Map<string, FormulaReferenceCellDecoration>
+  readonly text: FormulaReferenceTextDecoration[]
 }
 
 interface FormulaReferenceBounds {
@@ -39,7 +45,7 @@ export function formulaReferenceDecorationsFor(
   draft: string,
   bounds: FormulaReferenceBounds,
 ): FormulaReferenceDecorations {
-  if (!editing || !draft.startsWith('=')) return { highlightedIds: [], byId: new Map() }
+  if (!editing || !draft.startsWith('=')) return { highlightedIds: [], byId: new Map(), text: [] }
 
   const body = draft.slice(1).toUpperCase()
   const gridBounds = { rowCount: bounds.rowCount, colCount: bounds.colLetters.length }
@@ -67,12 +73,18 @@ export function formulaReferenceDecorationsFor(
   tokens.sort((a, b) => a.start - b.start)
   const byId = new Map<string, FormulaReferenceCellDecoration>()
   const highlightedIds: string[] = []
+  const text: FormulaReferenceTextDecoration[] = []
   tokens.forEach((token, index) => {
     const decoration = {
       index,
       token: token.token,
       className: `formula-ref formula-ref-${index % FORMULA_REF_CLASS_COUNT}`,
     }
+    text.push({
+      ...decoration,
+      from: token.start + 1,
+      to: token.end + 1,
+    })
     token.ids.forEach((id) => {
       if (byId.has(id)) return
       byId.set(id, decoration)
@@ -80,5 +92,5 @@ export function formulaReferenceDecorationsFor(
     })
   })
 
-  return { highlightedIds, byId }
+  return { highlightedIds, byId, text }
 }

@@ -40,6 +40,51 @@ describe('formula reference picking', () => {
     expect(picked?.classList.contains('formula-ref')).toBe(true)
     expect(picked?.classList.contains('formula-ref-0')).toBe(true)
     expect(picked?.dataset.formulaRef).toBe('B1')
+    const token = input.querySelector<HTMLElement>('[data-formula-token="B1"]')
+    expect(token?.textContent).toBe('B1')
+    expect(token?.classList.contains('formula-ref-0')).toBe(true)
+  })
+
+  it('continues moving the picked formula reference with repeated arrow keys', async () => {
+    const input = await startFormulaEdit()
+
+    act(() => keyDown(input, 'ArrowRight'))
+    act(() => keyDown(input, 'ArrowRight'))
+
+    expect(input.textContent).toBe('=C1')
+    const picked = document.querySelector<HTMLElement>('.cell.formula-ref-0')
+    expect(picked?.dataset.formulaRef).toBe('C1')
+    expect(input.querySelector<HTMLElement>('[data-formula-token="C1"]')?.classList.contains('formula-ref-0')).toBe(true)
+  })
+
+  it('colors multiple formula references differently inside the editor', async () => {
+    const input = await startFormulaEdit()
+
+    act(() => setContenteditableText(input, '=A1+C2'))
+    await act(async () => { await Promise.resolve() })
+
+    const tokens = [...input.querySelectorAll<HTMLElement>('.formula-token')]
+    expect(tokens.map((token) => token.textContent)).toEqual(['A1', 'C2'])
+    expect(tokens.map((token) => token.classList.contains('formula-ref-0'))).toEqual([true, false])
+    expect(tokens.map((token) => token.classList.contains('formula-ref-1'))).toEqual([false, true])
+  })
+
+  it('starts formula reference picking again after committing a previous formula edit', async () => {
+    const input = await startFormulaEdit()
+
+    act(() => keyDown(input, 'ArrowRight'))
+    act(() => keyDown(input, 'Enter'))
+
+    const b2 = gridCells()[11]
+    act(() => mouseClick(b2))
+    act(() => keyDown(b2, 'F2'))
+    const nextInput = cellEditor()!
+    act(() => setContenteditableText(nextInput, '='))
+    act(() => keyDown(nextInput, 'ArrowRight'))
+
+    expect(nextInput.textContent).toBe('=C2')
+    const picked = document.querySelector<HTMLElement>('.cell.formula-ref-0')
+    expect(picked?.dataset.formulaRef).toBe('C2')
   })
 
   it('extends the inserted reference to a range with Shift+Arrow', async () => {

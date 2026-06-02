@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react'
 import {
+  collapseInlineEditSelection,
   createContenteditableScalarEdit,
+  inlineEditSelectionOffset,
   type ContenteditableScalarEditHandle,
 } from 'nano-edit/inline-edit'
+import type { FormulaReferenceTextDecoration } from '../selection/formulaReferenceDecorations'
 
 interface CommitOptions {
   readonly restoreFocus?: boolean
@@ -12,6 +15,7 @@ interface Props {
   readonly ariaLabel: string
   readonly draft: string
   readonly setDraft: (draft: string) => void
+  readonly textDecorations: readonly FormulaReferenceTextDecoration[]
   readonly onCommit: (draft: string, opts?: CommitOptions) => void
   readonly onCancel: (opts?: CommitOptions) => void
   readonly onKeyDown?: React.KeyboardEventHandler<HTMLElement>
@@ -27,6 +31,7 @@ export function ContenteditableCellEditor({
   ariaLabel,
   draft,
   setDraft,
+  textDecorations,
   onCommit,
   onCancel,
   onKeyDown,
@@ -80,6 +85,27 @@ export function ContenteditableCellEditor({
     handle.replaceText(0, current.length, draft)
   }, [draft])
 
+  useEffect(() => {
+    const element = elementRef.current
+    if (!element) return
+    const signature = formulaMode
+      ? `${draft}\n${textDecorations.map((decoration) => `${decoration.from}:${decoration.to}:${decoration.className}`).join('|')}`
+      : draft
+    if (element.dataset.formulaDecorationSignature === signature && element.textContent === draft) return
+
+    const offset = inlineEditSelectionOffset(element)
+    if (!formulaMode || textDecorations.length === 0) {
+      if (element.childElementCount > 0 || element.textContent !== draft) element.textContent = draft
+      element.dataset.formulaDecorationSignature = signature
+      if (offset !== null && document.activeElement === element) collapseInlineEditSelection(element, Math.min(offset, draft.length))
+      return
+    }
+
+    element.replaceChildren(decoratedFormulaText(draft, textDecorations))
+    element.dataset.formulaDecorationSignature = signature
+    if (offset !== null && document.activeElement === element) collapseInlineEditSelection(element, Math.min(offset, draft.length))
+  }, [draft, formulaMode, textDecorations])
+
   return (
     <span
       ref={elementRef}
@@ -99,4 +125,24 @@ export function ContenteditableCellEditor({
       }}
     />
   )
+}
+
+function decoratedFormulaText(text: string, decorations: readonly FormulaReferenceTextDecoration[]): DocumentFragment {
+  const fragment = document.createDocumentFragment()
+  let offset = 0
+  decorations
+    .filter((decoration) => decoration.from >= 0 && decoration.to > decoration.from && decoration.to <= text.length)
+    .sort((a, b) => a.from - b.from)
+    .forEach((decoration) => {
+      if (decoration.from < offset) return
+      if (offset < decoration.from) fragment.append(document.createTextNode(text.slice(offset, decoration.from)))
+      const token = document.createElement('span')
+      token.className = `formula-token ${decoration.className}`
+      token.dataset.formulaToken = decoration.token
+      token.textContent = text.slice(decoration.from, decoration.to)
+      fragment.append(token)
+      offset = decoration.to
+    })
+  if (offset < text.length) fragment.append(document.createTextNode(text.slice(offset)))
+  return fragment
 }

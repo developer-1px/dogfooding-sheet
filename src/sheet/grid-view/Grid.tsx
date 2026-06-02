@@ -31,6 +31,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
     setSelectAnchor,
     highlightedIds,
     formulaReferenceById,
+    formulaReferenceText,
     sheet,
     toggleCheckboxCell,
     styleOf,
@@ -149,6 +150,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
             condBgOf={condBgOf}
             hiSet={hiSet}
             formulaReferenceById={formulaReferenceById}
+            formulaReferenceText={formulaReferenceText}
             previewIds={previewIds}
             onFormulaPickKeyDown={(e) => {
               if (e.key === 'F4' && ctx.formulaPickActive) {

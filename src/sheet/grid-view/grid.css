@@ -65,12 +65,12 @@
   outline-color: var(--formula-ref-color);
   background: var(--formula-ref-bg);
 }
-.cell.formula-ref-0 { --formula-ref-color: #1a73e8; --formula-ref-bg: rgba(26, 115, 232, .12); }
-.cell.formula-ref-1 { --formula-ref-color: #d93025; --formula-ref-bg: rgba(217, 48, 37, .10); }
-.cell.formula-ref-2 { --formula-ref-color: #188038; --formula-ref-bg: rgba(24, 128, 56, .11); }
-.cell.formula-ref-3 { --formula-ref-color: #a142f4; --formula-ref-bg: rgba(161, 66, 244, .10); }
-.cell.formula-ref-4 { --formula-ref-color: #f29900; --formula-ref-bg: rgba(242, 153, 0, .13); }
-.cell.formula-ref-5 { --formula-ref-color: #00897b; --formula-ref-bg: rgba(0, 137, 123, .11); }
+.formula-ref-0 { --formula-ref-color: #1a73e8; --formula-ref-bg: rgba(26, 115, 232, .12); }
+.formula-ref-1 { --formula-ref-color: #d93025; --formula-ref-bg: rgba(217, 48, 37, .10); }
+.formula-ref-2 { --formula-ref-color: #188038; --formula-ref-bg: rgba(24, 128, 56, .11); }
+.formula-ref-3 { --formula-ref-color: #a142f4; --formula-ref-bg: rgba(161, 66, 244, .10); }
+.formula-ref-4 { --formula-ref-color: #f29900; --formula-ref-bg: rgba(242, 153, 0, .13); }
+.formula-ref-5 { --formula-ref-color: #00897b; --formula-ref-bg: rgba(0, 137, 123, .11); }
 .grid.formula-pick-active .cell.selected.formula-ref {
   box-shadow: inset 0 0 0 1px var(--formula-ref-color);
 }
@@ -99,6 +99,12 @@
 .cell-input.formula-input {
   border-color: #188038;
   box-shadow: inset 3px 0 0 #188038;
+}
+.formula-token {
+  color: var(--formula-ref-color);
+  background: var(--formula-ref-bg);
+  border-radius: 3px;
+  box-decoration-break: clone;
 }
 
 .header-cell.active, .grid-row.active-row > .row-header { background: #e8f0fe; color: #1a73e8; font-weight: 600; }

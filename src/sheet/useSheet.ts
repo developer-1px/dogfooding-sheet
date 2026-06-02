@@ -171,6 +171,7 @@ export function useSheet(opts: SheetOptions = {}) {
     selectedIds, setSelectedIds, setFocusId, setSelectAnchor,
     highlightedIds: formulaReferences.highlightedIds,
     formulaReferenceById: formulaReferences.byId,
+    formulaReferenceText: formulaReferences.text,
     formulaPickActive: formulaPick.formulaPickActive,
     pickFormulaRef: formulaPick.pickFormulaRef,
     moveFormulaPick: formulaPick.moveFormulaPick,

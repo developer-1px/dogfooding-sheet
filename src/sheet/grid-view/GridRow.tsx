@@ -5,7 +5,7 @@ import { createGridCellViewModel, type MergeAnchor } from './gridCellViewModel'
 import type { StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
-import type { FormulaReferenceCellDecoration } from '../selection/formulaReferenceDecorations'
+import type { FormulaReferenceCellDecoration, FormulaReferenceTextDecoration } from '../selection/formulaReferenceDecorations'
 import type { Rect } from '@spredsheet/grid'
 import type { SheetGridItemProps, SheetGridRow } from './gridTypes'
 
@@ -55,6 +55,7 @@ interface Props {
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
   formulaReferenceById: ReadonlyMap<string, FormulaReferenceCellDecoration>
+  formulaReferenceText: readonly FormulaReferenceTextDecoration[]
   previewIds: Set<string>
   onFormulaPickKeyDown: (e: React.KeyboardEvent) => void
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
@@ -133,6 +134,7 @@ export function GridRow(p: Props) {
             styleClass={view.styleClass}
             styleInline={view.styleInline}
             formulaReference={view.formulaReference}
+            formulaReferenceText={p.formulaReferenceText}
             note={view.note}
             tooltip={view.tooltip}
             validationOptions={view.validationOptions}
