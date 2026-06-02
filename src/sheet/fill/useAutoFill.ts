@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { type Cells, type WriteCell, type WriteMany } from '../schema'
+import { type FillCellRange } from '../schema'
 import { fillSourceRect, fillTargetForCell, idsInFillTarget, rectEq, type Rect } from '@spredsheet/grid'
-import { applyFill } from './applyFill'
 
 interface Args {
   selectedIds: string[]
   focusId: string | null
-  cells: Cells
-  writeCell: WriteCell
-  writeCells?: WriteMany
+  fillCellRange: FillCellRange
   setSelectedIds: (ids: string[]) => void
   rowCount: number
   colLetters: readonly string[]
@@ -70,7 +67,7 @@ function useFillHandleGesture(args: {
   }
 }
 
-export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells, setSelectedIds, rowCount, colLetters }: Args) {
+export function useAutoFill({ selectedIds, focusId, fillCellRange, setSelectedIds, rowCount, colLetters }: Args) {
   const sourceRef = useRef<Rect | null>(null)
   const [dragging, setDragging] = useState(false)
 
@@ -79,7 +76,7 @@ export function useAutoFill({ selectedIds, focusId, cells, writeCell, writeCells
   const fill = useFillHandleGesture({
     equals: rectEq,
     onCommit: (src, tgt) => {
-      if (applyFill(src, tgt, cells, writeCell, writeCells)) {
+      if (fillCellRange(src, tgt)) {
         setSelectedIds(idsInFillTarget(tgt, colLetters))
       }
     },

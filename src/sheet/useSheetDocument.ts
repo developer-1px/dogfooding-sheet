@@ -5,7 +5,7 @@ import { createClearContents } from '@zod-crud/clear-contents'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
 import { createCollection } from '@zod-crud/collection'
 import { createDocumentDiff } from '@zod-crud/document-diff'
-import { createGridRange } from '@zod-crud/grid-range'
+import { createGridRange, type GridRangeFillGenerator } from '@zod-crud/grid-range'
 import { createIncrementNumber } from '@zod-crud/increment-number'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
@@ -15,8 +15,8 @@ import { createToggleOption } from '@zod-crud/toggle-option'
 import { createToggleValue } from '@zod-crud/toggle-value'
 import { useJSONDocument } from 'zod-crud/react'
 import { appendSegment, type Pointer } from 'zod-crud'
-import { columnLabel } from '@spredsheet/grid'
-import { MAX_COL_COUNT, MAX_ROW_COUNT, SheetSchema, cellKey, type Rect, type Sheet, type SheetOps, type WriteCellRange, type Writes } from './schema'
+import { applyFillWrites, columnLabel } from '@spredsheet/grid'
+import { MAX_COL_COUNT, MAX_ROW_COUNT, SheetSchema, cellKey, type FillCellRange, type Rect, type Sheet, type SheetOps, type WriteCellRange, type Writes } from './schema'
 import { loadInitial, SHEET_STORAGE_KEY, sheetPersistenceCodec } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
 import { normalizeCellWrite } from './cellValue'
@@ -76,6 +76,49 @@ const gridCellIntent = (value: string): { intent: 'set'; value: string } | { int
   return normalized.type === 'remove'
     ? { intent: 'remove' }
     : { intent: 'set', value: normalized.value }
+}
+const rectToGridRange = (range: Rect) => ({
+  row: range.rMin,
+  column: range.cMin,
+  rowCount: rectRowCount(range),
+  columnCount: rectColumnCount(range),
+})
+
+const fillDestinationRect = (source: Rect, target: Rect): Rect | null => {
+  if (target.rMax > source.rMax) {
+    return {
+      rMin: source.rMax + 1,
+      rMax: target.rMax,
+      cMin: source.cMin,
+      cMax: source.cMax,
+    }
+  }
+  if (target.cMax > source.cMax) {
+    return {
+      rMin: source.rMin,
+      rMax: source.rMax,
+      cMin: source.cMax + 1,
+      cMax: target.cMax,
+    }
+  }
+  return null
+}
+
+const fillIntentFromValue = (value: string) => {
+  const intent = gridCellIntent(value)
+  if (intent === null) throw new Error('invalid fill value')
+  return intent
+}
+
+const createFillIntentGenerator = (
+  source: Rect,
+  target: Rect,
+  cells: Sheet['cells'],
+): GridRangeFillGenerator => {
+  const writes = new Map(applyFillWrites(source, target, cells))
+  return ({ targetCell }) => {
+    return fillIntentFromValue(writes.get(cellKey(columnLabel(targetCell.column), targetCell.row)) ?? '')
+  }
 }
 
 const rawTextClipboardCodec: WebClipboardCodec = {
@@ -215,6 +258,19 @@ export function useSheetDocument() {
       },
     }, { label: 'grid-range:paste', origin: 'programmatic' }).ok
   }
+  const fillCellRange: FillCellRange = (source, target) => {
+    const destination = fillDestinationRect(source, target)
+    if (destination === null) return true
+    return gridRange.fill({
+      root: '/cells' as Pointer,
+      source: rectToGridRange(source),
+      target: rectToGridRange(destination),
+      keyForCell: ({ row, column }) => cellKey(columnLabel(column), row),
+      bounds: { rowCount: sheet.rowCount, columnCount: sheet.colCount },
+    }, {
+      generateFillIntent: createFillIntentGenerator(source, target, sheet.cells),
+    }, { label: 'grid-range:fill', origin: 'programmatic' }).ok
+  }
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
@@ -300,6 +356,7 @@ export function useSheetDocument() {
     writeCell,
     writeCells,
     writeCellRange,
+    fillCellRange,
     toggleCheckboxCell,
     replaceCellsByQuery,
     replaceCellText,

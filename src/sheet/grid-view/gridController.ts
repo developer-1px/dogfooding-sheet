@@ -1,7 +1,7 @@
 import type { PatternData } from '@interactive-os/aria'
 import type { SelectedIdsUpdate } from '@spredsheet/selection-contract'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
-import type { Display, Sheet, SheetOps, WriteCell, WriteMany } from '../schema'
+import type { Display, FillCellRange, Sheet, SheetOps, WriteCell, WriteMany } from '../schema'
 import type { StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
@@ -46,6 +46,7 @@ export interface GridController extends GridContextMenuController {
   recordMutations: Pick<SheetRecordMutationCommands, 'colWidths'>
   display: Display
   writeCells: WriteMany
+  fillCellRange: FillCellRange
   toggleCheckboxCell: (key: string) => void
   showGridlines: boolean
   rowHeightOf: (row: number) => number

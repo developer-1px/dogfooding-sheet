@@ -8,9 +8,9 @@ Date: 2026-06-02
 
 - Good: document state and undo/redo are already backed by zod-crud.
 - Good: `dictOps` now favors surgical key patches instead of whole-dict replacement.
-- Good: `useSheetDocument` composes official and lab zod-crud extensions for autosave/persistence, collection movement, text replace, sparse record entry edits, rectangular sparse-grid paste/import application, tab color record edits, tab state/sheet diff apply, structural sheet diff apply, conditional-format item edits, merge append/delete edits, bounded count increments, freeze count updates/toggles, whole-record clear contents, import patch preview/diff apply, browser text clipboard access, hidden row/column option toggles, and checkbox value toggles.
+- Good: `useSheetDocument` composes official and lab zod-crud extensions for autosave/persistence, collection movement, text replace, sparse record entry edits, rectangular sparse-grid paste/import/fill application, tab color record edits, tab state/sheet diff apply, structural sheet diff apply, conditional-format item edits, merge append/delete edits, bounded count increments, freeze count updates/toggles, whole-record clear contents, import patch preview/diff apply, browser text clipboard access, hidden row/column option toggles, and checkbox value toggles.
 - Good: `@zod-crud/sparse-record` now owns add/replace/remove/no-op patch planning for cells, notes, formats, styles, validation, row heights, column widths, tab colors, and checkbox conversion entry writes.
-- Good: `@zod-crud/grid-range` now owns rectangular external TSV/CSV paste application over sparse `/cells/{A1}` records.
+- Good: `@zod-crud/grid-range` now owns rectangular external TSV/CSV paste/import and fill-handle application over sparse `/cells/{A1}` records.
 - App-owned: visual grid selection, DOM focus, keyboard policy, TSV/CSV parsing, formula semantics, checkbox normalization semantics, overlapping merge normalization, auto-fill series inference, and structural row/column shift calculations.
 
 Current usage is broadly valid.
@@ -47,7 +47,7 @@ Unreleased local zod-crud changes already reflected here:
 3. Keep TSV/CSV parsing outside zod-crud.
    zod-crud clipboard-web owns browser text clipboard access, and grid-range owns rectangular sparse record application after the app parses table text.
 
-4. Keep auto-fill series inference app-owned until zod-crud can accept host-owned fill semantics for sparse grid fill.
+4. Keep auto-fill series inference app-owned, while delegating sparse fill application through `grid-range.fill`.
 
 5. Consider `doc.commit(..., { selection })` later only if sheet model selection needs to be stored with history.
 
@@ -68,7 +68,7 @@ Unreleased local zod-crud changes already reflected here:
 
 - Keep moving app-owned patch helpers behind zod-crud extension commands where a matching feature concept exists.
 - Keep checkbox normalization semantics app-owned, but keep sparse cell/validation entry writes delegated through `sparse-record`.
-- Keep rectangular parsed table data application delegated through `grid-range`; TSV/CSV parsing remains app-owned.
+- Keep rectangular parsed table data and fill-handle sparse application delegated through `grid-range`; TSV/CSV parsing and series inference remain app-owned.
 - Keep undo tests that prove one cell/metadata edit reverts only that intended edit.
 - Avoid imports from zod-crud private subpaths.
 
@@ -77,11 +77,11 @@ Unreleased local zod-crud changes already reflected here:
 Follow-up audit on 2026-06-02 checked whether more zod-crud labs can replace the remaining app-owned grid edit code. The initial audit found real gaps; subsequent zod-crud updates added `sparse-record` and `grid-range`, and this app now adopts both.
 
 - `@zod-crud/sparse-record` now fits this app's sparse record roots directly. It replaced the app-owned next-parent-record construction for mixed sparse record edits.
-- `@zod-crud/grid-range` now fits rectangular external TSV/CSV paste/import application over sparse `/cells/{A1}` records.
+- `@zod-crud/grid-range` now fits rectangular external TSV/CSV paste/import application and fill-handle sparse application over sparse `/cells/{A1}` records.
 - `@zod-crud/fill-series`, `@zod-crud/fill-down`, and `@zod-crud/paste-cells` remain real delegation candidates for array-of-record editors, but they still do not directly fit this app's sparse `cells: Record<A1, string>` model.
 - `@zod-crud/fill-blanks` fills existing empty slots and explicitly does not add absent fields. That is adjacent to sparse cell editing but does not cover sparse record upsert.
 - `@zod-crud/form-draft` fits temporary invalid form input, not the current cell patch planning gap. The active cell editor already delegates draft/commit/cancel behavior to `@spredsheet/grid`.
-- The remaining upstream gap is sparse grid fill with product-owned series semantics. `grid-range.fill` repeats source patterns; `spredsheet` also needs arithmetic series behavior such as `1, 2 -> 3, 4`.
+- Sparse grid fill no longer needs app-owned sparse patch application. `grid-range.fill` accepts a host generator, so `spredsheet` keeps product-owned series derivation while zod-crud owns sparse add/replace/remove/no-op application.
 
 Latest upstream updates:
 

@@ -57,6 +57,7 @@ export const SheetSchema = z.preprocess(sanitizeRawTabBundleInput, RawSheetShape
 }))
 export type Sheet = z.infer<typeof SheetSchema>
 export type WriteCellRange = (range: Rect, matrix: readonly (readonly string[])[]) => boolean
+export type FillCellRange = (source: Rect, target: Rect) => boolean
 type SheetEditResult = JSONResult | Exclude<JSONCapabilityResult, { ok: true }>
 export interface SheetOps {
   add(path: string, value: unknown): SheetEditResult

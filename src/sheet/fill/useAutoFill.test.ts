@@ -45,8 +45,7 @@ describe('useAutoFill', () => {
       const fill = useAutoFill({
         selectedIds: [],
         focusId: cellId('A', 0),
-        cells: { A1: '1' },
-        writeCell: () => { throw new Error('writeCell should not run') },
+        fillCellRange: () => { throw new Error('fillCellRange should not run') },
         setSelectedIds: () => {},
         rowCount: 3,
         colLetters: ['A'],
@@ -78,8 +77,7 @@ describe('useAutoFill', () => {
       const fill = useAutoFill({
         selectedIds: [],
         focusId: cellId('A', 0),
-        cells: { A1: '1' },
-        writeCell: () => { throw new Error('blocked') },
+        fillCellRange: () => false,
         setSelectedIds: (ids) => { selected.push(ids) },
         rowCount: 3,
         colLetters: ['A'],

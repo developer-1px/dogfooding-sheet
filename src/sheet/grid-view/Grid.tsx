@@ -31,7 +31,6 @@ export function Grid({ ctx }: { ctx: GridController }) {
     setSelectAnchor,
     highlightedIds,
     sheet,
-    writeCell,
     toggleCheckboxCell,
     styleOf,
     noteOf,
@@ -47,9 +46,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
   const fill = useAutoFill({
     selectedIds,
     focusId,
-    cells: sheet.cells,
-    writeCell,
-    writeCells: ctx.writeCells,
+    fillCellRange: ctx.fillCellRange,
     setSelectedIds,
     rowCount: ctx.rowCount,
     colLetters: ctx.colLetters,

@@ -82,4 +82,55 @@ describe('useSheetDocument', () => {
     expect(document.querySelector('output')?.textContent).toBe('TRUE')
   })
 
+  it('delegates fill handle series application to zod-crud grid-range', () => {
+    let doc!: ReturnType<typeof useSheetDocument>
+
+    function Harness() {
+      doc = useSheetDocument()
+      return createElement('output', null, JSON.stringify(doc.sheet.cells))
+    }
+
+    act(() => root!.render(createElement(Harness)))
+
+    act(() => {
+      doc.writeCell('A1', '1')
+      doc.writeCell('A2', '2')
+    })
+    act(() => {
+      expect(doc.fillCellRange(
+        { rMin: 0, rMax: 1, cMin: 0, cMax: 0 },
+        { rMin: 0, rMax: 4, cMin: 0, cMax: 0 },
+      )).toBe(true)
+    })
+
+    expect(doc.sheet.cells.A3).toBe('3')
+    expect(doc.sheet.cells.A4).toBe('4')
+    expect(doc.sheet.cells.A5).toBe('5')
+  })
+
+  it('delegates rightward fill handle series application to zod-crud grid-range', () => {
+    let doc!: ReturnType<typeof useSheetDocument>
+
+    function Harness() {
+      doc = useSheetDocument()
+      return createElement('output', null, JSON.stringify(doc.sheet.cells))
+    }
+
+    act(() => root!.render(createElement(Harness)))
+
+    act(() => {
+      doc.writeCell('A1', '10')
+      doc.writeCell('B1', '20')
+    })
+    act(() => {
+      expect(doc.fillCellRange(
+        { rMin: 0, rMax: 0, cMin: 0, cMax: 1 },
+        { rMin: 0, rMax: 0, cMin: 0, cMax: 3 },
+      )).toBe(true)
+    })
+
+    expect(doc.sheet.cells.C1).toBe('30')
+    expect(doc.sheet.cells.D1).toBe('40')
+  })
+
 })
