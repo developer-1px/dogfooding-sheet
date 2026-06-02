@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import { parseA1, cellId } from '../schema'
-import { refsInFormula } from '@spredsheet/formula'
 
 export function useFindState() {
   const [findOpen, setFindOpen] = useState(false)
@@ -10,14 +8,4 @@ export function useFindState() {
     openFind: () => { setFindMode('find'); setFindOpen(true) },
     openReplace: () => { setFindMode('replace'); setFindOpen(true) },
   }
-}
-
-export function highlightedIdsFor(editing: string | null, draft: string): string[] {
-  if (!editing || !draft.startsWith('=')) return []
-  return refsInFormula(draft)
-    .map((ref) => {
-      const p = parseA1(ref)
-      return p ? cellId(p.col, p.row) : ''
-    })
-    .filter(Boolean)
 }

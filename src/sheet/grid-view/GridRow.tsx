@@ -5,6 +5,7 @@ import { createGridCellViewModel, type MergeAnchor } from './gridCellViewModel'
 import type { StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
+import type { FormulaReferenceCellDecoration } from '../selection/formulaReferenceDecorations'
 import type { Rect } from '@spredsheet/grid'
 import type { SheetGridItemProps, SheetGridRow } from './gridTypes'
 
@@ -53,6 +54,7 @@ interface Props {
   toggleCheckboxCell: (key: string) => void
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
+  formulaReferenceById: ReadonlyMap<string, FormulaReferenceCellDecoration>
   previewIds: Set<string>
   onFormulaPickKeyDown: (e: React.KeyboardEvent) => void
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
@@ -111,6 +113,7 @@ export function GridRow(p: Props) {
           ruleOf: p.ruleOf,
           condBgOf: p.condBgOf,
           highlightedIds: p.hiSet,
+          formulaReferenceById: p.formulaReferenceById,
           previewIds: p.previewIds,
         })
         if (!view) return null
@@ -129,6 +132,7 @@ export function GridRow(p: Props) {
             mergeCols={view.mergeCols}
             styleClass={view.styleClass}
             styleInline={view.styleInline}
+            formulaReference={view.formulaReference}
             note={view.note}
             tooltip={view.tooltip}
             validationOptions={view.validationOptions}

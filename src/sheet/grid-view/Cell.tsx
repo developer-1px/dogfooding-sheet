@@ -1,5 +1,6 @@
 import { createCellDisplayModel, type CellContent } from '@spredsheet/editable-grid/cell-display'
 import type { InputProps, SelectProps } from '../../interactive-os/useEditable'
+import type { FormulaReferenceCellDecoration } from '../selection/formulaReferenceDecorations'
 import { ContenteditableCellEditor } from './ContenteditableCellEditor'
 import type { SheetGridItemProps } from './gridTypes'
 
@@ -33,6 +34,7 @@ interface Props {
   onFillHandleMouseDown: (e: React.MouseEvent) => void
   styleClass: string
   styleInline: React.CSSProperties
+  formulaReference?: FormulaReferenceCellDecoration
   note?: string
   tooltip?: string
   validationOptions?: string[]
@@ -78,6 +80,9 @@ export function Cell(p: Props) {
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
     },
   } as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> }
+  const className = p.formulaReference
+    ? `${display.className} ${p.formulaReference.className}`
+    : display.className
 
   return (
     <span
@@ -88,8 +93,10 @@ export function Cell(p: Props) {
       aria-invalid={display.error || undefined}
       aria-colspan={p.mergeCols && p.mergeCols > 1 ? p.mergeCols : undefined}
       aria-rowspan={p.mergeRows && p.mergeRows > 1 ? p.mergeRows : undefined}
-      className={display.className}
+      className={className}
       style={p.styleInline}
+      data-formula-ref-index={p.formulaReference?.index}
+      data-formula-ref={p.formulaReference?.token}
       onDoubleClick={p.onStartEdit}
       onMouseDown={p.onMouseDown}
       onMouseEnter={p.onMouseEnter}

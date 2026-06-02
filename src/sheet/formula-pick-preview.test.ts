@@ -15,6 +15,8 @@ const startFormulaEdit = async () => {
 
   const input = cellEditor()!
   act(() => setContenteditableText(input, '='))
+  expect(input.classList.contains('formula-input')).toBe(true)
+  expect(input.dataset.formulaEditor).toBe('true')
   return input
 }
 
@@ -33,7 +35,11 @@ describe('formula reference picking', () => {
     act(() => keyDown(input, 'ArrowRight'))
 
     expect(input.textContent).toBe('=B1')
-    expect(document.querySelector<HTMLElement>('.cell.selected')?.textContent).toContain('Qty')
+    const picked = document.querySelector<HTMLElement>('.cell.selected')
+    expect(picked?.textContent).toContain('Qty')
+    expect(picked?.classList.contains('formula-ref')).toBe(true)
+    expect(picked?.classList.contains('formula-ref-0')).toBe(true)
+    expect(picked?.dataset.formulaRef).toBe('B1')
   })
 
   it('extends the inserted reference to a range with Shift+Arrow', async () => {
@@ -43,7 +49,10 @@ describe('formula reference picking', () => {
     act(() => keyDown(input, 'ArrowDown', { shiftKey: true }))
 
     expect(input.textContent).toBe('=B1:B2')
-    expect([...document.querySelectorAll<HTMLElement>('.cell.selected')]).toHaveLength(2)
+    const selected = [...document.querySelectorAll<HTMLElement>('.cell.selected')]
+    expect(selected).toHaveLength(2)
+    expect(selected.map((cell) => cell.dataset.formulaRefIndex)).toEqual(['0', '0'])
+    expect(selected.every((cell) => cell.classList.contains('formula-ref-0'))).toBe(true)
   })
 
   it('inserts a clicked cell reference without leaving formula edit', async () => {

@@ -8,7 +8,8 @@ import { useNotes } from './useNotes'
 import { useValidation } from './validation/useValidation'
 import { useCondFormat } from './formatting/useCondFormat'
 import { sheetMutations } from './structure/sheetMutations'
-import { useFindState, highlightedIdsFor } from './find/useFindState'
+import { useFindState } from './find/useFindState'
+import { formulaReferenceDecorationsFor } from './selection/formulaReferenceDecorations'
 import { useTabs, tabActions } from './tabs/useTabs'
 import { useEditState } from './useEditState'
 import { useMerges } from './structure/useMerges'
@@ -116,6 +117,7 @@ export function useSheet(opts: SheetOptions = {}) {
     selectedIds,
     selectAnchor: selection.selectAnchor,
   })
+  const formulaReferences = formulaReferenceDecorationsFor(edit.editing, edit.draft, { rowCount, colLetters })
 
   const { insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol } = sheetMutations(sheet, ops, countMutations)
 
@@ -167,7 +169,8 @@ export function useSheet(opts: SheetOptions = {}) {
     commitEdit, cancelEdit,
     writeCell, writeCells, writeCellRange, fillCellRange, toggleCheckboxCell, replaceCellsByQuery, replaceCellText, previewSheetReplacement, applySheetReplacement, clearCellValues, clearAllFormats, clipboardText, display,
     selectedIds, setSelectedIds, setFocusId, setSelectAnchor,
-    highlightedIds: highlightedIdsFor(edit.editing, edit.draft),
+    highlightedIds: formulaReferences.highlightedIds,
+    formulaReferenceById: formulaReferences.byId,
     formulaPickActive: formulaPick.formulaPickActive,
     pickFormulaRef: formulaPick.pickFormulaRef,
     moveFormulaPick: formulaPick.moveFormulaPick,

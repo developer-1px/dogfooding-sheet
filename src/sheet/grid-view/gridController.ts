@@ -11,6 +11,7 @@ import type { HiddenActions } from '../visibility/useHidden'
 import type { SheetMutations } from '../structure/sheetMutations'
 import type { ClipboardTextBridge } from '../clipboard/clipboardActions'
 import type { SheetRecordMutationCommands } from '../useSheetDocument'
+import type { FormulaReferenceCellDecoration } from '../selection/formulaReferenceDecorations'
 
 interface CommitOptions {
   readonly restoreFocus?: boolean
@@ -69,6 +70,7 @@ export interface GridController extends GridContextMenuController {
   inputProps: InputProps
   selectProps: SelectProps
   highlightedIds: string[]
+  formulaReferenceById: ReadonlyMap<string, FormulaReferenceCellDecoration>
   styleOf: StyleLookup
   ruleOf: RuleLookup
   condBgOf: (col: string, displayed: string) => string | undefined

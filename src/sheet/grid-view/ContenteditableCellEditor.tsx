@@ -31,6 +31,7 @@ export function ContenteditableCellEditor({
   onCancel,
   onKeyDown,
 }: Props) {
+  const formulaMode = draft.startsWith('=')
   const elementRef = useRef<HTMLSpanElement | null>(null)
   const handleRef = useRef<ContenteditableScalarEditHandle | null>(null)
   const completedRef = useRef(false)
@@ -82,7 +83,8 @@ export function ContenteditableCellEditor({
   return (
     <span
       ref={elementRef}
-      className="cell-input"
+      className={`cell-input${formulaMode ? ' formula-input' : ''}`}
+      data-formula-editor={formulaMode || undefined}
       tabIndex={0}
       onBlur={() => {
         if (completedRef.current) return
