@@ -14,13 +14,13 @@ export interface ValidationActions {
   clearRule: (keys: string[]) => void
 }
 
-export interface CheckboxConversionState {
-  cells: Cells
+export interface CheckboxConversionEdit {
+  cells: Record<string, string>
   validation: Record<string, Rule>
 }
 
 export interface ValidationMutationCommands extends RecordMutationCommands<Rule> {
-  applyCheckboxConversion?: (next: CheckboxConversionState) => boolean
+  applyCheckboxConversion?: (edit: CheckboxConversionEdit) => boolean
 }
 
 interface ValidationBounds {
@@ -68,23 +68,23 @@ export function checkboxConversionPatch(rules: Record<string, Rule>, cells: Cell
   return patch
 }
 
-export function checkboxConversionState(rules: Record<string, Rule>, cells: Cells, keys: string[]): CheckboxConversionState | null {
+export function checkboxConversionEdit(rules: Record<string, Rule>, cells: Cells, keys: string[]): CheckboxConversionEdit | null {
   let validation: Record<string, Rule> | null = null
-  let nextCells: Cells | null = null
+  let nextCells: Record<string, string> | null = null
   for (const key of keys) {
     if (rules[key] === undefined || rules[key]?.type !== 'checkbox') {
-      validation ??= { ...rules }
+      validation ??= {}
       validation[key] = { type: 'checkbox' }
     }
 
     const value = normalizeCheckboxValue(cells[key])
     if (cells[key] === undefined || cells[key] !== value) {
-      nextCells ??= { ...cells }
+      nextCells ??= {}
       nextCells[key] = value
     }
   }
   if (!validation && !nextCells) return null
-  return { validation: validation ?? rules, cells: nextCells ?? cells }
+  return { validation: validation ?? {}, cells: nextCells ?? {} }
 }
 
 const LEGACY_KEY = 'spreadsheet:validation:v1'
@@ -141,9 +141,9 @@ export const setCheckboxValidationRule = (
   commands?: ValidationMutationCommands,
 ): void => {
   const targetKeys = validKeys(keys, bounds)
-  const next = checkboxConversionState(rules, cells, targetKeys)
-  if (!next) return
-  if (commands?.applyCheckboxConversion?.(next)) return
+  const edit = checkboxConversionEdit(rules, cells, targetKeys)
+  if (!edit) return
+  if (commands?.applyCheckboxConversion?.(edit)) return
   applyPatch(ops, checkboxConversionPatch(rules, cells, targetKeys))
 }
 

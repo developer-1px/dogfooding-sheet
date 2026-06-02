@@ -126,6 +126,36 @@ describe('dictOps mutation adapter', () => {
     ])
   })
 
+  it('delegates sparse entry intents before specialized fallbacks', () => {
+    const calls: unknown[] = []
+    const ops = {
+      add: (path: never, value: never) => { calls.push(['add', path, value]) },
+      replace: (path: never, value: never) => { calls.push(['replace', path, value]) },
+      remove: (path: never) => { calls.push(['remove', path]) },
+      patch: (patch: never) => { calls.push(['patch', patch]) },
+    }
+    const edited: unknown[] = []
+    const commands = {
+      editEntries: (entries: Array<[string, string | undefined]>) => { edited.push(entries); return true },
+      replaceExisting: () => { calls.push('replaceExisting'); return true },
+      ensureMissing: () => { calls.push('ensureMissing'); return true },
+      applyRecordDiff: () => { calls.push('applyRecordDiff'); return true },
+    }
+
+    upsertKey(ops, '/records', {}, 'A', 'new', undefined, commands)
+    upsertKeys(ops, '/records', { B: 'old', C: 'drop' }, [
+      ['B', 'new'],
+      ['C', undefined],
+      ['D', 'added'],
+    ], undefined, commands)
+
+    expect(edited).toEqual([
+      [['A', 'new']],
+      [['B', 'new'], ['C', undefined], ['D', 'added']],
+    ])
+    expect(calls).toEqual([])
+  })
+
   it('delegates mixed record batches through a record diff command', () => {
     const calls: unknown[] = []
     const ops = {

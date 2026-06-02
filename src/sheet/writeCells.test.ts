@@ -146,6 +146,36 @@ describe('cell write adapters', () => {
     ])
   })
 
+  it('delegates normalized sparse cell intents before older write commands', () => {
+    const { ops, calls } = recordingOps()
+    const edited: Array<Array<[string, string | undefined]>> = []
+    const replaceExisting = () => {
+      calls.push(['replaceExisting'])
+      return true
+    }
+    const ensureMissing = () => {
+      calls.push(['ensureMissing'])
+      return true
+    }
+    const editEntries = (entries: Array<[string, string | undefined]>) => {
+      edited.push(entries)
+      return true
+    }
+
+    writeSingleCell(ops, { A1: 'old' }, 'A1', 'next', undefined, replaceExisting, ensureMissing, editEntries)
+    writeCellsBatch(ops, { B1: 'old', C1: 'drop' }, [
+      ['B1', 'new'],
+      ['C1', ''],
+      ['D1', 'added'],
+    ], undefined, replaceExisting, ensureMissing, undefined, editEntries)
+
+    expect(edited).toEqual([
+      [['A1', 'next']],
+      [['B1', 'new'], ['C1', undefined], ['D1', 'added']],
+    ])
+    expect(calls).toEqual([])
+  })
+
   it('delegates mixed batch cell writes through a record diff command', () => {
     const { ops, calls } = recordingOps()
     const diffed: unknown[] = []

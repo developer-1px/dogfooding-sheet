@@ -11,7 +11,10 @@ type Equal<V> = (a: V, b: V) => boolean
 
 const defaultEqual = <V>(a: V, b: V): boolean => a === b
 
+export type RecordEditEntries<V> = (entries: Array<[string, V | undefined]>, equal?: Equal<V>) => boolean
+
 export interface RecordMutationCommands<V> {
+  editEntries?: RecordEditEntries<V>
   replaceExisting?: (entries: Array<[string, V]>) => boolean
   ensureMissing?: (entries: Array<[string, V]>) => boolean
   applyRecordDiff?: (next: Record<string, V>) => boolean
@@ -51,6 +54,7 @@ export function upsertKey<V>(
   commands?: RecordMutationCommands<V>,
 ): void {
   const path = childPath(base, key)
+  if (commands?.editEntries?.([[key, value]], equal)) return
   if (value === undefined) {
     if (current[key] !== undefined) removeValue(ops, path)
   } else if (current[key] === undefined) {
@@ -74,6 +78,7 @@ export function upsertKeys<V>(
   const patch: Patch = []
   const latest = new Map(entries)
   const latestEntries = [...latest]
+  if (latestEntries.length > 0 && commands?.editEntries?.(latestEntries, equal)) return
   if (
     commands?.replaceExisting &&
     latestEntries.length > 0 &&

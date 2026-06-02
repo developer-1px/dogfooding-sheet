@@ -11,6 +11,7 @@ import { createIncrementNumber } from '@zod-crud/increment-number'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
 import { createSearchReplace } from '@zod-crud/search-replace'
+import { createSparseRecord } from '@zod-crud/sparse-record'
 import { createToggleOption } from '@zod-crud/toggle-option'
 import { createToggleValue } from '@zod-crud/toggle-value'
 import { useJSONDocument } from 'zod-crud/react'
@@ -101,11 +102,30 @@ export function useSheetDocument() {
   const diff = useMemo(() => createDocumentDiff(doc), [doc])
   const incrementNumber = useMemo(() => createIncrementNumber(doc), [doc])
   const preview = useMemo(() => createPatchPreview(SheetSchema, doc), [doc])
+  const sparseRecord = useMemo(() => createSparseRecord(doc), [doc])
   const toggleOption = useMemo(() => createToggleOption(doc), [doc])
   const toggleValue = useMemo(() => createToggleValue(doc), [doc])
   const text = useMemo(() => createSearchReplace(doc), [doc])
   const recordMutations = useMemo<SheetRecordMutationCommands>(() => {
     const commandsFor = <V,>(base: Pointer): RecordMutationCommands<V> => ({
+      editEntries(entries, equal) {
+        const field = base.slice(1) as keyof Sheet
+        const set: Record<string, unknown> = {}
+        const remove: string[] = []
+        for (const [key, value] of entries) {
+          if (value === undefined) remove.push(key)
+          else set[key] = value
+        }
+        return sparseRecord.edit({
+          root: base,
+          set,
+          remove,
+        }, {
+          equals: equal
+            ? (current, next) => equal(current as V, next as V)
+            : undefined,
+        }, { label: `sparse-record:${String(field)}`, origin: 'programmatic' }).ok
+      },
       replaceExisting(entries) {
         return batchUpdate.batchUpdate(entries.map(([key]) => appendSegment(base, key)), {
           compute: (_current, _pointer, index) => entries[index]?.[1] as V,
@@ -126,14 +146,17 @@ export function useSheetDocument() {
       styles: commandsFor('/styles' as Pointer),
       validation: {
         ...commandsFor<Rule>('/validation' as Pointer),
-        applyCheckboxConversion(next) {
-          return diff.apply({ ...sheet, cells: next.cells, validation: next.validation }, { label: 'checkbox-conversion', origin: 'programmatic' }).ok
+        applyCheckboxConversion(edit) {
+          return sparseRecord.edit([
+            { root: '/cells' as Pointer, set: edit.cells },
+            { root: '/validation' as Pointer, set: edit.validation },
+          ], undefined, { label: 'checkbox-conversion', origin: 'programmatic' }).ok
         },
       },
       rowHeights: commandsFor('/rowHeights' as Pointer),
       colWidths: commandsFor('/colWidths' as Pointer),
     }
-  }, [batchUpdate, defaults, diff, sheet])
+  }, [batchUpdate, defaults, diff, sheet, sparseRecord])
   const ops = useMemo<SheetOps>(() => ({
     add: (path, value) => doc.insert(path as Pointer, value),
     remove: (path) => doc.delete(path as Pointer),
@@ -169,8 +192,8 @@ export function useSheetDocument() {
   }, [doc])
 
   const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
-  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing)
-  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.applyRecordDiff)
+  const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.editEntries)
+  const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.applyRecordDiff, recordMutations.cells.editEntries)
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
@@ -183,7 +206,10 @@ export function useSheetDocument() {
     }).ok
   }
   const toggleCheckboxCell = (key: string): boolean => {
-    if (sheet.cells[key] === undefined) return defaults.ensure('/cells' as Pointer, { [key]: 'TRUE' }).ok
+    if (sheet.cells[key] === undefined) {
+      if (recordMutations.cells.editEntries?.([[key, 'TRUE']])) return true
+      return defaults.ensure('/cells' as Pointer, { [key]: 'TRUE' }).ok
+    }
     return toggleValue.toggleValue(cellValuePointer(key), { values: ['TRUE', 'FALSE'] }).ok
   }
   const moveCollectionBefore = (source: string, target: string): boolean =>
@@ -198,10 +224,12 @@ export function useSheetDocument() {
     diff.apply(next, { label, origin: 'programmatic' }).ok
   const writeTabColor = (name: string, color: string): boolean => {
     const pointer = appendSegment('/tabs/colors' as Pointer, name)
+    if (sparseRecord.edit({ root: '/tabs/colors' as Pointer, set: { [name]: color } }, undefined, { label: 'tab-color', origin: 'programmatic' }).ok) return true
     if (sheet.tabs.colors[name] === undefined) return defaults.ensure('/tabs/colors' as Pointer, { [name]: color }).ok
     return batchUpdate.batchUpdate([pointer], { value: color }).ok
   }
   const clearTabColor = (name: string): boolean =>
+    sparseRecord.edit({ root: '/tabs/colors' as Pointer, remove: [name] }, undefined, { label: 'tab-color:clear', origin: 'programmatic' }).ok ||
     doc.delete(appendSegment('/tabs/colors' as Pointer, name)).ok
   const clearCellValues = (): boolean =>
     clear.clearContents(['/cells' as Pointer]).ok

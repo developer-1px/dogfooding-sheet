@@ -36,6 +36,7 @@
     "@zod-crud/patch-preview": "file:../zod-crud/packages/patch-preview",
     "@zod-crud/persist-web": "file:../zod-crud/packages/persist-web",
     "@zod-crud/search-replace": "file:../zod-crud/packages/search-replace",
+    "@zod-crud/sparse-record": "file:../zod-crud/labs/extensions/sparse-record",
     "@zod-crud/toggle-option": "file:../zod-crud/labs/extensions/toggle-option",
     "@zod-crud/toggle-value": "file:../zod-crud/labs/extensions/toggle-value",
     "react": "^19.2.5",
