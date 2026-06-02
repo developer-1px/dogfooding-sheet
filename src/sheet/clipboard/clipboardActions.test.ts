@@ -14,6 +14,39 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
     expect(written).toEqual({ B2: 'x', C2: 'y', B3: '1', C3: '2' })
   })
 
+  it('delegates rectangular TSV paste to a range writer when available', () => {
+    const written: Record<string, string> = {}
+    const ranges: unknown[] = []
+
+    pasteTsvAt('x\ty\n1\t2', { col: 'B', row: 1 }, (k, v) => { written[k] = v }, {
+      writeRange: (range, matrix) => {
+        ranges.push({ range, matrix })
+        return true
+      },
+    })
+
+    expect(ranges).toEqual([{
+      range: { rMin: 1, rMax: 2, cMin: 1, cMax: 2 },
+      matrix: [['x', 'y'], ['1', '2']],
+    }])
+    expect(written).toEqual({})
+  })
+
+  it('falls back to cell writes for ragged TSV paste', () => {
+    const written: Record<string, string> = {}
+    const ranges: unknown[] = []
+
+    pasteTsvAt('x\ty\n1', { col: 'A', row: 0 }, (k, v) => { written[k] = v }, {
+      writeRange: (range, matrix) => {
+        ranges.push({ range, matrix })
+        return true
+      },
+    })
+
+    expect(ranges).toEqual([])
+    expect(written).toEqual({ A1: 'x', B1: 'y', A2: '1' })
+  })
+
   it('fills every selected cell when pasting a single clipboard value', () => {
     const written: Record<string, string> = {}
     pasteTsvIntoSelection(
@@ -34,6 +67,30 @@ describe('rectToTsv / pasteTsv roundtrip', () => {
       (k, v) => { written[k] = v },
     )
     expect(written).toEqual({ A1: 'x', B1: 'y', A2: 'x', B2: 'y' })
+  })
+
+  it('delegates selected rectangular paste as a full tiled matrix', () => {
+    const written: Record<string, string> = {}
+    const ranges: unknown[] = []
+
+    pasteTsvIntoSelection(
+      'x\ty',
+      [cellId('A', 0), cellId('B', 0), cellId('A', 1), cellId('B', 1)],
+      { col: 'A', row: 0 },
+      (k, v) => { written[k] = v },
+      {
+        writeRange: (range, matrix) => {
+          ranges.push({ range, matrix })
+          return true
+        },
+      },
+    )
+
+    expect(ranges).toEqual([{
+      range: { rMin: 0, rMax: 1, cMin: 0, cMax: 1 },
+      matrix: [['x', 'y'], ['x', 'y']],
+    }])
+    expect(written).toEqual({})
   })
 
   it('does not clear cells when cut serialization exceeds the clipboard limit', async () => {

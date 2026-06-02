@@ -7,6 +7,7 @@ import { createClearContents } from '@zod-crud/clear-contents'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
 import { createCollection } from '@zod-crud/collection'
 import { createDocumentDiff } from '@zod-crud/document-diff'
+import { createGridRange } from '@zod-crud/grid-range'
 import { createIncrementNumber } from '@zod-crud/increment-number'
 import { createPatchPreview } from '@zod-crud/patch-preview'
 import { createDocumentPersistence } from '@zod-crud/persist-web'
@@ -16,9 +17,11 @@ import { createToggleOption } from '@zod-crud/toggle-option'
 import { createToggleValue } from '@zod-crud/toggle-value'
 import { useJSONDocument } from 'zod-crud/react'
 import { appendSegment, type Pointer } from 'zod-crud'
-import { MAX_COL_COUNT, MAX_ROW_COUNT, SheetSchema, type Sheet, type SheetOps, type Writes } from './schema'
+import { columnLabel } from '@spredsheet/grid'
+import { MAX_COL_COUNT, MAX_ROW_COUNT, SheetSchema, cellKey, type Rect, type Sheet, type SheetOps, type WriteCellRange, type Writes } from './schema'
 import { loadInitial, SHEET_STORAGE_KEY, sheetPersistenceCodec } from './storage'
 import { writeCellsBatch, writeSingleCell } from './writeCells'
+import { normalizeCellWrite } from './cellValue'
 import type { RecordMutationCommands } from '../lib/dictOps'
 import type { ClipboardTextBridge } from './clipboard/clipboardActions'
 import type { Format } from './formatting/useFormats'
@@ -67,6 +70,16 @@ const initialPersistenceState: SheetPersistenceState = {
 const cellValuePointer = (key: string): Pointer =>
   appendSegment('/cells' as Pointer, key)
 
+const rectRowCount = (range: Rect): number => range.rMax - range.rMin + 1
+const rectColumnCount = (range: Rect): number => range.cMax - range.cMin + 1
+const gridCellIntent = (value: string): { intent: 'set'; value: string } | { intent: 'remove' } | null => {
+  const normalized = normalizeCellWrite(value)
+  if (normalized.type === 'reject') return null
+  return normalized.type === 'remove'
+    ? { intent: 'remove' }
+    : { intent: 'set', value: normalized.value }
+}
+
 const rawTextClipboardCodec: WebClipboardCodec = {
   encode: ({ payload }) => typeof payload === 'string' ? payload : JSON.stringify(payload),
   decode: (text) => ({ payload: text, source: null, sources: null }),
@@ -100,6 +113,7 @@ export function useSheetDocument() {
   const webClipboard = useMemo(() => createWebClipboard(doc, { codec: rawTextClipboardCodec }), [doc])
   const collection = useMemo(() => createCollection(doc), [doc])
   const diff = useMemo(() => createDocumentDiff(doc), [doc])
+  const gridRange = useMemo(() => createGridRange(doc), [doc])
   const incrementNumber = useMemo(() => createIncrementNumber(doc), [doc])
   const preview = useMemo(() => createPatchPreview(SheetSchema, doc), [doc])
   const sparseRecord = useMemo(() => createSparseRecord(doc), [doc])
@@ -194,6 +208,29 @@ export function useSheetDocument() {
   const bounds = { rowCount: sheet.rowCount, colCount: sheet.colCount }
   const writeCell = (key: string, value: string) => writeSingleCell(ops, sheet.cells, key, value, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.editEntries)
   const writeCells = (writes: Writes) => writeCellsBatch(ops, sheet.cells, writes, bounds, recordMutations.cells.replaceExisting, recordMutations.cells.ensureMissing, recordMutations.cells.applyRecordDiff, recordMutations.cells.editEntries)
+  const writeCellRange: WriteCellRange = (range, matrix) => {
+    for (const row of matrix) {
+      for (const value of row) {
+        if (gridCellIntent(value) === null) return false
+      }
+    }
+    return gridRange.paste({
+      root: '/cells' as Pointer,
+      range: {
+        row: range.rMin,
+        column: range.cMin,
+        rowCount: rectRowCount(range),
+        columnCount: rectColumnCount(range),
+      },
+      matrix,
+      keyForCell: ({ row, column }) => cellKey(columnLabel(column), row),
+      bounds: { rowCount: sheet.rowCount, columnCount: sheet.colCount },
+    }, {
+      valueToIntent(value) {
+        return gridCellIntent(String(value)) ?? { intent: 'set', value: String(value) }
+      },
+    }, { label: 'grid-range:paste', origin: 'programmatic' }).ok
+  }
   const replaceCellsByQuery = (jsonPath: string, replace: ReplaceCellValue): boolean =>
     bulk.replaceAll<string>(jsonPath, ({ value }) => replace(value)).ok
   const replaceCellText = ({ keys, search, replacement, caseSensitive = false }: ReplaceCellTextOptions): boolean => {
@@ -278,6 +315,7 @@ export function useSheetDocument() {
     ops,
     writeCell,
     writeCells,
+    writeCellRange,
     toggleCheckboxCell,
     replaceCellsByQuery,
     replaceCellText,

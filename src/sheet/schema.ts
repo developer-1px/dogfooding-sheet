@@ -1,5 +1,6 @@
 import * as z from 'zod'
 import type { JSONCapabilityResult, JSONPatchOperation, JSONResult } from 'zod-crud'
+import type { Rect } from '@spredsheet/grid'
 import { MAX_SHEET_TABS } from './sheetLimits'
 import { isSafeSheetName, isSafeTabColor } from './sheetStyleModel'
 import {
@@ -9,7 +10,7 @@ import {
 } from './sheetTabBundleSchema'
 import { sanitizeTabBundle } from './sheetTabBundleSanitizer'
 
-export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, moveCellIdByDelta, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef } from '@spredsheet/grid'
+export { COL_LETTERS, cellKey, cellId, parseCellId, parseA1, cellIdToKey, colIndex, moveCellIdByDelta, A1_RE, type Cells, type Writes, type WriteCell, type WriteMany, type Display, type CellRef, type Rect } from '@spredsheet/grid'
 export * from './sheetLimits'
 export * from './sheetStyleModel'
 export { RawTabBundleSchema, TabBundleSchema, sanitizeRawTabBundleInput } from './sheetTabBundleSchema'
@@ -55,6 +56,7 @@ export const SheetSchema = z.preprocess(sanitizeRawTabBundleInput, RawSheetShape
   tabs,
 }))
 export type Sheet = z.infer<typeof SheetSchema>
+export type WriteCellRange = (range: Rect, matrix: readonly (readonly string[])[]) => boolean
 type SheetEditResult = JSONResult | Exclude<JSONCapabilityResult, { ok: true }>
 export interface SheetOps {
   add(path: string, value: unknown): SheetEditResult
