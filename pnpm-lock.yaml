@@ -51,9 +51,6 @@ importers:
       '@zod-crud/autosave':
         specifier: file:../zod-crud/labs/extensions/autosave
         version: file:../zod-crud/labs/extensions/autosave(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
-      '@zod-crud/batch-update':
-        specifier: file:../zod-crud/labs/extensions/batch-update
-        version: file:../zod-crud/labs/extensions/batch-update(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
       '@zod-crud/bulk-edit':
         specifier: file:../zod-crud/packages/bulk-edit
         version: file:../zod-crud/packages/bulk-edit(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))
@@ -832,11 +829,6 @@ packages:
 
   '@zod-crud/autosave@file:../zod-crud/labs/extensions/autosave':
     resolution: {directory: ../zod-crud/labs/extensions/autosave, type: directory}
-    peerDependencies:
-      zod-crud: ^1.0.0
-
-  '@zod-crud/batch-update@file:../zod-crud/labs/extensions/batch-update':
-    resolution: {directory: ../zod-crud/labs/extensions/batch-update, type: directory}
     peerDependencies:
       zod-crud: ^1.0.0
 
@@ -2164,10 +2156,6 @@ snapshots:
       tinyrainbow: 3.1.0
 
   '@zod-crud/autosave@file:../zod-crud/labs/extensions/autosave(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
-    dependencies:
-      zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
-
-  '@zod-crud/batch-update@file:../zod-crud/labs/extensions/batch-update(zod-crud@file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3))':
     dependencies:
       zod-crud: file:../zod-crud/packages/zod-crud(react@19.2.6)(zod@4.4.3)
 

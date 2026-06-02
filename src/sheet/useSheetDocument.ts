@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createAutoSave, type AutoSaveSnapshot } from '@zod-crud/autosave'
-import { createBatchUpdate } from '@zod-crud/batch-update'
 import { createBulkEdit } from '@zod-crud/bulk-edit'
 import { createClearContents } from '@zod-crud/clear-contents'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
@@ -105,7 +104,6 @@ export function useSheetDocument() {
   const doc = useJSONDocument(SheetSchema, initial, { history: 100 })
   const { value: sheet } = doc
   const [persistence, setPersistence] = useState<SheetPersistenceState>(initialPersistenceState)
-  const batchUpdate = useMemo(() => createBatchUpdate(doc), [doc])
   const bulk = useMemo(() => createBulkEdit(doc), [doc])
   const clear = useMemo(() => createClearContents(doc), [doc])
   const webClipboard = useMemo(() => createWebClipboard(doc, { codec: rawTextClipboardCodec }), [doc])
@@ -249,7 +247,7 @@ export function useSheetDocument() {
     const pointer = appendSegment('/tabs/colors' as Pointer, name)
     if (sparseRecord.edit({ root: '/tabs/colors' as Pointer, set: { [name]: color } }, undefined, { label: 'tab-color', origin: 'programmatic' }).ok) return true
     if (sheet.tabs.colors[name] === undefined) return doc.insert(pointer, color).ok
-    return batchUpdate.batchUpdate([pointer], { value: color }).ok
+    return doc.replace(pointer, color).ok
   }
   const clearTabColor = (name: string): boolean =>
     sparseRecord.edit({ root: '/tabs/colors' as Pointer, remove: [name] }, undefined, { label: 'tab-color:clear', origin: 'programmatic' }).ok ||
@@ -268,15 +266,15 @@ export function useSheetDocument() {
   const freezeMutations = useMemo<FreezeMutationCommands>(() => ({
     toggleRows: () => toggleValue.toggleValue('/freeze/rows' as Pointer, { values: [0, 1] }).ok,
     toggleCols: () => toggleValue.toggleValue('/freeze/cols' as Pointer, { values: [0, 1] }).ok,
-    setRows: (rows) => batchUpdate.batchUpdate(['/freeze/rows' as Pointer], { value: rows }).ok,
-    setCols: (cols) => batchUpdate.batchUpdate(['/freeze/cols' as Pointer], { value: cols }).ok,
-  }), [batchUpdate, toggleValue])
+    setRows: (rows) => doc.replace('/freeze/rows' as Pointer, rows).ok,
+    setCols: (cols) => doc.replace('/freeze/cols' as Pointer, cols).ok,
+  }), [doc, toggleValue])
   const condFormatMutations = useMemo<CondMutationCommands>(() => ({
     addRule: (rule) => doc.insert('/condFormat/-' as Pointer, rule).ok,
-    replaceRule: (index, rule: CondRule) => batchUpdate.batchUpdate([appendSegment('/condFormat' as Pointer, index)], { value: rule }).ok,
+    replaceRule: (index, rule: CondRule) => doc.replace(appendSegment('/condFormat' as Pointer, index), rule).ok,
     removeRule: (index) => collection.deleteItems(appendSegment('/condFormat' as Pointer, index)).ok,
     clearAll: () => clear.clearContents(['/condFormat' as Pointer]).ok,
-  }), [batchUpdate, clear, collection, doc])
+  }), [clear, collection, doc])
   const mergeMutations = useMemo<MergeMutationCommands>(() => ({
     addMerge: (merge) => doc.insert('/merges/-' as Pointer, merge).ok,
     removeMerge: (index) => collection.deleteItems(appendSegment('/merges' as Pointer, index)).ok,
