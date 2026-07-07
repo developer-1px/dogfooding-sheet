@@ -1,6 +1,6 @@
 import { act, createElement } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { setupReactDOM } from './test-utils'
+import { setInputValue, setupReactDOM } from './test-utils'
 import { FormulaBar } from './FormulaBar'
 
 describe('FormulaBar', () => {
@@ -50,5 +50,34 @@ describe('FormulaBar', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')?.type).toBe('button')
+  })
+
+  it('prevents Enter from submitting an enclosing form while committing the draft', () => {
+    const onSubmit = vi.fn((e: SubmitEvent) => e.preventDefault())
+    const onCommit = vi.fn()
+
+    act(() => dom.root.render(createElement('form', { onSubmit }, createElement(FormulaBar, {
+      addr: 'A1',
+      value: 'old',
+      onCommit,
+      onUndo: vi.fn(),
+      onRedo: vi.fn(),
+      canUndo: false,
+      canRedo: false,
+    }))))
+
+    const formula = document.querySelector<HTMLInputElement>('input.formula')!
+
+    act(() => {
+      formula.focus()
+      setInputValue(formula, 'next')
+    })
+
+    const enter = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' })
+    act(() => formula.dispatchEvent(enter))
+
+    expect(enter.defaultPrevented).toBe(true)
+    expect(onCommit).toHaveBeenCalledWith('next')
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 })
