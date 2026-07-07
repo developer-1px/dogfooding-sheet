@@ -63,4 +63,32 @@ describe('PromptDialog component', () => {
     act(() => cancel!.click())
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
+
+  it('resets the input value when a new initial value is supplied', () => {
+    const onSubmit = vi.fn()
+    const onCancel = vi.fn()
+
+    act(() => dom.root.render(createElement(PromptDialog, {
+      open: true,
+      label: '필터',
+      initial: 'old',
+      submitLabel: '적용',
+      onSubmit,
+      onCancel,
+    })))
+
+    const input = document.querySelector<HTMLInputElement>('.prompt-dialog input')!
+    act(() => setInputValue(input, 'typed'))
+
+    act(() => dom.root.render(createElement(PromptDialog, {
+      open: true,
+      label: '필터',
+      initial: 'new',
+      submitLabel: '적용',
+      onSubmit,
+      onCancel,
+    })))
+
+    expect(document.querySelector<HTMLInputElement>('.prompt-dialog input')?.value).toBe('new')
+  })
 })
