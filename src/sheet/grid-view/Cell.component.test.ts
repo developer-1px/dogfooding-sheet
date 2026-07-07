@@ -112,6 +112,33 @@ describe('Cell component', () => {
     expect(gridKeyDown).not.toHaveBeenCalled()
   })
 
+  it('keeps validation select keyboard events inside the select control', () => {
+    const gridKeyDown = vi.fn()
+    const contextKeyDown = vi.fn()
+    const selectKeyDown = vi.fn()
+
+    renderCell({
+      cellProps: { role: 'gridcell', tabIndex: 0, onKeyDown: gridKeyDown },
+      ctxHandlers: { onContextMenu: vi.fn(), onKeyDown: contextKeyDown },
+      editing: true,
+      label: 'Open',
+      draft: 'Open',
+      validationOptions: ['Open', 'Closed'],
+      selectProps: { value: 'Open', onChange: vi.fn(), onKeyDown: selectKeyDown },
+    })
+
+    const select = document.querySelector<HTMLSelectElement>('select.cell-input')
+
+    expect(select?.getAttribute('aria-label')).toBe('A1 편집')
+    expect([...select!.querySelectorAll('option')].map((option) => option.value)).toEqual(['', 'Open', 'Closed'])
+
+    act(() => select!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))
+
+    expect(selectKeyDown).toHaveBeenCalledTimes(1)
+    expect(contextKeyDown).not.toHaveBeenCalled()
+    expect(gridKeyDown).not.toHaveBeenCalled()
+  })
+
   it('keeps non-checkbox cell keyboard handling on the parent gridcell', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()
