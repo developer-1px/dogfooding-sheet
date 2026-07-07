@@ -57,7 +57,7 @@ describe('header context menus', () => {
 
     act(() => contextMenu(header('.header-cell', 'B')!))
     act(() => document.querySelectorAll<HTMLButtonElement>('.ctx-item')
-      .forEach((button) => { if (button.textContent === 'B열 숨기기') button.click() }))
+      .forEach((button) => { if (button.textContent === 'B열 숨기기 (Ctrl/⌘+Alt+0)') button.click() }))
     expect(header('.header-cell', 'B')).toBeUndefined()
 
     act(() => contextMenu(header('.header-cell', 'A')!))
@@ -74,7 +74,7 @@ describe('header context menus', () => {
 
     act(() => contextMenu(header('.header-cell', 'B')!))
     act(() => document.querySelectorAll<HTMLButtonElement>('.ctx-item')
-      .forEach((button) => { if (button.textContent === 'B열 숨기기') button.click() }))
+      .forEach((button) => { if (button.textContent === 'B열 숨기기 (Ctrl/⌘+Alt+0)') button.click() }))
     expect(header('.header-cell', 'B')).toBeUndefined()
 
     const restore = document.querySelector<HTMLButtonElement>('.unhide-col[aria-label="B열 숨김 표시"]')
