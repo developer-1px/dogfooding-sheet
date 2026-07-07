@@ -1,11 +1,76 @@
 @import './sheet/grid-view/grid.css';
 @import './sheet/overlays.css';
 
+:root {
+  --sheet-font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --sheet-font-mono: 'SF Mono', Menlo, monospace;
+  --sheet-font-size-xs: 10px;
+  --sheet-font-size-control-xs: 11px;
+  --sheet-font-size-sm: 12px;
+  --sheet-font-size-ui: 13px;
+  --sheet-font-size-control: 14px;
+  --sheet-font-size-title: 16px;
+  --sheet-font-weight-medium: 500;
+  --sheet-font-weight-strong: 600;
+  --sheet-line-height-ui: 1.4;
+
+  --sheet-color-text: #202124;
+  --sheet-color-muted: #5f6368;
+  --sheet-color-disabled: #9aa0a6;
+  --sheet-color-surface: #fff;
+  --sheet-color-surface-muted: #f8f9fa;
+  --sheet-color-hover: #f1f3f4;
+  --sheet-color-accent-muted: #e8f0fe;
+  --sheet-color-selected: #d2e3fc;
+  --sheet-color-accent: #1a73e8;
+  --sheet-color-accent-strong: #174ea6;
+  --sheet-color-success: #188038;
+  --sheet-color-danger: #d93025;
+  --sheet-color-warning: #fbbc04;
+  --sheet-color-print-border: #999;
+  --sheet-color-border: #dadce0;
+  --sheet-color-border-subtle: #e0e0e0;
+
+  --sheet-state-accent-hover: rgba(26, 115, 232, .3);
+  --sheet-state-accent-selected: rgba(26, 115, 232, .1);
+  --sheet-state-accent-preview: rgba(26, 115, 232, .15);
+  --sheet-state-accent-outline: rgba(26, 115, 232, .35);
+  --sheet-state-success-bg: rgba(24, 128, 56, .08);
+  --sheet-state-control-hover: rgba(0, 0, 0, .1);
+  --sheet-state-scrim: rgba(0, 0, 0, .3);
+
+  --sheet-shadow-menu: 0 2px 8px rgba(0, 0, 0, .1);
+  --sheet-shadow-popover: 0 4px 16px rgba(0, 0, 0, .15);
+  --sheet-shadow-panel: 0 4px 12px rgba(0, 0, 0, .15);
+  --sheet-shadow-dialog: 0 8px 32px rgba(0, 0, 0, .2);
+
+  --sheet-radius-tight: 2px;
+  --sheet-radius-kbd: 3px;
+  --sheet-radius-control: 4px;
+  --sheet-radius-tab: 6px;
+  --sheet-radius-panel: 8px;
+  --sheet-radius-round: 999px;
+
+  --sheet-space-half: 2px;
+  --sheet-space-1: 4px;
+  --sheet-space-2: 6px;
+  --sheet-space-3: 8px;
+  --sheet-space-4: 10px;
+  --sheet-space-5: 12px;
+  --sheet-space-6: 16px;
+  --sheet-space-7: 20px;
+  --sheet-space-8: 24px;
+
+  --sheet-size-control-sm: 16px;
+  --sheet-size-control-md: 18px;
+  --sheet-size-cell-min-height: 28px;
+}
+
 * { box-sizing: border-box; }
 body, html, #root {
   margin: 0; padding: 0; height: 100%;
-  font: 13px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #f8f9fa; color: #202124;
+  font: var(--sheet-font-size-ui)/var(--sheet-line-height-ui) var(--sheet-font-ui);
+  background: var(--sheet-color-surface-muted); color: var(--sheet-color-text);
 }
 .sheet-app { display: flex; flex-direction: column; height: 100vh; }
 .app-error {
@@ -13,45 +78,45 @@ body, html, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background: #f8f9fa;
-  color: #202124;
+  gap: var(--sheet-space-5);
+  background: var(--sheet-color-surface-muted);
+  color: var(--sheet-color-text);
 }
 .app-error button {
-  padding: 6px 12px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  background: #fff;
+  padding: var(--sheet-space-2) var(--sheet-space-5);
+  border: 1px solid var(--sheet-color-border);
+  border-radius: var(--sheet-radius-control);
+  background: var(--sheet-color-surface);
   cursor: pointer;
 }
 
 .sheet-toolbar {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  padding: 10px 16px; background: #fff;
-  border-bottom: 1px solid #e0e0e0;
+  display: flex; align-items: center; gap: var(--sheet-space-5); flex-wrap: wrap;
+  padding: var(--sheet-space-4) var(--sheet-space-6); background: var(--sheet-color-surface);
+  border-bottom: 1px solid var(--sheet-color-border-subtle);
 }
 .sheet-toolbar .addr {
-  min-width: 56px; padding: 4px 8px; text-align: center;
-  border: 1px solid #dadce0; border-radius: 4px; background: #f8f9fa;
-  font: 13px 'SF Mono', Menlo, monospace;
+  min-width: 56px; padding: var(--sheet-space-1) var(--sheet-space-3); text-align: center;
+  border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); background: var(--sheet-color-surface-muted);
+  font: var(--sheet-font-size-ui) var(--sheet-font-mono);
 }
 .sheet-toolbar .formula {
-  flex: 1; min-width: 200px; padding: 6px 10px; font-size: 14px;
-  border: 1px solid #dadce0; border-radius: 4px; outline: none;
+  flex: 1; min-width: 200px; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
+  border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); outline: none;
 }
-.sheet-toolbar .formula:focus { border-color: #1a73e8; }
+.sheet-toolbar .formula:focus { border-color: var(--sheet-color-accent); }
 .sheet-toolbar button {
-  padding: 6px 12px; font-size: 13px; cursor: pointer; background: #fff;
-  border: 1px solid #dadce0; border-radius: 4px;
+  padding: var(--sheet-space-2) var(--sheet-space-5); font-size: var(--sheet-font-size-ui); cursor: pointer; background: var(--sheet-color-surface);
+  border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
 }
-.sheet-toolbar button[aria-pressed="true"] { background: #d2e3fc; border-color: #1a73e8; }
-.sheet-toolbar button:hover:not(:disabled) { background: #f1f3f4; }
+.sheet-toolbar button[aria-pressed="true"] { background: var(--sheet-color-selected); border-color: var(--sheet-color-accent); }
+.sheet-toolbar button:hover:not(:disabled) { background: var(--sheet-color-hover); }
 .sheet-toolbar button:disabled { opacity: .4; cursor: not-allowed; }
 .color-pick {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 8px; border: 1px solid #dadce0; border-radius: 4px;
-  background: #fff; font-size: 13px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: var(--sheet-space-1);
+  padding: var(--sheet-space-1) var(--sheet-space-3); border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
+  background: var(--sheet-color-surface); font-size: var(--sheet-font-size-ui); cursor: pointer;
 }
 .color-pick input[type="color"] {
-  width: 18px; height: 18px; padding: 0; border: none; cursor: pointer; background: transparent;
+  width: var(--sheet-size-control-md); height: var(--sheet-size-control-md); padding: 0; border: none; cursor: pointer; background: transparent;
 }
