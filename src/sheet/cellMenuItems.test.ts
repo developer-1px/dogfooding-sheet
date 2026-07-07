@@ -120,24 +120,36 @@ describe('cellMenuItems', () => {
 
   it('exposes row structure shortcut metadata on row and cell menus', () => {
     const insertLabel = '위에 행 삽입 (Ctrl/⌘+Alt+=)'
+    const insertBelowLabel = '아래 행 삽입'
     const deleteLabel = '행 삭제 (Ctrl/⌘+Alt+-)'
     const hideLabel = '2행 숨기기 (Ctrl/⌘+Alt+9)'
     const rowCalls: string[] = []
     const rowItems = cellMenuItems(actions({}, rowCalls), 'r1-B', 'row')
 
     expect(item(rowItems, insertLabel).keyShortcuts).toBe('Control+Alt+= Meta+Alt+=')
+    expect(item(rowItems, insertBelowLabel).disabled).toBe(false)
     expect(item(rowItems, deleteLabel).keyShortcuts).toBe('Control+Alt+- Meta+Alt+-')
     expect(item(rowItems, hideLabel).keyShortcuts).toBe('Control+Alt+9 Meta+Alt+9')
 
     item(rowItems, insertLabel).onClick()
+    item(rowItems, insertBelowLabel).onClick()
     item(rowItems, deleteLabel).onClick()
     item(rowItems, hideLabel).onClick()
-    expect(rowCalls).toEqual(['insertRow:1', 'deleteRow:1', 'hideRow:1'])
+    expect(rowCalls).toEqual(['insertRow:1', 'insertRow:2', 'deleteRow:1', 'hideRow:1'])
 
     const cellItems = cellMenuItems(actions(), 'r1-B')
     expect(item(cellItems, insertLabel).keyShortcuts).toBe('Control+Alt+= Meta+Alt+=')
+    expect(item(cellItems, insertBelowLabel).disabled).toBe(false)
     expect(item(cellItems, deleteLabel).keyShortcuts).toBe('Control+Alt+- Meta+Alt+-')
     expect(item(cellItems, hideLabel).keyShortcuts).toBe('Control+Alt+9 Meta+Alt+9')
+  })
+
+  it('disables insert-below row actions on the final row', () => {
+    const rowItems = cellMenuItems(actions({ rowCount: 2 }), 'r1-B', 'row')
+    const cellItems = cellMenuItems(actions({ rowCount: 2 }), 'r1-B')
+
+    expect(item(rowItems, '아래 행 삽입').disabled).toBe(true)
+    expect(item(cellItems, '아래 행 삽입').disabled).toBe(true)
   })
 
   it('exposes column structure shortcut metadata on column and cell menus', () => {
