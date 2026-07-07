@@ -56,6 +56,24 @@ describe('Tabs component', () => {
     expect(document.querySelector<HTMLButtonElement>('.tab-add')?.getAttribute('aria-label')).toBe('시트 추가')
   })
 
+  it('exposes rename input shortcuts after entering tab name edit mode', () => {
+    renderTabs({
+      order: ['Budget', 'Forecast'],
+      active: 'Budget',
+      saved: { Forecast: blankBundle() },
+      colors: {},
+    })
+
+    const tab = document.querySelector<HTMLElement>('.tab')
+    expect(tab).not.toBeNull()
+
+    act(() => tab!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+
+    const rename = document.querySelector<HTMLInputElement>('.tab-rename')
+    expect(rename?.getAttribute('aria-label')).toBe('Budget 시트 이름 편집')
+    expect(rename?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
+  })
+
   it('does not render delete controls for the last remaining sheet', () => {
     renderTabs({
       order: ['Only'],
