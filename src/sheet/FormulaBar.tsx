@@ -18,6 +18,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
   const skipCommitOnBlur = useRef(false)
   const draft = draftState.addr === addr && draftState.value === value ? draftState.draft : value
   const setDraft = (next: string) => setDraftState({ addr, value, draft: next })
+  const addressLabel = addr ? `${addr} 셀로 이동` : '셀 주소'
 
   return (
     <header className="sheet-toolbar">
@@ -27,10 +28,12 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         className="addr"
         onClick={onAddrClick}
         title="셀로 이동 (Ctrl/⌘+G)"
+        aria-label={addressLabel}
         disabled={!onAddrClick}
       >{addr ?? '—'}</button>
       <input
         className="formula"
+        aria-label="수식 입력줄"
         value={draft}
         onMouseDown={(e) => e.currentTarget.focus()}
         onChange={(e) => setDraft(e.target.value)}
