@@ -161,9 +161,11 @@ describe('header restore controls', () => {
     expect(onHeaderKeyDown).toHaveBeenCalledTimes(1)
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
 
+    onGridKeyDown.mockClear()
     const nestedSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' })
     act(() => restore!.dispatchEvent(nestedSpace))
     expect(nestedSpace.defaultPrevented).toBe(false)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
 
     onGridKeyDown.mockClear()
@@ -269,9 +271,11 @@ describe('header restore controls', () => {
     expect(shiftSpace.defaultPrevented).toBe(true)
     expect(setSelectedIds).toHaveBeenLastCalledWith(['r1-A', 'r1-B', 'r2-A', 'r2-B'])
 
+    onGridKeyDown.mockClear()
     const nestedSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' })
     act(() => restore!.dispatchEvent(nestedSpace))
     expect(nestedSpace.defaultPrevented).toBe(false)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
 
     onGridKeyDown.mockClear()

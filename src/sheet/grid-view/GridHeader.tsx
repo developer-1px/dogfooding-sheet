@@ -108,6 +108,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             type="button"
             className={control.className}
             onClick={(e) => { e.stopPropagation(); showCol(control.col) }}
+            onKeyDown={(e) => e.stopPropagation()}
             title={control.label}
             aria-label={control.label}
           >

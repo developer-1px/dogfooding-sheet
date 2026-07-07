@@ -72,6 +72,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
       type="button"
       className={control.className}
       onClick={(e) => { e.stopPropagation(); showRow(control.row) }}
+      onKeyDown={(e) => e.stopPropagation()}
       title={control.label}
       aria-label={control.label}
     >
