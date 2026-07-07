@@ -19,6 +19,7 @@ describe('FormulaBar', () => {
     })))
 
     expect(document.querySelector('button.addr')?.getAttribute('aria-label')).toBe('B12 셀로 이동')
+    expect(document.querySelector('button.addr')?.getAttribute('aria-keyshortcuts')).toBe('Control+G Meta+G')
     expect(document.querySelector('input.formula')?.getAttribute('aria-label')).toBe('수식 입력줄')
     expect(document.querySelector('input.formula')?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape F4')
     expect(document.querySelector('button[aria-label="실행 취소"]')?.textContent).toBe('실행 취소')
