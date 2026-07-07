@@ -20,6 +20,8 @@ export function useFormulaPick({ edit, rowCount, colLetters, setSelectedIds, set
   const formulaPickActive = edit.editing !== null && edit.draft.startsWith('=')
   const anchorRef = useRef<string | null>(null)
   const targetRef = useRef<string | null>(null)
+  const draftRef = useRef(edit.draft)
+  const editingRef = useRef(edit.editing)
 
   const clearFormulaPick = useCallback(() => {
     anchorRef.current = null
@@ -27,27 +29,40 @@ export function useFormulaPick({ edit, rowCount, colLetters, setSelectedIds, set
   }, [])
 
   const pickFormulaRef = useCallback((id: string, opts: { extend?: boolean } = {}) => {
-    if (!formulaPickActive) return
+    const draft = draftRef.current
+    if (!editingRef.current || !draft.startsWith('=')) return
     const anchor = opts.extend && anchorRef.current ? anchorRef.current : id
     const ref = refForFormulaPick(anchor, id)
     if (!ref) return
+    const nextDraft = replaceTrailingFormulaRef(draft, ref)
     anchorRef.current = anchor
     targetRef.current = id
+    draftRef.current = nextDraft
     setSelectedIds(idsForFormulaPick(anchor, id))
     setSelectAnchor(anchor)
-    edit.setDraft(replaceTrailingFormulaRef(edit.draft, ref))
-  }, [edit, formulaPickActive, setSelectAnchor, setSelectedIds])
+    edit.setDraft(nextDraft)
+  }, [edit, setSelectAnchor, setSelectedIds])
 
   const moveFormulaPick = useCallback((delta: { dRow: number; dCol: number }, extend = false) => {
-    if (!formulaPickActive || !edit.editing) return
-    const base = targetRef.current ?? anchorRef.current ?? edit.editing
+    const editing = editingRef.current
+    if (!editing || !draftRef.current.startsWith('=')) return
+    const base = targetRef.current ?? anchorRef.current ?? editing
     const next = moveCellId(base, delta.dRow, delta.dCol, rowCount, colLetters)
     if (next) pickFormulaRef(next, { extend })
-  }, [colLetters, edit.editing, formulaPickActive, pickFormulaRef, rowCount])
+  }, [colLetters, pickFormulaRef, rowCount])
 
   const cycleFormulaRef = useCallback(() => {
-    if (formulaPickActive) edit.setDraft(cycleTrailingFormulaRef(edit.draft))
-  }, [edit, formulaPickActive])
+    if (!editingRef.current || !draftRef.current.startsWith('=')) return
+    const nextDraft = cycleTrailingFormulaRef(draftRef.current)
+    draftRef.current = nextDraft
+    edit.setDraft(nextDraft)
+  }, [edit])
+
+  useEffect(() => {
+    if (editingRef.current !== edit.editing) clearFormulaPick()
+    editingRef.current = edit.editing
+    draftRef.current = edit.draft
+  }, [clearFormulaPick, edit.draft, edit.editing])
 
   useEffect(() => {
     if (!formulaPickActive) clearFormulaPick()

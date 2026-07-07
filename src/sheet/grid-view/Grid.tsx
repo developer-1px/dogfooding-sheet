@@ -30,6 +30,8 @@ export function Grid({ ctx }: { ctx: GridController }) {
     setSelectedIds,
     setSelectAnchor,
     highlightedIds,
+    formulaReferenceById,
+    formulaReferenceText,
     sheet,
     toggleCheckboxCell,
     styleOf,
@@ -82,7 +84,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
   const gridTemplate = gridTemplateFor(view.visibleCols)
 
   return (
-    <div {...rootProps} className={`grid${ctx.showGridlines ? '' : ' no-gridlines'}`}>
+    <div {...rootProps} className={`grid${ctx.showGridlines ? '' : ' no-gridlines'}${ctx.formulaPickActive ? ' formula-pick-active' : ''}`}>
       <GridHeader
         gridTemplate={gridTemplate}
         columnHeaderProps={columnHeaderProps}
@@ -147,6 +149,8 @@ export function Grid({ ctx }: { ctx: GridController }) {
             toggleCheckboxCell={toggleCheckboxCell}
             condBgOf={condBgOf}
             hiSet={hiSet}
+            formulaReferenceById={formulaReferenceById}
+            formulaReferenceText={formulaReferenceText}
             previewIds={previewIds}
             onFormulaPickKeyDown={(e) => {
               if (e.key === 'F4' && ctx.formulaPickActive) {

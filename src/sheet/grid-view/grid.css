@@ -56,7 +56,24 @@
 .cell.focused { outline: 2px solid #1a73e8; outline-offset: -2px; z-index: 1; }
 .cell.selected { background: rgba(26, 115, 232, .1); }
 .cell.merged { box-shadow: inset 0 0 0 1px rgba(26, 115, 232, .35); }
-.cell.ref-hi { outline: 2px dashed #34a853; outline-offset: -2px; background: rgba(52, 168, 83, .08); }
+.cell.ref-hi {
+  outline: 2px solid #188038;
+  outline-offset: -2px;
+  background: rgba(24, 128, 56, .08);
+}
+.cell.formula-ref {
+  outline-color: var(--formula-ref-color);
+  background: var(--formula-ref-bg);
+}
+.formula-ref-0 { --formula-ref-color: #1a73e8; --formula-ref-bg: rgba(26, 115, 232, .12); }
+.formula-ref-1 { --formula-ref-color: #d93025; --formula-ref-bg: rgba(217, 48, 37, .10); }
+.formula-ref-2 { --formula-ref-color: #188038; --formula-ref-bg: rgba(24, 128, 56, .11); }
+.formula-ref-3 { --formula-ref-color: #a142f4; --formula-ref-bg: rgba(161, 66, 244, .10); }
+.formula-ref-4 { --formula-ref-color: #f29900; --formula-ref-bg: rgba(242, 153, 0, .13); }
+.formula-ref-5 { --formula-ref-color: #00897b; --formula-ref-bg: rgba(0, 137, 123, .11); }
+.grid.formula-pick-active .cell.selected.formula-ref {
+  box-shadow: inset 0 0 0 1px var(--formula-ref-color);
+}
 .cell.preview { outline: 2px dashed #1a73e8; outline-offset: -2px; background: rgba(26, 115, 232, .15); }
 .dropdown-mark {
   position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
@@ -76,7 +93,18 @@
 .cell-input {
   position: absolute; inset: 0; width: 100%; padding: 4px 6px;
   font: inherit; outline: none; background: #fff;
-  border: 2px solid #1a73e8;
+  border: 2px solid #1a73e8; box-sizing: border-box;
+}
+.cell-input[contenteditable="true"] { display: block; white-space: nowrap; overflow: hidden; text-align: inherit; }
+.cell-input.formula-input {
+  border-color: #188038;
+  box-shadow: inset 3px 0 0 #188038;
+}
+.formula-token {
+  color: var(--formula-ref-color);
+  background: var(--formula-ref-bg);
+  border-radius: 3px;
+  box-decoration-break: clone;
 }
 
 .header-cell.active, .grid-row.active-row > .row-header { background: #e8f0fe; color: #1a73e8; font-weight: 600; }

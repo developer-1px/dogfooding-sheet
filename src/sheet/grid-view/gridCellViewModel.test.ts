@@ -35,6 +35,7 @@ describe('createGridCellViewModel', () => {
       ruleOf: () => undefined,
       condBgOf: () => undefined,
       highlightedIds: new Set(),
+      formulaReferenceById: new Map(),
       previewIds: new Set(),
     })).toBeNull()
 
@@ -56,6 +57,7 @@ describe('createGridCellViewModel', () => {
       ruleOf: () => undefined,
       condBgOf: () => undefined,
       highlightedIds: new Set(),
+      formulaReferenceById: new Map(),
       previewIds: new Set(),
     })).toBeNull()
   })
@@ -79,6 +81,7 @@ describe('createGridCellViewModel', () => {
       ruleOf: () => ({ type: 'list', options: ['A', 'B'] }),
       condBgOf: () => '#eee',
       highlightedIds: new Set(['r0-A']),
+      formulaReferenceById: new Map(),
       previewIds: new Set(['r0-A']),
     })
 
@@ -119,10 +122,37 @@ describe('createGridCellViewModel', () => {
       ruleOf: () => ({ type: 'checkbox' }),
       condBgOf: () => undefined,
       highlightedIds: new Set(),
+      formulaReferenceById: new Map(),
       previewIds: new Set(),
     })
 
     expect(view?.checkbox).toBe(true)
+  })
+
+  it('carries formula reference decoration metadata', () => {
+    const view = createGridCellViewModel({
+      rowIndex: 0,
+      colIndex: 0,
+      cell: cell('r0-A'),
+      colLetters: ['A'],
+      hiddenCols: new Set(),
+      mergeAnchors: new Map(),
+      mergeHidden: new Set(),
+      freezeCols: 0,
+      freezeLefts: [],
+      focusId: null,
+      fillSourceRect: null,
+      styleOf: () => undefined,
+      noteOf: () => undefined,
+      rawOf: () => '',
+      ruleOf: () => undefined,
+      condBgOf: () => undefined,
+      highlightedIds: new Set(['r0-A']),
+      formulaReferenceById: new Map([['r0-A', { index: 0, token: 'A1', className: 'formula-ref formula-ref-0' }]]),
+      previewIds: new Set(),
+    })
+
+    expect(view?.formulaReference).toEqual({ index: 0, token: 'A1', className: 'formula-ref formula-ref-0' })
   })
 
   it('uses a precomputed fill source rect for fill-corner state', () => {
@@ -143,6 +173,7 @@ describe('createGridCellViewModel', () => {
       ruleOf: () => undefined,
       condBgOf: () => undefined,
       highlightedIds: new Set<string>(),
+      formulaReferenceById: new Map(),
       previewIds: new Set<string>(),
     }
 

@@ -4,6 +4,7 @@ import { cellKey, parseCellId } from '../schema'
 import { styleToProps, type StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
+import type { FormulaReferenceCellDecoration } from '../selection/formulaReferenceDecorations'
 import type { SheetGridCell } from './gridTypes'
 
 export interface MergeAnchor {
@@ -29,6 +30,7 @@ interface GridCellViewModelArgs {
   ruleOf: RuleLookup
   condBgOf: (col: string, displayed: string) => string | undefined
   highlightedIds: ReadonlySet<string>
+  formulaReferenceById: ReadonlyMap<string, FormulaReferenceCellDecoration>
   previewIds: ReadonlySet<string>
 }
 
@@ -45,6 +47,7 @@ export interface GridCellViewModel {
   mergeCols?: number
   styleClass: string
   styleInline: CSSProperties
+  formulaReference?: FormulaReferenceCellDecoration
   note?: string
   tooltip?: string
   validationOptions?: string[]
@@ -97,6 +100,7 @@ export function createGridCellViewModel(args: GridCellViewModelArgs): GridCellVi
     mergeCols: anchor?.cols,
     styleClass,
     styleInline: { ...freezeStyle, ...mergeStyle },
+    formulaReference: args.formulaReferenceById.get(args.cell.id),
     note: args.noteOf(address),
     tooltip: raw?.startsWith('=') ? raw : undefined,
     validationOptions: rule?.type === 'list' ? rule.options : undefined,

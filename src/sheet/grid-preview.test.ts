@@ -1,16 +1,16 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDOM } from './test-utils'
+import { cellEditor, cells as gridCells, contenteditableSelectionOffset, keyDown, mouseClick, press, setContenteditableText, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
 const typeKey = (key: string) => {
-  const inp = document.querySelector<HTMLInputElement>('input.cell-input')
-  if (inp) {
-    keyDown(inp, key)
+  const editor = cellEditor()
+  if (editor) {
+    keyDown(editor, key)
     if (key === 'Enter' || key === 'Escape' || key === 'Tab') return
-    if (key.length === 1) setInputValue(inp, inp.value + key)
+    if (key.length === 1) setContenteditableText(editor, `${editor.textContent ?? ''}${key}`)
     return
   }
   press(key)
@@ -52,7 +52,7 @@ describe('spreadsheet preview interactions', () => {
     act(() => mouseClick(a1))
     act(() => keyDown(a1, 'F2'))
 
-    const editor = document.querySelector<HTMLInputElement>('input.cell-input')
+    const editor = cellEditor()
     expect(a1.getAttribute('aria-label')).toBe('A1 Item 선택됨 현재 셀 편집 중')
     expect(editor?.getAttribute('aria-label')).toBe('A1 편집')
   })
@@ -65,10 +65,9 @@ describe('spreadsheet preview interactions', () => {
     act(() => press('H'))
     await act(async () => { await Promise.resolve() })
 
-    const editor = document.querySelector<HTMLInputElement>('input.cell-input')
-    expect(editor?.value).toBe('H')
-    expect(editor?.selectionStart).toBe(1)
-    expect(editor?.selectionEnd).toBe(1)
+    const editor = cellEditor()
+    expect(editor?.textContent).toBe('H')
+    expect(editor ? contenteditableSelectionOffset(editor) : null).toBe(1)
   })
 
   it('exposes merged cells with range and span metadata', async () => {
@@ -98,7 +97,7 @@ describe('spreadsheet preview interactions', () => {
     await act(async () => { await Promise.resolve() })
 
     expect(a5.textContent).toContain('Hello')
-    expect(document.querySelector('input.cell-input')).toBeNull()
+    expect(cellEditor()).toBeNull()
     expect(document.activeElement).toBe(a5)
   })
 })

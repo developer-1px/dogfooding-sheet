@@ -5,8 +5,14 @@ import { createGridCellViewModel, type MergeAnchor } from './gridCellViewModel'
 import type { StyleLookup } from '../formatting/useStyles'
 import type { NoteLookup } from '../useNotes'
 import type { RuleLookup } from '../validation/useValidation'
+import type { FormulaReferenceCellDecoration, FormulaReferenceTextDecoration } from '../selection/formulaReferenceDecorations'
 import type { Rect } from '@spredsheet/grid'
 import type { SheetGridItemProps, SheetGridRow } from './gridTypes'
+
+interface CommitOptions {
+  readonly restoreFocus?: boolean
+  readonly draft?: string
+}
 
 interface Props {
   rIdx: number
@@ -34,8 +40,8 @@ interface Props {
   setDraft: (v: string) => void
   setSelectedIds: (ids: string[]) => void
   startEdit: (id: string, initial?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
-  commitEdit: (move?: { dRow: number; dCol: number }) => void
-  cancelEdit: () => void
+  commitEdit: (move?: { dRow: number; dCol: number }, opts?: CommitOptions) => void
+  cancelEdit: (opts?: { restoreFocus?: boolean }) => void
   onRowHeaderContextMenu: (e: React.MouseEvent) => void
   heightOf: (row: number) => number
   onResize: (row: number, h: number) => void
@@ -48,6 +54,8 @@ interface Props {
   toggleCheckboxCell: (key: string) => void
   condBgOf: (col: string, displayed: string) => string | undefined
   hiSet: Set<string>
+  formulaReferenceById: ReadonlyMap<string, FormulaReferenceCellDecoration>
+  formulaReferenceText: readonly FormulaReferenceTextDecoration[]
   previewIds: Set<string>
   onFormulaPickKeyDown: (e: React.KeyboardEvent) => void
   onCellMouseDown: (id: string, e: React.MouseEvent) => void
@@ -106,6 +114,7 @@ export function GridRow(p: Props) {
           ruleOf: p.ruleOf,
           condBgOf: p.condBgOf,
           highlightedIds: p.hiSet,
+          formulaReferenceById: p.formulaReferenceById,
           previewIds: p.previewIds,
         })
         if (!view) return null
@@ -124,6 +133,8 @@ export function GridRow(p: Props) {
             mergeCols={view.mergeCols}
             styleClass={view.styleClass}
             styleInline={view.styleInline}
+            formulaReference={view.formulaReference}
+            formulaReferenceText={p.formulaReferenceText}
             note={view.note}
             tooltip={view.tooltip}
             validationOptions={view.validationOptions}
@@ -132,7 +143,7 @@ export function GridRow(p: Props) {
             editing={p.editing === view.id}
             draft={p.draft}
             setDraft={p.setDraft}
-            onCommit={p.commitEdit}
+            onCommit={(draft, opts) => p.commitEdit(undefined, { ...opts, draft })}
             onCancel={p.cancelEdit}
             onStartEdit={() => p.startEdit(view.id, undefined, { caret: 'end' })}
             onMouseDown={(e) => p.onCellMouseDown(view.id, e)}

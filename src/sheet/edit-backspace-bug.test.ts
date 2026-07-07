@@ -1,7 +1,7 @@
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { cellByText, cells as gridCells, keyDown, mouseClick, press, setInputValue, setupReactDOM } from './test-utils'
+import { cellByText, cellEditor, cells as gridCells, keyDown, mouseClick, press, setContenteditableText, setupReactDOM } from './test-utils'
 
 const dom = setupReactDOM()
 
@@ -12,7 +12,7 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     const apple = cellByText('Apple')!
     act(() => mouseClick(apple))
     act(() => keyDown(apple, 'F2'))
-    const input = document.querySelector<HTMLInputElement>('input.cell-input')!
+    const input = cellEditor()!
     expect(input).not.toBeNull()
 
     const ke = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Backspace' })
@@ -31,16 +31,15 @@ describe('cell edit: Backspace deletes character inside the input', () => {
     // Press F2 to start edit
     act(() => keyDown(apple, 'F2'))
 
-    const input = document.querySelector<HTMLInputElement>('input.cell-input')
+    const input = cellEditor()
     expect(input, 'input should mount on edit').not.toBeNull()
-    expect(input!.value).toBe('Apple')
+    expect(input!.textContent).toBe('Apple')
 
-    // Backspace inside the input — simulate native: dispatch keydown then mutate value via setter.
+    // Backspace inside the editor: jsdom does not mutate contenteditable text on keydown.
     act(() => keyDown(input!, 'Backspace'))
-    // jsdom doesn't auto-mutate input.value on Backspace keydown — emulate browser by setting value.
-    act(() => setInputValue(input!, 'Appl'))
+    act(() => setContenteditableText(input!, 'Appl'))
 
-    expect(input!.value, 'input.value should reflect deletion').toBe('Appl')
+    expect(input!.textContent, 'editor text should reflect deletion').toBe('Appl')
   })
 
   it('typed-letter-start: pressing Backspace after starting edit by typing should delete the letter', async () => {
@@ -51,14 +50,14 @@ describe('cell edit: Backspace deletes character inside the input', () => {
 
     act(() => press('a'))
 
-    const input = document.querySelector<HTMLInputElement>('input.cell-input')
+    const input = cellEditor()
     expect(input).not.toBeNull()
-    expect(input!.value).toBe('a')
+    expect(input!.textContent).toBe('a')
 
     act(() => keyDown(input!, 'Backspace'))
-    act(() => setInputValue(input!, ''))
+    act(() => setContenteditableText(input!, ''))
 
-    expect(input!.value).toBe('')
+    expect(input!.textContent).toBe('')
   })
 
   it('FormulaBar: Backspace inside formula input does NOT clear the focused cell', async () => {

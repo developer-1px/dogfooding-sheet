@@ -11,6 +11,12 @@ import type { HiddenActions } from '../visibility/useHidden'
 import type { SheetMutations } from '../structure/sheetMutations'
 import type { ClipboardTextBridge } from '../clipboard/clipboardActions'
 import type { SheetRecordMutationCommands } from '../useSheetDocument'
+import type { FormulaReferenceCellDecoration, FormulaReferenceTextDecoration } from '../selection/formulaReferenceDecorations'
+
+interface CommitOptions {
+  readonly restoreFocus?: boolean
+  readonly draft?: string
+}
 
 export interface GridContextMenuController
   extends SheetMutations,
@@ -59,11 +65,13 @@ export interface GridController extends GridContextMenuController {
   draft: string
   setDraft: (draft: string) => void
   startEdit: (id: string, initial?: string, opts?: { caret?: 'end' | 'start' | 'select-all' }) => void
-  commitEdit: (move?: { dRow: number; dCol: number }) => void
-  cancelEdit: () => void
+  commitEdit: (move?: { dRow: number; dCol: number }, opts?: CommitOptions) => void
+  cancelEdit: (opts?: { restoreFocus?: boolean }) => void
   inputProps: InputProps
   selectProps: SelectProps
   highlightedIds: string[]
+  formulaReferenceById: ReadonlyMap<string, FormulaReferenceCellDecoration>
+  formulaReferenceText: readonly FormulaReferenceTextDecoration[]
   styleOf: StyleLookup
   ruleOf: RuleLookup
   condBgOf: (col: string, displayed: string) => string | undefined
