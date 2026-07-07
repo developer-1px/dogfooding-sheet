@@ -20,7 +20,7 @@ interface Props {
   colLetters: readonly string[]
 }
 
-const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+const stopControlActivationKeyDown = (event: KeyboardEvent<HTMLElement>) => {
   if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
 }
 
@@ -82,18 +82,18 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
           aria-label="바꿀 내용"
         />
       )}
-      <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} aria-label="대소문자 구분" />Aa</label>
-      <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} aria-label="정규식 사용" />.*</label>
+      <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label="대소문자 구분" />Aa</label>
+      <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label="정규식 사용" />.*</label>
       <span className="count" role="status" aria-live="polite" aria-atomic="true">{counter}</span>
-      <button type="button" onClick={() => jump(-1)} onKeyDown={stopButtonActivationKeyDown} disabled={matches.length === 0} title="이전 찾기 결과 (Shift+Enter)" aria-label="이전 찾기 결과" aria-keyshortcuts="Shift+Enter">↑</button>
-      <button type="button" onClick={() => jump(1)} onKeyDown={stopButtonActivationKeyDown} disabled={matches.length === 0} title="다음 찾기 결과 (Enter)" aria-label="다음 찾기 결과" aria-keyshortcuts="Enter">↓</button>
+      <button type="button" onClick={() => jump(-1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title="이전 찾기 결과 (Shift+Enter)" aria-label="이전 찾기 결과" aria-keyshortcuts="Shift+Enter">↑</button>
+      <button type="button" onClick={() => jump(1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title="다음 찾기 결과 (Enter)" aria-label="다음 찾기 결과" aria-keyshortcuts="Enter">↓</button>
       {mode === 'replace' && (
         <>
-          <button type="button" onClick={replaceOne} onKeyDown={stopButtonActivationKeyDown} disabled={matches.length === 0} title="현재 찾기 결과 바꾸기" aria-label="현재 찾기 결과 바꾸기">바꾸기</button>
-          <button type="button" onClick={replaceAll} onKeyDown={stopButtonActivationKeyDown} disabled={matches.length === 0} title="모든 찾기 결과 바꾸기" aria-label="모든 찾기 결과 바꾸기">전체</button>
+          <button type="button" onClick={replaceOne} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title="현재 찾기 결과 바꾸기" aria-label="현재 찾기 결과 바꾸기">바꾸기</button>
+          <button type="button" onClick={replaceAll} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title="모든 찾기 결과 바꾸기" aria-label="모든 찾기 결과 바꾸기">전체</button>
         </>
       )}
-      <button type="button" onClick={onClose} onKeyDown={stopButtonActivationKeyDown} title={`${dialogLabel} 닫기 (Esc)`} aria-label={`${dialogLabel} 닫기`} aria-keyshortcuts="Escape">✕</button>
+      <button type="button" onClick={onClose} onKeyDown={stopControlActivationKeyDown} title={`${dialogLabel} 닫기 (Esc)`} aria-label={`${dialogLabel} 닫기`} aria-keyshortcuts="Escape">✕</button>
     </div>
   )
 }

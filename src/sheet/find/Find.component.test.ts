@@ -1,4 +1,4 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEvent } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Find } from './Find'
@@ -24,12 +24,12 @@ describe('Find component', () => {
   const renderFind = (
     mode: 'find' | 'replace',
     cells: Cells = {},
-    handlers: { onClose?: () => void; onJump?: (cellId: string) => void } = {},
+    handlers: { onClose?: () => void; onJump?: (cellId: string) => void; onKeyDown?: (event: KeyboardEvent) => void } = {},
   ) => {
     const display: Display = (key) => cells[key] ?? ''
     const colLetters = Object.keys(cells).some((key) => key.startsWith('B')) ? ['A', 'B'] : ['A']
 
-    act(() => root.render(createElement(Find, {
+    const find = createElement(Find, {
       open: true,
       mode,
       onClose: handlers.onClose ?? (() => {}),
@@ -40,7 +40,10 @@ describe('Find component', () => {
       writeCells: () => {},
       rowCount: 1,
       colLetters,
-    })))
+    })
+    act(() => root.render(handlers.onKeyDown
+      ? createElement('div', { onKeyDown: handlers.onKeyDown }, find)
+      : find))
   }
 
   it('labels find mode controls and disables navigation without matches', () => {
@@ -112,6 +115,31 @@ describe('Find component', () => {
 
     act(() => next.click())
     expect(jumps).toEqual(['r0-A'])
+  })
+
+  it('keeps option checkbox keys from triggering find bar shortcuts', () => {
+    const jumps: string[] = []
+    const parentKeys: string[] = []
+    renderFind('find', { A1: 'Alpha', B1: 'Alpha' }, {
+      onJump: (cellId) => jumps.push(cellId),
+      onKeyDown: (event) => parentKeys.push(event.key),
+    })
+
+    const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')!
+    const caseSensitive = document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분"]')!
+    const regex = document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용"]')!
+
+    act(() => setInputValue(query, 'Alpha'))
+    expect(jumps).toEqual(['r0-A'])
+
+    jumps.length = 0
+    parentKeys.length = 0
+    act(() => keyDown(caseSensitive, 'Enter'))
+    expect(jumps).toEqual([])
+    expect(parentKeys).toEqual([])
+
+    act(() => keyDown(regex, ' '))
+    expect(parentKeys).toEqual([])
   })
 
   it('keeps Escape close handling available from find bar buttons', () => {
