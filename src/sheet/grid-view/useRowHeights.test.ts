@@ -23,6 +23,7 @@ describe('row height writes', () => {
   it('rounds and clamps custom heights before storing them', () => {
     expect(storedRowHeight(31.6)).toBe(32)
     expect(storedRowHeight(1)).toBe(MIN_HEIGHT)
+    expect(storedRowHeight(1001)).toBe(1000)
   })
 
   it('coerces legacy heights through row bounds and storage rules', () => {

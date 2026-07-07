@@ -7,6 +7,7 @@ describe('resize rules', () => {
     expect(clampResizeValue(999, COLUMN_WIDTH_BOUNDS)).toBe(400)
     expect(clampResizeValue(1, ROW_HEIGHT_BOUNDS)).toBe(18)
     expect(clampResizeValue(999, ROW_HEIGHT_BOUNDS)).toBe(999)
+    expect(clampResizeValue(1001, ROW_HEIGHT_BOUNDS)).toBe(1000)
   })
 
   it('rounds values only for storage', () => {
@@ -26,6 +27,7 @@ describe('resize rules', () => {
   it('maps vertical keyboard resize keys to bounded values', () => {
     expect(resizeValueForKey(28, 'ArrowUp', false, 'y', ROW_HEIGHT_BOUNDS)).toBe(18)
     expect(resizeValueForKey(28, 'ArrowDown', true, 'y', ROW_HEIGHT_BOUNDS)).toBe(78)
+    expect(resizeValueForKey(990, 'ArrowDown', true, 'y', ROW_HEIGHT_BOUNDS)).toBe(1000)
     expect(resizeValueForKey(28, 'ArrowRight', false, 'y', ROW_HEIGHT_BOUNDS)).toBeNull()
   })
 })
