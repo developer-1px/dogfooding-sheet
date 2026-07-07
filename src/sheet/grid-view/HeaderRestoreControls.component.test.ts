@@ -98,6 +98,72 @@ describe('header restore controls', () => {
     expect(setSelectedIds).not.toHaveBeenCalled()
   })
 
+  it('makes column headers keyboard-operable without stealing nested control keys', () => {
+    const setSelectedIds = vi.fn()
+    const setFocusId = vi.fn()
+    const setSelectAnchor = vi.fn()
+    const onResizeEnd = vi.fn()
+    const onHeaderKeyDown = vi.fn()
+
+    act(() => dom.root.render(createElement(GridHeader, {
+      gridTemplate: '40px 80px 80px 80px',
+      columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0, onKeyDown: onHeaderKeyDown }),
+      widthOf: () => 80,
+      onResize: vi.fn(),
+      onResizeEnd,
+      autoFitCol: vi.fn(),
+      setSelectedIds,
+      setFocusId,
+      setSelectAnchor,
+      hiddenCols: new Set(['A']),
+      showCol: vi.fn(),
+      filterCol: null,
+      focusCol: 'A',
+      selectedCols: new Set(),
+      allSelected: false,
+      onHeaderContextMenu: vi.fn(),
+      rowCount: 2,
+      colLetters: ['A', 'B', 'C'],
+    })))
+
+    const header = document.querySelector<HTMLElement>('.header-cell[aria-label="B열"]')
+    const restore = document.querySelector<HTMLButtonElement>('.unhide-col.left')
+    const resizer = header?.querySelector<HTMLElement>('.col-resizer')
+
+    expect(header?.getAttribute('role')).toBe('columnheader')
+    expect(header?.tabIndex).toBe(0)
+
+    act(() => header!.click())
+    expect(setSelectedIds).toHaveBeenLastCalledWith(['r0-B', 'r1-B'])
+    expect(setFocusId).toHaveBeenLastCalledWith('r0-B')
+    expect(setSelectAnchor).toHaveBeenLastCalledWith('r0-B')
+
+    const enter = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' })
+    act(() => header!.dispatchEvent(enter))
+    expect(enter.defaultPrevented).toBe(true)
+    expect(setSelectedIds).toHaveBeenCalledTimes(2)
+
+    const shiftSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ', shiftKey: true })
+    act(() => header!.dispatchEvent(shiftSpace))
+    expect(shiftSpace.defaultPrevented).toBe(true)
+    expect(setSelectedIds).toHaveBeenLastCalledWith(['r0-A', 'r1-A', 'r0-B', 'r1-B'])
+
+    const arrowDown = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowDown' })
+    act(() => header!.dispatchEvent(arrowDown))
+    expect(onHeaderKeyDown).toHaveBeenCalledTimes(1)
+    expect(setSelectedIds).toHaveBeenCalledTimes(3)
+
+    const nestedSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' })
+    act(() => restore!.dispatchEvent(nestedSpace))
+    expect(nestedSpace.defaultPrevented).toBe(false)
+    expect(setSelectedIds).toHaveBeenCalledTimes(3)
+
+    const resizeArrow = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowRight' })
+    act(() => resizer!.dispatchEvent(resizeArrow))
+    expect(onResizeEnd).toHaveBeenCalledTimes(1)
+    expect(setSelectedIds).toHaveBeenCalledTimes(3)
+  })
+
   it('renders row restore controls as non-submit buttons', () => {
     const showRow = vi.fn()
     const setSelectedIds = vi.fn()
