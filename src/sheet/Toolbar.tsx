@@ -24,6 +24,7 @@ import {
   toggleToolbarStyle,
   type ToolbarStyleFlag,
 } from './toolbarActions'
+import { activeToolbarStateStyle } from './toolbarStyles'
 
 interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
   focusKey: string | null
@@ -80,8 +81,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <label className="color-pick" title="배경색">🎨<input type="color" aria-label="배경색 선택" onChange={(e) => setBg(e.target.value)} /></label>
       <label className="color-pick" title="글자색">A<input type="color" aria-label="글자색 선택" onChange={(e) => setFg(e.target.value)} /></label>
       <button onClick={clearStyle} title="서식 모두 해제" aria-label="서식 모두 해제">✕서식</button><button onClick={mergeSelection} disabled={selectedIds.length < 2 && !focusKey} title="선택 셀 병합 / 병합 해제 (Alt+Shift+M)" aria-label="선택 셀 병합 또는 병합 해제">⊞병합</button>
-      <button onClick={toggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? { background: '#e8f0fe' } : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button onClick={toggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? { background: '#e8f0fe' } : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
-      <button onClick={openFilterPrompt} title="현재 열로 행 필터" aria-label={filterLabel} aria-pressed={!!filter} style={filter ? { background: '#e8f0fe' } : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
+      <button onClick={toggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button onClick={toggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
+      <button onClick={openFilterPrompt} title="현재 열로 행 필터" aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button onClick={clearFilter} title="필터 해제" aria-label="필터 해제">✕</button>}
       {hasHidden && <button onClick={showAll} title="숨김 행/열 모두 표시" aria-label="숨김 행과 열 모두 표시">👁모두표시</button>}
       <button onClick={openListValidationPrompt} title="유효성 검사 (드롭다운 목록)" aria-label="드롭다운 목록 유효성 검사 설정">▾목록</button>
