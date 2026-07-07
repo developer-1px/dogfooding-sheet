@@ -25,6 +25,7 @@ describe('PromptDialog component', () => {
     expect(label?.htmlFor).toBe(input?.id)
     expect(input?.placeholder).toBe('A,B,C')
     expect(input?.value).toBe('A')
+    expect(input?.getAttribute('aria-keyshortcuts')).toBe('Enter')
   })
 
   it('keeps submit, Enter, and cancel interactions unchanged', () => {
