@@ -1,8 +1,13 @@
+import type { KeyboardEvent } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
   open: boolean
   onClose: () => void
+}
+
+const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+  if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
 }
 
 const SHORTCUTS: Array<[string, string]> = [
@@ -75,7 +80,7 @@ export function HelpDialog({ open, onClose }: Props) {
             ))}
           </tbody>
         </table>
-        <button type="button" onClick={onClose} title="닫기 (Esc)" aria-label="키보드 단축키 도움말 닫기" aria-keyshortcuts="Escape">닫기</button>
+        <button type="button" onClick={onClose} onKeyDown={stopButtonActivationKeyDown} title="닫기 (Esc)" aria-label="키보드 단축키 도움말 닫기" aria-keyshortcuts="Escape">닫기</button>
       </div>
     </>
   )

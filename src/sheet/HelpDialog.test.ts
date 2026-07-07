@@ -1,16 +1,23 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEvent } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { setupReactDOM } from './test-utils'
+import { keyDown, setupReactDOM } from './test-utils'
 import { HelpDialog } from './HelpDialog'
 
 describe('HelpDialog', () => {
   const dom = setupReactDOM()
 
   it('documents shortcuts in a structured table', () => {
-    act(() => dom.root.render(createElement(HelpDialog, {
-      open: true,
-      onClose: vi.fn(),
-    })))
+    const onClose = vi.fn()
+    const parentKeys: string[] = []
+
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(HelpDialog, {
+        open: true,
+        onClose,
+      }),
+    )))
 
     expect(document.querySelector('caption')?.textContent).toBe('키보드 단축키 목록')
     const columnHeaders = [...document.querySelectorAll('thead th')]
@@ -29,5 +36,15 @@ describe('HelpDialog', () => {
     expect(close?.type).toBe('button')
     expect(close?.getAttribute('title')).toBe('닫기 (Esc)')
     expect(close?.getAttribute('aria-keyshortcuts')).toBe('Escape')
+
+    act(() => keyDown(close!, 'Enter'))
+    act(() => keyDown(close!, ' '))
+    expect(parentKeys).toEqual([])
+
+    act(() => keyDown(close!, 'Escape'))
+    expect(onClose).toHaveBeenCalledTimes(1)
+
+    act(() => close!.click())
+    expect(onClose).toHaveBeenCalledTimes(2)
   })
 })
