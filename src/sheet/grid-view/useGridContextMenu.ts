@@ -7,6 +7,7 @@ import type { GridContextMenuController } from './gridController'
 export function useGridContextMenu(ctx: GridContextMenuController) {
   const cellMenu = useCellMenu({
     sheet: ctx.sheet,
+    rowCount: ctx.rowCount,
     colLetters: ctx.colLetters,
     hiddenRows: ctx.hiddenRows,
     hiddenCols: ctx.hiddenCols,

@@ -11,6 +11,7 @@ const item = (items: CellMenuEntry[], label: string) => {
 function actions(overrides: Partial<CellMenuActions> = {}, calls: string[] = []): CellMenuActions {
   return {
     sheet: { cells: { B2: 'value' } },
+    rowCount: 20,
     colLetters: ['A', 'B', 'C'],
     hiddenRows: new Set(),
     hiddenCols: new Set(),
@@ -73,6 +74,7 @@ describe('cellMenuItems', () => {
     expect(labels(items)).toContain('필터 수정…')
     expect(labels(items)).toContain('필터 해제')
     expect(labels(items)).toContain('열 고정 해제')
+    expect(item(items, 'B 내림차순 정렬').disabled).toBe(false)
     item(items, 'A열 숨김 표시').onClick()
     item(items, '필터 해제').onClick()
     item(items, '열 고정 해제').onClick()
@@ -91,10 +93,21 @@ describe('cellMenuItems', () => {
     expect(labels(items)).toContain('노트 삭제')
     expect(labels(items)).toContain('행 고정 해제')
     expect(labels(items)).toContain('B열까지 고정')
+    expect(item(items, 'B 오름차순 정렬').disabled).toBe(false)
     item(items, '지우기 (Delete/Backspace)').onClick()
     item(items, '노트 삭제').onClick()
     item(items, 'B 오름차순 정렬').onClick()
     expect(calls).toEqual(['writeCell:B2:', 'setNote:B2:', 'sortByCol:B:asc'])
+  })
+
+  it('disables sort actions in cell and column menus when a single-row sheet cannot be sorted', () => {
+    const cellItems = cellMenuItems(actions({ rowCount: 1 }), 'r0-B')
+    const colItems = cellMenuItems(actions({ rowCount: 1 }), 'r0-B', 'col')
+
+    expect(item(cellItems, 'B 오름차순 정렬').disabled).toBe(true)
+    expect(item(cellItems, 'B 내림차순 정렬').disabled).toBe(true)
+    expect(item(colItems, 'B 오름차순 정렬').disabled).toBe(true)
+    expect(item(colItems, 'B 내림차순 정렬').disabled).toBe(true)
   })
 
   it('exposes the merge shortcut metadata on cell, row, and column menus', () => {

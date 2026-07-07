@@ -15,6 +15,7 @@ export interface CellMenuActions
   Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>,
   Pick<HiddenActions, 'hideRow' | 'hideCol' | 'showRow' | 'showCol'> {
   sheet: { cells: Cells }
+  rowCount: number
   colLetters: readonly string[]
   hiddenRows: Set<number>
   hiddenCols: Set<string>
@@ -126,9 +127,10 @@ function colFilterItems(a: CellMenuActions, col: string): CellMenuEntry[] {
 }
 
 function colSortItems(a: CellMenuActions, col: string): CellMenuEntry[] {
+  const disabled = a.rowCount <= 1
   return [
-    { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
-    { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },
+    { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc'), disabled },
+    { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc'), disabled },
   ]
 }
 
