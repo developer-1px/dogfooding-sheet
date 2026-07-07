@@ -17,7 +17,7 @@ export function FormatButtons({ apply, current }: { apply: (f: Format) => void; 
   return (
     <>
       {FORMATS.map(([f, label, title]) => (
-        <button key={f} onClick={() => apply(f)} aria-pressed={current === f} title={title} aria-label={`숫자 형식: ${title}`}>{label}</button>
+        <button type="button" key={f} onClick={() => apply(f)} aria-pressed={current === f} title={title} aria-label={`숫자 형식: ${title}`}>{label}</button>
       ))}
     </>
   )

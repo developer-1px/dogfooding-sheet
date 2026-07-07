@@ -20,7 +20,7 @@ export function StyleToggleButtons({ toggle, styleOf, focusKey }: Props) {
   return (
     <>
       {TOGGLES.map(([k, , title, node]) => (
-        <button key={k} onClick={() => toggle(k)} aria-pressed={!!(focusKey && styleOf(focusKey)?.[k])} title={title} aria-label={title}>{node}</button>
+        <button type="button" key={k} onClick={() => toggle(k)} aria-pressed={!!(focusKey && styleOf(focusKey)?.[k])} title={title} aria-label={title}>{node}</button>
       ))}
     </>
   )
