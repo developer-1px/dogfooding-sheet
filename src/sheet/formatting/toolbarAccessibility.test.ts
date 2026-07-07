@@ -21,6 +21,7 @@ describe('toolbar formatting controls', () => {
       }),
       createElement(CondFmtButtons, {
         col: 'A',
+        hasRules: true,
         addCondRule: vi.fn(),
         clearCondRules: vi.fn(),
         ask: () => Promise.resolve(null),

@@ -38,6 +38,7 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions, CondAc
   applyFilter: (col: string, text: string) => void
   clearFilter: () => void
   hasHidden: boolean
+  hasCondRules: boolean
   ask: Ask
   undo: () => void; redo: () => void; canUndo: boolean; canRedo: boolean
   mergeSelection: () => void
@@ -45,7 +46,7 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions, CondAc
   colCount: number
 }
 
-export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats, mergeSelection, rowCount, colCount }: Props) {
+export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, hasCondRules, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats, mergeSelection, rowCount, colCount }: Props) {
   const focus = focusKey ? parseA1(focusKey) : null
   const focusRow = focus?.row
   const focusRowLabel = focusRow !== undefined ? `${focusRow + 1}행` : '현재 행'
@@ -95,7 +96,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       {hasHidden && <button type="button" onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
       <button type="button" onClick={openListValidationPrompt} disabled={!hasCellTarget} title="유효성 검사 (드롭다운 목록)" aria-label="드롭다운 목록 유효성 검사 설정">▾목록</button>
       <button type="button" onClick={convertToCheckbox} disabled={!hasCellTarget} title="체크박스로 변환" aria-label="체크박스로 변환">☑체크</button>
-      <CondFmtButtons col={focus?.col ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
+      <CondFmtButtons col={focus?.col ?? null} hasRules={hasCondRules} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
       <FormatButtons apply={applyF} current={focusKey ? formatOf(focusKey) : 'plain'} disabled={!hasCellTarget} />
       <OverflowMenu display={display} writeCell={writeCell} writeCells={writeCells} writeCellRange={writeCellRange} openHelp={openHelp} insertLink={insertLink} sheet={sheet} previewSheetReplacement={previewSheetReplacement} applySheetReplacement={applySheetReplacement} clearCellValues={clearCellValues} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} showGridlines={showGridlines} toggleShowGridlines={toggleShowGridlines} clearAllFormats={clearAllFormats} />
     </>
