@@ -60,7 +60,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
         onResizeEnd(col, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }}
-      title="드래그로 너비 조정 / ← → 키로 조정 / 더블클릭 자동 맞춤"
+      title="드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤"
     />
   )
 }
