@@ -26,6 +26,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
   const onEvent = (e: UiEvent) => {
     if (e.type === 'activate' && e.id) {
       const item = itemList.find((it) => it.id === e.id)
+      if (!item || item.disabled) return
       runMenuItemAction(item?.action)
       onClose()
     }

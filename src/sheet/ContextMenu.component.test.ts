@@ -39,6 +39,11 @@ describe('ContextMenu component', () => {
     expect(items[1]?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(items[1]?.disabled).toBe(true)
 
+    act(() => items[1]!.click())
+
+    expect(onDisabled).not.toHaveBeenCalled()
+    expect(onClose).not.toHaveBeenCalled()
+
     act(() => items[0]!.click())
 
     expect(onOpen).toHaveBeenCalledTimes(1)
