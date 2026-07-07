@@ -20,5 +20,6 @@ describe('HelpDialog', () => {
     expect(close?.textContent).toBe('닫기')
     expect(close?.type).toBe('button')
     expect(close?.getAttribute('title')).toBe('닫기 (Esc)')
+    expect(close?.getAttribute('aria-keyshortcuts')).toBe('Escape')
   })
 })
