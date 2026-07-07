@@ -48,7 +48,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
           onCommit(draft)
         }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') { e.currentTarget.blur() }
+          if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur() }
           else if (e.key === 'Escape') {
             skipCommitOnBlur.current = true
             setDraft(value)
