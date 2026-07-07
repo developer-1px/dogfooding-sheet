@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useId, useRef } from 'react'
 import { useAlertdialogPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 }
 
 export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLabel = '취소', onConfirm, onCancel }: Props) {
+  const messageId = useId()
   const cancelRef = useRef<HTMLButtonElement | null>(null)
   const { rootProps } = useAlertdialogPattern({
     open, label: '확인',
@@ -21,11 +22,11 @@ export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLa
   return (
     <>
       <div className="dialog-backdrop" onClick={onCancel} />
-      <div {...rootProps} className="confirm-dialog">
-        <p>{message}</p>
+      <div {...rootProps} aria-describedby={messageId} className="confirm-dialog">
+        <p id={messageId}>{message}</p>
         <div className="confirm-actions">
-          <button ref={cancelRef} onClick={onCancel}>{cancelLabel}</button>
-          <button className="danger" onClick={onConfirm}>{confirmLabel}</button>
+          <button type="button" ref={cancelRef} onClick={onCancel}>{cancelLabel}</button>
+          <button type="button" className="danger" onClick={onConfirm}>{confirmLabel}</button>
         </div>
       </div>
     </>
