@@ -3,6 +3,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Find } from './Find'
 import type { Cells, Display } from '../schema'
+import { setInputValue } from '../test-utils'
 
 describe('Find component', () => {
   let host: HTMLDivElement
@@ -20,9 +21,9 @@ describe('Find component', () => {
     host.remove()
   })
 
-  const renderFind = (mode: 'find' | 'replace') => {
-    const cells: Cells = {}
-    const display: Display = () => ''
+  const renderFind = (mode: 'find' | 'replace', cells: Cells = {}) => {
+    const display: Display = (key) => cells[key] ?? ''
+    const colLetters = Object.keys(cells).some((key) => key.startsWith('B')) ? ['A', 'B'] : ['A']
 
     act(() => root.render(createElement(Find, {
       open: true,
@@ -34,7 +35,7 @@ describe('Find component', () => {
       writeCell: () => {},
       writeCells: () => {},
       rowCount: 1,
-      colLetters: ['A'],
+      colLetters,
     })))
   }
 
@@ -52,7 +53,30 @@ describe('Find component', () => {
     expect(previous?.disabled).toBe(true)
     expect(next?.textContent).toBe('↓')
     expect(next?.disabled).toBe(true)
+    expect(document.querySelector('.count')?.textContent).toBe('')
+    expect(document.querySelector('.count')?.getAttribute('role')).toBe('status')
+    expect(document.querySelector('.count')?.getAttribute('aria-live')).toBe('polite')
+    expect(document.querySelector('.count')?.getAttribute('aria-atomic')).toBe('true')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="찾기 닫기"]')?.textContent).toBe('✕')
+  })
+
+  it('announces no-match and matched result counts as status text', () => {
+    renderFind('find', { A1: 'Alpha', B1: 'Beta' })
+
+    const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')
+    const status = document.querySelector<HTMLElement>('.count[role="status"]')
+    const next = document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과"]')
+
+    expect(query).not.toBeNull()
+    expect(status?.textContent).toBe('')
+
+    act(() => setInputValue(query!, 'Missing'))
+    expect(status?.textContent).toBe('0개')
+    expect(next?.disabled).toBe(true)
+
+    act(() => setInputValue(query!, 'Alpha'))
+    expect(status?.textContent).toBe('1/1')
+    expect(next?.disabled).toBe(false)
   })
 
   it('labels replace mode inputs and actions', () => {
