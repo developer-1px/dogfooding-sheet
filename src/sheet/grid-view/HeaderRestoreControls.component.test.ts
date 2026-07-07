@@ -104,27 +104,32 @@ describe('header restore controls', () => {
     const setSelectAnchor = vi.fn()
     const onResizeEnd = vi.fn()
     const onHeaderKeyDown = vi.fn()
+    const onGridKeyDown = vi.fn()
 
-    act(() => dom.root.render(createElement(GridHeader, {
-      gridTemplate: '40px 80px 80px 80px',
-      columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0, onKeyDown: onHeaderKeyDown }),
-      widthOf: () => 80,
-      onResize: vi.fn(),
-      onResizeEnd,
-      autoFitCol: vi.fn(),
-      setSelectedIds,
-      setFocusId,
-      setSelectAnchor,
-      hiddenCols: new Set(['A']),
-      showCol: vi.fn(),
-      filterCol: null,
-      focusCol: 'A',
-      selectedCols: new Set(),
-      allSelected: false,
-      onHeaderContextMenu: vi.fn(),
-      rowCount: 2,
-      colLetters: ['A', 'B', 'C'],
-    })))
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: onGridKeyDown },
+      createElement(GridHeader, {
+        gridTemplate: '40px 80px 80px 80px',
+        columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0, onKeyDown: onHeaderKeyDown }),
+        widthOf: () => 80,
+        onResize: vi.fn(),
+        onResizeEnd,
+        autoFitCol: vi.fn(),
+        setSelectedIds,
+        setFocusId,
+        setSelectAnchor,
+        hiddenCols: new Set(['A']),
+        showCol: vi.fn(),
+        filterCol: null,
+        focusCol: 'A',
+        selectedCols: new Set(),
+        allSelected: false,
+        onHeaderContextMenu: vi.fn(),
+        rowCount: 2,
+        colLetters: ['A', 'B', 'C'],
+      }),
+    )))
 
     const header = document.querySelector<HTMLElement>('.header-cell[aria-label="B열"]')
     const restore = document.querySelector<HTMLButtonElement>('.unhide-col.left')
@@ -161,9 +166,11 @@ describe('header restore controls', () => {
     expect(nestedSpace.defaultPrevented).toBe(false)
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
 
+    onGridKeyDown.mockClear()
     const resizeArrow = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowRight' })
     act(() => resizer!.dispatchEvent(resizeArrow))
     expect(onResizeEnd).toHaveBeenCalledTimes(1)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
   })
 
@@ -212,24 +219,29 @@ describe('header restore controls', () => {
     const setFocusId = vi.fn()
     const setSelectAnchor = vi.fn()
     const onResizeEnd = vi.fn()
+    const onGridKeyDown = vi.fn()
 
-    act(() => dom.root.render(createElement(RowHeader, {
-      rIdx: 2,
-      focusId: 'r1-A',
-      setFocusId,
-      setSelectAnchor,
-      setSelectedIds,
-      heightOf: () => 24,
-      onResize: vi.fn(),
-      onResizeEnd,
-      resetRowHeight: vi.fn(),
-      onContextMenu: vi.fn(),
-      colLetters: ['A', 'B'],
-      hiddenRows: new Set([1]),
-      showRow: vi.fn(),
-      selected: false,
-      active: false,
-    })))
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: onGridKeyDown },
+      createElement(RowHeader, {
+        rIdx: 2,
+        focusId: 'r1-A',
+        setFocusId,
+        setSelectAnchor,
+        setSelectedIds,
+        heightOf: () => 24,
+        onResize: vi.fn(),
+        onResizeEnd,
+        resetRowHeight: vi.fn(),
+        onContextMenu: vi.fn(),
+        colLetters: ['A', 'B'],
+        hiddenRows: new Set([1]),
+        showRow: vi.fn(),
+        selected: false,
+        active: false,
+      }),
+    )))
 
     const header = document.querySelector<HTMLElement>('.row-header')
     const restore = document.querySelector<HTMLButtonElement>('.unhide-row.top')
@@ -262,9 +274,11 @@ describe('header restore controls', () => {
     expect(nestedSpace.defaultPrevented).toBe(false)
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
 
+    onGridKeyDown.mockClear()
     const arrowDown = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowDown' })
     act(() => resizer!.dispatchEvent(arrowDown))
     expect(onResizeEnd).toHaveBeenCalledTimes(1)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
   })
 })
