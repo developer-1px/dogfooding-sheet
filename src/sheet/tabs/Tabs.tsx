@@ -56,12 +56,27 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           title="더블클릭=이름 변경 / 드래그=순서 변경"
         >
           {ed.editing === name ? (
-            <input className="tab-rename" {...ed.inputProps} />
+            <input className="tab-rename" {...ed.inputProps} aria-label={`${name} 시트 이름 편집`} />
           ) : name}
-          <input type="color" className="tab-color" value={state.colors[name] ?? '#cccccc'} onChange={(e) => setTabColor(name, e.target.value)} onClick={(e) => e.stopPropagation()} title="탭 색상" />
-          <button className="tab-dup" onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }} title="시트 복제">⎘</button>
+          <input
+            type="color"
+            className="tab-color"
+            value={state.colors[name] ?? '#cccccc'}
+            onChange={(e) => setTabColor(name, e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            title={`${name} 탭 색상 변경`}
+            aria-label={`${name} 탭 색상 변경`}
+          />
+          <button
+            type="button"
+            className="tab-dup"
+            onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }}
+            title={`${name} 시트 복제`}
+            aria-label={`${name} 시트 복제`}
+          >⎘</button>
           {state.order.length > 1 && (
             <button
+              type="button"
               className="tab-close"
               onClick={(e) => {
                 e.stopPropagation()
@@ -69,12 +84,13 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
                   .then((ok) => { if (ok) deleteSheet(name) })
                   .catch(() => {})
               }}
-              title="시트 삭제"
+              title={`${name} 시트 삭제`}
+              aria-label={`${name} 시트 삭제`}
             >×</button>
           )}
         </span>
       ))}
-      <button className="tab-add" onClick={addSheet} title="시트 추가">+</button>
+      <button type="button" className="tab-add" onClick={addSheet} title="시트 추가" aria-label="시트 추가">+</button>
     </div>
   )
 }

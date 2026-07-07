@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { blankBundle } from '../schema'
 import { Tabs } from './Tabs'
 import type { Confirm } from '../useConfirm'
+import type { TabsState } from './useTabs'
 
 const flush = () => Promise.resolve()
 
@@ -23,17 +24,11 @@ describe('Tabs component', () => {
     host.remove()
   })
 
-  it('does not leak a rejected delete confirmation', async () => {
+  const renderTabs = (state: TabsState, confirm: Confirm = () => Promise.resolve(false)) => {
     const calls: string[] = []
-    const confirm: Confirm = () => Promise.reject(new Error('closed'))
 
     act(() => root.render(createElement(Tabs, {
-      state: {
-        order: ['Sheet1', 'Sheet2'],
-        active: 'Sheet1',
-        saved: { Sheet2: blankBundle() },
-        colors: {},
-      },
+      state,
       switchTab: (name) => calls.push(`switch:${name}`),
       addSheet: () => calls.push('add'),
       deleteSheet: (name) => calls.push(`delete:${name}`),
@@ -43,6 +38,43 @@ describe('Tabs component', () => {
       reorderTab: (from, to) => calls.push(`reorder:${from}:${to}`),
       confirm,
     })))
+
+    return calls
+  }
+
+  it('labels sheet tab utility controls by action and sheet', () => {
+    renderTabs({
+      order: ['Budget', 'Forecast'],
+      active: 'Budget',
+      saved: { Forecast: blankBundle() },
+      colors: { Budget: '#ff0000' },
+    })
+
+    expect(document.querySelector<HTMLInputElement>('.tab-color')?.getAttribute('aria-label')).toBe('Budget 탭 색상 변경')
+    expect(document.querySelector<HTMLButtonElement>('.tab-dup')?.getAttribute('aria-label')).toBe('Budget 시트 복제')
+    expect(document.querySelector<HTMLButtonElement>('.tab-close')?.getAttribute('aria-label')).toBe('Budget 시트 삭제')
+    expect(document.querySelector<HTMLButtonElement>('.tab-add')?.getAttribute('aria-label')).toBe('시트 추가')
+  })
+
+  it('does not render delete controls for the last remaining sheet', () => {
+    renderTabs({
+      order: ['Only'],
+      active: 'Only',
+      saved: {},
+      colors: {},
+    })
+
+    expect(document.querySelector<HTMLButtonElement>('.tab-close')).toBeNull()
+  })
+
+  it('does not leak a rejected delete confirmation', async () => {
+    const confirm: Confirm = () => Promise.reject(new Error('closed'))
+    const calls = renderTabs({
+      order: ['Sheet1', 'Sheet2'],
+      active: 'Sheet1',
+      saved: { Sheet2: blankBundle() },
+      colors: {},
+    }, confirm)
 
     const close = document.querySelector<HTMLButtonElement>('.tab-close')
     expect(close).not.toBeNull()
