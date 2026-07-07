@@ -1,6 +1,6 @@
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { OverflowMenu } from './OverflowMenu'
 import type { Confirm } from './useConfirm'
 import { initialSheet, type Sheet } from './schema'
@@ -22,8 +22,9 @@ describe('OverflowMenu component', () => {
     host.remove()
   })
 
-  const renderOverflowMenu = (sheet: Sheet = emptySheet) => {
+  const renderOverflowMenu = (sheet: Sheet = emptySheet, options: { canInsertLink?: boolean; insertLink?: () => void } = {}) => {
     const confirm: Confirm = () => Promise.resolve(false)
+    const { canInsertLink = true, insertLink = () => {} } = options
 
     act(() => root.render(createElement(OverflowMenu, {
       display: () => '',
@@ -31,7 +32,8 @@ describe('OverflowMenu component', () => {
       writeCells: () => {},
       writeCellRange: () => false,
       openHelp: () => {},
-      insertLink: () => {},
+      insertLink,
+      canInsertLink,
       sheet,
       applySheetReplacement: () => false,
       clearCellValues: () => false,
@@ -73,6 +75,39 @@ describe('OverflowMenu component', () => {
     expect(items.find((item) => item.textContent === 'CSV 내보내기 (Ctrl/⌘+S)')?.getAttribute('aria-keyshortcuts')).toBe('Control+S Meta+S')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.getAttribute('title')).toBe('CSV 가져오기')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.hasAttribute('aria-keyshortcuts')).toBe(false)
+  })
+
+  it('disables hyperlink insertion when there is no focused cell target', () => {
+    const insertLink = vi.fn()
+
+    renderOverflowMenu(emptySheet, { canInsertLink: false, insertLink })
+
+    const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
+    act(() => trigger!.click())
+
+    const link = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
+
+    expect(link?.disabled).toBe(true)
+    expect(link?.getAttribute('title')).toBe('하이퍼링크 삽입 (Ctrl/⌘+K)')
+    expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
+
+    act(() => link!.click())
+
+    expect(insertLink).not.toHaveBeenCalled()
+  })
+
+  it('keeps hyperlink insertion enabled when a focused cell target exists', () => {
+    renderOverflowMenu(emptySheet, { canInsertLink: true })
+
+    const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
+    act(() => trigger!.click())
+
+    const link = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
+
+    expect(link?.disabled).toBe(false)
+    expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
   })
 
   it('disables destructive clear items when the sheet has nothing to clear', () => {

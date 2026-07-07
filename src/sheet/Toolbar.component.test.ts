@@ -189,6 +189,19 @@ describe('Toolbar component', () => {
     expect(autoSum?.getAttribute('title')).toBe('자동 합계 (위쪽 연속 숫자 합)')
   })
 
+  it('disables the overflow hyperlink command without a focused cell', () => {
+    renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
+
+    const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
+    act(() => trigger!.click())
+
+    const link = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
+
+    expect(link?.disabled).toBe(true)
+    expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
+  })
+
   it('disables toolbar filter setup without a focused column but keeps clearing available', () => {
     renderToolbar({ focusKey: null, selectedIds: [], filter: { col: 'B', text: 'needle' } })
 

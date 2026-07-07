@@ -31,6 +31,7 @@ export interface OverflowMenuItem {
 interface OverflowMenuState {
   showFormulas: boolean
   showGridlines: boolean
+  canInsertLink?: boolean
   canClearValues?: boolean
   canClearFormats?: boolean
 }
@@ -43,7 +44,7 @@ export const overflowMenuItems = (state: OverflowMenuState): OverflowMenuItem[] 
   { id: 'help', label: '도움말 (F1)', keyShortcuts: 'F1' },
   { id: 'show-formulas', label: `${state.showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)`, keyShortcuts: 'Control+` Meta+`' },
   { id: 'show-gridlines', label: `${state.showGridlines ? '✓ ' : ''}격자선 표시` },
-  { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', keyShortcuts: 'Control+K Meta+K' },
+  { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', keyShortcuts: 'Control+K Meta+K', disabled: state.canInsertLink === false },
   { id: 'print', label: '인쇄 (Ctrl/⌘+P)', keyShortcuts: 'Control+P Meta+P' },
   { id: 'csv-export', label: 'CSV 내보내기 (Ctrl/⌘+S)', keyShortcuts: 'Control+S Meta+S' },
   { id: 'csv-import', label: 'CSV 가져오기' },
