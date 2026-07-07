@@ -51,7 +51,7 @@ export function cellMenuItems(a: CellMenuActions, cellId: string, kind: CellMenu
 function rowMenuItems(a: CellMenuActions, row: number): CellMenuEntry[] {
   return [
     insertRowAboveItem(a, row),
-    { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
+    insertRowBelowItem(a, row),
     deleteRowItem(a, row),
     hideRowItem(a, row),
     ...rowRevealItems(a, row),
@@ -93,7 +93,7 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
     { label: '하이퍼링크 삽입 (Ctrl/⌘+K)', onClick: a.insertLink, keyShortcuts: 'Control+K Meta+K' },
     'separator',
     insertRowAboveItem(a, row),
-    { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
+    insertRowBelowItem(a, row),
     deleteRowItem(a, row),
     insertColLeftItem(a, col),
     deleteColItem(a, col),
@@ -147,6 +147,14 @@ function insertRowAboveItem(a: CellMenuActions, row: number): MenuItem {
     label: '위에 행 삽입 (Ctrl/⌘+Alt+=)',
     onClick: () => a.insertRow(row),
     keyShortcuts: 'Control+Alt+= Meta+Alt+=',
+  }
+}
+
+function insertRowBelowItem(a: CellMenuActions, row: number): MenuItem {
+  return {
+    label: '아래 행 삽입',
+    onClick: () => a.insertRow(row + 1),
+    disabled: row + 1 >= a.rowCount,
   }
 }
 
