@@ -29,6 +29,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         onClick={onAddrClick}
         title="셀로 이동 (Ctrl/⌘+G)"
         aria-label={addressLabel}
+        aria-keyshortcuts="Control+G Meta+G"
         disabled={!onAddrClick}
       >{addr ?? '—'}</button>
       <input
