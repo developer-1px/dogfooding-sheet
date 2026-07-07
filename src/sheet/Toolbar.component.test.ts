@@ -143,6 +143,20 @@ describe('Toolbar component', () => {
     expect(sortDesc?.getAttribute('title')).toBe('현재 열 내림차순 정렬')
   })
 
+  it('disables toolbar sort buttons when sorting cannot change a single-row sheet', () => {
+    renderToolbar({ rowCount: 1, focusKey: 'B1', selectedIds: ['B1'], filter: null })
+
+    const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]')
+    const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬"]')
+
+    expect(sortAsc?.textContent).toBe('↑정렬')
+    expect(sortAsc?.disabled).toBe(true)
+    expect(sortAsc?.getAttribute('title')).toBe('B열 오름차순 정렬')
+    expect(sortDesc?.textContent).toBe('↓정렬')
+    expect(sortDesc?.disabled).toBe(true)
+    expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬')
+  })
+
   it('disables append buttons at sheet limits', () => {
     renderToolbar({ rowCount: MAX_ROW_COUNT, colCount: MAX_COL_COUNT })
 
