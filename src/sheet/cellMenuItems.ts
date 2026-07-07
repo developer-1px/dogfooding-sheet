@@ -87,7 +87,7 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
     { label: '붙여넣기 (Ctrl/⌘+V)', onClick: () => pasteSingleCell(key, a.writeCell, a.clipboardText), keyShortcuts: 'Control+V Meta+V' },
     { label: '지우기 (Delete/Backspace)', onClick: () => a.writeCell(key, ''), keyShortcuts: 'Delete Backspace' },
     'separator',
-    { label: note ? '노트 편집' : '노트 추가', onClick: () => a.editNote(key) },
+    { label: note ? '노트 편집 (Ctrl/⌘+Shift+M)' : '노트 추가 (Ctrl/⌘+Shift+M)', onClick: () => a.editNote(key), keyShortcuts: 'Control+Shift+M Meta+Shift+M' },
     ...(note ? [{ label: '노트 삭제', onClick: () => a.setNote(key, '') }] : []),
     { label: '하이퍼링크 삽입 (Ctrl/⌘+K)', onClick: a.insertLink, keyShortcuts: 'Control+K Meta+K' },
     'separator',
