@@ -48,7 +48,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
         onResizeEnd(rIdx, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }}
-      title="드래그=높이 조정 / ↑ ↓ 키로 조정 / 더블클릭=기본값 복원"
+      title="드래그=높이 조정 / ↑ ↓ 키로 10px 조정 / Shift+↑ ↓ 키로 50px 조정 / 더블클릭=기본값 복원"
     />
   )
 }
