@@ -113,6 +113,7 @@ export function Cell(p: Props) {
           checked={p.label === 'TRUE'}
           onChange={p.onCheckboxToggle}
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
         />
       ) : p.editing ? (
         p.validationOptions ? (
