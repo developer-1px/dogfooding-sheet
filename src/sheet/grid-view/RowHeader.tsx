@@ -37,6 +37,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
       role="separator"
       tabIndex={0}
       aria-label={`${rIdx + 1}행 높이 조정`}
+      aria-keyshortcuts="ArrowUp ArrowDown Shift+ArrowUp Shift+ArrowDown"
       aria-orientation="horizontal"
       aria-valuemin={ROW_HEIGHT_BOUNDS.min}
       aria-valuenow={Math.round(height)}
