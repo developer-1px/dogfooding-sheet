@@ -6,6 +6,7 @@ export interface MenuItem {
   label: string
   onClick: MenuAction
   disabled?: boolean
+  keyShortcuts?: string
 }
 
 interface Props {
@@ -56,6 +57,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
             type="button"
             className="ctx-item"
             disabled={it.disabled}
+            aria-keyshortcuts={it.keyShortcuts}
             onClick={() => { runMenuItemAction(it.onClick); onClose() }}
           >
             {it.label}

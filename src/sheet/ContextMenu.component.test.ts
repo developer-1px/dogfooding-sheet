@@ -16,7 +16,7 @@ describe('ContextMenu component', () => {
       y: 34,
       label: '셀 메뉴',
       items: [
-        { label: '열기', onClick: onOpen },
+        { label: '열기', onClick: onOpen, keyShortcuts: 'Alt+Shift+M' },
         'separator',
         { label: '삭제', onClick: onDisabled, disabled: true },
       ],
@@ -33,6 +33,8 @@ describe('ContextMenu component', () => {
     expect(separator?.textContent).toBe('')
     expect(items.map((item) => item.textContent)).toEqual(['열기', '삭제'])
     expect(items.every((item) => item.type === 'button')).toBe(true)
+    expect(items[0]?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
+    expect(items[1]?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(items[1]?.disabled).toBe(true)
 
     act(() => items[0]!.click())

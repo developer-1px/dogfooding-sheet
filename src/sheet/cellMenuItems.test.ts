@@ -97,6 +97,14 @@ describe('cellMenuItems', () => {
     expect(calls).toEqual(['writeCell:B2:', 'setNote:B2:', 'sortByCol:B:asc'])
   })
 
+  it('exposes the merge shortcut metadata on cell, row, and column menus', () => {
+    const mergeLabel = '셀 병합 / 해제 (Alt+Shift+M)'
+
+    expect(item(cellMenuItems(actions(), 'r1-B'), mergeLabel).keyShortcuts).toBe('Alt+Shift+M')
+    expect(item(cellMenuItems(actions(), 'r1-B', 'row'), mergeLabel).keyShortcuts).toBe('Alt+Shift+M')
+    expect(item(cellMenuItems(actions(), 'r1-B', 'col'), mergeLabel).keyShortcuts).toBe('Alt+Shift+M')
+  })
+
   it('returns no items for an invalid cell id', () => {
     expect(cellMenuItems(actions(), 'bad-id')).toEqual([])
   })
