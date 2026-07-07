@@ -10,7 +10,9 @@ const item = (items: CellMenuEntry[], label: string) => {
 
 function actions(overrides: Partial<CellMenuActions> = {}, calls: string[] = []): CellMenuActions {
   return {
-    sheet: { cells: { B2: 'value' } },
+    sheet: { cells: { B2: 'value' }, merges: [] },
+    selectedIds: ['r1-B'],
+    focusId: 'r1-B',
     rowCount: 20,
     colLetters: ['A', 'B', 'C'],
     hiddenRows: new Set(),
@@ -167,6 +169,49 @@ describe('cellMenuItems', () => {
     expect(item(cellMenuItems(actions(), 'r1-B'), mergeLabel).keyShortcuts).toBe('Alt+Shift+M')
     expect(item(cellMenuItems(actions(), 'r1-B', 'row'), mergeLabel).keyShortcuts).toBe('Alt+Shift+M')
     expect(item(cellMenuItems(actions(), 'r1-B', 'col'), mergeLabel).keyShortcuts).toBe('Alt+Shift+M')
+  })
+
+  it('disables merge actions for a single unmerged focused cell', () => {
+    const calls: string[] = []
+    const merge = item(cellMenuItems(actions({}, calls), 'r1-B'), '셀 병합 / 해제 (Alt+Shift+M)')
+
+    expect(merge.disabled).toBe(true)
+
+    merge.onClick()
+
+    expect(calls).toEqual([])
+  })
+
+  it('enables merge actions for a supported row selection', () => {
+    const calls: string[] = []
+    const merge = item(
+      cellMenuItems(actions({ selectedIds: ['r1-A', 'r1-B'], focusId: 'r1-A' }, calls), 'r1-A', 'row'),
+      '셀 병합 / 해제 (Alt+Shift+M)',
+    )
+
+    expect(merge.disabled).toBe(false)
+
+    merge.onClick()
+
+    expect(calls).toEqual(['mergeSelection'])
+  })
+
+  it('enables merge actions for a focused cell inside an existing merge', () => {
+    const calls: string[] = []
+    const merge = item(
+      cellMenuItems(actions({
+        sheet: { cells: { B2: 'value' }, merges: [[1, 1, 1, 2]] },
+        selectedIds: [],
+        focusId: 'r1-C',
+      }, calls), 'r1-C'),
+      '셀 병합 / 해제 (Alt+Shift+M)',
+    )
+
+    expect(merge.disabled).toBe(false)
+
+    merge.onClick()
+
+    expect(calls).toEqual(['mergeSelection'])
   })
 
   it('exposes row structure shortcut metadata on row and cell menus', () => {

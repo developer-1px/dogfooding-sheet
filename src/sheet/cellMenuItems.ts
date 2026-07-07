@@ -6,6 +6,7 @@ import type { NoteLookup } from './useNotes'
 import type { MenuItem } from './ContextMenu'
 import { copySingleCell, cutSingleCell, pasteSingleCell, type ClipboardTextBridge } from './clipboard/clipboardActions'
 import { columnRestoreControls, rowRestoreControls } from './grid-view/hiddenRestoreControls'
+import { canMergeSelection, type Merge } from './structure/mergeSelection'
 
 export type CellMenuKind = 'cell' | 'row' | 'col'
 export type CellMenuEntry = MenuItem | 'separator'
@@ -14,7 +15,9 @@ export interface CellMenuActions
   extends SheetMutations,
   Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>,
   Pick<HiddenActions, 'hideRow' | 'hideCol' | 'showRow' | 'showCol'> {
-  sheet: { cells: Cells }
+  sheet: { cells: Cells; merges: ReadonlyArray<Merge> }
+  selectedIds: string[]
+  focusId: string | null
   rowCount: number
   colLetters: readonly string[]
   hiddenRows: Set<number>
@@ -136,9 +139,11 @@ function colSortItems(a: CellMenuActions, col: string): CellMenuEntry[] {
 }
 
 function mergeSelectionItem(a: CellMenuActions): MenuItem {
+  const canMerge = canMergeSelection(a.selectedIds, a.focusId, a.sheet.merges)
   return {
     label: '셀 병합 / 해제 (Alt+Shift+M)',
-    onClick: a.mergeSelection,
+    onClick: () => { if (canMerge) a.mergeSelection() },
+    disabled: !canMerge,
     keyShortcuts: 'Alt+Shift+M',
   }
 }
