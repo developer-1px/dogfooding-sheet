@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from 'react'
+import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { cycleTrailingFormulaRef } from './selection/formulaPick'
 
 interface Props {
@@ -11,6 +11,10 @@ interface Props {
   canRedo: boolean
   extra?: ReactNode
   onAddrClick?: () => void
+}
+
+const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+  if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
 }
 
 export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, canRedo, extra, onAddrClick }: Props) {
@@ -31,6 +35,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         aria-label={addressLabel}
         aria-keyshortcuts="Control+G Meta+G"
         disabled={!onAddrClick}
+        onKeyDown={stopButtonActivationKeyDown}
       >{addr ?? '—'}</button>
       <input
         className="formula"
@@ -59,8 +64,8 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         placeholder="값 또는 =A1+B1"
         disabled={!addr}
       />
-      <button type="button" onClick={onUndo} disabled={!canUndo} title="실행 취소 (Ctrl/⌘+Z)" aria-keyshortcuts="Control+Z Meta+Z" aria-label="실행 취소">실행 취소</button>
-      <button type="button" onClick={onRedo} disabled={!canRedo} title="다시 실행 (Ctrl/⌘+Shift+Z)" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label="다시 실행">다시 실행</button>
+      <button type="button" onClick={onUndo} onKeyDown={stopButtonActivationKeyDown} disabled={!canUndo} title="실행 취소 (Ctrl/⌘+Z)" aria-keyshortcuts="Control+Z Meta+Z" aria-label="실행 취소">실행 취소</button>
+      <button type="button" onClick={onRedo} onKeyDown={stopButtonActivationKeyDown} disabled={!canRedo} title="다시 실행 (Ctrl/⌘+Shift+Z)" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label="다시 실행">다시 실행</button>
       {extra}
     </header>
   )
