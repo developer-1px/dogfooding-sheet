@@ -67,6 +67,51 @@ describe('Cell component', () => {
     expect(onCheckboxToggle).toHaveBeenCalledTimes(1)
   })
 
+  it('keeps URL link keyboard events inside the link control', () => {
+    const gridKeyDown = vi.fn()
+    const contextKeyDown = vi.fn()
+
+    renderCell({
+      cellProps: { role: 'gridcell', tabIndex: 0, onKeyDown: gridKeyDown },
+      ctxHandlers: { onContextMenu: vi.fn(), onKeyDown: contextKeyDown },
+      label: 'https://example.com',
+    })
+
+    const link = document.querySelector<HTMLAnchorElement>('.cell-link')
+
+    expect(link?.textContent).toBe('https://example.com')
+    expect(link?.getAttribute('href')).toBe('https://example.com/')
+    expect(link?.getAttribute('target')).toBe('_blank')
+    expect(link?.getAttribute('rel')).toBe('noreferrer noopener')
+
+    act(() => link!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })))
+
+    expect(contextKeyDown).not.toHaveBeenCalled()
+    expect(gridKeyDown).not.toHaveBeenCalled()
+  })
+
+  it('keeps email link keyboard events inside the link control', () => {
+    const gridKeyDown = vi.fn()
+    const contextKeyDown = vi.fn()
+
+    renderCell({
+      cellProps: { role: 'gridcell', tabIndex: 0, onKeyDown: gridKeyDown },
+      ctxHandlers: { onContextMenu: vi.fn(), onKeyDown: contextKeyDown },
+      label: 'person@example.com',
+    })
+
+    const link = document.querySelector<HTMLAnchorElement>('.cell-link')
+
+    expect(link?.textContent).toBe('person@example.com')
+    expect(link?.getAttribute('href')).toBe('mailto:person@example.com')
+    expect(link?.hasAttribute('target')).toBe(false)
+
+    act(() => link!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })))
+
+    expect(contextKeyDown).not.toHaveBeenCalled()
+    expect(gridKeyDown).not.toHaveBeenCalled()
+  })
+
   it('keeps non-checkbox cell keyboard handling on the parent gridcell', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()
