@@ -51,8 +51,10 @@ describe('Find component', () => {
 
     expect(previous?.textContent).toBe('↑')
     expect(previous?.disabled).toBe(true)
+    expect(previous?.getAttribute('aria-keyshortcuts')).toBe('Shift+Enter')
     expect(next?.textContent).toBe('↓')
     expect(next?.disabled).toBe(true)
+    expect(next?.getAttribute('aria-keyshortcuts')).toBe('Enter')
     expect(document.querySelector('.count')?.textContent).toBe('')
     expect(document.querySelector('.count')?.getAttribute('role')).toBe('status')
     expect(document.querySelector('.count')?.getAttribute('aria-live')).toBe('polite')
