@@ -47,6 +47,7 @@ describe('ConfirmDialog component', () => {
     expect(cancel?.getAttribute('aria-keyshortcuts')).toBe('Escape')
     expect(confirm?.type).toBe('button')
     expect(confirm?.textContent).toBe('삭제')
+    expect(confirm?.getAttribute('title')).toBe('삭제')
 
     act(() => cancel!.click())
     expect(onCancel).toHaveBeenCalledTimes(1)

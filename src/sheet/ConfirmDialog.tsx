@@ -26,7 +26,7 @@ export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLa
         <p id={messageId}>{message}</p>
         <div className="confirm-actions">
           <button type="button" ref={cancelRef} onClick={onCancel} title={`${cancelLabel} (Esc)`} aria-keyshortcuts="Escape">{cancelLabel}</button>
-          <button type="button" className="danger" onClick={onConfirm}>{confirmLabel}</button>
+          <button type="button" className="danger" onClick={onConfirm} title={confirmLabel}>{confirmLabel}</button>
         </div>
       </div>
     </>
