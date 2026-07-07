@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react'
+import { useId, useRef, type KeyboardEvent } from 'react'
 import { useAlertdialogPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
@@ -8,6 +8,10 @@ interface Props {
   cancelLabel?: string
   onConfirm: () => void
   onCancel: () => void
+}
+
+const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+  if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
 }
 
 export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLabel = '취소', onConfirm, onCancel }: Props) {
@@ -25,8 +29,8 @@ export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLa
       <div {...rootProps} aria-describedby={messageId} className="confirm-dialog">
         <p id={messageId}>{message}</p>
         <div className="confirm-actions">
-          <button type="button" ref={cancelRef} onClick={onCancel} title={`${cancelLabel} (Esc)`} aria-keyshortcuts="Escape">{cancelLabel}</button>
-          <button type="button" className="danger" onClick={onConfirm} title={confirmLabel}>{confirmLabel}</button>
+          <button type="button" ref={cancelRef} onClick={onCancel} onKeyDown={stopButtonActivationKeyDown} title={`${cancelLabel} (Esc)`} aria-keyshortcuts="Escape">{cancelLabel}</button>
+          <button type="button" className="danger" onClick={onConfirm} onKeyDown={stopButtonActivationKeyDown} title={confirmLabel}>{confirmLabel}</button>
         </div>
       </div>
     </>
