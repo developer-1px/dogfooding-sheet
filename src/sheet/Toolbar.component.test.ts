@@ -104,4 +104,44 @@ describe('Toolbar component', () => {
     expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
     expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
   })
+
+  it('exposes structure shortcut hints without changing labels or wiring', () => {
+    const props = renderToolbar()
+
+    const insertRow = document.querySelector<HTMLButtonElement>('button[aria-label="2행 위에 행 삽입"]')
+    const deleteRow = document.querySelector<HTMLButtonElement>('button[aria-label="2행 삭제"]')
+    const insertCol = document.querySelector<HTMLButtonElement>('button[aria-label="B열 왼쪽에 열 삽입"]')
+    const deleteCol = document.querySelector<HTMLButtonElement>('button[aria-label="B열 삭제"]')
+    const showAll = document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')
+
+    expect(insertRow?.textContent).toBe('+행')
+    expect(insertRow?.getAttribute('title')).toBe('2행 위에 행 삽입 (Ctrl/⌘+Alt+=)')
+    expect(insertRow?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+= Meta+Alt+=')
+    expect(deleteRow?.textContent).toBe('−행')
+    expect(deleteRow?.getAttribute('title')).toBe('2행 삭제 (Ctrl/⌘+Alt+-)')
+    expect(deleteRow?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+- Meta+Alt+-')
+
+    expect(insertCol?.textContent).toBe('+열')
+    expect(insertCol?.getAttribute('title')).toBe('B열 왼쪽에 열 삽입 (Ctrl/⌘+Alt+Shift+=)')
+    expect(insertCol?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+Shift+= Meta+Alt+Shift+=')
+    expect(deleteCol?.textContent).toBe('−열')
+    expect(deleteCol?.getAttribute('title')).toBe('B열 삭제 (Ctrl/⌘+Alt+Shift+-)')
+    expect(deleteCol?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+Shift+- Meta+Alt+Shift+-')
+
+    expect(showAll?.textContent).toBe('👁모두표시')
+    expect(showAll?.getAttribute('title')).toBe('숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)')
+    expect(showAll?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+0 Meta+Shift+0')
+
+    act(() => insertRow!.click())
+    act(() => deleteRow!.click())
+    act(() => insertCol!.click())
+    act(() => deleteCol!.click())
+    act(() => showAll!.click())
+
+    expect(props.insertRow).toHaveBeenCalledWith(1)
+    expect(props.deleteRow).toHaveBeenCalledWith(1)
+    expect(props.insertCol).toHaveBeenCalledWith('B')
+    expect(props.deleteCol).toHaveBeenCalledWith('B')
+    expect(props.showAll).toHaveBeenCalledTimes(1)
+  })
 })

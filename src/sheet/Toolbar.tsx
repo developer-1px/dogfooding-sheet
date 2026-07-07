@@ -50,11 +50,16 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const focusRow = focus?.row
   const focusRowLabel = focusRow !== undefined ? `${focusRow + 1}행` : '현재 행'
   const focusColLabel = focus ? `${focus.col}열` : '현재 열'
+  const insertRowTitle = `${focusRowLabel} 위에 행 삽입 (Ctrl/⌘+Alt+=)`
+  const deleteRowTitle = `${focusRowLabel} 삭제 (Ctrl/⌘+Alt+-)`
+  const insertColTitle = `${focusColLabel} 왼쪽에 열 삽입 (Ctrl/⌘+Alt+Shift+=)`
+  const deleteColTitle = `${focusColLabel} 삭제 (Ctrl/⌘+Alt+Shift+-)`
   const appendRowsLabel = `아래에 행 20개 추가 (현재 ${rowCount}행)`
   const appendColsLabel = `오른쪽에 열 1개 추가 (현재 ${colCount}열)`
   const freezeRowsLabel = `첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`
   const freezeColsLabel = `첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`
   const filterLabel = filter ? `${filter.col}열 필터 수정` : '현재 열로 행 필터'
+  const showAllTitle = '숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)'
   const applyF = (format: Format) => applyToolbarFormat({ selectedIds, focusKey, format, setFormat })
   const toggle = (flag: ToolbarStyleFlag) => toggleToolbarStyle({ selectedIds, focusKey, flag, styleOf, updateStyle })
   const setAlign = (alignment: CellStyle['a']) => setToolbarAlignment({ selectedIds, focusKey, alignment, updateStyle })
@@ -69,8 +74,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   return (
     <>
       <button type="button" onClick={undo} disabled={!canUndo} title="실행 취소 (Ctrl/⌘+Z)" aria-keyshortcuts="Control+Z Meta+Z" aria-label="실행 취소">↶</button><button type="button" onClick={redo} disabled={!canRedo} title="다시 실행 (Ctrl/⌘+Shift+Z)" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label="다시 실행">↷</button>
-      <button type="button" onClick={() => focusRow !== undefined && insertRow(focusRow)} disabled={focusRow === undefined} title={`${focusRowLabel} 위에 행 삽입`} aria-label={`${focusRowLabel} 위에 행 삽입`}>+행</button><button type="button" onClick={() => focusRow !== undefined && deleteRow(focusRow)} disabled={focusRow === undefined} title={`${focusRowLabel} 삭제`} aria-label={`${focusRowLabel} 삭제`}>−행</button>
-      <button type="button" onClick={() => focus && insertCol(focus.col)} disabled={!focus} title={`${focusColLabel} 왼쪽에 열 삽입`} aria-label={`${focusColLabel} 왼쪽에 열 삽입`}>+열</button><button type="button" onClick={() => focus && deleteCol(focus.col)} disabled={!focus} title={`${focusColLabel} 삭제`} aria-label={`${focusColLabel} 삭제`}>−열</button>
+      <button type="button" onClick={() => focusRow !== undefined && insertRow(focusRow)} disabled={focusRow === undefined} title={insertRowTitle} aria-label={`${focusRowLabel} 위에 행 삽입`} aria-keyshortcuts="Control+Alt+= Meta+Alt+=">+행</button><button type="button" onClick={() => focusRow !== undefined && deleteRow(focusRow)} disabled={focusRow === undefined} title={deleteRowTitle} aria-label={`${focusRowLabel} 삭제`} aria-keyshortcuts="Control+Alt+- Meta+Alt+-">−행</button>
+      <button type="button" onClick={() => focus && insertCol(focus.col)} disabled={!focus} title={insertColTitle} aria-label={`${focusColLabel} 왼쪽에 열 삽입`} aria-keyshortcuts="Control+Alt+Shift+= Meta+Alt+Shift+=">+열</button><button type="button" onClick={() => focus && deleteCol(focus.col)} disabled={!focus} title={deleteColTitle} aria-label={`${focusColLabel} 삭제`} aria-keyshortcuts="Control+Alt+Shift+- Meta+Alt+Shift+-">−열</button>
       <button type="button" onClick={() => appendRows(20)} title={appendRowsLabel} aria-label={appendRowsLabel}>+20행</button><button type="button" onClick={() => appendCols(1)} title={appendColsLabel} aria-label={appendColsLabel}>+끝열</button>
       <button type="button" onClick={() => focus && sortByCol(focus.col, 'asc')} title="오름차순 정렬" aria-label="오름차순 정렬">↑정렬</button><button type="button" onClick={() => focus && sortByCol(focus.col, 'desc')} title="내림차순 정렬" aria-label="내림차순 정렬">↓정렬</button>
       <button type="button" onClick={runAutoSum} disabled={!focus} title="자동 합계 (위쪽 연속 숫자 합)" aria-label="자동 합계">Σ</button>
@@ -84,7 +89,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button type="button" onClick={toggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button type="button" onClick={toggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button type="button" onClick={openFilterPrompt} title="현재 열로 행 필터" aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button type="button" onClick={clearFilter} title="필터 해제" aria-label="필터 해제">✕</button>}
-      {hasHidden && <button type="button" onClick={showAll} title="숨김 행/열 모두 표시" aria-label="숨김 행과 열 모두 표시">👁모두표시</button>}
+      {hasHidden && <button type="button" onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
       <button type="button" onClick={openListValidationPrompt} title="유효성 검사 (드롭다운 목록)" aria-label="드롭다운 목록 유효성 검사 설정">▾목록</button>
       <button type="button" onClick={convertToCheckbox} title="체크박스로 변환" aria-label="체크박스로 변환">☑체크</button>
       <CondFmtButtons col={focus?.col ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
