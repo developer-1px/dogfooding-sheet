@@ -18,7 +18,7 @@ export function StatusBar(props: Props) {
   const saved = persistenceText(props.persistence)
   if (!model.showDetails) {
     return (
-      <footer className="status-bar" role="status" aria-live="polite">
+      <footer className="status-bar" role="status" aria-live="polite" aria-atomic="true">
         <span>{model.summary}</span>
         {saved && <span>{saved}</span>}
       </footer>
@@ -26,7 +26,7 @@ export function StatusBar(props: Props) {
   }
 
   return (
-    <footer className="status-bar" role="status" aria-live="polite">
+    <footer className="status-bar" role="status" aria-live="polite" aria-atomic="true">
       <span>{model.summary}</span>
       {saved && <span>{saved}</span>}
       <span>COUNTA: <b>{model.nonEmpty}</b></span>
