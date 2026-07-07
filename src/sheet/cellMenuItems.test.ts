@@ -127,6 +127,28 @@ describe('cellMenuItems', () => {
     expect(item(cellItems, hideLabel).keyShortcuts).toBe('Control+Alt+9 Meta+Alt+9')
   })
 
+  it('exposes column structure shortcut metadata on column and cell menus', () => {
+    const insertLabel = 'B열 왼쪽에 삽입 (Ctrl/⌘+Alt+Shift+=)'
+    const deleteLabel = 'B열 삭제 (Ctrl/⌘+Alt+Shift+-)'
+    const hideLabel = 'B열 숨기기 (Ctrl/⌘+Alt+0)'
+    const colCalls: string[] = []
+    const colItems = cellMenuItems(actions({}, colCalls), 'r1-B', 'col')
+
+    expect(item(colItems, insertLabel).keyShortcuts).toBe('Control+Alt+Shift+= Meta+Alt+Shift+=')
+    expect(item(colItems, deleteLabel).keyShortcuts).toBe('Control+Alt+Shift+- Meta+Alt+Shift+-')
+    expect(item(colItems, hideLabel).keyShortcuts).toBe('Control+Alt+0 Meta+Alt+0')
+
+    item(colItems, insertLabel).onClick()
+    item(colItems, deleteLabel).onClick()
+    item(colItems, hideLabel).onClick()
+    expect(colCalls).toEqual(['insertCol:B', 'deleteCol:B', 'hideCol:B'])
+
+    const cellItems = cellMenuItems(actions(), 'r1-B')
+    expect(item(cellItems, insertLabel).keyShortcuts).toBe('Control+Alt+Shift+= Meta+Alt+Shift+=')
+    expect(item(cellItems, deleteLabel).keyShortcuts).toBe('Control+Alt+Shift+- Meta+Alt+Shift+-')
+    expect(item(cellItems, hideLabel).keyShortcuts).toBe('Control+Alt+0 Meta+Alt+0')
+  })
+
   it('exposes the hyperlink shortcut metadata and keeps its action wired', () => {
     const calls: string[] = []
     const link = item(cellMenuItems(actions({}, calls), 'r1-B'), '하이퍼링크 삽입 (Ctrl/⌘+K)')

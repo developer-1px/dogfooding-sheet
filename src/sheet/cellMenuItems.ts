@@ -63,9 +63,9 @@ function rowMenuItems(a: CellMenuActions, row: number): CellMenuEntry[] {
 
 function colMenuItems(a: CellMenuActions, col: string): CellMenuEntry[] {
   return [
-    { label: `${col}열 왼쪽에 삽입`, onClick: () => a.insertCol(col) },
-    { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
-    { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
+    insertColLeftItem(a, col),
+    deleteColItem(a, col),
+    hideColItem(a, col),
     ...colRevealItems(a, col),
     ...colFilterItems(a, col),
     { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
@@ -94,9 +94,9 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
     insertRowAboveItem(a, row),
     { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
     deleteRowItem(a, row),
-    { label: `${col}열 왼쪽에 삽입`, onClick: () => a.insertCol(col) },
-    { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
-    { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
+    insertColLeftItem(a, col),
+    deleteColItem(a, col),
+    hideColItem(a, col),
     hideRowItem(a, row),
     { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
     { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
@@ -161,6 +161,30 @@ function hideRowItem(a: CellMenuActions, row: number): MenuItem {
     label: `${row + 1}행 숨기기 (Ctrl/⌘+Alt+9)`,
     onClick: () => a.hideRow(row),
     keyShortcuts: 'Control+Alt+9 Meta+Alt+9',
+  }
+}
+
+function insertColLeftItem(a: CellMenuActions, col: string): MenuItem {
+  return {
+    label: `${col}열 왼쪽에 삽입 (Ctrl/⌘+Alt+Shift+=)`,
+    onClick: () => a.insertCol(col),
+    keyShortcuts: 'Control+Alt+Shift+= Meta+Alt+Shift+=',
+  }
+}
+
+function deleteColItem(a: CellMenuActions, col: string): MenuItem {
+  return {
+    label: `${col}열 삭제 (Ctrl/⌘+Alt+Shift+-)`,
+    onClick: () => a.deleteCol(col),
+    keyShortcuts: 'Control+Alt+Shift+- Meta+Alt+Shift+-',
+  }
+}
+
+function hideColItem(a: CellMenuActions, col: string): MenuItem {
+  return {
+    label: `${col}열 숨기기 (Ctrl/⌘+Alt+0)`,
+    onClick: () => a.hideCol(col),
+    keyShortcuts: 'Control+Alt+0 Meta+Alt+0',
   }
 }
 
