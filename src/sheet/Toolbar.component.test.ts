@@ -92,6 +92,12 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
 
+    const clearFormatButton = document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')
+    expect(clearFormatButton?.textContent).toBe('✕서식')
+    expect(clearFormatButton?.disabled).toBe(false)
+    expect(clearFormatButton?.getAttribute('title')).toBe('서식 모두 해제')
+    expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
+
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
     expect(mergeButton?.textContent).toBe('⊞병합')
     expect(mergeButton?.disabled).toBe(false)
