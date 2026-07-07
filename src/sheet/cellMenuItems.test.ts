@@ -87,7 +87,7 @@ describe('cellMenuItems', () => {
       freeze: { rows: 2, cols: 0 },
     }, calls), 'r1-B')
 
-    expect(labels(items)).toContain('노트 편집')
+    expect(labels(items)).toContain('노트 편집 (Ctrl/⌘+Shift+M)')
     expect(labels(items)).toContain('노트 삭제')
     expect(labels(items)).toContain('행 고정 해제')
     expect(labels(items)).toContain('B열까지 고정')
@@ -112,6 +112,25 @@ describe('cellMenuItems', () => {
     expect(link.keyShortcuts).toBe('Control+K Meta+K')
     link.onClick()
     expect(calls).toEqual(['insertLink'])
+  })
+
+  it('exposes note add and edit shortcut metadata while keeping actions wired', () => {
+    const addCalls: string[] = []
+    const addNote = item(cellMenuItems(actions({}, addCalls), 'r1-B'), '노트 추가 (Ctrl/⌘+Shift+M)')
+
+    expect(addNote.keyShortcuts).toBe('Control+Shift+M Meta+Shift+M')
+    addNote.onClick()
+    expect(addCalls).toEqual(['editNote:B2'])
+
+    const editCalls: string[] = []
+    const editNote = item(
+      cellMenuItems(actions({ noteOf: () => 'note' }, editCalls), 'r1-B'),
+      '노트 편집 (Ctrl/⌘+Shift+M)',
+    )
+
+    expect(editNote.keyShortcuts).toBe('Control+Shift+M Meta+Shift+M')
+    editNote.onClick()
+    expect(editCalls).toEqual(['editNote:B2'])
   })
 
   it('exposes the clear shortcut metadata and keeps its action wired', () => {
