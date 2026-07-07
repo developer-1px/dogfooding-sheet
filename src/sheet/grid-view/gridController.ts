@@ -22,12 +22,14 @@ export interface GridContextMenuController
   extends SheetMutations,
   Pick<FreezeActions, 'setFreezeRows' | 'setFreezeCols'>,
   Pick<HiddenActions, 'hideRow' | 'hideCol' | 'showRow' | 'showCol'> {
-  sheet: Pick<Sheet, 'cells'>
+  sheet: Pick<Sheet, 'cells' | 'merges'>
   colLetters: readonly string[]
   hiddenRows: Set<number>
   hiddenCols: Set<string>
   filter: Filter | null
   clearFilter: () => void
+  focusId: string | null
+  selectedIds: string[]
   setFocusId: (id: string) => void
   setSelectedIds: (ids: SelectedIdsUpdate<string>) => void
   setSelectAnchor: (id: string | null) => void
@@ -59,8 +61,6 @@ export interface GridController extends GridContextMenuController {
   onRowResize: (row: number, height: number) => void
   onRowResizeEnd: (row: number, height: number) => void
   resetRowHeight: (row: number) => void
-  focusId: string | null
-  selectedIds: string[]
   editing: string | null
   draft: string
   setDraft: (draft: string) => void
