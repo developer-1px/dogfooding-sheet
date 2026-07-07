@@ -12,13 +12,19 @@ const persistenceText = (state?: SheetPersistenceState): string | null => {
   if (state.status === 'saving' || state.dirty) return '저장 중'
   return '저장됨'
 }
+const statusRegionProps = {
+  role: 'status',
+  'aria-label': '상태 표시줄',
+  'aria-live': 'polite',
+  'aria-atomic': 'true',
+} as const
 
 export function StatusBar(props: Props) {
   const model = statusBarViewModel(props)
   const saved = persistenceText(props.persistence)
   if (!model.showDetails) {
     return (
-      <footer className="status-bar" role="status" aria-live="polite" aria-atomic="true">
+      <footer className="status-bar" {...statusRegionProps}>
         <span>{model.summary}</span>
         {saved && <span>{saved}</span>}
       </footer>
@@ -26,7 +32,7 @@ export function StatusBar(props: Props) {
   }
 
   return (
-    <footer className="status-bar" role="status" aria-live="polite" aria-atomic="true">
+    <footer className="status-bar" {...statusRegionProps}>
       <span>{model.summary}</span>
       {saved && <span>{saved}</span>}
       <span>COUNTA: <b>{model.nonEmpty}</b></span>
