@@ -2,6 +2,7 @@ import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useTabsPattern } from '@interactive-os/aria-kernel/patterns'
 import { useReorderDndGestureRaw } from '@interactive-os/aria-kernel/gesture'
 import { useEditable } from '../../interactive-os/useEditable'
+import type { KeyboardEventHandler } from 'react'
 import type { Confirm } from '../useConfirm'
 import type { TabsState } from './useTabs'
 
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, duplicateSheet, setTabColor, reorderTab, confirm }: Props) {
+  const stopTabUtilityKeyDown: KeyboardEventHandler<HTMLElement> = (e) => e.stopPropagation()
   const ed = useEditable<string>({
     getValue: (id) => id,
     onCommit: (oldName, draft) => {
@@ -64,6 +66,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
             value={state.colors[name] ?? '#cccccc'}
             onChange={(e) => setTabColor(name, e.target.value)}
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={stopTabUtilityKeyDown}
             title={`${name} 탭 색상 변경`}
             aria-label={`${name} 탭 색상 변경`}
           />
@@ -71,6 +74,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
             type="button"
             className="tab-dup"
             onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }}
+            onKeyDown={stopTabUtilityKeyDown}
             title={`${name} 시트 복제`}
             aria-label={`${name} 시트 복제`}
           >⎘</button>
@@ -84,6 +88,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
                   .then((ok) => { if (ok) deleteSheet(name) })
                   .catch(() => {})
               }}
+              onKeyDown={stopTabUtilityKeyDown}
               title={`${name} 시트 삭제`}
               aria-label={`${name} 시트 삭제`}
             >×</button>

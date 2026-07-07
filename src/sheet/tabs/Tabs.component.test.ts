@@ -86,6 +86,29 @@ describe('Tabs component', () => {
     expect(document.querySelector<HTMLButtonElement>('.tab-close')).toBeNull()
   })
 
+  it('keeps tab utility keyboard events from switching sheets', () => {
+    const calls = renderTabs({
+      order: ['Budget', 'Forecast'],
+      active: 'Budget',
+      saved: { Forecast: blankBundle() },
+      colors: {},
+    })
+
+    const color = document.querySelector<HTMLInputElement>('.tab-color')
+    const duplicate = document.querySelector<HTMLButtonElement>('.tab-dup')
+    const close = document.querySelector<HTMLButtonElement>('.tab-close')
+
+    act(() => color!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })))
+    act(() => duplicate!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })))
+    act(() => close!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })))
+
+    expect(calls).toEqual([])
+
+    act(() => duplicate!.click())
+
+    expect(calls).toEqual(['duplicate:Budget'])
+  })
+
   it('does not leak a rejected delete confirmation', async () => {
     const confirm: Confirm = () => Promise.reject(new Error('closed'))
     const calls = renderTabs({
