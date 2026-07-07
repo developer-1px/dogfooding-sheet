@@ -82,9 +82,9 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
   const note = a.noteOf(key)
 
   return [
-    { label: '잘라내기', onClick: () => cutSingleCell(a.sheet.cells[key] ?? '', key, a.writeCell, a.clipboardText) },
-    { label: '복사', onClick: () => copySingleCell(a.sheet.cells[key] ?? '', a.clipboardText) },
-    { label: '붙여넣기', onClick: () => pasteSingleCell(key, a.writeCell, a.clipboardText) },
+    { label: '잘라내기 (Ctrl/⌘+X)', onClick: () => cutSingleCell(a.sheet.cells[key] ?? '', key, a.writeCell, a.clipboardText), keyShortcuts: 'Control+X Meta+X' },
+    { label: '복사 (Ctrl/⌘+C)', onClick: () => copySingleCell(a.sheet.cells[key] ?? '', a.clipboardText), keyShortcuts: 'Control+C Meta+C' },
+    { label: '붙여넣기 (Ctrl/⌘+V)', onClick: () => pasteSingleCell(key, a.writeCell, a.clipboardText), keyShortcuts: 'Control+V Meta+V' },
     { label: '지우기', onClick: () => a.writeCell(key, '') },
     'separator',
     { label: note ? '노트 편집' : '노트 추가', onClick: () => a.editNote(key) },
