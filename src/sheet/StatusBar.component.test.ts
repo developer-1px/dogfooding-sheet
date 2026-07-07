@@ -25,6 +25,7 @@ describe('StatusBar component', () => {
     })))
 
     expect(footer().getAttribute('role')).toBe('status')
+    expect(footer().getAttribute('aria-label')).toBe('상태 표시줄')
     expect(footer().getAttribute('aria-live')).toBe('polite')
     expect(footer().getAttribute('aria-atomic')).toBe('true')
     expect(footer().textContent).toContain('1 셀')
@@ -43,6 +44,7 @@ describe('StatusBar component', () => {
     })))
 
     expect(footer().getAttribute('role')).toBe('status')
+    expect(footer().getAttribute('aria-label')).toBe('상태 표시줄')
     expect(footer().getAttribute('aria-live')).toBe('polite')
     expect(footer().getAttribute('aria-atomic')).toBe('true')
     expect(footer().textContent).toContain('2 셀 (2행 × 1열)')
