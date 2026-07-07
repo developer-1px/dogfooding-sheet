@@ -33,6 +33,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ['Ctrl/⌘ + PageUp / PageDown', '이전 / 다음 시트 탭으로 이동'],
   ['Delete / Backspace', '선택 셀 비우기'],
   ['F2', '셀 편집 시작'],
+  ['F4 (수식 입력 중)', '마지막 셀 참조의 절대/상대 형식 순환'],
   ['F9', '선택한 셀의 수식을 평가된 값으로 고정'],
   ['Ctrl/⌘ + Shift + 1 / 3 / 4 / 5', '서식: 일반 / 날짜 / 통화 / 백분율'],
   ['Ctrl/⌘ + Shift + M', '셀 노트 추가 / 편집'],
