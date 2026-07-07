@@ -88,6 +88,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         const restoreButton = (control: typeof restoreControls[number]) => (
           <button
             key={control.col}
+            type="button"
             className={control.className}
             onClick={(e) => { e.stopPropagation(); showCol(control.col) }}
             title={control.label}

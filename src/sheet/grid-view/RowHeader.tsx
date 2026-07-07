@@ -59,6 +59,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
   const restoreButton = (control: typeof restoreControls[number]) => (
     <button
       key={control.row}
+      type="button"
       className={control.className}
       onClick={(e) => { e.stopPropagation(); showRow(control.row) }}
       title={control.label}
