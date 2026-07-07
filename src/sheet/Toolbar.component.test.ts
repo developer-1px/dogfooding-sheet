@@ -175,6 +175,36 @@ describe('Toolbar component', () => {
     expect(appendCols?.getAttribute('title')).toBe(`오른쪽에 열 1개 추가 (현재 ${MAX_COL_COUNT}열)`)
   })
 
+  it('disables inactive freeze toggles when a single row or column cannot be meaningfully frozen', () => {
+    renderToolbar({ rowCount: 1, colCount: 1, freeze: { rows: 0, cols: 0 } })
+
+    const freezeRows = document.querySelector<HTMLButtonElement>('button[aria-label="첫 행 고정 토글 (현재 0행 고정)"]')
+    const freezeCols = document.querySelector<HTMLButtonElement>('button[aria-label="첫 열 고정 토글 (현재 0열 고정)"]')
+
+    expect(freezeRows?.textContent).toBe('📌행')
+    expect(freezeRows?.disabled).toBe(true)
+    expect(freezeRows?.getAttribute('title')).toBe('첫 행 고정 토글 (현재 0행 고정)')
+    expect(freezeRows?.getAttribute('aria-pressed')).toBe('false')
+    expect(freezeCols?.textContent).toBe('📌열')
+    expect(freezeCols?.disabled).toBe(true)
+    expect(freezeCols?.getAttribute('title')).toBe('첫 열 고정 토글 (현재 0열 고정)')
+    expect(freezeCols?.getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('keeps active freeze toggles enabled on a single row or column so they can be cleared', () => {
+    renderToolbar({ rowCount: 1, colCount: 1, freeze: { rows: 1, cols: 1 } })
+
+    const freezeRows = document.querySelector<HTMLButtonElement>('button[aria-label="첫 행 고정 토글 (현재 1행 고정)"]')
+    const freezeCols = document.querySelector<HTMLButtonElement>('button[aria-label="첫 열 고정 토글 (현재 1열 고정)"]')
+
+    expect(freezeRows?.textContent).toBe('📌행')
+    expect(freezeRows?.disabled).toBe(false)
+    expect(freezeRows?.getAttribute('aria-pressed')).toBe('true')
+    expect(freezeCols?.textContent).toBe('📌열')
+    expect(freezeCols?.disabled).toBe(false)
+    expect(freezeCols?.getAttribute('aria-pressed')).toBe('true')
+  })
+
   it('disables AutoSum when no contiguous numeric range exists', () => {
     renderToolbar({
       focusKey: 'A1',
