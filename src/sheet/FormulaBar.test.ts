@@ -20,6 +20,10 @@ describe('FormulaBar', () => {
 
     expect(document.querySelector('button.addr')?.getAttribute('aria-label')).toBe('B12 셀로 이동')
     expect(document.querySelector('input.formula')?.getAttribute('aria-label')).toBe('수식 입력줄')
+    expect(document.querySelector('button[aria-label="실행 취소"]')?.textContent).toBe('실행 취소')
+    expect(document.querySelector('button[aria-label="실행 취소"]')?.getAttribute('aria-keyshortcuts')).toBe('Control+Z Meta+Z')
+    expect(document.querySelector('button[aria-label="다시 실행"]')?.textContent).toBe('다시 실행')
+    expect(document.querySelector('button[aria-label="다시 실행"]')?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
   })
 
   it('keeps the address control disabled when no jump action is available', () => {
@@ -37,5 +41,7 @@ describe('FormulaBar', () => {
     expect(address?.disabled).toBe(true)
     expect(address?.getAttribute('aria-label')).toBe('셀 주소')
     expect(document.querySelector<HTMLInputElement>('input.formula')?.disabled).toBe(true)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.disabled).toBe(true)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')?.disabled).toBe(true)
   })
 })
