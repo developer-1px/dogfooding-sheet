@@ -27,10 +27,12 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
   const [regex, setRegex] = useState(false)
 
   const { matches, jump, resetIdx, current, counter } = useFind({ query: open ? q : '', cells, display, onJump, caseSensitive, regex, skipIds, rowCount, colLetters })
+  const dialogLabel = mode === 'replace' ? '찾기 및 바꾸기' : '찾기'
 
   const { rootProps } = useDialogModalPattern({
-    open, modal: false,
-    label: mode === 'replace' ? '찾기 및 바꾸기' : '찾기',
+    open,
+    modal: false,
+    label: dialogLabel,
     onOpenChange: (next) => { if (!next) onClose() },
     on: { Enter: () => jump(1), 'shift+Enter': () => jump(-1) },
   })
@@ -66,26 +68,28 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
         value={q}
         onChange={(e) => { setQ(e.target.value); resetIdx() }}
         placeholder="찾기"
+        aria-label="찾을 내용"
       />
       {mode === 'replace' && (
         <input
           value={r}
           onChange={(e) => setR(e.target.value)}
           placeholder="바꾸기"
+          aria-label="바꿀 내용"
         />
       )}
-      <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} />Aa</label>
-      <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} />.*</label>
+      <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} aria-label="대소문자 구분" />Aa</label>
+      <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} aria-label="정규식 사용" />.*</label>
       <span className="count">{counter}</span>
-      <button onClick={() => jump(-1)} disabled={matches.length === 0}>↑</button>
-      <button onClick={() => jump(1)} disabled={matches.length === 0}>↓</button>
+      <button type="button" onClick={() => jump(-1)} disabled={matches.length === 0} title="이전 찾기 결과" aria-label="이전 찾기 결과">↑</button>
+      <button type="button" onClick={() => jump(1)} disabled={matches.length === 0} title="다음 찾기 결과" aria-label="다음 찾기 결과">↓</button>
       {mode === 'replace' && (
         <>
-          <button onClick={replaceOne} disabled={matches.length === 0}>바꾸기</button>
-          <button onClick={replaceAll} disabled={matches.length === 0}>전체</button>
+          <button type="button" onClick={replaceOne} disabled={matches.length === 0} title="현재 찾기 결과 바꾸기" aria-label="현재 찾기 결과 바꾸기">바꾸기</button>
+          <button type="button" onClick={replaceAll} disabled={matches.length === 0} title="모든 찾기 결과 바꾸기" aria-label="모든 찾기 결과 바꾸기">전체</button>
         </>
       )}
-      <button onClick={onClose}>✕</button>
+      <button type="button" onClick={onClose} title={`${dialogLabel} 닫기`} aria-label={`${dialogLabel} 닫기`}>✕</button>
     </div>
   )
 }
