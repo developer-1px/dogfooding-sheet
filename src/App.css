@@ -38,6 +38,8 @@
   --sheet-state-success-bg: rgba(24, 128, 56, .08);
   --sheet-state-control-hover: rgba(0, 0, 0, .1);
   --sheet-state-scrim: rgba(0, 0, 0, .3);
+  --sheet-focus-ring: 2px solid var(--sheet-color-accent);
+  --sheet-focus-offset: 2px;
 
   --sheet-shadow-menu: 0 2px 8px rgba(0, 0, 0, .1);
   --sheet-shadow-popover: 0 4px 16px rgba(0, 0, 0, .15);
@@ -89,6 +91,10 @@ body, html, #root {
   background: var(--sheet-color-surface);
   cursor: pointer;
 }
+.app-error button:focus-visible {
+  outline: var(--sheet-focus-ring);
+  outline-offset: var(--sheet-focus-offset);
+}
 
 .sheet-toolbar {
   display: flex; align-items: center; gap: var(--sheet-space-5); flex-wrap: wrap;
@@ -111,12 +117,21 @@ body, html, #root {
 }
 .sheet-toolbar button[aria-pressed="true"] { background: var(--sheet-color-selected); border-color: var(--sheet-color-accent); }
 .sheet-toolbar button:hover:not(:disabled) { background: var(--sheet-color-hover); }
+.sheet-toolbar button:focus-visible {
+  outline: var(--sheet-focus-ring);
+  outline-offset: var(--sheet-focus-offset);
+}
 .sheet-toolbar button:disabled { opacity: .4; cursor: not-allowed; }
 .color-pick {
   display: inline-flex; align-items: center; gap: var(--sheet-space-1);
   padding: var(--sheet-space-1) var(--sheet-space-3); border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
   background: var(--sheet-color-surface); font-size: var(--sheet-font-size-ui); cursor: pointer;
 }
+.color-pick:focus-within {
+  outline: var(--sheet-focus-ring);
+  outline-offset: var(--sheet-focus-offset);
+}
 .color-pick input[type="color"] {
   width: var(--sheet-size-control-md); height: var(--sheet-size-control-md); padding: 0; border: none; cursor: pointer; background: transparent;
 }
+.color-pick input[type="color"]:focus { outline: none; }

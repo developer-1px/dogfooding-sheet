@@ -9,6 +9,10 @@
   border: none; background: none; font-size: var(--sheet-font-size-ui, 13px); cursor: pointer;
 }
 .ctx-item:hover:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); }
+.ctx-item:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));
+}
 .ctx-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }
 .ctx-sep { height: 1px; background: var(--sheet-color-border-subtle, #e0e0e0); margin: var(--sheet-space-1, 4px) 0; }
 
@@ -29,6 +33,10 @@
   cursor: pointer; font-size: var(--sheet-font-size-sm, 12px);
 }
 .find-bar button:hover:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); }
+.find-bar button:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 .find-bar button:disabled { opacity: .4; cursor: not-allowed; }
 
 .tabs-bar {
@@ -42,12 +50,20 @@
   user-select: none;
 }
 .tab.active { background: var(--sheet-color-surface, #fff); color: var(--sheet-color-accent, #1a73e8); font-weight: var(--sheet-font-weight-medium, 500); }
+.tab:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 .tab-close, .tab-add {
   width: var(--sheet-size-control-md, 18px); height: var(--sheet-size-control-md, 18px); padding: 0; line-height: var(--sheet-size-control-sm, 16px);
   border: none; background: transparent; border-radius: var(--sheet-radius-round, 999px);
   color: inherit; cursor: pointer; font-size: var(--sheet-font-size-control, 14px);
 }
 .tab-close:hover { background: var(--sheet-state-control-hover, rgba(0, 0, 0, .1)); }
+.tab-close:focus-visible, .tab-add:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 .tab-add { background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); margin-left: var(--sheet-space-1, 4px); }
 .tab-add:hover { background: var(--sheet-color-hover, #f1f3f4); }
 
@@ -74,6 +90,7 @@
 }
 .prompt-dialog label { font-size: var(--sheet-font-size-ui, 13px); color: var(--sheet-color-muted, #5f6368); }
 .prompt-dialog input { padding: var(--sheet-space-2, 6px) var(--sheet-space-3, 8px); font-size: var(--sheet-font-size-control, 14px); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px); }
+.prompt-dialog input:focus { border-color: var(--sheet-color-accent, #1a73e8); outline: none; }
 .prompt-dialog .primary { background: var(--sheet-color-accent, #1a73e8); color: var(--sheet-color-surface, #fff); border-color: var(--sheet-color-accent, #1a73e8); }
 .confirm-dialog {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -91,10 +108,18 @@
   padding: var(--sheet-space-half, 2px) var(--sheet-space-2, 6px); font-family: var(--sheet-font-mono, monospace); font-size: var(--sheet-font-size-sm, 12px);
 }
 .help-dialog button { margin-top: var(--sheet-space-5, 12px); }
+.prompt-dialog button:focus-visible, .confirm-actions button:focus-visible, .help-dialog button:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 
 .overflow-menu { position: relative; display: inline-block; }
 .overflow-trigger { background: transparent; border: 1px solid transparent; padding: var(--sheet-space-half, 2px) var(--sheet-space-2, 6px); cursor: pointer; }
 .overflow-trigger:hover { background: var(--sheet-color-hover, #f1f3f4); border-color: var(--sheet-color-border, #dadce0); }
+.overflow-trigger:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 .overflow-list {
   position: absolute; top: 100%; right: 0;
   background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px);
@@ -106,6 +131,10 @@
   cursor: pointer; font-size: var(--sheet-font-size-ui, 13px);
 }
 .overflow-item:hover, .overflow-item:focus { background: var(--sheet-color-hover, #f1f3f4); outline: none; }
+.overflow-item:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));
+}
 
 .tab-rename {
   background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-accent, #1a73e8); border-radius: var(--sheet-radius-tight, 2px);
@@ -117,7 +146,16 @@
   color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-control-xs, 11px); cursor: pointer;
 }
 .tab-dup:hover { color: var(--sheet-color-accent, #1a73e8); }
+.tab-dup:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 .tab-color { width: 14px; height: 14px; padding: 0; border: none; background: transparent; cursor: pointer; margin-left: var(--sheet-space-half, 2px); opacity: 0; transition: opacity .15s; }
+.tab-color:focus-visible {
+  opacity: 1;
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 .tab:hover .tab-color, .tab.active .tab-color { opacity: 1; }
 .tab .tab-dup, .tab .tab-close { opacity: 0; transition: opacity .15s; }
 .tab:hover .tab-dup, .tab:hover .tab-close, .tab.active .tab-dup, .tab.active .tab-close { opacity: 1; }
