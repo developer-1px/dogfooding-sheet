@@ -105,6 +105,15 @@ describe('cellMenuItems', () => {
     expect(item(cellMenuItems(actions(), 'r1-B', 'col'), mergeLabel).keyShortcuts).toBe('Alt+Shift+M')
   })
 
+  it('exposes the hyperlink shortcut metadata and keeps its action wired', () => {
+    const calls: string[] = []
+    const link = item(cellMenuItems(actions({}, calls), 'r1-B'), '하이퍼링크 삽입 (Ctrl/⌘+K)')
+
+    expect(link.keyShortcuts).toBe('Control+K Meta+K')
+    link.onClick()
+    expect(calls).toEqual(['insertLink'])
+  })
+
   it('returns no items for an invalid cell id', () => {
     expect(cellMenuItems(actions(), 'bad-id')).toEqual([])
   })

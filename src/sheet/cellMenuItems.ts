@@ -89,7 +89,7 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
     'separator',
     { label: note ? '노트 편집' : '노트 추가', onClick: () => a.editNote(key) },
     ...(note ? [{ label: '노트 삭제', onClick: () => a.setNote(key, '') }] : []),
-    { label: '하이퍼링크 삽입', onClick: a.insertLink },
+    { label: '하이퍼링크 삽입 (Ctrl/⌘+K)', onClick: a.insertLink, keyShortcuts: 'Control+K Meta+K' },
     'separator',
     { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
     { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
