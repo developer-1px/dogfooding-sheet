@@ -71,7 +71,7 @@ export function HelpDialog({ open, onClose }: Props) {
           </thead>
           <tbody>
             {SHORTCUTS.map(([k, d]) => (
-              <tr key={k}><td><kbd>{k}</kbd></td><td>{d}</td></tr>
+              <tr key={k}><th scope="row"><kbd>{k}</kbd></th><td>{d}</td></tr>
             ))}
           </tbody>
         </table>

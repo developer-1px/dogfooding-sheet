@@ -106,11 +106,12 @@
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
-.help-dialog th {
-  padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); font-size: var(--sheet-font-size-sm, 12px);
-  color: var(--sheet-color-muted, #5f6368); font-weight: var(--sheet-font-weight-strong, 600); text-align: left;
+.help-dialog th, .help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); text-align: left; }
+.help-dialog thead th {
+  font-size: var(--sheet-font-size-sm, 12px); color: var(--sheet-color-muted, #5f6368);
+  font-weight: var(--sheet-font-weight-strong, 600);
 }
-.help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); font-size: var(--sheet-font-size-ui, 13px); }
+.help-dialog tbody th, .help-dialog td { font-size: var(--sheet-font-size-ui, 13px); font-weight: normal; }
 .help-dialog kbd {
   background: var(--sheet-color-hover, #f1f3f4); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-kbd, 3px);
   padding: var(--sheet-space-half, 2px) var(--sheet-space-2, 6px); font-family: var(--sheet-font-mono, monospace); font-size: var(--sheet-font-size-sm, 12px);
