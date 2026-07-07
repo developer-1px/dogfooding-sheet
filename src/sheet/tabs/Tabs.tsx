@@ -56,7 +56,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           title="더블클릭=이름 변경 / 드래그=순서 변경"
         >
           {ed.editing === name ? (
-            <input className="tab-rename" {...ed.inputProps} aria-label={`${name} 시트 이름 편집`} />
+            <input className="tab-rename" {...ed.inputProps} aria-label={`${name} 시트 이름 편집`} aria-keyshortcuts="Enter Escape" />
           ) : name}
           <input
             type="color"
