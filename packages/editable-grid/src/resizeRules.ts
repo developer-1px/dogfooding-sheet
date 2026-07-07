@@ -6,7 +6,7 @@ export interface ResizeBounds {
 export const DEFAULT_COLUMN_WIDTH = 100
 export const DEFAULT_ROW_HEIGHT = 28
 export const COLUMN_WIDTH_BOUNDS = { min: 40, max: 400 } satisfies ResizeBounds
-export const ROW_HEIGHT_BOUNDS = { min: 18 } satisfies ResizeBounds
+export const ROW_HEIGHT_BOUNDS = { min: 18, max: 1000 } satisfies ResizeBounds
 
 const STEP = 10
 const LARGE_STEP = 50

@@ -29,6 +29,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
     onChange: (h) => onResize(rIdx, h),
     onEnd: (h) => onResizeEnd(rIdx, h),
     min: ROW_HEIGHT_BOUNDS.min,
+    max: ROW_HEIGHT_BOUNDS.max,
   })
   return (
     <span
@@ -40,6 +41,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
       aria-keyshortcuts="ArrowUp ArrowDown Shift+ArrowUp Shift+ArrowDown"
       aria-orientation="horizontal"
       aria-valuemin={ROW_HEIGHT_BOUNDS.min}
+      aria-valuemax={ROW_HEIGHT_BOUNDS.max}
       aria-valuenow={Math.round(height)}
       onKeyDown={(e) => {
         const next = resizeValueForKey(heightOf(rIdx), e.key, e.shiftKey, 'y', ROW_HEIGHT_BOUNDS)

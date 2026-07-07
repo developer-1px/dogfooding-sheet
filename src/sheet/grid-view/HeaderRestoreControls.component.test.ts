@@ -240,6 +240,7 @@ describe('header restore controls', () => {
     expect(header?.tabIndex).toBe(0)
     expect(resizer?.getAttribute('title')).toBe('드래그=높이 조정 / ↑ ↓ 키로 10px 조정 / Shift+↑ ↓ 키로 50px 조정 / 더블클릭=기본값 복원')
     expect(resizer?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown Shift+ArrowUp Shift+ArrowDown')
+    expect(resizer?.getAttribute('aria-valuemax')).toBe('1000')
 
     act(() => header!.click())
     expect(setSelectedIds).toHaveBeenLastCalledWith(['r2-A', 'r2-B'])
