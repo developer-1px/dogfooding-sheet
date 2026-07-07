@@ -137,4 +137,62 @@ describe('header restore controls', () => {
     expect(showRow).toHaveBeenNthCalledWith(2, 3)
     expect(setSelectedIds).not.toHaveBeenCalled()
   })
+
+  it('makes row headers keyboard-operable without stealing nested control keys', () => {
+    const setSelectedIds = vi.fn()
+    const setFocusId = vi.fn()
+    const setSelectAnchor = vi.fn()
+    const onResizeEnd = vi.fn()
+
+    act(() => dom.root.render(createElement(RowHeader, {
+      rIdx: 2,
+      focusId: 'r1-A',
+      setFocusId,
+      setSelectAnchor,
+      setSelectedIds,
+      heightOf: () => 24,
+      onResize: vi.fn(),
+      onResizeEnd,
+      resetRowHeight: vi.fn(),
+      onContextMenu: vi.fn(),
+      colLetters: ['A', 'B'],
+      hiddenRows: new Set([1]),
+      showRow: vi.fn(),
+      selected: false,
+      active: false,
+    })))
+
+    const header = document.querySelector<HTMLElement>('.row-header')
+    const restore = document.querySelector<HTMLButtonElement>('.unhide-row.top')
+    const resizer = document.querySelector<HTMLElement>('.row-resizer')
+
+    expect(header?.getAttribute('role')).toBe('rowheader')
+    expect(header?.getAttribute('aria-label')).toBe('3행')
+    expect(header?.tabIndex).toBe(0)
+
+    act(() => header!.click())
+    expect(setSelectedIds).toHaveBeenLastCalledWith(['r2-A', 'r2-B'])
+    expect(setFocusId).toHaveBeenLastCalledWith('r2-A')
+    expect(setSelectAnchor).toHaveBeenLastCalledWith('r2-A')
+
+    const enter = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' })
+    act(() => header!.dispatchEvent(enter))
+    expect(enter.defaultPrevented).toBe(true)
+    expect(setSelectedIds).toHaveBeenCalledTimes(2)
+
+    const shiftSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ', shiftKey: true })
+    act(() => header!.dispatchEvent(shiftSpace))
+    expect(shiftSpace.defaultPrevented).toBe(true)
+    expect(setSelectedIds).toHaveBeenLastCalledWith(['r1-A', 'r1-B', 'r2-A', 'r2-B'])
+
+    const nestedSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' })
+    act(() => restore!.dispatchEvent(nestedSpace))
+    expect(nestedSpace.defaultPrevented).toBe(false)
+    expect(setSelectedIds).toHaveBeenCalledTimes(3)
+
+    const arrowDown = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowDown' })
+    act(() => resizer!.dispatchEvent(arrowDown))
+    expect(onResizeEnd).toHaveBeenCalledTimes(1)
+    expect(setSelectedIds).toHaveBeenCalledTimes(3)
+  })
 })
