@@ -90,9 +90,16 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
       />
       {colLetters.map((c) => {
         if (hiddenCols.has(c)) return null
+        const headerProps = columnHeaderProps(`h-${c}`)
         const restoreControls = columnRestoreControls(c, colLetters, hiddenCols)
         const leftRestore = restoreControls.find((control) => control.className === 'unhide-col left')
         const rightRestore = restoreControls.find((control) => control.className === 'unhide-col right')
+        const selectColumn = (extend: boolean) => {
+          const selection = selectColumnHeader(c, extend ? focusCol : null, rowCount, colLetters)
+          setSelectedIds(selection.selectedIds)
+          setFocusId(selection.focusId)
+          setSelectAnchor(selection.anchorId)
+        }
         const restoreButton = (control: typeof restoreControls[number]) => (
           <button
             key={control.col}
@@ -108,16 +115,20 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         return (
           <span
             key={c}
-            {...columnHeaderProps(`h-${c}`)}
+            {...headerProps}
             className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${c === filterCol ? ' filtered' : ''}`}
             aria-label={`${c}열`}
             aria-current={c === focusCol ? 'true' : undefined}
             aria-selected={selectedCols.has(c)}
-            onClick={(e) => {
-              const selection = selectColumnHeader(c, e.shiftKey ? focusCol : null, rowCount, colLetters)
-              setSelectedIds(selection.selectedIds)
-              setFocusId(selection.focusId)
-              setSelectAnchor(selection.anchorId)
+            onClick={(e) => selectColumn(e.shiftKey)}
+            onKeyDown={(e) => {
+              if (e.currentTarget !== e.target) return
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                selectColumn(e.shiftKey)
+                return
+              }
+              headerProps.onKeyDown?.(e)
             }}
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
             title="우클릭으로 열 메뉴"
