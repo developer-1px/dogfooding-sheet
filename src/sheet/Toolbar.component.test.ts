@@ -94,8 +94,10 @@ describe('Toolbar component', () => {
     const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]')
     const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬"]')
     expect(sortAsc?.textContent).toBe('↑정렬')
+    expect(sortAsc?.disabled).toBe(false)
     expect(sortAsc?.getAttribute('title')).toBe('B열 오름차순 정렬')
     expect(sortDesc?.textContent).toBe('↓정렬')
+    expect(sortDesc?.disabled).toBe(false)
     expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
@@ -111,6 +113,20 @@ describe('Toolbar component', () => {
     expect(mergeButton?.disabled).toBe(false)
     expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
     expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
+  })
+
+  it('disables toolbar sort buttons without a focused column', () => {
+    renderToolbar({ focusKey: null, filter: null })
+
+    const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="현재 열 오름차순 정렬"]')
+    const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="현재 열 내림차순 정렬"]')
+
+    expect(sortAsc?.textContent).toBe('↑정렬')
+    expect(sortAsc?.disabled).toBe(true)
+    expect(sortAsc?.getAttribute('title')).toBe('현재 열 오름차순 정렬')
+    expect(sortDesc?.textContent).toBe('↓정렬')
+    expect(sortDesc?.disabled).toBe(true)
+    expect(sortDesc?.getAttribute('title')).toBe('현재 열 내림차순 정렬')
   })
 
   it('exposes structure shortcut hints without changing labels or wiring', () => {
