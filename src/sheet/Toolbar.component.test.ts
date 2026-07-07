@@ -2,7 +2,7 @@ import { act, createElement, type ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { setupReactDOM } from './test-utils'
 import { Toolbar } from './Toolbar'
-import type { Sheet } from './schema'
+import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from './schema'
 
 vi.mock('./toolbarActions', () => ({
   applyCheckboxValidation: () => false,
@@ -56,7 +56,7 @@ describe('Toolbar component', () => {
       addCondRule: vi.fn(),
       clearCondRules: vi.fn(),
       hasCondRules: true,
-      sheet: {} as Sheet,
+      sheet: initialSheet,
       previewSheetReplacement: () => null,
       applySheetReplacement: vi.fn(() => false),
       clearCellValues: vi.fn(() => false),
@@ -103,6 +103,8 @@ describe('Toolbar component', () => {
     expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="아래에 행 20개 추가 (현재 10행)"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="오른쪽에 열 1개 추가 (현재 5열)"]')?.disabled).toBe(false)
 
     const clearFormatButton = document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')
     expect(clearFormatButton?.textContent).toBe('✕서식')
@@ -139,6 +141,20 @@ describe('Toolbar component', () => {
     expect(sortDesc?.textContent).toBe('↓정렬')
     expect(sortDesc?.disabled).toBe(true)
     expect(sortDesc?.getAttribute('title')).toBe('현재 열 내림차순 정렬')
+  })
+
+  it('disables append buttons at sheet limits', () => {
+    renderToolbar({ rowCount: MAX_ROW_COUNT, colCount: MAX_COL_COUNT })
+
+    const appendRows = document.querySelector<HTMLButtonElement>(`button[aria-label="아래에 행 20개 추가 (현재 ${MAX_ROW_COUNT}행)"]`)
+    const appendCols = document.querySelector<HTMLButtonElement>(`button[aria-label="오른쪽에 열 1개 추가 (현재 ${MAX_COL_COUNT}열)"]`)
+
+    expect(appendRows?.textContent).toBe('+20행')
+    expect(appendRows?.disabled).toBe(true)
+    expect(appendRows?.getAttribute('title')).toBe(`아래에 행 20개 추가 (현재 ${MAX_ROW_COUNT}행)`)
+    expect(appendCols?.textContent).toBe('+끝열')
+    expect(appendCols?.disabled).toBe(true)
+    expect(appendCols?.getAttribute('title')).toBe(`오른쪽에 열 1개 추가 (현재 ${MAX_COL_COUNT}열)`)
   })
 
   it('disables toolbar filter setup without a focused column but keeps clearing available', () => {
