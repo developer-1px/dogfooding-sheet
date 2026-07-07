@@ -66,6 +66,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const hasCellTarget = selectedIds.length > 0 || !!focusKey
   const canAppendRows = rowCount < MAX_ROW_COUNT
   const canAppendCols = colCount < MAX_COL_COUNT
+  const canSort = !!focus && rowCount > 1
   const applyF = (format: Format) => applyToolbarFormat({ selectedIds, focusKey, format, setFormat })
   const toggle = (flag: ToolbarStyleFlag) => toggleToolbarStyle({ selectedIds, focusKey, flag, styleOf, updateStyle })
   const setAlign = (alignment: CellStyle['a']) => setToolbarAlignment({ selectedIds, focusKey, alignment, updateStyle })
@@ -83,7 +84,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button type="button" onClick={() => focusRow !== undefined && insertRow(focusRow)} disabled={focusRow === undefined} title={insertRowTitle} aria-label={`${focusRowLabel} 위에 행 삽입`} aria-keyshortcuts="Control+Alt+= Meta+Alt+=">+행</button><button type="button" onClick={() => focusRow !== undefined && deleteRow(focusRow)} disabled={focusRow === undefined} title={deleteRowTitle} aria-label={`${focusRowLabel} 삭제`} aria-keyshortcuts="Control+Alt+- Meta+Alt+-">−행</button>
       <button type="button" onClick={() => focus && insertCol(focus.col)} disabled={!focus} title={insertColTitle} aria-label={`${focusColLabel} 왼쪽에 열 삽입`} aria-keyshortcuts="Control+Alt+Shift+= Meta+Alt+Shift+=">+열</button><button type="button" onClick={() => focus && deleteCol(focus.col)} disabled={!focus} title={deleteColTitle} aria-label={`${focusColLabel} 삭제`} aria-keyshortcuts="Control+Alt+Shift+- Meta+Alt+Shift+-">−열</button>
       <button type="button" onClick={() => appendRows(20)} disabled={!canAppendRows} title={appendRowsLabel} aria-label={appendRowsLabel}>+20행</button><button type="button" onClick={() => appendCols(1)} disabled={!canAppendCols} title={appendColsLabel} aria-label={appendColsLabel}>+끝열</button>
-      <button type="button" onClick={() => focus && sortByCol(focus.col, 'asc')} disabled={!focus} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button type="button" onClick={() => focus && sortByCol(focus.col, 'desc')} disabled={!focus} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
+      <button type="button" onClick={() => canSort && sortByCol(focus.col, 'asc')} disabled={!canSort} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button type="button" onClick={() => canSort && sortByCol(focus.col, 'desc')} disabled={!canSort} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
       <button type="button" onClick={runAutoSum} disabled={!focus} title="자동 합계 (위쪽 연속 숫자 합)" aria-label="자동 합계">Σ</button>
       <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} disabled={!hasCellTarget} />
       <button type="button" onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬" aria-label="왼쪽 정렬">⇤</button>
