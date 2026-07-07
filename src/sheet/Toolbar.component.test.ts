@@ -88,7 +88,9 @@ describe('Toolbar component', () => {
     expect(buttons.length).toBeGreaterThan(20)
     expect(buttons.every((button) => button.type === 'button')).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')?.type).toBe('button')
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
+    expect(filterButton?.type).toBe('button')
+    expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
 
