@@ -68,10 +68,11 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
   const { triggerProps, menuProps, itemProps, open } = useMenuButtonPattern(data, onEvent, {
     label: '추가 메뉴',
   })
+  const triggerLabel = open ? '더 보기 메뉴 닫기' : '더 보기 메뉴 열기'
 
   return (
     <span className="overflow-menu">
-      <button {...triggerProps} className="overflow-trigger" title="더 보기">⋮</button>
+      <button {...triggerProps} className="overflow-trigger" title={triggerLabel} aria-label={triggerLabel}>⋮</button>
       {open && (
         <div {...menuProps} className="overflow-list">
           {items.map((it) => (
