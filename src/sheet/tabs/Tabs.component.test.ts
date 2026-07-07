@@ -71,6 +71,7 @@ describe('Tabs component', () => {
 
     const rename = document.querySelector<HTMLInputElement>('.tab-rename')
     expect(rename?.getAttribute('aria-label')).toBe('Budget 시트 이름 편집')
+    expect(rename?.getAttribute('title')).toBe('Budget 시트 이름 편집 (Enter=저장 / Esc=취소)')
     expect(rename?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
   })
 
