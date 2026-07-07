@@ -91,7 +91,7 @@ describe('cellMenuItems', () => {
     expect(labels(items)).toContain('노트 삭제')
     expect(labels(items)).toContain('행 고정 해제')
     expect(labels(items)).toContain('B열까지 고정')
-    item(items, '지우기').onClick()
+    item(items, '지우기 (Delete/Backspace)').onClick()
     item(items, '노트 삭제').onClick()
     item(items, 'B 오름차순 정렬').onClick()
     expect(calls).toEqual(['writeCell:B2:', 'setNote:B2:', 'sortByCol:B:asc'])
@@ -112,6 +112,15 @@ describe('cellMenuItems', () => {
     expect(link.keyShortcuts).toBe('Control+K Meta+K')
     link.onClick()
     expect(calls).toEqual(['insertLink'])
+  })
+
+  it('exposes the clear shortcut metadata and keeps its action wired', () => {
+    const calls: string[] = []
+    const clear = item(cellMenuItems(actions({}, calls), 'r1-B'), '지우기 (Delete/Backspace)')
+
+    expect(clear.keyShortcuts).toBe('Delete Backspace')
+    clear.onClick()
+    expect(calls).toEqual(['writeCell:B2:'])
   })
 
   it('exposes clipboard shortcut metadata and keeps actions wired', async () => {
