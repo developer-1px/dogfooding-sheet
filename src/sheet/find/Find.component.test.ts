@@ -3,7 +3,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Find } from './Find'
 import type { Cells, Display } from '../schema'
-import { setInputValue } from '../test-utils'
+import { keyDown, setInputValue } from '../test-utils'
 
 describe('Find component', () => {
   let host: HTMLDivElement
@@ -21,17 +21,21 @@ describe('Find component', () => {
     host.remove()
   })
 
-  const renderFind = (mode: 'find' | 'replace', cells: Cells = {}) => {
+  const renderFind = (
+    mode: 'find' | 'replace',
+    cells: Cells = {},
+    handlers: { onClose?: () => void; onJump?: (cellId: string) => void } = {},
+  ) => {
     const display: Display = (key) => cells[key] ?? ''
     const colLetters = Object.keys(cells).some((key) => key.startsWith('B')) ? ['A', 'B'] : ['A']
 
     act(() => root.render(createElement(Find, {
       open: true,
       mode,
-      onClose: () => {},
+      onClose: handlers.onClose ?? (() => {}),
       cells,
       display,
-      onJump: () => {},
+      onJump: handlers.onJump ?? (() => {}),
       writeCell: () => {},
       writeCells: () => {},
       rowCount: 1,
@@ -85,6 +89,39 @@ describe('Find component', () => {
     act(() => setInputValue(query!, 'Alpha'))
     expect(status?.textContent).toBe('1/1')
     expect(next?.disabled).toBe(false)
+  })
+
+  it('keeps button activation keys from directly triggering find bar Enter shortcuts', () => {
+    const jumps: string[] = []
+    renderFind('find', { A1: 'Alpha', B1: 'Alpha' }, { onJump: (cellId) => jumps.push(cellId) })
+
+    const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')!
+    const next = document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과"]')!
+
+    act(() => setInputValue(query, 'Alpha'))
+    expect(next.disabled).toBe(false)
+    expect(jumps).toEqual(['r0-A'])
+
+    jumps.length = 0
+    act(() => keyDown(query, 'Enter'))
+    expect(jumps).toEqual(['r0-B'])
+
+    jumps.length = 0
+    act(() => keyDown(next, 'Enter'))
+    expect(jumps).toEqual([])
+
+    act(() => next.click())
+    expect(jumps).toEqual(['r0-A'])
+  })
+
+  it('keeps Escape close handling available from find bar buttons', () => {
+    const closes: string[] = []
+    renderFind('find', {}, { onClose: () => closes.push('close') })
+
+    const close = document.querySelector<HTMLButtonElement>('button[aria-label="찾기 닫기"]')!
+
+    act(() => keyDown(close, 'Escape'))
+    expect(closes).toEqual(['close'])
   })
 
   it('labels replace mode inputs and actions', () => {
