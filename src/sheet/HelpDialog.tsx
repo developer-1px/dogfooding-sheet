@@ -65,6 +65,10 @@ export function HelpDialog({ open, onClose }: Props) {
       <div {...rootProps} className="help-dialog">
         <h2 id="help-title">키보드 단축키</h2>
         <table>
+          <caption>키보드 단축키 목록</caption>
+          <thead>
+            <tr><th scope="col">단축키</th><th scope="col">동작</th></tr>
+          </thead>
           <tbody>
             {SHORTCUTS.map(([k, d]) => (
               <tr key={k}><td><kbd>{k}</kbd></td><td>{d}</td></tr>
