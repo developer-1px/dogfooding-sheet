@@ -46,10 +46,14 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
     >
       {items.map((it, i) => {
         if (it === 'separator') return <div key={`s${i}`} className="ctx-sep" />
+        const patternProps = it.disabled
+          ? { role: 'menuitem' as const, 'aria-disabled': true, tabIndex: -1 }
+          : menuitemProps(`m${i}`)
         return (
           <button
             key={`m${i}`}
-            {...menuitemProps(`m${i}`)}
+            {...patternProps}
+            type="button"
             className="ctx-item"
             disabled={it.disabled}
             onClick={() => { runMenuItemAction(it.onClick); onClose() }}
