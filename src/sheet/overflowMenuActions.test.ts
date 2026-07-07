@@ -30,6 +30,7 @@ describe('overflowMenuActions', () => {
   it('builds stateful menu labels and validates menu ids', () => {
     expect(overflowMenuItems({ showFormulas: true, showGridlines: false }).map((item) => item.label)).toContain('✓ 수식 표시 (Ctrl/⌘+`)')
     expect(overflowMenuItems({ showFormulas: false, showGridlines: true }).map((item) => item.label)).toContain('✓ 격자선 표시')
+    expect(overflowMenuItems({ showFormulas: false, showGridlines: false }).map((item) => item.label)).toContain('CSV 내보내기 (Ctrl/⌘+S)')
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false }).map((item) => item.label)).toContain('전체 값 지우기')
     expect(overflowMenuItemId('csv-export')).toBe('csv-export')
     expect(overflowMenuItemId('unknown')).toBeNull()

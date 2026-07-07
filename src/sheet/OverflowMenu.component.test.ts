@@ -67,6 +67,7 @@ describe('OverflowMenu component', () => {
     expect(items.find((item) => item.textContent === '수식 표시 (Ctrl/⌘+`)')?.getAttribute('aria-keyshortcuts')).toBe('Control+` Meta+`')
     expect(items.find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
     expect(items.find((item) => item.textContent === '인쇄 (Ctrl/⌘+P)')?.getAttribute('aria-keyshortcuts')).toBe('Control+P Meta+P')
-    expect(items.find((item) => item.textContent === 'CSV 내보내기')?.hasAttribute('aria-keyshortcuts')).toBe(false)
+    expect(items.find((item) => item.textContent === 'CSV 내보내기 (Ctrl/⌘+S)')?.getAttribute('aria-keyshortcuts')).toBe('Control+S Meta+S')
+    expect(items.find((item) => item.textContent === 'CSV 가져오기')?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 })

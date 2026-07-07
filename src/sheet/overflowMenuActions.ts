@@ -37,7 +37,7 @@ export const overflowMenuItems = (state: { showFormulas: boolean; showGridlines:
   { id: 'show-gridlines', label: `${state.showGridlines ? '✓ ' : ''}격자선 표시` },
   { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', keyShortcuts: 'Control+K Meta+K' },
   { id: 'print', label: '인쇄 (Ctrl/⌘+P)', keyShortcuts: 'Control+P Meta+P' },
-  { id: 'csv-export', label: 'CSV 내보내기' },
+  { id: 'csv-export', label: 'CSV 내보내기 (Ctrl/⌘+S)', keyShortcuts: 'Control+S Meta+S' },
   { id: 'csv-import', label: 'CSV 가져오기' },
   { id: 'json-export', label: 'JSON 내보내기' },
   { id: 'json-import', label: 'JSON 가져오기' },
