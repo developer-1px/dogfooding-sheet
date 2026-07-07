@@ -52,7 +52,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
     canClearValues: hasRecordEntries(sheet.cells),
     canClearFormats: hasRecordEntries(sheet.styles) || hasRecordEntries(sheet.formats) || sheet.condFormat.length > 0,
   }), [canInsertLink, sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
-  const data = fromList(items.map(({ id, label, disabled }) => ({ id, label, disabled })))
+  const data = fromList(items.map(({ id, label, disabled, kind, checked }) => ({ id, label, disabled, kind, checked })))
 
   const onEvent = (e: UiEvent) => {
     if (e.type === 'activate' && e.id) {

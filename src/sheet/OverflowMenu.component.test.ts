@@ -22,9 +22,9 @@ describe('OverflowMenu component', () => {
     host.remove()
   })
 
-  const renderOverflowMenu = (sheet: Sheet = emptySheet, options: { canInsertLink?: boolean; insertLink?: () => void } = {}) => {
+  const renderOverflowMenu = (sheet: Sheet = emptySheet, options: { canInsertLink?: boolean; insertLink?: () => void; showFormulas?: boolean; showGridlines?: boolean } = {}) => {
     const confirm: Confirm = () => Promise.resolve(false)
-    const { canInsertLink = true, insertLink = () => {} } = options
+    const { canInsertLink = true, insertLink = () => {}, showFormulas = false, showGridlines = true } = options
 
     act(() => root.render(createElement(OverflowMenu, {
       display: () => '',
@@ -38,9 +38,9 @@ describe('OverflowMenu component', () => {
       applySheetReplacement: () => false,
       clearCellValues: () => false,
       confirm,
-      showFormulas: false,
+      showFormulas,
       toggleShowFormulas: () => {},
-      showGridlines: true,
+      showGridlines,
       toggleShowGridlines: () => {},
       clearAllFormats: () => false,
     })))
@@ -75,6 +75,28 @@ describe('OverflowMenu component', () => {
     expect(items.find((item) => item.textContent === 'CSV 내보내기 (Ctrl/⌘+S)')?.getAttribute('aria-keyshortcuts')).toBe('Control+S Meta+S')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.getAttribute('title')).toBe('CSV 가져오기')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.hasAttribute('aria-keyshortcuts')).toBe(false)
+  })
+
+  it('exposes checkbox state for view toggles', () => {
+    renderOverflowMenu(emptySheet, { showFormulas: true, showGridlines: false })
+
+    const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
+    act(() => trigger!.click())
+
+    const formula = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '✓ 수식 표시 (Ctrl/⌘+`)')
+    const gridlines = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '격자선 표시')
+    const help = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '도움말 (F1)')
+
+    expect(formula?.getAttribute('role')).toBe('menuitemcheckbox')
+    expect(formula?.getAttribute('aria-checked')).toBe('true')
+    expect(formula?.getAttribute('aria-keyshortcuts')).toBe('Control+` Meta+`')
+    expect(gridlines?.getAttribute('role')).toBe('menuitemcheckbox')
+    expect(gridlines?.getAttribute('aria-checked')).toBe('false')
+    expect(help?.getAttribute('role')).toBe('menuitem')
+    expect(help?.hasAttribute('aria-checked')).toBe(false)
   })
 
   it('disables hyperlink insertion when there is no focused cell target', () => {
