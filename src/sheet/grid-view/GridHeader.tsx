@@ -57,6 +57,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
         const next = resizeValueForKey(widthOf(col), e.key, e.shiftKey, 'x', COLUMN_WIDTH_BOUNDS)
         if (next === null) return
         e.preventDefault()
+        e.stopPropagation()
         onResizeEnd(col, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }}

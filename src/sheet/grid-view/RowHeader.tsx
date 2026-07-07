@@ -47,6 +47,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
         const next = resizeValueForKey(heightOf(rIdx), e.key, e.shiftKey, 'y', ROW_HEIGHT_BOUNDS)
         if (next === null) return
         e.preventDefault()
+        e.stopPropagation()
         onResizeEnd(rIdx, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }}
