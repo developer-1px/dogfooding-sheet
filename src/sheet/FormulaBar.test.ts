@@ -1,6 +1,6 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEvent } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { setInputValue, setupReactDOM } from './test-utils'
+import { keyDown, setInputValue, setupReactDOM } from './test-utils'
 import { FormulaBar } from './FormulaBar'
 
 describe('FormulaBar', () => {
@@ -50,6 +50,46 @@ describe('FormulaBar', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')?.type).toBe('button')
+  })
+
+  it('keeps button activation keys inside the formula bar controls', () => {
+    const onAddrClick = vi.fn()
+    const onUndo = vi.fn()
+    const onRedo = vi.fn()
+    const parentKeys: string[] = []
+
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(FormulaBar, {
+        addr: 'C3',
+        value: '42',
+        onCommit: vi.fn(),
+        onUndo,
+        onRedo,
+        canUndo: true,
+        canRedo: true,
+        onAddrClick,
+      }),
+    )))
+
+    const address = document.querySelector<HTMLButtonElement>('button.addr')!
+    const undo = document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')!
+    const redo = document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')!
+
+    act(() => keyDown(address, 'Enter'))
+    act(() => keyDown(undo, ' '))
+    act(() => keyDown(redo, 'Enter'))
+
+    expect(parentKeys).toEqual([])
+
+    act(() => address.click())
+    act(() => undo.click())
+    act(() => redo.click())
+
+    expect(onAddrClick).toHaveBeenCalledTimes(1)
+    expect(onUndo).toHaveBeenCalledTimes(1)
+    expect(onRedo).toHaveBeenCalledTimes(1)
   })
 
   it('prevents Enter from submitting an enclosing form while committing the draft', () => {
