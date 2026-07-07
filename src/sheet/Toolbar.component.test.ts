@@ -245,6 +245,19 @@ describe('Toolbar component', () => {
     expect(clearFilter?.disabled).toBe(false)
   })
 
+  it('disables toolbar filter setup on a single-row sheet but keeps clearing available', () => {
+    renderToolbar({ rowCount: 1, focusKey: 'B1', selectedIds: ['B1'], filter: { col: 'B', text: 'needle' } })
+
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
+    const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="필터 해제"]')
+
+    expect(filterButton?.textContent).toBe('🔽필터 B')
+    expect(filterButton?.disabled).toBe(true)
+    expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
+    expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
+    expect(clearFilter?.disabled).toBe(false)
+  })
+
   it('disables validation commands without target cells', () => {
     renderToolbar({ focusKey: null, selectedIds: [], filter: null })
 

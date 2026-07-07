@@ -120,8 +120,9 @@ function colRevealItems(a: CellMenuActions, col: string): CellMenuEntry[] {
 }
 
 function colFilterItems(a: CellMenuActions, col: string): CellMenuEntry[] {
+  const disabled = a.rowCount <= 1
   return [
-    { label: a.filterCol === col ? '필터 수정…' : '필터 적용…', onClick: () => a.promptFilter(col) },
+    { label: a.filterCol === col ? '필터 수정…' : '필터 적용…', onClick: () => a.promptFilter(col), disabled },
     ...(a.filterCol === col ? [{ label: '필터 해제', onClick: a.clearFilter }] : []),
   ]
 }

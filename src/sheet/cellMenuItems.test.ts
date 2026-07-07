@@ -74,12 +74,30 @@ describe('cellMenuItems', () => {
     expect(labels(items)).toContain('필터 수정…')
     expect(labels(items)).toContain('필터 해제')
     expect(labels(items)).toContain('열 고정 해제')
+    expect(item(items, '필터 수정…').disabled).toBe(false)
     expect(item(items, 'B 내림차순 정렬').disabled).toBe(false)
     item(items, 'A열 숨김 표시').onClick()
     item(items, '필터 해제').onClick()
     item(items, '열 고정 해제').onClick()
     item(items, 'B 내림차순 정렬').onClick()
     expect(calls).toEqual(['showCol:A', 'clearFilter', 'setFreezeCols:0', 'sortByCol:B:desc'])
+  })
+
+  it('disables filter setup in column menus on single-row sheets while keeping clear available', () => {
+    const inactiveItems = cellMenuItems(actions({ rowCount: 1, filterCol: null }), 'r0-B', 'col')
+    expect(item(inactiveItems, '필터 적용…').disabled).toBe(true)
+
+    const calls: string[] = []
+    const activeItems = cellMenuItems(actions({ rowCount: 1, filterCol: 'B' }, calls), 'r0-B', 'col')
+    const editFilter = item(activeItems, '필터 수정…')
+    const clearFilter = item(activeItems, '필터 해제')
+
+    expect(editFilter.disabled).toBe(true)
+    expect(clearFilter.disabled).toBeUndefined()
+
+    clearFilter.onClick()
+
+    expect(calls).toEqual(['clearFilter'])
   })
 
   it('builds cell items from address, note, structure, freeze, and sort state', () => {
