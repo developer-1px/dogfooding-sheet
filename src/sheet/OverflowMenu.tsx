@@ -76,7 +76,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
       {open && (
         <div {...menuProps} className="overflow-list">
           {items.map((it) => (
-            <button key={it.id} {...itemProps(it.id)} type="button" className="overflow-item" aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
+            <button key={it.id} {...itemProps(it.id)} type="button" className="overflow-item" title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
           ))}
         </div>
       )}
