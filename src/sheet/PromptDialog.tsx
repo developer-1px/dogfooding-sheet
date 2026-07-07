@@ -37,7 +37,7 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
           aria-keyshortcuts="Enter"
         />
         <div className="confirm-actions">
-          <button type="button" onClick={onCancel}>취소</button>
+          <button type="button" onClick={onCancel} aria-keyshortcuts="Escape">취소</button>
           <button type="button" className="primary" onClick={submit}>{submitLabel}</button>
         </div>
       </div>
