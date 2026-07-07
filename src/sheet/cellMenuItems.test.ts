@@ -114,6 +114,36 @@ describe('cellMenuItems', () => {
     expect(calls).toEqual(['insertLink'])
   })
 
+  it('exposes clipboard shortcut metadata and keeps actions wired', async () => {
+    const calls: string[] = []
+    let clipboardText = ''
+    const clipboardTextBridge = {
+      readText: () => Promise.resolve(clipboardText),
+      writeText: (text: string) => {
+        clipboardText = text
+        return Promise.resolve(true)
+      },
+    }
+    const items = cellMenuItems(actions({ clipboardText: clipboardTextBridge }, calls), 'r1-B')
+    const cut = item(items, '잘라내기 (Ctrl/⌘+X)')
+    const copy = item(items, '복사 (Ctrl/⌘+C)')
+    const paste = item(items, '붙여넣기 (Ctrl/⌘+V)')
+
+    expect(cut.keyShortcuts).toBe('Control+X Meta+X')
+    expect(copy.keyShortcuts).toBe('Control+C Meta+C')
+    expect(paste.keyShortcuts).toBe('Control+V Meta+V')
+
+    await copy.onClick()
+    expect(clipboardText).toBe('value')
+
+    await cut.onClick()
+    expect(clipboardText).toBe('value')
+
+    clipboardText = 'pasted'
+    await paste.onClick()
+    expect(calls).toEqual(['writeCell:B2:', 'writeCell:B2:pasted'])
+  })
+
   it('returns no items for an invalid cell id', () => {
     expect(cellMenuItems(actions(), 'bad-id')).toEqual([])
   })
