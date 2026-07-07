@@ -81,6 +81,14 @@ export function Cell(p: Props) {
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
     },
   } as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> }
+  const selectProps = {
+    'aria-label': display.editLabel,
+    ...p.selectProps,
+    onKeyDown: (e: React.KeyboardEvent<HTMLSelectElement>) => {
+      p.selectProps.onKeyDown?.(e)
+      e.stopPropagation()
+    },
+  } as React.SelectHTMLAttributes<HTMLSelectElement> & { ref?: React.Ref<HTMLSelectElement> }
   const className = p.formulaReference
     ? `${display.className} ${p.formulaReference.className}`
     : display.className
@@ -117,7 +125,7 @@ export function Cell(p: Props) {
         />
       ) : p.editing ? (
         p.validationOptions ? (
-          <select className="cell-input" aria-label={display.editLabel} {...p.selectProps}>
+          <select className="cell-input" {...selectProps}>
             <option value="">—</option>
             {p.validationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
