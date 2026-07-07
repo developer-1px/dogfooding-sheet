@@ -14,6 +14,9 @@ import {
   runOverflowMenuCommand,
 } from './overflowMenuActions'
 
+const hasRecordEntries = (record: Record<string, unknown>): boolean =>
+  Object.keys(record).length > 0
+
 export interface OverflowProps {
   display: Display
   writeCell: WriteCell
@@ -41,13 +44,19 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
   const exportJson = () => exportOverflowJson({ sheet, downloadFile })
   const importJson = (file: File) => importOverflowJson({ file, confirm, previewSheetReplacement, applySheetReplacement })
 
-  const items = useMemo(() => overflowMenuItems({ showFormulas, showGridlines }), [showFormulas, showGridlines])
+  const items = useMemo(() => overflowMenuItems({
+    showFormulas,
+    showGridlines,
+    canClearValues: hasRecordEntries(sheet.cells),
+    canClearFormats: hasRecordEntries(sheet.styles) || hasRecordEntries(sheet.formats) || sheet.condFormat.length > 0,
+  }), [sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
   const data = fromList(items.map(({ id, label }) => ({ id, label })))
 
   const onEvent = (e: UiEvent) => {
     if (e.type === 'activate' && e.id) {
       const id = overflowMenuItemId(e.id)
       if (!id) return
+      if (items.find((item) => item.id === id)?.disabled) return
       void runOverflowMenuCommand(id, {
         openHelp,
         toggleShowFormulas,
@@ -76,7 +85,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
       {open && (
         <div {...menuProps} className="overflow-list">
           {items.map((it) => (
-            <button key={it.id} {...itemProps(it.id)} type="button" className="overflow-item" title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
+            <button key={it.id} {...itemProps(it.id)} type="button" className="overflow-item" disabled={it.disabled} title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
           ))}
         </div>
       )}

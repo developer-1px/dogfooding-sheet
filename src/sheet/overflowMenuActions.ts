@@ -25,13 +25,21 @@ export interface OverflowMenuItem {
   id: OverflowMenuItemId
   label: string
   keyShortcuts?: string
+  disabled?: boolean
+}
+
+interface OverflowMenuState {
+  showFormulas: boolean
+  showGridlines: boolean
+  canClearValues?: boolean
+  canClearFormats?: boolean
 }
 
 export interface DownloadFile {
   (name: string, content: string): boolean
 }
 
-export const overflowMenuItems = (state: { showFormulas: boolean; showGridlines: boolean }): OverflowMenuItem[] => [
+export const overflowMenuItems = (state: OverflowMenuState): OverflowMenuItem[] => [
   { id: 'help', label: '도움말 (F1)', keyShortcuts: 'F1' },
   { id: 'show-formulas', label: `${state.showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)`, keyShortcuts: 'Control+` Meta+`' },
   { id: 'show-gridlines', label: `${state.showGridlines ? '✓ ' : ''}격자선 표시` },
@@ -41,8 +49,8 @@ export const overflowMenuItems = (state: { showFormulas: boolean; showGridlines:
   { id: 'csv-import', label: 'CSV 가져오기' },
   { id: 'json-export', label: 'JSON 내보내기' },
   { id: 'json-import', label: 'JSON 가져오기' },
-  { id: 'clear-values', label: '전체 값 지우기' },
-  { id: 'clear-formats', label: '전체 서식 지우기' },
+  { id: 'clear-values', label: '전체 값 지우기', disabled: state.canClearValues === false },
+  { id: 'clear-formats', label: '전체 서식 지우기', disabled: state.canClearFormats === false },
 ]
 
 export const overflowMenuItemId = (id: string): OverflowMenuItemId | null =>

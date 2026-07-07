@@ -3,11 +3,12 @@ import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { OverflowMenu } from './OverflowMenu'
 import type { Confirm } from './useConfirm'
-import type { Sheet } from './schema'
+import { initialSheet, type Sheet } from './schema'
 
 describe('OverflowMenu component', () => {
   let host: HTMLDivElement
   let root: Root
+  const emptySheet: Sheet = { ...initialSheet, cells: {}, styles: {}, formats: {}, condFormat: [] }
 
   beforeEach(() => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = true
@@ -21,7 +22,7 @@ describe('OverflowMenu component', () => {
     host.remove()
   })
 
-  const renderOverflowMenu = () => {
+  const renderOverflowMenu = (sheet: Sheet = emptySheet) => {
     const confirm: Confirm = () => Promise.resolve(false)
 
     act(() => root.render(createElement(OverflowMenu, {
@@ -31,7 +32,7 @@ describe('OverflowMenu component', () => {
       writeCellRange: () => false,
       openHelp: () => {},
       insertLink: () => {},
-      sheet: {} as Sheet,
+      sheet,
       applySheetReplacement: () => false,
       clearCellValues: () => false,
       confirm,
@@ -72,5 +73,41 @@ describe('OverflowMenu component', () => {
     expect(items.find((item) => item.textContent === 'CSV 내보내기 (Ctrl/⌘+S)')?.getAttribute('aria-keyshortcuts')).toBe('Control+S Meta+S')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.getAttribute('title')).toBe('CSV 가져오기')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.hasAttribute('aria-keyshortcuts')).toBe(false)
+  })
+
+  it('disables destructive clear items when the sheet has nothing to clear', () => {
+    renderOverflowMenu()
+
+    const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
+    act(() => trigger!.click())
+
+    const clearValues = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '전체 값 지우기')
+    const clearFormats = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '전체 서식 지우기')
+
+    expect(clearValues?.disabled).toBe(true)
+    expect(clearValues?.getAttribute('title')).toBe('전체 값 지우기')
+    expect(clearFormats?.disabled).toBe(true)
+    expect(clearFormats?.getAttribute('title')).toBe('전체 서식 지우기')
+  })
+
+  it('enables destructive clear items when matching sheet data exists', () => {
+    renderOverflowMenu({
+      ...emptySheet,
+      cells: { A1: 'value' },
+      styles: { A1: { b: true } },
+    })
+
+    const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
+    act(() => trigger!.click())
+
+    const clearValues = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '전체 값 지우기')
+    const clearFormats = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '전체 서식 지우기')
+
+    expect(clearValues?.disabled).toBe(false)
+    expect(clearFormats?.disabled).toBe(false)
   })
 })
