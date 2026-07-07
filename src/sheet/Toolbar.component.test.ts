@@ -108,6 +108,11 @@ describe('Toolbar component', () => {
     expect(clearFormatButton?.disabled).toBe(false)
     expect(clearFormatButton?.getAttribute('title')).toBe('서식 모두 해제')
     expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
 
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
     expect(mergeButton?.textContent).toBe('⊞병합')
@@ -168,6 +173,41 @@ describe('Toolbar component', () => {
 
     expect(listValidation?.disabled).toBe(false)
     expect(checkbox?.disabled).toBe(false)
+  })
+
+  it('disables formatting controls without target cells', () => {
+    renderToolbar({ focusKey: null, selectedIds: [], filter: null })
+
+    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')
+    const leftAlign = document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')
+    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')
+    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')
+    const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')
+    const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')
+
+    expect(bold?.textContent).toBe('B')
+    expect(bold?.disabled).toBe(true)
+    expect(bold?.getAttribute('title')).toBe('굵게 (Ctrl/⌘+B)')
+    expect(leftAlign?.textContent).toBe('⇤')
+    expect(leftAlign?.disabled).toBe(true)
+    expect(bgColor?.disabled).toBe(true)
+    expect(fgColor?.disabled).toBe(true)
+    expect(clearFormat?.textContent).toBe('✕서식')
+    expect(clearFormat?.disabled).toBe(true)
+    expect(plainFormat?.textContent).toBe('123')
+    expect(plainFormat?.disabled).toBe(true)
+    expect(plainFormat?.getAttribute('title')).toBe('일반 (Ctrl/⌘+Shift+1)')
+  })
+
+  it('keeps formatting controls enabled for selected cells without focus', () => {
+    renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
+
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
   })
 
   it('exposes structure shortcut hints without changing labels or wiring', () => {

@@ -14,13 +14,14 @@ interface Props {
   toggle: (k: Flag) => void
   styleOf: StyleLookup
   focusKey: string | null
+  disabled?: boolean
 }
 
-export function StyleToggleButtons({ toggle, styleOf, focusKey }: Props) {
+export function StyleToggleButtons({ toggle, styleOf, focusKey, disabled = false }: Props) {
   return (
     <>
       {TOGGLES.map(([k, , title, node, keyShortcuts, shortcutLabel]) => (
-        <button type="button" key={k} onClick={() => toggle(k)} aria-pressed={!!(focusKey && styleOf(focusKey)?.[k])} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={title} aria-keyshortcuts={keyShortcuts}>{node}</button>
+        <button type="button" key={k} onClick={() => toggle(k)} disabled={disabled} aria-pressed={!!(focusKey && styleOf(focusKey)?.[k])} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={title} aria-keyshortcuts={keyShortcuts}>{node}</button>
       ))}
     </>
   )
