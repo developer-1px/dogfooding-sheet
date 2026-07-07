@@ -24,6 +24,7 @@ export type OverflowMenuItemId =
 export interface OverflowMenuItem {
   id: OverflowMenuItemId
   label: string
+  keyShortcuts?: string
 }
 
 export interface DownloadFile {
@@ -31,11 +32,11 @@ export interface DownloadFile {
 }
 
 export const overflowMenuItems = (state: { showFormulas: boolean; showGridlines: boolean }): OverflowMenuItem[] => [
-  { id: 'help', label: '도움말 (F1)' },
-  { id: 'show-formulas', label: `${state.showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)` },
+  { id: 'help', label: '도움말 (F1)', keyShortcuts: 'F1' },
+  { id: 'show-formulas', label: `${state.showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)`, keyShortcuts: 'Control+` Meta+`' },
   { id: 'show-gridlines', label: `${state.showGridlines ? '✓ ' : ''}격자선 표시` },
-  { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)' },
-  { id: 'print', label: '인쇄 (Ctrl/⌘+P)' },
+  { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', keyShortcuts: 'Control+K Meta+K' },
+  { id: 'print', label: '인쇄 (Ctrl/⌘+P)', keyShortcuts: 'Control+P Meta+P' },
   { id: 'csv-export', label: 'CSV 내보내기' },
   { id: 'csv-import', label: 'CSV 가져오기' },
   { id: 'json-export', label: 'JSON 내보내기' },
