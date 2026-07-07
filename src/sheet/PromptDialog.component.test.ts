@@ -1,4 +1,4 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEvent } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { PromptDialog } from './PromptDialog'
 import { keyDown, setInputValue, setupReactDOM } from './test-utils'
@@ -31,20 +31,26 @@ describe('PromptDialog component', () => {
   it('keeps submit, Enter, and cancel interactions unchanged', () => {
     const onSubmit = vi.fn()
     const onCancel = vi.fn()
+    const parentKeys: string[] = []
 
-    act(() => dom.root.render(createElement(PromptDialog, {
-      open: true,
-      label: '필터',
-      initial: 'old',
-      submitLabel: '적용',
-      onSubmit,
-      onCancel,
-    })))
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(PromptDialog, {
+        open: true,
+        label: '필터',
+        initial: 'old',
+        submitLabel: '적용',
+        onSubmit,
+        onCancel,
+      }),
+    )))
 
     const input = document.querySelector<HTMLInputElement>('.prompt-dialog input')!
     act(() => setInputValue(input, 'next'))
     act(() => keyDown(input, 'Enter'))
     expect(onSubmit).toHaveBeenLastCalledWith('next')
+    expect(parentKeys).toEqual([])
 
     act(() => setInputValue(input, 'click'))
     act(() => document.querySelector<HTMLButtonElement>('.prompt-dialog .primary')!.click())
@@ -60,8 +66,15 @@ describe('PromptDialog component', () => {
     expect(submit?.getAttribute('title')).toBe('적용 (Enter)')
     expect(submit?.getAttribute('aria-keyshortcuts')).toBe('Enter')
 
-    act(() => cancel!.click())
+    act(() => keyDown(submit!, 'Enter'))
+    act(() => keyDown(cancel!, ' '))
+    expect(parentKeys).toEqual([])
+
+    act(() => keyDown(cancel!, 'Escape'))
     expect(onCancel).toHaveBeenCalledTimes(1)
+
+    act(() => cancel!.click())
+    expect(onCancel).toHaveBeenCalledTimes(2)
   })
 
   it('resets the input value when a new initial value is supplied', () => {
