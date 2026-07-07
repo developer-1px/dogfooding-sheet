@@ -52,7 +52,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
     canClearValues: hasRecordEntries(sheet.cells),
     canClearFormats: hasRecordEntries(sheet.styles) || hasRecordEntries(sheet.formats) || sheet.condFormat.length > 0,
   }), [canInsertLink, sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
-  const data = fromList(items.map(({ id, label }) => ({ id, label })))
+  const data = fromList(items.map(({ id, label, disabled }) => ({ id, label, disabled })))
 
   const onEvent = (e: UiEvent) => {
     if (e.type === 'activate' && e.id) {
@@ -86,9 +86,14 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
       <button {...triggerProps} type="button" className="overflow-trigger" title={triggerLabel} aria-label={triggerLabel}>⋮</button>
       {open && (
         <div {...menuProps} className="overflow-list">
-          {items.map((it) => (
-            <button key={it.id} {...itemProps(it.id)} type="button" className="overflow-item" disabled={it.disabled} title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
-          ))}
+          {items.map((it) => {
+            const patternProps = it.disabled
+              ? { role: 'menuitem' as const, 'aria-disabled': true, tabIndex: -1 }
+              : itemProps(it.id)
+            return (
+              <button key={it.id} {...patternProps} type="button" className="overflow-item" disabled={it.disabled} title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
+            )
+          })}
         </div>
       )}
       <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }}

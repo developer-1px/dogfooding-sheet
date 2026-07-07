@@ -89,6 +89,7 @@ describe('OverflowMenu component', () => {
       .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
 
     expect(link?.disabled).toBe(true)
+    expect(link?.getAttribute('aria-disabled')).toBe('true')
     expect(link?.getAttribute('title')).toBe('하이퍼링크 삽입 (Ctrl/⌘+K)')
     expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
 
@@ -107,6 +108,7 @@ describe('OverflowMenu component', () => {
       .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
 
     expect(link?.disabled).toBe(false)
+    expect(link?.hasAttribute('aria-disabled')).toBe(false)
     expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
   })
 
@@ -122,8 +124,10 @@ describe('OverflowMenu component', () => {
       .find((item) => item.textContent === '전체 서식 지우기')
 
     expect(clearValues?.disabled).toBe(true)
+    expect(clearValues?.getAttribute('aria-disabled')).toBe('true')
     expect(clearValues?.getAttribute('title')).toBe('전체 값 지우기')
     expect(clearFormats?.disabled).toBe(true)
+    expect(clearFormats?.getAttribute('aria-disabled')).toBe('true')
     expect(clearFormats?.getAttribute('title')).toBe('전체 서식 지우기')
   })
 
