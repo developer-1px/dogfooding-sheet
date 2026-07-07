@@ -95,12 +95,16 @@ describe('Toolbar component', () => {
     expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
     const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]')
     const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬"]')
+    const autoSum = document.querySelector<HTMLButtonElement>('button[aria-label="자동 합계"]')
     expect(sortAsc?.textContent).toBe('↑정렬')
     expect(sortAsc?.disabled).toBe(false)
     expect(sortAsc?.getAttribute('title')).toBe('B열 오름차순 정렬')
     expect(sortDesc?.textContent).toBe('↓정렬')
     expect(sortDesc?.disabled).toBe(false)
     expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬')
+    expect(autoSum?.textContent).toBe('Σ')
+    expect(autoSum?.disabled).toBe(false)
+    expect(autoSum?.getAttribute('title')).toBe('자동 합계 (위쪽 연속 숫자 합)')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="아래에 행 20개 추가 (현재 10행)"]')?.disabled).toBe(false)
@@ -169,6 +173,20 @@ describe('Toolbar component', () => {
     expect(appendCols?.textContent).toBe('+끝열')
     expect(appendCols?.disabled).toBe(true)
     expect(appendCols?.getAttribute('title')).toBe(`오른쪽에 열 1개 추가 (현재 ${MAX_COL_COUNT}열)`)
+  })
+
+  it('disables AutoSum when no contiguous numeric range exists', () => {
+    renderToolbar({
+      focusKey: 'A1',
+      selectedIds: ['A1'],
+      display: () => '',
+    })
+
+    const autoSum = document.querySelector<HTMLButtonElement>('button[aria-label="자동 합계"]')
+
+    expect(autoSum?.textContent).toBe('Σ')
+    expect(autoSum?.disabled).toBe(true)
+    expect(autoSum?.getAttribute('title')).toBe('자동 합계 (위쪽 연속 숫자 합)')
   })
 
   it('disables toolbar filter setup without a focused column but keeps clearing available', () => {
