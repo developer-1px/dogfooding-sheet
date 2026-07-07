@@ -57,7 +57,7 @@ function rowMenuItems(a: CellMenuActions, row: number): CellMenuEntry[] {
     { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
     'separator',
     rowFreezeItem(a, row),
-    { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
+    mergeSelectionItem(a),
   ]
 }
 
@@ -71,7 +71,7 @@ function colMenuItems(a: CellMenuActions, col: string): CellMenuEntry[] {
     { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
     'separator',
     colFreezeItem(a, col),
-    { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
+    mergeSelectionItem(a),
     'separator',
     ...colSortItems(a, col),
   ]
@@ -102,7 +102,7 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
     { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
     rowFreezeItem(a, row),
     colFreezeItem(a, col),
-    { label: '셀 병합 / 해제 (Alt+Shift+M)', onClick: a.mergeSelection },
+    mergeSelectionItem(a),
     'separator',
     ...colSortItems(a, col),
   ]
@@ -130,6 +130,14 @@ function colSortItems(a: CellMenuActions, col: string): CellMenuEntry[] {
     { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc') },
     { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc') },
   ]
+}
+
+function mergeSelectionItem(a: CellMenuActions): MenuItem {
+  return {
+    label: '셀 병합 / 해제 (Alt+Shift+M)',
+    onClick: a.mergeSelection,
+    keyShortcuts: 'Alt+Shift+M',
+  }
 }
 
 function rowFreezeItem(a: CellMenuActions, row: number): MenuItem {
