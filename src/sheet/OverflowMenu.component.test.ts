@@ -48,6 +48,7 @@ describe('OverflowMenu component', () => {
 
     const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
     expect(trigger).not.toBeNull()
+    expect(trigger?.type).toBe('button')
     expect(trigger?.textContent).toBe('⋮')
     expect(trigger?.getAttribute('aria-label')).toBe('더 보기 메뉴 열기')
     expect(trigger?.getAttribute('aria-haspopup')).toBe('menu')
@@ -59,6 +60,8 @@ describe('OverflowMenu component', () => {
     expect(trigger?.getAttribute('aria-label')).toBe('더 보기 메뉴 닫기')
     expect(trigger?.getAttribute('aria-expanded')).toBe('true')
     expect(document.querySelector('.overflow-list')?.getAttribute('role')).toBe('menu')
-    expect(document.querySelectorAll('.overflow-item').length).toBeGreaterThan(0)
+    const items = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+    expect(items.length).toBeGreaterThan(0)
+    expect(items.every((item) => item.type === 'button')).toBe(true)
   })
 })
