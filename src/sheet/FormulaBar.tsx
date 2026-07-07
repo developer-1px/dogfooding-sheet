@@ -36,6 +36,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         className="formula"
         aria-label="수식 입력줄"
         aria-keyshortcuts="Enter Escape F4"
+        title="수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)"
         value={draft}
         onMouseDown={(e) => e.currentTarget.focus()}
         onChange={(e) => setDraft(e.target.value)}
