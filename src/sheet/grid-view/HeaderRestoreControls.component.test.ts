@@ -132,6 +132,7 @@ describe('header restore controls', () => {
 
     expect(header?.getAttribute('role')).toBe('columnheader')
     expect(header?.tabIndex).toBe(0)
+    expect(header?.getAttribute('title')).toBe('클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
     expect(resizer?.getAttribute('title')).toBe('드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤')
     expect(resizer?.getAttribute('aria-keyshortcuts')).toBe('ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight')
 

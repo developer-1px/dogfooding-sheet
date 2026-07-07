@@ -132,7 +132,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
               headerProps.onKeyDown?.(e)
             }}
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
-            title="우클릭으로 열 메뉴"
+            title="클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정"
           >
             {leftRestore && restoreButton(leftRestore)}
             {c}
