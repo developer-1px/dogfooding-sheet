@@ -81,8 +81,8 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
       <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} aria-label="대소문자 구분" />Aa</label>
       <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} aria-label="정규식 사용" />.*</label>
       <span className="count" role="status" aria-live="polite" aria-atomic="true">{counter}</span>
-      <button type="button" onClick={() => jump(-1)} disabled={matches.length === 0} title="이전 찾기 결과" aria-label="이전 찾기 결과">↑</button>
-      <button type="button" onClick={() => jump(1)} disabled={matches.length === 0} title="다음 찾기 결과" aria-label="다음 찾기 결과">↓</button>
+      <button type="button" onClick={() => jump(-1)} disabled={matches.length === 0} title="이전 찾기 결과" aria-label="이전 찾기 결과" aria-keyshortcuts="Shift+Enter">↑</button>
+      <button type="button" onClick={() => jump(1)} disabled={matches.length === 0} title="다음 찾기 결과" aria-label="다음 찾기 결과" aria-keyshortcuts="Enter">↓</button>
       {mode === 'replace' && (
         <>
           <button type="button" onClick={replaceOne} disabled={matches.length === 0} title="현재 찾기 결과 바꾸기" aria-label="현재 찾기 결과 바꾸기">바꾸기</button>
