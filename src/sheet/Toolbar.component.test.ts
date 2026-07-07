@@ -91,5 +91,11 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
+
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+    expect(mergeButton?.textContent).toBe('⊞병합')
+    expect(mergeButton?.disabled).toBe(false)
+    expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
+    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
   })
 })
