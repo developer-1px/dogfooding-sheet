@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
@@ -9,6 +9,10 @@ interface Props {
   submitLabel?: string
   onSubmit: (value: string) => void
   onCancel: () => void
+}
+
+const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+  if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
 }
 
 export function PromptDialog({ open, label, placeholder, initial = '', submitLabel = '확인', onSubmit, onCancel }: Props) {
@@ -36,12 +40,12 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
           value={value}
           placeholder={placeholder}
           onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); submit() } }}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); submit() } }}
           aria-keyshortcuts="Enter"
         />
         <div className="confirm-actions">
-          <button type="button" onClick={onCancel} title="취소 (Esc)" aria-keyshortcuts="Escape">취소</button>
-          <button type="button" className="primary" onClick={submit} title={`${submitLabel} (Enter)`} aria-keyshortcuts="Enter">{submitLabel}</button>
+          <button type="button" onClick={onCancel} onKeyDown={stopButtonActivationKeyDown} title="취소 (Esc)" aria-keyshortcuts="Escape">취소</button>
+          <button type="button" className="primary" onClick={submit} onKeyDown={stopButtonActivationKeyDown} title={`${submitLabel} (Enter)`} aria-keyshortcuts="Enter">{submitLabel}</button>
         </div>
       </div>
     </>
