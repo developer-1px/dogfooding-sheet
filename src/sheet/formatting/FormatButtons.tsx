@@ -13,11 +13,11 @@ const FORMATS: Array<[Format, string, string, string?, string?]> = [
   ['plain', '123', '일반', 'Control+Shift+1 Meta+Shift+1', 'Ctrl/⌘+Shift+1'],
 ]
 
-export function FormatButtons({ apply, current }: { apply: (f: Format) => void; current: Format }) {
+export function FormatButtons({ apply, current, disabled = false }: { apply: (f: Format) => void; current: Format; disabled?: boolean }) {
   return (
     <>
       {FORMATS.map(([f, label, title, keyShortcuts, shortcutLabel]) => (
-        <button type="button" key={f} onClick={() => apply(f)} aria-pressed={current === f} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={`숫자 형식: ${title}`} aria-keyshortcuts={keyShortcuts}>{label}</button>
+        <button type="button" key={f} onClick={() => apply(f)} disabled={disabled} aria-pressed={current === f} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={`숫자 형식: ${title}`} aria-keyshortcuts={keyShortcuts}>{label}</button>
       ))}
     </>
   )
