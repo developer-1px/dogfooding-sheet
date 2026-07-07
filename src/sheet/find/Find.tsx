@@ -89,7 +89,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
           <button type="button" onClick={replaceAll} disabled={matches.length === 0} title="모든 찾기 결과 바꾸기" aria-label="모든 찾기 결과 바꾸기">전체</button>
         </>
       )}
-      <button type="button" onClick={onClose} title={`${dialogLabel} 닫기`} aria-label={`${dialogLabel} 닫기`}>✕</button>
+      <button type="button" onClick={onClose} title={`${dialogLabel} 닫기`} aria-label={`${dialogLabel} 닫기`} aria-keyshortcuts="Escape">✕</button>
     </div>
   )
 }
