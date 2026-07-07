@@ -24,6 +24,7 @@ export interface OverflowProps {
   writeCellRange: WriteCellRange
   openHelp: () => void
   insertLink: () => void
+  canInsertLink: boolean
   sheet: Sheet
   previewSheetReplacement?: (sheet: Sheet) => Sheet | null
   applySheetReplacement: (sheet: Sheet) => boolean
@@ -36,7 +37,7 @@ export interface OverflowProps {
   clearAllFormats: () => boolean
 }
 
-export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, openHelp, insertLink, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
+export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, openHelp, insertLink, canInsertLink, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, confirm, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats }: OverflowProps) {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const jsonRef = useRef<HTMLInputElement | null>(null)
   const exportCsvFile = () => exportOverflowCsv({ display, sheet, downloadFile })
@@ -47,9 +48,10 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
   const items = useMemo(() => overflowMenuItems({
     showFormulas,
     showGridlines,
+    canInsertLink,
     canClearValues: hasRecordEntries(sheet.cells),
     canClearFormats: hasRecordEntries(sheet.styles) || hasRecordEntries(sheet.formats) || sheet.condFormat.length > 0,
-  }), [sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
+  }), [canInsertLink, sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
   const data = fromList(items.map(({ id, label }) => ({ id, label })))
 
   const onEvent = (e: UiEvent) => {
