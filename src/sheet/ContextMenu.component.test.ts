@@ -17,16 +17,20 @@ describe('ContextMenu component', () => {
       label: '셀 메뉴',
       items: [
         { label: '열기', onClick: onOpen },
+        'separator',
         { label: '삭제', onClick: onDisabled, disabled: true },
       ],
       onClose,
     })))
 
     const menu = document.querySelector<HTMLElement>('.ctx-menu')
+    const separator = document.querySelector<HTMLElement>('.ctx-sep')
     const items = [...document.querySelectorAll<HTMLButtonElement>('.ctx-item')]
 
     expect(menu?.getAttribute('role')).toBe('menu')
     expect(menu?.getAttribute('aria-label')).toBe('셀 메뉴')
+    expect(separator?.getAttribute('role')).toBe('separator')
+    expect(separator?.textContent).toBe('')
     expect(items.map((item) => item.textContent)).toEqual(['열기', '삭제'])
     expect(items.every((item) => item.type === 'button')).toBe(true)
     expect(items[1]?.disabled).toBe(true)

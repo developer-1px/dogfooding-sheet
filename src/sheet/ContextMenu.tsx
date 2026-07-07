@@ -45,7 +45,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
       style={{ left: x, top: y }}
     >
       {items.map((it, i) => {
-        if (it === 'separator') return <div key={`s${i}`} className="ctx-sep" />
+        if (it === 'separator') return <div key={`s${i}`} className="ctx-sep" role="separator" />
         const patternProps = it.disabled
           ? { role: 'menuitem' as const, 'aria-disabled': true, tabIndex: -1 }
           : menuitemProps(`m${i}`)
