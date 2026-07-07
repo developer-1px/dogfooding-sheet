@@ -26,7 +26,7 @@ describe('Toolbar component', () => {
       writeCells: vi.fn(),
       writeCellRange: vi.fn(() => false),
       focusKey: 'B2',
-      selectedIds: ['B2'],
+      selectedIds: ['r1-B'],
       setFormat: vi.fn(),
       formatOf: () => 'plain',
       insertRow: vi.fn(),
@@ -123,7 +123,7 @@ describe('Toolbar component', () => {
 
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
     expect(mergeButton?.textContent).toBe('⊞병합')
-    expect(mergeButton?.disabled).toBe(false)
+    expect(mergeButton?.disabled).toBe(true)
     expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
     expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
 
@@ -131,6 +131,48 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.disabled).toBe(false)
+  })
+
+  it('disables toolbar merge for a single unmerged focused cell', () => {
+    const props = renderToolbar()
+
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+
+    expect(mergeButton?.textContent).toBe('⊞병합')
+    expect(mergeButton?.disabled).toBe(true)
+    expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
+
+    act(() => mergeButton!.click())
+
+    expect(props.mergeSelection).not.toHaveBeenCalled()
+  })
+
+  it('enables toolbar merge for a supported multi-cell selection', () => {
+    const props = renderToolbar({ selectedIds: ['r1-B', 'r1-C'] })
+
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+
+    expect(mergeButton?.disabled).toBe(false)
+
+    act(() => mergeButton!.click())
+
+    expect(props.mergeSelection).toHaveBeenCalledTimes(1)
+  })
+
+  it('enables toolbar merge for a focused cell inside an existing merge', () => {
+    const props = renderToolbar({
+      focusKey: 'C2',
+      selectedIds: [],
+      sheet: { ...initialSheet, merges: [[1, 1, 1, 2]] },
+    })
+
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+
+    expect(mergeButton?.disabled).toBe(false)
+
+    act(() => mergeButton!.click())
+
+    expect(props.mergeSelection).toHaveBeenCalledTimes(1)
   })
 
   it('disables toolbar sort buttons without a focused column', () => {
