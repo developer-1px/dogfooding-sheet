@@ -114,6 +114,9 @@ describe('Toolbar component', () => {
     expect(mergeButton?.disabled).toBe(false)
     expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
     expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
+
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
   })
 
   it('disables toolbar sort buttons without a focused column', () => {
@@ -141,6 +144,30 @@ describe('Toolbar component', () => {
     expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
     expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
     expect(clearFilter?.disabled).toBe(false)
+  })
+
+  it('disables validation commands without target cells', () => {
+    renderToolbar({ focusKey: null, selectedIds: [], filter: null })
+
+    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')
+    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')
+
+    expect(listValidation?.textContent).toBe('▾목록')
+    expect(listValidation?.disabled).toBe(true)
+    expect(listValidation?.getAttribute('title')).toBe('유효성 검사 (드롭다운 목록)')
+    expect(checkbox?.textContent).toBe('☑체크')
+    expect(checkbox?.disabled).toBe(true)
+    expect(checkbox?.getAttribute('title')).toBe('체크박스로 변환')
+  })
+
+  it('keeps validation commands enabled for selected cells without focus', () => {
+    renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
+
+    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')
+    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')
+
+    expect(listValidation?.disabled).toBe(false)
+    expect(checkbox?.disabled).toBe(false)
   })
 
   it('exposes structure shortcut hints without changing labels or wiring', () => {

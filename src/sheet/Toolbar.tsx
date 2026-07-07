@@ -62,6 +62,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const freezeColsLabel = `첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`
   const filterLabel = filter ? `${filter.col}열 필터 수정` : '현재 열로 행 필터'
   const showAllTitle = '숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)'
+  const hasCellTarget = selectedIds.length > 0 || !!focusKey
   const applyF = (format: Format) => applyToolbarFormat({ selectedIds, focusKey, format, setFormat })
   const toggle = (flag: ToolbarStyleFlag) => toggleToolbarStyle({ selectedIds, focusKey, flag, styleOf, updateStyle })
   const setAlign = (alignment: CellStyle['a']) => setToolbarAlignment({ selectedIds, focusKey, alignment, updateStyle })
@@ -92,8 +93,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button type="button" onClick={openFilterPrompt} disabled={!focus} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button type="button" onClick={clearFilter} title="필터 해제" aria-label="필터 해제">✕</button>}
       {hasHidden && <button type="button" onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
-      <button type="button" onClick={openListValidationPrompt} title="유효성 검사 (드롭다운 목록)" aria-label="드롭다운 목록 유효성 검사 설정">▾목록</button>
-      <button type="button" onClick={convertToCheckbox} title="체크박스로 변환" aria-label="체크박스로 변환">☑체크</button>
+      <button type="button" onClick={openListValidationPrompt} disabled={!hasCellTarget} title="유효성 검사 (드롭다운 목록)" aria-label="드롭다운 목록 유효성 검사 설정">▾목록</button>
+      <button type="button" onClick={convertToCheckbox} disabled={!hasCellTarget} title="체크박스로 변환" aria-label="체크박스로 변환">☑체크</button>
       <CondFmtButtons col={focus?.col ?? null} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
       <FormatButtons apply={applyF} current={focusKey ? formatOf(focusKey) : 'plain'} />
       <OverflowMenu display={display} writeCell={writeCell} writeCells={writeCells} writeCellRange={writeCellRange} openHelp={openHelp} insertLink={insertLink} sheet={sheet} previewSheetReplacement={previewSheetReplacement} applySheetReplacement={applySheetReplacement} clearCellValues={clearCellValues} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} showGridlines={showGridlines} toggleShowGridlines={toggleShowGridlines} clearAllFormats={clearAllFormats} />
