@@ -86,6 +86,7 @@ export function SheetToolbar({ ctx, ask, confirm }: { ctx: SheetToolbarControlle
       insertLink={ctx.insertLink}
       addCondRule={ctx.addCondRule}
       clearCondRules={ctx.clearCondRules}
+      hasCondRules={ctx.sheet.condFormat.length > 0}
       sheet={ctx.sheet}
       previewSheetReplacement={ctx.previewSheetReplacement}
       applySheetReplacement={ctx.applySheetReplacement}

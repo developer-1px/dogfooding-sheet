@@ -55,6 +55,7 @@ describe('Toolbar component', () => {
       insertLink: vi.fn(),
       addCondRule: vi.fn(),
       clearCondRules: vi.fn(),
+      hasCondRules: true,
       sheet: {} as Sheet,
       previewSheetReplacement: () => null,
       applySheetReplacement: vi.fn(() => false),
@@ -123,6 +124,7 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.disabled).toBe(false)
   })
 
   it('disables toolbar sort buttons without a focused column', () => {
@@ -222,6 +224,18 @@ describe('Toolbar component', () => {
     expect(addCondFormat?.getAttribute('title')).toBe('조건부 서식 추가')
     expect(clearCondFormat?.textContent).toBe('✕조건')
     expect(clearCondFormat?.disabled).toBe(false)
+    expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 모두 해제')
+  })
+
+  it('disables conditional format clear when no rules exist', () => {
+    renderToolbar({ hasCondRules: false })
+
+    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
+    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
+
+    expect(addCondFormat?.disabled).toBe(false)
+    expect(clearCondFormat?.textContent).toBe('✕조건')
+    expect(clearCondFormat?.disabled).toBe(true)
     expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 모두 해제')
   })
 
