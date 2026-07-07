@@ -40,6 +40,7 @@ describe('ContextMenu component', () => {
     expect(items[1]?.disabled).toBe(true)
 
     act(() => items[1]!.click())
+    act(() => items[1]!.dispatchEvent(new MouseEvent('click', { bubbles: true })))
 
     expect(onDisabled).not.toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()

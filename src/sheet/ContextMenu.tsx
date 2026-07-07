@@ -51,6 +51,11 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
         const patternProps = it.disabled
           ? { role: 'menuitem' as const, 'aria-disabled': true, tabIndex: -1 }
           : menuitemProps(`m${i}`)
+        const onClick = () => {
+          if (it.disabled) return
+          runMenuItemAction(it.onClick)
+          onClose()
+        }
         return (
           <button
             key={`m${i}`}
@@ -60,7 +65,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
             disabled={it.disabled}
             title={it.label}
             aria-keyshortcuts={it.keyShortcuts}
-            onClick={() => { runMenuItemAction(it.onClick); onClose() }}
+            onClick={onClick}
           >
             {it.label}
           </button>
