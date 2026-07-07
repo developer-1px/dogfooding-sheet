@@ -42,7 +42,10 @@ describe('ConfirmDialog component', () => {
     const confirm = document.querySelector<HTMLButtonElement>('.confirm-actions .danger')
 
     expect(cancel?.type).toBe('button')
+    expect(cancel?.textContent).toBe('아니요')
+    expect(cancel?.getAttribute('aria-keyshortcuts')).toBe('Escape')
     expect(confirm?.type).toBe('button')
+    expect(confirm?.textContent).toBe('삭제')
 
     act(() => cancel!.click())
     expect(onCancel).toHaveBeenCalledTimes(1)

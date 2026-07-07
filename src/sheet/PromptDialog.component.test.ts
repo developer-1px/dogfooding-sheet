@@ -50,7 +50,12 @@ describe('PromptDialog component', () => {
     act(() => document.querySelector<HTMLButtonElement>('.prompt-dialog .primary')!.click())
     expect(onSubmit).toHaveBeenLastCalledWith('click')
 
-    act(() => document.querySelector<HTMLButtonElement>('.prompt-dialog button:not(.primary)')!.click())
+    const cancel = document.querySelector<HTMLButtonElement>('.prompt-dialog button:not(.primary)')
+    expect(cancel?.type).toBe('button')
+    expect(cancel?.textContent).toBe('취소')
+    expect(cancel?.getAttribute('aria-keyshortcuts')).toBe('Escape')
+
+    act(() => cancel!.click())
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
 })
