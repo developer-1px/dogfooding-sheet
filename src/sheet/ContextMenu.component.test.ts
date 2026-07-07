@@ -10,18 +10,23 @@ describe('ContextMenu component', () => {
     const onOpen = vi.fn()
     const onDisabled = vi.fn()
     const onClose = vi.fn()
+    const onGridKeyDown = vi.fn()
 
-    act(() => dom.root.render(createElement(ContextMenu, {
-      x: 12,
-      y: 34,
-      label: '셀 메뉴',
-      items: [
-        { label: '열기', onClick: onOpen, keyShortcuts: 'Alt+Shift+M' },
-        'separator',
-        { label: '삭제', onClick: onDisabled, disabled: true },
-      ],
-      onClose,
-    })))
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: onGridKeyDown },
+      createElement(ContextMenu, {
+        x: 12,
+        y: 34,
+        label: '셀 메뉴',
+        items: [
+          { label: '열기', onClick: onOpen, keyShortcuts: 'Alt+Shift+M' },
+          'separator',
+          { label: '삭제', onClick: onDisabled, disabled: true },
+        ],
+        onClose,
+      }),
+    )))
 
     const menu = document.querySelector<HTMLElement>('.ctx-menu')
     const separator = document.querySelector<HTMLElement>('.ctx-sep')
@@ -45,10 +50,19 @@ describe('ContextMenu component', () => {
     expect(onDisabled).not.toHaveBeenCalled()
     expect(onClose).not.toHaveBeenCalled()
 
+    const arrowDown = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowDown' })
+    act(() => items[0]!.dispatchEvent(arrowDown))
+    expect(onGridKeyDown).not.toHaveBeenCalled()
+
+    const escape = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Escape' })
+    act(() => items[0]!.dispatchEvent(escape))
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
+
     act(() => items[0]!.click())
 
     expect(onOpen).toHaveBeenCalledTimes(1)
-    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onClose).toHaveBeenCalledTimes(2)
     expect(onDisabled).not.toHaveBeenCalled()
   })
 })
