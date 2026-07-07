@@ -71,7 +71,7 @@ export function HelpDialog({ open, onClose }: Props) {
             ))}
           </tbody>
         </table>
-        <button type="button" onClick={onClose} title="닫기 (Esc)" aria-label="키보드 단축키 도움말 닫기">닫기</button>
+        <button type="button" onClick={onClose} title="닫기 (Esc)" aria-label="키보드 단축키 도움말 닫기" aria-keyshortcuts="Escape">닫기</button>
       </div>
     </>
   )
