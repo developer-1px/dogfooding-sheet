@@ -91,6 +91,12 @@ describe('Toolbar component', () => {
     const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
     expect(filterButton?.type).toBe('button')
     expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
+    const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]')
+    const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬"]')
+    expect(sortAsc?.textContent).toBe('↑정렬')
+    expect(sortAsc?.getAttribute('title')).toBe('B열 오름차순 정렬')
+    expect(sortDesc?.textContent).toBe('↓정렬')
+    expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
 
