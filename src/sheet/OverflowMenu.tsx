@@ -72,11 +72,11 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
 
   return (
     <span className="overflow-menu">
-      <button {...triggerProps} className="overflow-trigger" title={triggerLabel} aria-label={triggerLabel}>⋮</button>
+      <button {...triggerProps} type="button" className="overflow-trigger" title={triggerLabel} aria-label={triggerLabel}>⋮</button>
       {open && (
         <div {...menuProps} className="overflow-list">
           {items.map((it) => (
-            <button key={it.id} {...itemProps(it.id)} className="overflow-item">{it.label}</button>
+            <button key={it.id} {...itemProps(it.id)} type="button" className="overflow-item">{it.label}</button>
           ))}
         </div>
       )}
