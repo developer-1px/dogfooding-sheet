@@ -65,19 +65,27 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
 }
 
 export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, setSelectAnchor, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
+  const selectAll = () => {
+    const selection = selectAllHeaders(rowCount, colLetters)
+    setSelectedIds(selection.selectedIds)
+    setFocusId(selection.focusId)
+    setSelectAnchor(selection.anchorId)
+  }
+
   return (
     <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span
         className={`corner-cell${allSelected ? ' selected-header' : ''}`}
         role="columnheader"
+        tabIndex={0}
         aria-label="전체 시트 선택"
         aria-selected={allSelected}
         title="전체 시트 선택"
-        onClick={() => {
-          const selection = selectAllHeaders(rowCount, colLetters)
-          setSelectedIds(selection.selectedIds)
-          setFocusId(selection.focusId)
-          setSelectAnchor(selection.anchorId)
+        onClick={selectAll}
+        onKeyDown={(e) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return
+          e.preventDefault()
+          selectAll()
         }}
       />
       {colLetters.map((c) => {

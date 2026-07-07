@@ -7,6 +7,54 @@ import { RowHeader } from './RowHeader'
 describe('header restore controls', () => {
   const dom = setupReactDOM()
 
+  it('makes the select-all corner header keyboard-operable', () => {
+    const setSelectedIds = vi.fn()
+    const setFocusId = vi.fn()
+    const setSelectAnchor = vi.fn()
+
+    act(() => dom.root.render(createElement(GridHeader, {
+      gridTemplate: '40px 80px 80px',
+      columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0 }),
+      widthOf: () => 80,
+      onResize: vi.fn(),
+      onResizeEnd: vi.fn(),
+      autoFitCol: vi.fn(),
+      setSelectedIds,
+      setFocusId,
+      setSelectAnchor,
+      hiddenCols: new Set(),
+      showCol: vi.fn(),
+      filterCol: null,
+      focusCol: null,
+      selectedCols: new Set(),
+      allSelected: false,
+      onHeaderContextMenu: vi.fn(),
+      rowCount: 2,
+      colLetters: ['A', 'B'],
+    })))
+
+    const corner = document.querySelector<HTMLElement>('.corner-cell')
+
+    expect(corner?.getAttribute('role')).toBe('columnheader')
+    expect(corner?.getAttribute('aria-label')).toBe('전체 시트 선택')
+    expect(corner?.tabIndex).toBe(0)
+
+    act(() => corner!.click())
+    expect(setSelectedIds).toHaveBeenLastCalledWith(['r0-A', 'r0-B', 'r1-A', 'r1-B'])
+    expect(setFocusId).toHaveBeenLastCalledWith('r0-A')
+    expect(setSelectAnchor).toHaveBeenLastCalledWith('r0-A')
+
+    const enter = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' })
+    act(() => corner!.dispatchEvent(enter))
+    expect(enter.defaultPrevented).toBe(true)
+    expect(setSelectedIds).toHaveBeenCalledTimes(2)
+
+    const space = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' })
+    act(() => corner!.dispatchEvent(space))
+    expect(space.defaultPrevented).toBe(true)
+    expect(setSelectedIds).toHaveBeenCalledTimes(3)
+  })
+
   it('renders column restore controls as non-submit buttons', () => {
     const showCol = vi.fn()
     const setSelectedIds = vi.fn()
