@@ -122,6 +122,7 @@ describe('Toolbar component', () => {
 
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')?.disabled).toBe(false)
   })
 
   it('disables toolbar sort buttons without a focused column', () => {
@@ -208,6 +209,20 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
+  })
+
+  it('disables conditional format add without a focused column but keeps clearing available', () => {
+    renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
+
+    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
+    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
+
+    expect(addCondFormat?.textContent).toBe('🎨조건')
+    expect(addCondFormat?.disabled).toBe(true)
+    expect(addCondFormat?.getAttribute('title')).toBe('조건부 서식 추가')
+    expect(clearCondFormat?.textContent).toBe('✕조건')
+    expect(clearCondFormat?.disabled).toBe(false)
+    expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 모두 해제')
   })
 
   it('exposes structure shortcut hints without changing labels or wiring', () => {
