@@ -172,6 +172,7 @@ function hideRowItem(a: CellMenuActions, row: number): MenuItem {
     label: `${row + 1}행 숨기기 (Ctrl/⌘+Alt+9)`,
     onClick: () => a.hideRow(row),
     keyShortcuts: 'Control+Alt+9 Meta+Alt+9',
+    disabled: a.rowCount <= 1,
   }
 }
 
@@ -196,6 +197,7 @@ function hideColItem(a: CellMenuActions, col: string): MenuItem {
     label: `${col}열 숨기기 (Ctrl/⌘+Alt+0)`,
     onClick: () => a.hideCol(col),
     keyShortcuts: 'Control+Alt+0 Meta+Alt+0',
+    disabled: a.colLetters.length <= 1,
   }
 }
 

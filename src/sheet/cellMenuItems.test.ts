@@ -181,6 +181,7 @@ describe('cellMenuItems', () => {
     expect(item(rowItems, insertBelowLabel).disabled).toBe(false)
     expect(item(rowItems, deleteLabel).keyShortcuts).toBe('Control+Alt+- Meta+Alt+-')
     expect(item(rowItems, hideLabel).keyShortcuts).toBe('Control+Alt+9 Meta+Alt+9')
+    expect(item(rowItems, hideLabel).disabled).toBe(false)
 
     item(rowItems, insertLabel).onClick()
     item(rowItems, insertBelowLabel).onClick()
@@ -193,6 +194,15 @@ describe('cellMenuItems', () => {
     expect(item(cellItems, insertBelowLabel).disabled).toBe(false)
     expect(item(cellItems, deleteLabel).keyShortcuts).toBe('Control+Alt+- Meta+Alt+-')
     expect(item(cellItems, hideLabel).keyShortcuts).toBe('Control+Alt+9 Meta+Alt+9')
+    expect(item(cellItems, hideLabel).disabled).toBe(false)
+  })
+
+  it('disables row hide actions in cell and row menus on single-row sheets', () => {
+    const rowItems = cellMenuItems(actions({ rowCount: 1 }), 'r0-B', 'row')
+    const cellItems = cellMenuItems(actions({ rowCount: 1 }), 'r0-B')
+
+    expect(item(rowItems, '1행 숨기기 (Ctrl/⌘+Alt+9)').disabled).toBe(true)
+    expect(item(cellItems, '1행 숨기기 (Ctrl/⌘+Alt+9)').disabled).toBe(true)
   })
 
   it('disables insert-below row actions on the final row', () => {
@@ -213,6 +223,7 @@ describe('cellMenuItems', () => {
     expect(item(colItems, insertLabel).keyShortcuts).toBe('Control+Alt+Shift+= Meta+Alt+Shift+=')
     expect(item(colItems, deleteLabel).keyShortcuts).toBe('Control+Alt+Shift+- Meta+Alt+Shift+-')
     expect(item(colItems, hideLabel).keyShortcuts).toBe('Control+Alt+0 Meta+Alt+0')
+    expect(item(colItems, hideLabel).disabled).toBe(false)
 
     item(colItems, insertLabel).onClick()
     item(colItems, deleteLabel).onClick()
@@ -223,6 +234,15 @@ describe('cellMenuItems', () => {
     expect(item(cellItems, insertLabel).keyShortcuts).toBe('Control+Alt+Shift+= Meta+Alt+Shift+=')
     expect(item(cellItems, deleteLabel).keyShortcuts).toBe('Control+Alt+Shift+- Meta+Alt+Shift+-')
     expect(item(cellItems, hideLabel).keyShortcuts).toBe('Control+Alt+0 Meta+Alt+0')
+    expect(item(cellItems, hideLabel).disabled).toBe(false)
+  })
+
+  it('disables column hide actions in cell and column menus on single-column sheets', () => {
+    const colItems = cellMenuItems(actions({ colLetters: ['A'] }), 'r0-A', 'col')
+    const cellItems = cellMenuItems(actions({ colLetters: ['A'] }), 'r0-A')
+
+    expect(item(colItems, 'A열 숨기기 (Ctrl/⌘+Alt+0)').disabled).toBe(true)
+    expect(item(cellItems, 'A열 숨기기 (Ctrl/⌘+Alt+0)').disabled).toBe(true)
   })
 
   it('exposes the hyperlink shortcut metadata and keeps its action wired', () => {
