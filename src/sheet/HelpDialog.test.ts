@@ -13,10 +13,14 @@ describe('HelpDialog', () => {
     })))
 
     expect(document.querySelector('caption')?.textContent).toBe('키보드 단축키 목록')
-    expect([...document.querySelectorAll('th')].map((th) => th.textContent)).toEqual(['단축키', '동작'])
-    expect([...document.querySelectorAll('th')].every((th) => th.getAttribute('scope') === 'col')).toBe(true)
+    const columnHeaders = [...document.querySelectorAll('thead th')]
+    expect(columnHeaders.map((th) => th.textContent)).toEqual(['단축키', '동작'])
+    expect(columnHeaders.every((th) => th.getAttribute('scope') === 'col')).toBe(true)
     expect(document.querySelector('kbd')?.textContent).toBe('Ctrl/⌘ + Z')
-    expect(document.querySelector('tbody tr td:first-child kbd')?.textContent).toBe('Ctrl/⌘ + Z')
+    const rowHeaders = [...document.querySelectorAll('tbody th[scope="row"]')]
+    expect(rowHeaders[0]?.querySelector('kbd')?.textContent).toBe('Ctrl/⌘ + Z')
+    expect(rowHeaders.length).toBeGreaterThan(0)
+    expect(document.querySelector('tbody tr td')?.textContent).toBe('실행 취소')
     expect(document.body.textContent).toContain('F4 (수식 입력 중)')
     expect(document.body.textContent).toContain('마지막 셀 참조의 절대/상대 형식 순환')
 
