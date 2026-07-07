@@ -49,10 +49,10 @@ export function cellMenuItems(a: CellMenuActions, cellId: string, kind: CellMenu
 
 function rowMenuItems(a: CellMenuActions, row: number): CellMenuEntry[] {
   return [
-    { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
+    insertRowAboveItem(a, row),
     { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
-    { label: '행 삭제', onClick: () => a.deleteRow(row) },
-    { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
+    deleteRowItem(a, row),
+    hideRowItem(a, row),
     ...rowRevealItems(a, row),
     { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
     'separator',
@@ -91,13 +91,13 @@ function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): 
     ...(note ? [{ label: '노트 삭제', onClick: () => a.setNote(key, '') }] : []),
     { label: '하이퍼링크 삽입 (Ctrl/⌘+K)', onClick: a.insertLink, keyShortcuts: 'Control+K Meta+K' },
     'separator',
-    { label: '위에 행 삽입', onClick: () => a.insertRow(row) },
+    insertRowAboveItem(a, row),
     { label: '아래 행 삽입', onClick: () => a.insertRow(row + 1) },
-    { label: '행 삭제', onClick: () => a.deleteRow(row) },
+    deleteRowItem(a, row),
     { label: `${col}열 왼쪽에 삽입`, onClick: () => a.insertCol(col) },
     { label: `${col}열 삭제`, onClick: () => a.deleteCol(col) },
     { label: `${col}열 숨기기`, onClick: () => a.hideCol(col) },
-    { label: `${row + 1}행 숨기기`, onClick: () => a.hideRow(row) },
+    hideRowItem(a, row),
     { label: `${row + 1}행 높이…`, onClick: () => a.promptRowHeight(row) },
     { label: `${col}열 너비…`, onClick: () => a.promptColWidth(col) },
     rowFreezeItem(a, row),
@@ -137,6 +137,30 @@ function mergeSelectionItem(a: CellMenuActions): MenuItem {
     label: '셀 병합 / 해제 (Alt+Shift+M)',
     onClick: a.mergeSelection,
     keyShortcuts: 'Alt+Shift+M',
+  }
+}
+
+function insertRowAboveItem(a: CellMenuActions, row: number): MenuItem {
+  return {
+    label: '위에 행 삽입 (Ctrl/⌘+Alt+=)',
+    onClick: () => a.insertRow(row),
+    keyShortcuts: 'Control+Alt+= Meta+Alt+=',
+  }
+}
+
+function deleteRowItem(a: CellMenuActions, row: number): MenuItem {
+  return {
+    label: '행 삭제 (Ctrl/⌘+Alt+-)',
+    onClick: () => a.deleteRow(row),
+    keyShortcuts: 'Control+Alt+- Meta+Alt+-',
+  }
+}
+
+function hideRowItem(a: CellMenuActions, row: number): MenuItem {
+  return {
+    label: `${row + 1}행 숨기기 (Ctrl/⌘+Alt+9)`,
+    onClick: () => a.hideRow(row),
+    keyShortcuts: 'Control+Alt+9 Meta+Alt+9',
   }
 }
 

@@ -89,7 +89,7 @@ describe('header context menus', () => {
 
     act(() => contextMenu(rowHeader('2')!))
     act(() => document.querySelectorAll<HTMLButtonElement>('.ctx-item')
-      .forEach((button) => { if (button.textContent === '2행 숨기기') button.click() }))
+      .forEach((button) => { if (button.textContent === '2행 숨기기 (Ctrl/⌘+Alt+9)') button.click() }))
     expect(rowHeader('2')).toBeUndefined()
 
     act(() => contextMenu(rowHeader('1')!))
@@ -106,7 +106,7 @@ describe('header context menus', () => {
 
     act(() => contextMenu(rowHeader('2')!))
     act(() => document.querySelectorAll<HTMLButtonElement>('.ctx-item')
-      .forEach((button) => { if (button.textContent === '2행 숨기기') button.click() }))
+      .forEach((button) => { if (button.textContent === '2행 숨기기 (Ctrl/⌘+Alt+9)') button.click() }))
     expect(rowHeader('2')).toBeUndefined()
 
     const restore = document.querySelector<HTMLButtonElement>('.unhide-row[aria-label="2행 숨김 표시"]')
