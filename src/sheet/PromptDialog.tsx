@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 }
 
 export function PromptDialog({ open, label, placeholder, initial = '', submitLabel = '확인', onSubmit, onCancel }: Props) {
+  const inputId = useId()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [value, setValue] = useState(initial)
   const { rootProps } = useDialogModalPattern({
@@ -25,8 +26,9 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
     <>
       <div className="dialog-backdrop" onClick={onCancel} />
       <div {...rootProps} className="prompt-dialog">
-        <label>{label}</label>
+        <label htmlFor={inputId}>{label}</label>
         <input
+          id={inputId}
           ref={inputRef}
           value={value}
           placeholder={placeholder}
@@ -34,8 +36,8 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); submit() } }}
         />
         <div className="confirm-actions">
-          <button onClick={onCancel}>취소</button>
-          <button className="primary" onClick={submit}>{submitLabel}</button>
+          <button type="button" onClick={onCancel}>취소</button>
+          <button type="button" className="primary" onClick={submit}>{submitLabel}</button>
         </div>
       </div>
     </>
