@@ -110,6 +110,39 @@ describe('cellMenuItems', () => {
     expect(item(colItems, 'B 내림차순 정렬').disabled).toBe(true)
   })
 
+  it('disables inactive freeze actions in cell and header menus on single-axis sheets', () => {
+    const singleAxisActions = actions({ rowCount: 1, colLetters: ['A'] })
+    const cellItems = cellMenuItems(singleAxisActions, 'r0-A')
+    const rowItems = cellMenuItems(singleAxisActions, 'r0-A', 'row')
+    const colItems = cellMenuItems(singleAxisActions, 'r0-A', 'col')
+
+    expect(item(cellItems, '1행까지 고정').disabled).toBe(true)
+    expect(item(cellItems, 'A열까지 고정').disabled).toBe(true)
+    expect(item(rowItems, '1행까지 고정').disabled).toBe(true)
+    expect(item(colItems, 'A열까지 고정').disabled).toBe(true)
+  })
+
+  it('keeps active freeze actions enabled on single-axis sheets so they can be cleared', () => {
+    const calls: string[] = []
+    const activeFreezeActions = actions({
+      rowCount: 1,
+      colLetters: ['A'],
+      freeze: { rows: 1, cols: 1 },
+    }, calls)
+    const cellItems = cellMenuItems(activeFreezeActions, 'r0-A')
+
+    const rowFreeze = item(cellItems, '행 고정 해제')
+    const colFreeze = item(cellItems, '열 고정 해제')
+
+    expect(rowFreeze.disabled).toBe(false)
+    expect(colFreeze.disabled).toBe(false)
+
+    rowFreeze.onClick()
+    colFreeze.onClick()
+
+    expect(calls).toEqual(['setFreezeRows:0', 'setFreezeCols:0'])
+  })
+
   it('exposes the merge shortcut metadata on cell, row, and column menus', () => {
     const mergeLabel = '셀 병합 / 해제 (Alt+Shift+M)'
 

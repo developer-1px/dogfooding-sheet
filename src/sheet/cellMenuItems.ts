@@ -204,6 +204,7 @@ function rowFreezeItem(a: CellMenuActions, row: number): MenuItem {
   return {
     label: isFrozen ? '행 고정 해제' : `${freezeRows}행까지 고정`,
     onClick: () => a.setFreezeRows(isFrozen ? 0 : freezeRows),
+    disabled: !isFrozen && a.rowCount <= 1,
   }
 }
 
@@ -213,5 +214,6 @@ function colFreezeItem(a: CellMenuActions, col: string): MenuItem {
   return {
     label: isFrozen ? '열 고정 해제' : `${col}열까지 고정`,
     onClick: () => a.setFreezeCols(isFrozen ? 0 : colPosition),
+    disabled: !isFrozen && a.colLetters.length <= 1,
   }
 }
