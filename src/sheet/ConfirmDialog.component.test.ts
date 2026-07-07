@@ -1,7 +1,7 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEvent } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfirmDialog } from './ConfirmDialog'
-import { setupReactDOM } from './test-utils'
+import { keyDown, setupReactDOM } from './test-utils'
 
 describe('ConfirmDialog component', () => {
   const dom = setupReactDOM()
@@ -28,15 +28,20 @@ describe('ConfirmDialog component', () => {
   it('keeps cancel and confirm actions wired to buttons', () => {
     const onConfirm = vi.fn()
     const onCancel = vi.fn()
+    const parentKeys: string[] = []
 
-    act(() => dom.root.render(createElement(ConfirmDialog, {
-      open: true,
-      message: '삭제할까요?',
-      confirmLabel: '삭제',
-      cancelLabel: '아니요',
-      onConfirm,
-      onCancel,
-    })))
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(ConfirmDialog, {
+        open: true,
+        message: '삭제할까요?',
+        confirmLabel: '삭제',
+        cancelLabel: '아니요',
+        onConfirm,
+        onCancel,
+      }),
+    )))
 
     const cancel = document.querySelector<HTMLButtonElement>('.confirm-actions button:not(.danger)')
     const confirm = document.querySelector<HTMLButtonElement>('.confirm-actions .danger')
@@ -49,8 +54,15 @@ describe('ConfirmDialog component', () => {
     expect(confirm?.textContent).toBe('삭제')
     expect(confirm?.getAttribute('title')).toBe('삭제')
 
-    act(() => cancel!.click())
+    act(() => keyDown(cancel!, 'Enter'))
+    act(() => keyDown(confirm!, ' '))
+    expect(parentKeys).toEqual([])
+
+    act(() => keyDown(cancel!, 'Escape'))
     expect(onCancel).toHaveBeenCalledTimes(1)
+
+    act(() => cancel!.click())
+    expect(onCancel).toHaveBeenCalledTimes(2)
     expect(onConfirm).not.toHaveBeenCalled()
 
     act(() => confirm!.click())
