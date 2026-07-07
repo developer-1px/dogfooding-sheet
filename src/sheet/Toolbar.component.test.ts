@@ -90,6 +90,7 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
     const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
     expect(filterButton?.type).toBe('button')
+    expect(filterButton?.disabled).toBe(false)
     expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
     const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]')
     const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬"]')
@@ -127,6 +128,19 @@ describe('Toolbar component', () => {
     expect(sortDesc?.textContent).toBe('↓정렬')
     expect(sortDesc?.disabled).toBe(true)
     expect(sortDesc?.getAttribute('title')).toBe('현재 열 내림차순 정렬')
+  })
+
+  it('disables toolbar filter setup without a focused column but keeps clearing available', () => {
+    renderToolbar({ focusKey: null, selectedIds: [], filter: { col: 'B', text: 'needle' } })
+
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
+    const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="필터 해제"]')
+
+    expect(filterButton?.textContent).toBe('🔽필터 B')
+    expect(filterButton?.disabled).toBe(true)
+    expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
+    expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
+    expect(clearFilter?.disabled).toBe(false)
   })
 
   it('exposes structure shortcut hints without changing labels or wiring', () => {
