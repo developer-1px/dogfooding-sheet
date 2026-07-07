@@ -1,9 +1,10 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEventHandler } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { OverflowMenu } from './OverflowMenu'
 import type { Confirm } from './useConfirm'
 import { initialSheet, type Sheet } from './schema'
+import { keyDown } from './test-utils'
 
 describe('OverflowMenu component', () => {
   let host: HTMLDivElement
@@ -22,16 +23,16 @@ describe('OverflowMenu component', () => {
     host.remove()
   })
 
-  const renderOverflowMenu = (sheet: Sheet = emptySheet, options: { canInsertLink?: boolean; insertLink?: () => void; showFormulas?: boolean; showGridlines?: boolean } = {}) => {
+  const renderOverflowMenu = (sheet: Sheet = emptySheet, options: { canInsertLink?: boolean; insertLink?: () => void; openHelp?: () => void; showFormulas?: boolean; showGridlines?: boolean; onKeyDown?: KeyboardEventHandler } = {}) => {
     const confirm: Confirm = () => Promise.resolve(false)
-    const { canInsertLink = true, insertLink = () => {}, showFormulas = false, showGridlines = true } = options
+    const { canInsertLink = true, insertLink = () => {}, openHelp = () => {}, showFormulas = false, showGridlines = true } = options
 
-    act(() => root.render(createElement(OverflowMenu, {
+    const menu = createElement(OverflowMenu, {
       display: () => '',
       writeCell: () => {},
       writeCells: () => {},
       writeCellRange: () => false,
-      openHelp: () => {},
+      openHelp,
       insertLink,
       canInsertLink,
       sheet,
@@ -43,7 +44,10 @@ describe('OverflowMenu component', () => {
       showGridlines,
       toggleShowGridlines: () => {},
       clearAllFormats: () => false,
-    })))
+    })
+    act(() => root.render(options.onKeyDown
+      ? createElement('div', { onKeyDown: options.onKeyDown }, menu)
+      : menu))
   }
 
   it('labels the compact trigger and keeps menu-button relationships', () => {
@@ -75,6 +79,40 @@ describe('OverflowMenu component', () => {
     expect(items.find((item) => item.textContent === 'CSV 내보내기 (Ctrl/⌘+S)')?.getAttribute('aria-keyshortcuts')).toBe('Control+S Meta+S')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.getAttribute('title')).toBe('CSV 가져오기')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.hasAttribute('aria-keyshortcuts')).toBe(false)
+  })
+
+  it('keeps overflow menu activation keys inside the menu controls', () => {
+    const parentKeys: string[] = []
+    const openHelp = vi.fn()
+    renderOverflowMenu(emptySheet, {
+      openHelp,
+      onKeyDown: (event) => parentKeys.push(event.key),
+    })
+
+    const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')!
+
+    act(() => keyDown(trigger, 'Enter'))
+    expect(parentKeys).toEqual([])
+    expect(document.querySelector('.overflow-list')?.getAttribute('role')).toBe('menu')
+
+    act(() => trigger.click())
+    act(() => keyDown(trigger, ' '))
+    expect(parentKeys).toEqual([])
+    expect(document.querySelector('.overflow-list')?.getAttribute('role')).toBe('menu')
+
+    const help = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '도움말 (F1)')!
+
+    act(() => keyDown(help, 'Enter'))
+    expect(parentKeys).toEqual([])
+    expect(openHelp).toHaveBeenCalledTimes(1)
+
+    if (!document.querySelector('.overflow-list')) act(() => trigger.click())
+    const helpAgain = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
+      .find((item) => item.textContent === '도움말 (F1)')!
+
+    act(() => keyDown(helpAgain, ' '))
+    expect(parentKeys).toEqual([])
   })
 
   it('exposes checkbox state for view toggles', () => {

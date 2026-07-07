@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, type KeyboardEvent } from 'react'
 import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuButtonPattern } from '@interactive-os/aria-kernel/patterns'
 import { downloadFile } from '../lib/downloadFile'
@@ -16,6 +16,16 @@ import {
 
 const hasRecordEntries = (record: Record<string, unknown>): boolean =>
   Object.keys(record).length > 0
+
+const isActivationKey = (key: string): boolean => key === 'Enter' || key === ' '
+
+const keepActivationKeysLocal = <T extends { onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void }>(props: T) => ({
+  ...props,
+  onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+    props.onKeyDown?.(event)
+    if (isActivationKey(event.key)) event.stopPropagation()
+  },
+})
 
 export interface OverflowProps {
   display: Display
@@ -80,10 +90,11 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
     label: '추가 메뉴',
   })
   const triggerLabel = open ? '더 보기 메뉴 닫기' : '더 보기 메뉴 열기'
+  const localTriggerProps = keepActivationKeysLocal(triggerProps)
 
   return (
     <span className="overflow-menu">
-      <button {...triggerProps} type="button" className="overflow-trigger" title={triggerLabel} aria-label={triggerLabel}>⋮</button>
+      <button {...localTriggerProps} type="button" className="overflow-trigger" title={triggerLabel} aria-label={triggerLabel}>⋮</button>
       {open && (
         <div {...menuProps} className="overflow-list">
           {items.map((it) => {
@@ -91,7 +102,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
               ? { role: 'menuitem' as const, 'aria-disabled': true, tabIndex: -1 }
               : itemProps(it.id)
             return (
-              <button key={it.id} {...patternProps} type="button" className="overflow-item" disabled={it.disabled} title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
+              <button key={it.id} {...keepActivationKeysLocal(patternProps)} type="button" className="overflow-item" disabled={it.disabled} title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
             )
           })}
         </div>
