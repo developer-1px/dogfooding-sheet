@@ -102,6 +102,14 @@
 .confirm-actions .danger { background: var(--sheet-color-danger, #d93025); color: var(--sheet-color-surface, #fff); border-color: var(--sheet-color-danger, #d93025); }
 .help-dialog h2 { margin: 0 0 var(--sheet-space-5, 12px); font-size: var(--sheet-font-size-title, 16px); }
 .help-dialog table { border-collapse: collapse; width: 100%; }
+.help-dialog caption {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.help-dialog th {
+  padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); font-size: var(--sheet-font-size-sm, 12px);
+  color: var(--sheet-color-muted, #5f6368); font-weight: var(--sheet-font-weight-strong, 600); text-align: left;
+}
 .help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); font-size: var(--sheet-font-size-ui, 13px); }
 .help-dialog kbd {
   background: var(--sheet-color-hover, #f1f3f4); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-kbd, 3px);
