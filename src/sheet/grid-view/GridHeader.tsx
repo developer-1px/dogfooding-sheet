@@ -48,6 +48,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
       role="separator"
       tabIndex={0}
       aria-label={`${col}열 너비 조정`}
+      aria-keyshortcuts="ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight"
       aria-orientation="vertical"
       aria-valuemin={COLUMN_WIDTH_BOUNDS.min}
       aria-valuemax={COLUMN_WIDTH_BOUNDS.max}

@@ -132,6 +132,7 @@ describe('header restore controls', () => {
 
     expect(header?.getAttribute('role')).toBe('columnheader')
     expect(header?.tabIndex).toBe(0)
+    expect(resizer?.getAttribute('aria-keyshortcuts')).toBe('ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight')
 
     act(() => header!.click())
     expect(setSelectedIds).toHaveBeenLastCalledWith(['r0-B', 'r1-B'])
@@ -235,6 +236,7 @@ describe('header restore controls', () => {
     expect(header?.getAttribute('role')).toBe('rowheader')
     expect(header?.getAttribute('aria-label')).toBe('3행')
     expect(header?.tabIndex).toBe(0)
+    expect(resizer?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown Shift+ArrowUp Shift+ArrowDown')
 
     act(() => header!.click())
     expect(setSelectedIds).toHaveBeenLastCalledWith(['r2-A', 'r2-B'])
