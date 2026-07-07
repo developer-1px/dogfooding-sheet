@@ -68,6 +68,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const canAppendRows = rowCount < MAX_ROW_COUNT
   const canAppendCols = colCount < MAX_COL_COUNT
   const canSort = !!focus && rowCount > 1
+  const canToggleFreezeRows = rowCount > 1 || freeze.rows > 0
+  const canToggleFreezeCols = colCount > 1 || freeze.cols > 0
   const canAutoSum = focus ? autoSumFormula(focus.col, focus.row, display) !== null : false
   const applyF = (format: Format) => applyToolbarFormat({ selectedIds, focusKey, format, setFormat })
   const toggle = (flag: ToolbarStyleFlag) => toggleToolbarStyle({ selectedIds, focusKey, flag, styleOf, updateStyle })
@@ -95,7 +97,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <label className="color-pick" title="배경색">🎨<input type="color" aria-label="배경색 선택" disabled={!hasCellTarget} onChange={(e) => setBg(e.target.value)} /></label>
       <label className="color-pick" title="글자색">A<input type="color" aria-label="글자색 선택" disabled={!hasCellTarget} onChange={(e) => setFg(e.target.value)} /></label>
       <button type="button" onClick={clearStyle} disabled={!hasCellTarget} title="서식 모두 해제" aria-label="서식 모두 해제" aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button type="button" onClick={mergeSelection} disabled={selectedIds.length < 2 && !focusKey} title="선택 셀 병합 / 병합 해제 (Alt+Shift+M)" aria-label="선택 셀 병합 또는 병합 해제" aria-keyshortcuts="Alt+Shift+M">⊞병합</button>
-      <button type="button" onClick={toggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button type="button" onClick={toggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
+      <button type="button" onClick={toggleFreezeRows} disabled={!canToggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button type="button" onClick={toggleFreezeCols} disabled={!canToggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button type="button" onClick={openFilterPrompt} disabled={!focus} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button type="button" onClick={clearFilter} title="필터 해제" aria-label="필터 해제">✕</button>}
       {hasHidden && <button type="button" onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
