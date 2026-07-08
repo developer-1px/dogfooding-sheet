@@ -85,6 +85,8 @@
   --sheet-size-find-count-width: 50px;
   --sheet-inset-find-bar-top: 60px;
   --sheet-inset-find-bar-inline: 16px;
+  --sheet-size-shortcut-dialog-width: 360px;
+  --sheet-size-dialog-width: 320px;
   --sheet-size-tab-max: 220px;
   --sheet-size-tab-rename-width: 90px;
   --sheet-size-tab-color-swatch: 14px;

@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { PromptDialog } from './PromptDialog'
 import { keyDown, setInputValue, setupReactDOM } from './test-utils'
 
+const appCss = () => readFileSync('src/App.css', 'utf8')
 const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('PromptDialog component', () => {
@@ -163,10 +164,12 @@ describe('PromptDialog component', () => {
   })
 
   it('keeps prompt dialogs constrained to the viewport', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const promptDialogRule = css.match(/\.prompt-dialog\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(promptDialogRule).toContain('min-width: min(320px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))))')
+    expect(rootCss).toContain('--sheet-size-dialog-width: 320px;')
+    expect(promptDialogRule).toContain('min-width: min(var(--sheet-size-dialog-width, 320px), max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))))')
     expect(promptDialogRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(promptDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(promptDialogRule).toContain('overflow: auto')
