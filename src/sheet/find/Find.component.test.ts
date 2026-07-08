@@ -1,9 +1,12 @@
 import { act, createElement, type KeyboardEvent } from 'react'
+import { readFileSync } from 'node:fs'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Find } from './Find'
 import type { Cells, Display } from '../schema'
 import { keyDown, setInputValue } from '../test-utils'
+
+const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('Find component', () => {
   let host: HTMLDivElement
@@ -278,5 +281,13 @@ describe('Find component', () => {
     expect(close?.type).toBe('button')
     expect(close?.getAttribute('title')).toBe('찾기 및 바꾸기 닫기 (Esc)')
     expect(close?.getAttribute('aria-keyshortcuts')).toBe('Escape')
+  })
+
+  it('keeps the find bar constrained to the viewport', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('display: flex; flex-wrap: wrap;')
+    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px))')
+    expect(css).toContain('flex: 1 1 200px; width: 200px; max-width: 100%;')
   })
 })
