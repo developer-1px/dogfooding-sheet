@@ -13,6 +13,7 @@ interface CommitOptions {
 
 interface Props {
   readonly ariaLabel: string
+  readonly title?: string
   readonly draft: string
   readonly setDraft: (draft: string) => void
   readonly textDecorations: readonly FormulaReferenceTextDecoration[]
@@ -29,6 +30,7 @@ interface EditorCallbacks {
 
 export function ContenteditableCellEditor({
   ariaLabel,
+  title,
   draft,
   setDraft,
   textDecorations,
@@ -112,6 +114,7 @@ export function ContenteditableCellEditor({
       className={`cell-input${formulaMode ? ' formula-input' : ''}`}
       data-formula-editor={formulaMode || undefined}
       tabIndex={0}
+      title={title}
       onBlur={() => {
         if (completedRef.current) return
         const text = handleRef.current?.snapshot().text ?? draft

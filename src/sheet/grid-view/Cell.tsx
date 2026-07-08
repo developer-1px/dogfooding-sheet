@@ -79,6 +79,7 @@ export function Cell(p: Props) {
   const textareaProps = {
     ...p.inputProps,
     'aria-label': display.editLabel,
+    title: display.editLabel,
     onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       p.onFormulaPickKeyDown(e)
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
@@ -87,6 +88,7 @@ export function Cell(p: Props) {
   } as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> }
   const selectProps = {
     'aria-label': display.editLabel,
+    title: display.editLabel,
     ...p.selectProps,
     onKeyDown: (e: React.KeyboardEvent<HTMLSelectElement>) => {
       p.selectProps.onKeyDown?.(e)
@@ -140,6 +142,7 @@ export function Cell(p: Props) {
             : (
               <ContenteditableCellEditor
                 ariaLabel={display.editLabel}
+                title={display.editLabel}
                 draft={p.draft}
                 setDraft={p.setDraft}
                 textDecorations={p.formulaReferenceText}
