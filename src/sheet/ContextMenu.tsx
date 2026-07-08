@@ -30,10 +30,12 @@ const keepActivationKeysLocal = <T extends { onKeyDown?: (event: KeyboardEvent<H
 })
 
 const contextMenuStyle = (x: number, y: number): CSSProperties => {
+  const left = Math.max(0, x)
   const top = Math.max(0, y)
   return {
-    left: x,
+    left: `max(var(--sheet-space-1, 4px), min(${left}px, calc(100vw - 180px - var(--sheet-space-8, 24px))))`,
     top: y,
+    maxWidth: `max(180px, calc(100vw - ${left}px - var(--sheet-space-8, 24px)))`,
     maxHeight: `max(var(--sheet-space-8, 24px), calc(100vh - ${top}px - var(--sheet-space-8, 24px)))`,
   }
 }
