@@ -88,7 +88,10 @@
 .prompt-dialog {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   background: var(--sheet-color-surface, #fff); padding: var(--sheet-space-7, 20px) var(--sheet-space-8, 24px); border-radius: var(--sheet-radius-panel, 8px);
-  box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: 320px;
+  box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
+  max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  overflow: auto;
   display: flex; flex-direction: column; gap: var(--sheet-space-3, 8px);
 }
 .prompt-dialog label { font-size: var(--sheet-font-size-ui, 13px); color: var(--sheet-color-muted, #5f6368); }
@@ -98,7 +101,10 @@
 .confirm-dialog {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   background: var(--sheet-color-surface, #fff); padding: var(--sheet-space-7, 20px) var(--sheet-space-8, 24px); border-radius: var(--sheet-radius-panel, 8px);
-  box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: 320px;
+  box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
+  max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  overflow: auto;
 }
 .confirm-dialog p { margin: 0 0 var(--sheet-space-6, 16px); font-size: var(--sheet-font-size-control, 14px); }
 .confirm-actions { display: flex; justify-content: flex-end; gap: var(--sheet-space-3, 8px); }
