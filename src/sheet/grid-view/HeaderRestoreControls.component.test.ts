@@ -45,6 +45,7 @@ describe('header restore controls', () => {
     expect(corner?.getAttribute('role')).toBe('columnheader')
     expect(corner?.getAttribute('aria-colindex')).toBe('1')
     expect(corner?.getAttribute('aria-label')).toBe('전체 시트 선택')
+    expect(corner?.getAttribute('aria-keyshortcuts')).toBe('Enter Space')
     expect(corner?.getAttribute('title')).toBe('전체 시트 선택')
     expect(corner?.tabIndex).toBe(0)
 
@@ -213,6 +214,7 @@ describe('header restore controls', () => {
 
     expect(header?.getAttribute('role')).toBe('columnheader')
     expect(header?.tabIndex).toBe(0)
+    expect(header?.getAttribute('aria-keyshortcuts')).toBe('Enter Space')
     expect(header?.getAttribute('title')).toBe('B열 - 클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
     expect(resizer?.getAttribute('aria-label')).toBe('B열 너비 조정, 현재 80px')
     expect(resizer?.getAttribute('title')).toBe('B열 너비 조정, 현재 80px / 드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤')
@@ -360,6 +362,7 @@ describe('header restore controls', () => {
     expect(header?.getAttribute('aria-rowindex')).toBe('4')
     expect(header?.getAttribute('aria-colindex')).toBe('1')
     expect(header?.getAttribute('aria-label')).toBe('3행')
+    expect(header?.getAttribute('aria-keyshortcuts')).toBe('Enter Space')
     expect(header?.getAttribute('title')).toBe('3행 - 클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정')
     expect(header?.tabIndex).toBe(0)
     expect(resizer?.getAttribute('aria-label')).toBe('3행 높이 조정, 현재 24px')

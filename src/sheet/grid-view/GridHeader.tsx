@@ -78,6 +78,7 @@ const columnHeaderLabel = (col: string, { filtered, selected, current }: { filte
 }
 
 const selectAllHeaderLabel = (selected: boolean) => selected ? '전체 시트 선택, 선택됨' : '전체 시트 선택'
+const headerSelectionKeyShortcuts = 'Enter Space'
 
 export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, setSelectAnchor, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
   const selectAll = () => {
@@ -96,6 +97,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         aria-colindex={1}
         aria-label={selectAllHeaderLabel(allSelected)}
         aria-selected={allSelected}
+        aria-keyshortcuts={headerSelectionKeyShortcuts}
         title={selectAllHeaderLabel(allSelected)}
         onClick={selectAll}
         onKeyDown={(e) => {
@@ -142,6 +144,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             aria-label={headerLabel}
             aria-current={isCurrent ? 'true' : undefined}
             aria-selected={isSelected}
+            aria-keyshortcuts={headerSelectionKeyShortcuts}
             onClick={(e) => selectColumn(e.shiftKey)}
             onKeyDown={(e) => {
               if (e.currentTarget !== e.target) return
