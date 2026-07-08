@@ -142,7 +142,7 @@ describe('Find component', () => {
     const css = overlaysCss()
     const findBarRule = css.match(/\.find-bar\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(findBarRule).toContain('max-width: calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px));')
+    expect(findBarRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px)));')
     expect(findBarRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - 60px - var(--sheet-space-8, 24px)));')
     expect(findBarRule).toContain('overflow-x: hidden;')
     expect(findBarRule).toContain('overflow-y: auto;')
@@ -328,7 +328,9 @@ describe('Find component', () => {
     const css = overlaysCss()
 
     expect(css).toContain('display: flex; flex-wrap: wrap;')
-    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px))')
+    expect(css).toContain(
+      'max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px)))',
+    )
     expect(css).toContain('flex: 1 1 200px; width: 200px; max-width: 100%;')
   })
 })
