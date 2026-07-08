@@ -11,27 +11,32 @@ describe('header restore controls', () => {
     const setSelectedIds = vi.fn()
     const setFocusId = vi.fn()
     const setSelectAnchor = vi.fn()
+    const onGridKeyDown = vi.fn()
 
-    act(() => dom.root.render(createElement(GridHeader, {
-      gridTemplate: '40px 80px 80px',
-      columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0 }),
-      widthOf: () => 80,
-      onResize: vi.fn(),
-      onResizeEnd: vi.fn(),
-      autoFitCol: vi.fn(),
-      setSelectedIds,
-      setFocusId,
-      setSelectAnchor,
-      hiddenCols: new Set(),
-      showCol: vi.fn(),
-      filterCol: null,
-      focusCol: null,
-      selectedCols: new Set(),
-      allSelected: false,
-      onHeaderContextMenu: vi.fn(),
-      rowCount: 2,
-      colLetters: ['A', 'B'],
-    })))
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: onGridKeyDown },
+      createElement(GridHeader, {
+        gridTemplate: '40px 80px 80px',
+        columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0 }),
+        widthOf: () => 80,
+        onResize: vi.fn(),
+        onResizeEnd: vi.fn(),
+        autoFitCol: vi.fn(),
+        setSelectedIds,
+        setFocusId,
+        setSelectAnchor,
+        hiddenCols: new Set(),
+        showCol: vi.fn(),
+        filterCol: null,
+        focusCol: null,
+        selectedCols: new Set(),
+        allSelected: false,
+        onHeaderContextMenu: vi.fn(),
+        rowCount: 2,
+        colLetters: ['A', 'B'],
+      }),
+    )))
 
     const corner = document.querySelector<HTMLElement>('.corner-cell')
 
@@ -47,11 +52,13 @@ describe('header restore controls', () => {
     const enter = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' })
     act(() => corner!.dispatchEvent(enter))
     expect(enter.defaultPrevented).toBe(true)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(2)
 
     const space = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' })
     act(() => corner!.dispatchEvent(space))
     expect(space.defaultPrevented).toBe(true)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
   })
 
@@ -149,11 +156,13 @@ describe('header restore controls', () => {
     const enter = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' })
     act(() => header!.dispatchEvent(enter))
     expect(enter.defaultPrevented).toBe(true)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(2)
 
     const shiftSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ', shiftKey: true })
     act(() => header!.dispatchEvent(shiftSpace))
     expect(shiftSpace.defaultPrevented).toBe(true)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenLastCalledWith(['r0-A', 'r1-A', 'r0-B', 'r1-B'])
 
     const arrowDown = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowDown' })
@@ -264,11 +273,13 @@ describe('header restore controls', () => {
     const enter = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' })
     act(() => header!.dispatchEvent(enter))
     expect(enter.defaultPrevented).toBe(true)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenCalledTimes(2)
 
     const shiftSpace = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ', shiftKey: true })
     act(() => header!.dispatchEvent(shiftSpace))
     expect(shiftSpace.defaultPrevented).toBe(true)
+    expect(onGridKeyDown).not.toHaveBeenCalled()
     expect(setSelectedIds).toHaveBeenLastCalledWith(['r1-A', 'r1-B', 'r2-A', 'r2-B'])
 
     onGridKeyDown.mockClear()

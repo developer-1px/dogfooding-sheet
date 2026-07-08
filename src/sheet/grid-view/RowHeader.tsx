@@ -93,6 +93,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
         if (e.currentTarget !== e.target) return
         if (e.key !== 'Enter' && e.key !== ' ') return
         e.preventDefault()
+        e.stopPropagation()
         selectRow(e.shiftKey)
       }}
       onContextMenu={onContextMenu}
