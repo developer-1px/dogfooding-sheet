@@ -5,10 +5,12 @@ import { ContextMenu } from './ContextMenu'
 import { keyDown, setupReactDOM } from './test-utils'
 
 const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
+const appCss = () => readFileSync('src/App.css', 'utf8')
+const contextMenuPreferredWidth = 'var(--sheet-size-context-menu-width, 180px)'
 const contextMenuViewportWidth = 'max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-1, 4px) - var(--sheet-space-8, 24px)))'
-const contextMenuWidth = `min(180px, ${contextMenuViewportWidth})`
+const contextMenuWidth = `min(${contextMenuPreferredWidth}, ${contextMenuViewportWidth})`
 const expectedContextMenuLeft = (left: number) => `max(var(--sheet-space-1, 4px), min(${left}px, calc(100vw - ${contextMenuWidth} - var(--sheet-space-8, 24px))))`
-const expectedContextMenuMaxWidth = (left: number) => `min(max(180px, calc(100vw - ${left}px - var(--sheet-space-8, 24px))), ${contextMenuViewportWidth})`
+const expectedContextMenuMaxWidth = (left: number) => `min(max(${contextMenuPreferredWidth}, calc(100vw - ${left}px - var(--sheet-space-8, 24px))), ${contextMenuViewportWidth})`
 
 describe('ContextMenu component', () => {
   const dom = setupReactDOM()
@@ -140,9 +142,11 @@ describe('ContextMenu component', () => {
   })
 
   it('keeps long context menus vertically scrollable and horizontally clipped', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const menuRule = css.match(/\.ctx-menu\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-context-menu-width: 180px;')
     expect(menuRule).toContain(`min-width: ${contextMenuWidth};`)
     expect(menuRule).toContain('overflow-x: hidden;')
     expect(menuRule).toContain('overflow-y: auto;')

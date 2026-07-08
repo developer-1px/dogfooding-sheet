@@ -20,7 +20,7 @@ interface Props {
 }
 
 const isActivationKey = (key: string): boolean => key === 'Enter' || key === ' '
-const contextMenuPreferredWidth = '180px'
+const contextMenuPreferredWidth = 'var(--sheet-size-context-menu-width, 180px)'
 const contextMenuViewportWidth = 'max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-1, 4px) - var(--sheet-space-8, 24px)))'
 const contextMenuWidth = `min(${contextMenuPreferredWidth}, ${contextMenuViewportWidth})`
 
