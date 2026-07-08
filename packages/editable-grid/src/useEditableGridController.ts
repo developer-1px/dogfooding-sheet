@@ -55,6 +55,11 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     setSelection(selectionForAddress(address))
   }
 
+  const focusCellWithDomFocus = (address: EditableGridAddress) => {
+    domFocus.requestCellFocusRestore(addressDomId(address))
+    focusCell(address)
+  }
+
   const startEdit = (
     address: EditableGridAddress,
     cellValue: unknown,
@@ -121,8 +126,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     const nextColumn = surface.columns[nextCol]
     if (!nextColumn) return
     const nextAddress = { rowIndex: nextRow, columnId: nextColumn.id }
-    domFocus.requestCellFocusRestore(addressDomId(nextAddress))
-    focusCell(nextAddress)
+    focusCellWithDomFocus(nextAddress)
   }
 
   const onCellKeyDown = (
@@ -150,6 +154,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     setDraft,
     domFocus,
     focusCell,
+    focusCellWithDomFocus,
     startEdit,
     commitEdit,
     cancelEdit,
