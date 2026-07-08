@@ -82,6 +82,11 @@ describe('grid styles', () => {
   it('keeps hidden header restore controls token-sized and centered', () => {
     const source = gridCss()
     const restoreRule = source.match(/\.unhide-col,\s*\.unhide-row\s*\{[^}]+\}/)?.[0] ?? ''
+    const leftRule = source.match(/\.unhide-col\.left\s*\{[^}]+\}/)?.[0] ?? ''
+    const rightRule = source.match(/\.unhide-col\.right\s*\{[^}]+\}/)?.[0] ?? ''
+    const topRule = source.match(/\.unhide-row\.top\s*\{[^}]+\}/)?.[0] ?? ''
+    const bottomRule = source.match(/\.unhide-row\.bottom\s*\{[^}]+\}/)?.[0] ?? ''
+    const restoreOffset = 'calc(-1 * var(--sheet-size-control-sm, 16px) / 2)'
 
     expect(restoreRule).toContain('position: absolute;')
     expect(restoreRule).toContain('display: inline-flex;')
@@ -92,6 +97,18 @@ describe('grid styles', () => {
     expect(restoreRule).toContain('padding: 0;')
     expect(restoreRule).toContain('line-height: 1;')
     expect(restoreRule).not.toContain('line-height: 14px;')
+    expect(leftRule).toContain(`left: ${restoreOffset};`)
+    expect(rightRule).toContain(`right: ${restoreOffset};`)
+    expect(topRule).toContain(`top: ${restoreOffset};`)
+    expect(bottomRule).toContain(`bottom: ${restoreOffset};`)
+    expect(leftRule).toContain('top: 50%;')
+    expect(rightRule).toContain('top: 50%;')
+    expect(topRule).toContain('left: 50%;')
+    expect(bottomRule).toContain('left: 50%;')
+    expect(leftRule).toContain('transform: translateY(-50%);')
+    expect(rightRule).toContain('transform: translateY(-50%);')
+    expect(topRule).toContain('transform: translateX(-50%);')
+    expect(bottomRule).toContain('transform: translateX(-50%);')
   })
 
   it('keeps grid resize handles token-sized around header edges', () => {
