@@ -95,7 +95,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         tabIndex={0}
         aria-label={selectAllHeaderLabel(allSelected)}
         aria-selected={allSelected}
-        title="전체 시트 선택"
+        title={selectAllHeaderLabel(allSelected)}
         onClick={selectAll}
         onKeyDown={(e) => {
           if (e.key !== 'Enter' && e.key !== ' ') return
