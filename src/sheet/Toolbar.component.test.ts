@@ -729,6 +729,18 @@ describe('Toolbar component', () => {
     expect(css).toContain('.color-pick[aria-disabled="true"] input[type="color"] { cursor: not-allowed; }')
   })
 
+  it('keeps toolbar color picker controls from shrinking', () => {
+    const css = appCss()
+    const colorPickRule = css.match(/\.color-pick\s*\{[^}]+\}/)?.[0] ?? ''
+    const colorInputRule = css.match(/\.color-pick input\[type="color"\]\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(colorPickRule).toContain('display: inline-flex;')
+    expect(colorPickRule).toContain('flex: 0 0 auto;')
+    expect(colorInputRule).toContain('flex: 0 0 auto;')
+    expect(colorInputRule).toContain('width: var(--sheet-size-control-md);')
+    expect(colorInputRule).toContain('height: var(--sheet-size-control-md);')
+  })
+
   it('keeps the toolbar formula input contained on narrow rows', () => {
     const css = appCss()
 
