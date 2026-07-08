@@ -341,8 +341,21 @@ describe('cellMenuItems', () => {
     const clear = item(cellMenuItems(actions({}, calls), 'r1-B'), '지우기 (Delete/Backspace)')
 
     expect(clear.keyShortcuts).toBe('Delete Backspace')
+    expect(clear.disabled).toBe(false)
     clear.onClick()
     expect(calls).toEqual(['writeCell:B2:'])
+  })
+
+  it('disables the clear action when the focused cell has no value', () => {
+    const calls: string[] = []
+    const clear = item(cellMenuItems(actions({ sheet: { cells: {}, merges: [] } }, calls), 'r1-B'), '지우기 (Delete/Backspace)')
+
+    expect(clear.disabled).toBe(true)
+    expect(clear.disabledLabel).toBe('지울 셀 값 없음')
+
+    clear.onClick()
+
+    expect(calls).toEqual([])
   })
 
   it('exposes clipboard shortcut metadata and keeps actions wired', async () => {
