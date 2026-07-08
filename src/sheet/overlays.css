@@ -42,10 +42,11 @@
 
 .tabs-bar {
   display: flex; gap: var(--sheet-space-half, 2px); align-items: center; padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px) 0;
+  overflow-x: auto; max-width: 100%; min-width: 0;
   background: var(--sheet-color-surface-muted, #f8f9fa); border-top: 1px solid var(--sheet-color-border-subtle, #e0e0e0);
 }
 .tab {
-  display: inline-flex; align-items: center; gap: var(--sheet-space-2, 6px); padding: var(--sheet-space-2, 6px) var(--sheet-space-5, 12px);
+  display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--sheet-space-2, 6px); padding: var(--sheet-space-2, 6px) var(--sheet-space-5, 12px);
   border: 1px solid var(--sheet-color-border, #dadce0); border-bottom: none; border-radius: var(--sheet-radius-tab, 6px) var(--sheet-radius-tab, 6px) 0 0;
   background: var(--sheet-color-hover, #f1f3f4); color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-ui, 13px); cursor: pointer;
   user-select: none;
@@ -65,7 +66,7 @@
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: var(--sheet-focus-offset, 2px);
 }
-.tab-add { background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); margin-left: var(--sheet-space-1, 4px); }
+.tab-add { flex: 0 0 auto; background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); margin-left: var(--sheet-space-1, 4px); }
 .tab-add:hover:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); }
 
 .status-bar {
