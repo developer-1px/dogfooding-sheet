@@ -25,14 +25,14 @@ const persistencePresentation = (state?: SheetPersistenceState): PersistencePres
   if (state.status === 'error') {
     return {
       text: '저장 실패',
-      detail: state.error ? `저장 실패: ${state.error}` : undefined,
+      detail: state.error ? `저장 실패: ${state.error}` : '저장 실패',
     }
   }
   if (state.status === 'saving') return { text: '저장 중', detail: '변경 사항 저장 중' }
   if (state.status === 'pending' || state.dirty) return { text: '저장 대기', detail: '자동 저장 대기 중' }
   return {
     text: '저장됨',
-    detail: state.savedAt ? `마지막 저장: ${state.savedAt}` : undefined,
+    detail: state.savedAt ? `마지막 저장: ${state.savedAt}` : '저장됨',
   }
 }
 const statusRegionProps = {
