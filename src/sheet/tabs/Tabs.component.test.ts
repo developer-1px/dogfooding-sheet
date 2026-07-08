@@ -199,6 +199,14 @@ describe('Tabs component', () => {
     expect(css).toMatch(/\.tab-dup:disabled,\s*\.tab-add:disabled\s*\{\s*color:\s*var\(--sheet-color-disabled,\s*#9aa0a6\);\s*cursor:\s*not-allowed;\s*\}/)
   })
 
+  it('keeps overflowing sheet tabs contained in a horizontal tab strip', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('overflow-x: auto; max-width: 100%; min-width: 0;')
+    expect(css).toContain('display: inline-flex; flex: 0 0 auto; align-items: center;')
+    expect(css).toContain('.tab-add { flex: 0 0 auto;')
+  })
+
   it('keeps add-sheet activation keys inside the tab add control', () => {
     const parentKeys: string[] = []
     const calls = renderTabs({
