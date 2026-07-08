@@ -97,4 +97,10 @@ describe('ConfirmDialog component', () => {
     expect(css).toContain('.confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sheet-space-3, 8px); }')
     expect(css).toContain('.confirm-actions button { max-width: 100%; overflow-wrap: anywhere; }')
   })
+
+  it('keeps confirm dialog messages contained on narrow viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('.confirm-dialog p { margin: 0 0 var(--sheet-space-6, 16px); font-size: var(--sheet-font-size-control, 14px); overflow-wrap: anywhere; }')
+  })
 })
