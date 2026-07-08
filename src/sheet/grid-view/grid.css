@@ -112,7 +112,7 @@
 .cell-input[contenteditable="true"] { display: block; white-space: nowrap; overflow: hidden; text-align: inherit; }
 .cell-input.formula-input {
   border-color: var(--sheet-color-success, #188038);
-  box-shadow: inset 3px 0 0 var(--sheet-color-success, #188038);
+  box-shadow: inset var(--sheet-size-formula-input-accent-strip, 3px) 0 0 var(--sheet-color-success, #188038);
 }
 .formula-token {
   color: var(--formula-ref-color);
