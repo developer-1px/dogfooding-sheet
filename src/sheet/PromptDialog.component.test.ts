@@ -60,10 +60,12 @@ describe('PromptDialog component', () => {
     const cancel = document.querySelector<HTMLButtonElement>('.prompt-dialog button:not(.primary)')
     expect(cancel?.type).toBe('button')
     expect(cancel?.textContent).toBe('취소')
+    expect(cancel?.getAttribute('aria-label')).toBe('취소')
     expect(cancel?.getAttribute('title')).toBe('취소 (Esc)')
     expect(cancel?.getAttribute('aria-keyshortcuts')).toBe('Escape')
 
     const submit = document.querySelector<HTMLButtonElement>('.prompt-dialog .primary')
+    expect(submit?.getAttribute('aria-label')).toBe('적용')
     expect(submit?.getAttribute('title')).toBe('적용 (Enter)')
     expect(submit?.getAttribute('aria-keyshortcuts')).toBe('Enter')
 
