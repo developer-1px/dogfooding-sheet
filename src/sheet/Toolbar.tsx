@@ -64,12 +64,18 @@ interface Props extends SheetMutations, OverflowProps, ValidationActions, CondAc
 export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusKey, selectedIds, setFormat, formatOf, insertRow, deleteRow, insertCol, deleteCol, appendRows, appendCols, sortByCol, updateStyle, styleOf, freeze, toggleFreezeRows, toggleFreezeCols, filter, applyFilter, clearFilter, hasHidden, showAll, setListRule, setCheckboxRule, clearRule, openHelp, insertLink, addCondRule, clearCondRules, hasCondRules, sheet, previewSheetReplacement, applySheetReplacement, clearCellValues, ask, confirm, undo, redo, canUndo, canRedo, showFormulas, toggleShowFormulas, showGridlines, toggleShowGridlines, clearAllFormats, mergeSelection, rowCount, colCount }: Props) {
   const focus = focusKey ? parseA1(focusKey) : null
   const focusRow = focus?.row
+  const hasFocusedRow = focusRow !== undefined
+  const hasFocusedCol = !!focus
   const focusRowLabel = focusRow !== undefined ? `${focusRow + 1}행` : '현재 행'
   const focusColLabel = focus ? `${focus.col}열` : '현재 열'
-  const insertRowTitle = `${focusRowLabel} 위에 행 삽입 (Ctrl/⌘+Alt+=)`
-  const deleteRowTitle = `${focusRowLabel} 삭제 (Ctrl/⌘+Alt+-)`
-  const insertColTitle = `${focusColLabel} 왼쪽에 열 삽입 (Ctrl/⌘+Alt+Shift+=)`
-  const deleteColTitle = `${focusColLabel} 삭제 (Ctrl/⌘+Alt+Shift+-)`
+  const insertRowLabel = hasFocusedRow ? `${focusRowLabel} 위에 행 삽입` : '삽입할 기준 행 없음'
+  const deleteRowLabel = hasFocusedRow ? `${focusRowLabel} 삭제` : '삭제할 행 없음'
+  const insertColLabel = hasFocusedCol ? `${focusColLabel} 왼쪽에 열 삽입` : '삽입할 기준 열 없음'
+  const deleteColLabel = hasFocusedCol ? `${focusColLabel} 삭제` : '삭제할 열 없음'
+  const insertRowTitle = `${insertRowLabel} (Ctrl/⌘+Alt+=)`
+  const deleteRowTitle = `${deleteRowLabel} (Ctrl/⌘+Alt+-)`
+  const insertColTitle = `${insertColLabel} (Ctrl/⌘+Alt+Shift+=)`
+  const deleteColTitle = `${deleteColLabel} (Ctrl/⌘+Alt+Shift+-)`
   const canAppendRows = rowCount < MAX_ROW_COUNT
   const canAppendCols = colCount < MAX_COL_COUNT
   const appendRowsLabel = canAppendRows ? `아래에 행 20개 추가 (현재 ${rowCount}행)` : `행 최대 개수 도달 (현재 ${rowCount}행)`
@@ -140,8 +146,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   return (
     <>
       <button {...toolbarCommandButtonProps} onClick={undo} disabled={!canUndo} title={`${undoLabel} (Ctrl/⌘+Z)`} aria-keyshortcuts="Control+Z Meta+Z" aria-label={undoLabel}>↶</button><button {...toolbarCommandButtonProps} onClick={redo} disabled={!canRedo} title={`${redoLabel} (Ctrl/⌘+Shift+Z)`} aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label={redoLabel}>↷</button>
-      <button {...toolbarCommandButtonProps} onClick={() => focusRow !== undefined && insertRow(focusRow)} disabled={focusRow === undefined} title={insertRowTitle} aria-label={`${focusRowLabel} 위에 행 삽입`} aria-keyshortcuts="Control+Alt+= Meta+Alt+=">+행</button><button {...toolbarCommandButtonProps} onClick={() => focusRow !== undefined && deleteRow(focusRow)} disabled={focusRow === undefined} title={deleteRowTitle} aria-label={`${focusRowLabel} 삭제`} aria-keyshortcuts="Control+Alt+- Meta+Alt+-">−행</button>
-      <button {...toolbarCommandButtonProps} onClick={() => focus && insertCol(focus.col)} disabled={!focus} title={insertColTitle} aria-label={`${focusColLabel} 왼쪽에 열 삽입`} aria-keyshortcuts="Control+Alt+Shift+= Meta+Alt+Shift+=">+열</button><button {...toolbarCommandButtonProps} onClick={() => focus && deleteCol(focus.col)} disabled={!focus} title={deleteColTitle} aria-label={`${focusColLabel} 삭제`} aria-keyshortcuts="Control+Alt+Shift+- Meta+Alt+Shift+-">−열</button>
+      <button {...toolbarCommandButtonProps} onClick={() => focusRow !== undefined && insertRow(focusRow)} disabled={!hasFocusedRow} title={insertRowTitle} aria-label={insertRowLabel} aria-keyshortcuts="Control+Alt+= Meta+Alt+=">+행</button><button {...toolbarCommandButtonProps} onClick={() => focusRow !== undefined && deleteRow(focusRow)} disabled={!hasFocusedRow} title={deleteRowTitle} aria-label={deleteRowLabel} aria-keyshortcuts="Control+Alt+- Meta+Alt+-">−행</button>
+      <button {...toolbarCommandButtonProps} onClick={() => focus && insertCol(focus.col)} disabled={!hasFocusedCol} title={insertColTitle} aria-label={insertColLabel} aria-keyshortcuts="Control+Alt+Shift+= Meta+Alt+Shift+=">+열</button><button {...toolbarCommandButtonProps} onClick={() => focus && deleteCol(focus.col)} disabled={!hasFocusedCol} title={deleteColTitle} aria-label={deleteColLabel} aria-keyshortcuts="Control+Alt+Shift+- Meta+Alt+Shift+-">−열</button>
       <button {...toolbarCommandButtonProps} onClick={() => appendRows(20)} disabled={!canAppendRows} title={appendRowsLabel} aria-label={appendRowsLabel}>+20행</button><button {...toolbarCommandButtonProps} onClick={() => appendCols(1)} disabled={!canAppendCols} title={appendColsLabel} aria-label={appendColsLabel}>+끝열</button>
       <button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'asc')} disabled={!canSort} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'desc')} disabled={!canSort} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
       <button {...toolbarCommandButtonProps} onClick={runAutoSum} disabled={!canAutoSum} title={autoSumTitle} aria-label={autoSumLabel}>Σ</button>

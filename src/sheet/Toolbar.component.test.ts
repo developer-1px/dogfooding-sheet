@@ -622,6 +622,43 @@ describe('Toolbar component', () => {
     expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 모두 해제')
   })
 
+  it('clarifies disabled structure command labels without focus', () => {
+    const props = renderToolbar({ focusKey: null, selectedIds: [], filter: null })
+
+    const insertRow = document.querySelector<HTMLButtonElement>('button[aria-label="삽입할 기준 행 없음"]')
+    const deleteRow = document.querySelector<HTMLButtonElement>('button[aria-label="삭제할 행 없음"]')
+    const insertCol = document.querySelector<HTMLButtonElement>('button[aria-label="삽입할 기준 열 없음"]')
+    const deleteCol = document.querySelector<HTMLButtonElement>('button[aria-label="삭제할 열 없음"]')
+
+    expect(insertRow?.textContent).toBe('+행')
+    expect(insertRow?.disabled).toBe(true)
+    expect(insertRow?.getAttribute('title')).toBe('삽입할 기준 행 없음 (Ctrl/⌘+Alt+=)')
+    expect(insertRow?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+= Meta+Alt+=')
+    expect(deleteRow?.textContent).toBe('−행')
+    expect(deleteRow?.disabled).toBe(true)
+    expect(deleteRow?.getAttribute('title')).toBe('삭제할 행 없음 (Ctrl/⌘+Alt+-)')
+    expect(deleteRow?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+- Meta+Alt+-')
+
+    expect(insertCol?.textContent).toBe('+열')
+    expect(insertCol?.disabled).toBe(true)
+    expect(insertCol?.getAttribute('title')).toBe('삽입할 기준 열 없음 (Ctrl/⌘+Alt+Shift+=)')
+    expect(insertCol?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+Shift+= Meta+Alt+Shift+=')
+    expect(deleteCol?.textContent).toBe('−열')
+    expect(deleteCol?.disabled).toBe(true)
+    expect(deleteCol?.getAttribute('title')).toBe('삭제할 열 없음 (Ctrl/⌘+Alt+Shift+-)')
+    expect(deleteCol?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+Shift+- Meta+Alt+Shift+-')
+
+    act(() => insertRow!.click())
+    act(() => deleteRow!.click())
+    act(() => insertCol!.click())
+    act(() => deleteCol!.click())
+
+    expect(props.insertRow).not.toHaveBeenCalled()
+    expect(props.deleteRow).not.toHaveBeenCalled()
+    expect(props.insertCol).not.toHaveBeenCalled()
+    expect(props.deleteCol).not.toHaveBeenCalled()
+  })
+
   it('exposes structure shortcut hints without changing labels or wiring', () => {
     const props = renderToolbar()
 
