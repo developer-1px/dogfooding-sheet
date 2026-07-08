@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 describe('REC devtools styles', () => {
+  const appCss = () => readFileSync(join(process.cwd(), 'src/App.css'), 'utf8')
   const css = () => readFileSync(join(process.cwd(), 'src/interactive-os/devtools.css'), 'utf8')
 
   it('uses spreadsheet design tokens for idle overlay chrome', () => {
@@ -38,13 +39,16 @@ describe('REC devtools styles', () => {
   })
 
   it('keeps the overlay dot stable and clips only the text label', () => {
+    const root = appCss()
     const source = css()
     const dotRule = source.match(/\.rec-dot\s*\{[^}]+\}/)?.[0] ?? ''
     const labelRule = source.match(/\.rec-label\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(root).toContain('--sheet-size-rec-dot: 7px;')
     expect(dotRule).toContain('flex: 0 0 auto;')
-    expect(dotRule).toContain('width: 7px;')
-    expect(dotRule).toContain('height: 7px;')
+    expect(dotRule).toContain('width: var(--sheet-size-rec-dot, 7px);')
+    expect(dotRule).toContain('height: var(--sheet-size-rec-dot, 7px);')
+    expect(dotRule).toContain('border-radius: var(--sheet-radius-round, 999px);')
     expect(labelRule).toContain('min-width: 0;')
     expect(labelRule).toContain('overflow: hidden;')
     expect(labelRule).toContain('text-overflow: ellipsis;')
@@ -70,5 +74,7 @@ describe('REC devtools styles', () => {
     expect(source).not.toMatch(/border-radius:\s*6px;/)
     expect(source).not.toMatch(/font:\s*700 11px\/1 system-ui, sans-serif;/)
     expect(source).not.toMatch(/border-radius:\s*999px;/)
+    expect(source).not.toMatch(/width:\s*7px;/)
+    expect(source).not.toMatch(/height:\s*7px;/)
   })
 })
