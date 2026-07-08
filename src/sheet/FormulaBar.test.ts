@@ -23,9 +23,9 @@ describe('FormulaBar', () => {
     expect(document.querySelector('button.addr')?.getAttribute('aria-label')).toBe('B12 셀로 이동')
     expect(document.querySelector('button.addr')?.getAttribute('title')).toBe('셀로 이동 (Ctrl/⌘+G)')
     expect(document.querySelector('button.addr')?.getAttribute('aria-keyshortcuts')).toBe('Control+G Meta+G')
-    expect(document.querySelector('input.formula')?.getAttribute('aria-label')).toBe('수식 입력줄')
+    expect(document.querySelector('input.formula')?.getAttribute('aria-label')).toBe('B12 셀 수식 입력줄')
     expect(document.querySelector('input.formula')?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape F4')
-    expect(document.querySelector('input.formula')?.getAttribute('title')).toBe('수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)')
+    expect(document.querySelector('input.formula')?.getAttribute('title')).toBe('B12 셀 수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)')
     expect(document.querySelector('button[aria-label="실행 취소"]')?.textContent).toBe('실행 취소')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
     expect(document.querySelector('button[aria-label="실행 취소"]')?.getAttribute('title')).toBe('실행 취소 (Ctrl/⌘+Z)')
@@ -169,9 +169,9 @@ describe('FormulaBar', () => {
 
     const formula = document.querySelector<HTMLInputElement>('input.formula')!
 
-    expect(formula.getAttribute('aria-label')).toBe('수식 입력줄')
+    expect(formula.getAttribute('aria-label')).toBe('A1 셀 수식 입력줄')
     expect(formula.getAttribute('aria-keyshortcuts')).toBe('Enter Escape F4')
-    expect(formula.getAttribute('title')).toBe('수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)')
+    expect(formula.getAttribute('title')).toBe('A1 셀 수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)')
 
     act(() => formula.focus())
     act(() => keyDown(formula, 'ArrowLeft'))
