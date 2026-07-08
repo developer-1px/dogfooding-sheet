@@ -122,9 +122,33 @@ describe('EditableGrid', () => {
     try {
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-rowcount')).toBe('3')
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe('3')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-label')).toBe('Editable grid')
       expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.textContent)).toEqual(['Name', 'Qty', 'Total'])
       expect(gridCells().map((cell) => cell.textContent)).toEqual(['Apple', '3', '3.00', 'Bread', '2', '4.00'])
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('allows host apps to provide a specific grid label', () => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+    act(() => {
+      root.render(createElement(EditableGrid, {
+        surface,
+        value,
+        onChange: vi.fn(),
+        ariaLabel: 'Invoice line items',
+      }))
+    })
+    try {
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-label')).toBe('Invoice line items')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-rowcount')).toBe('3')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe('3')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
     } finally {
       cleanup(root, host)
     }

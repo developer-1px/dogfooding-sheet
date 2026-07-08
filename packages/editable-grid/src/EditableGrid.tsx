@@ -35,6 +35,7 @@ export interface EditableGridRenderCell {
 
 export interface EditableGridProps<TValue = unknown, TMeta = unknown> extends EditableGridHostContract<TValue, TMeta> {
   readonly className?: string
+  readonly ariaLabel?: string
   readonly renderCell?: (cell: EditableGridRenderCell) => ReactNode
 }
 
@@ -46,6 +47,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
   onChange,
   onSelectionChange,
   className,
+  ariaLabel = 'Editable grid',
   renderCell,
 }: EditableGridProps<TValue, TMeta>) {
   const gridId = useId()
@@ -66,6 +68,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
       rowCount={controller.rows.length + 1}
       colCount={surface.columns.length}
       className={className}
+      aria-label={ariaLabel}
     >
       <EditableGridRow header>
         {surface.columns.map((column, columnIndex) => (
