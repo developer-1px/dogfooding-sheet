@@ -366,29 +366,29 @@ describe('Toolbar component', () => {
   it('disables toolbar sort buttons without a focused column', () => {
     renderToolbar({ focusKey: null, filter: null })
 
-    const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="현재 열 오름차순 정렬"]')
-    const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="현재 열 내림차순 정렬"]')
+    const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="오름차순 정렬할 열 없음"]')
+    const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="내림차순 정렬할 열 없음"]')
 
     expect(sortAsc?.textContent).toBe('↑정렬')
     expect(sortAsc?.disabled).toBe(true)
-    expect(sortAsc?.getAttribute('title')).toBe('현재 열 오름차순 정렬')
+    expect(sortAsc?.getAttribute('title')).toBe('오름차순 정렬할 열 없음')
     expect(sortDesc?.textContent).toBe('↓정렬')
     expect(sortDesc?.disabled).toBe(true)
-    expect(sortDesc?.getAttribute('title')).toBe('현재 열 내림차순 정렬')
+    expect(sortDesc?.getAttribute('title')).toBe('내림차순 정렬할 열 없음')
   })
 
   it('disables toolbar sort buttons when sorting cannot change a single-row sheet', () => {
     renderToolbar({ rowCount: 1, focusKey: 'B1', selectedIds: ['B1'], filter: null })
 
-    const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]')
-    const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬"]')
+    const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬할 데이터 행 없음"]')
+    const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬할 데이터 행 없음"]')
 
     expect(sortAsc?.textContent).toBe('↑정렬')
     expect(sortAsc?.disabled).toBe(true)
-    expect(sortAsc?.getAttribute('title')).toBe('B열 오름차순 정렬')
+    expect(sortAsc?.getAttribute('title')).toBe('B열 오름차순 정렬할 데이터 행 없음')
     expect(sortDesc?.textContent).toBe('↓정렬')
     expect(sortDesc?.disabled).toBe(true)
-    expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬')
+    expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬할 데이터 행 없음')
   })
 
   it('disables append buttons at sheet limits', () => {

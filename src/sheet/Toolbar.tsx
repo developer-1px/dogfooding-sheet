@@ -72,8 +72,16 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const deleteColTitle = `${focusColLabel} 삭제 (Ctrl/⌘+Alt+Shift+-)`
   const appendRowsLabel = `아래에 행 20개 추가 (현재 ${rowCount}행)`
   const appendColsLabel = `오른쪽에 열 1개 추가 (현재 ${colCount}열)`
-  const sortAscLabel = `${focusColLabel} 오름차순 정렬`
-  const sortDescLabel = `${focusColLabel} 내림차순 정렬`
+  const sortAscLabel = !focus
+    ? '오름차순 정렬할 열 없음'
+    : rowCount <= 1
+      ? `${focus.col}열 오름차순 정렬할 데이터 행 없음`
+      : `${focus.col}열 오름차순 정렬`
+  const sortDescLabel = !focus
+    ? '내림차순 정렬할 열 없음'
+    : rowCount <= 1
+      ? `${focus.col}열 내림차순 정렬할 데이터 행 없음`
+      : `${focus.col}열 내림차순 정렬`
   const freezeRowsLabel = `첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`
   const freezeColsLabel = `첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`
   const filterCriteriaLabel = filter ? `${filter.col}열 필터: ${filter.text}` : null
