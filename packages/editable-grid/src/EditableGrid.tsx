@@ -111,6 +111,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
               <EditableGridCell
                 key={column.id}
                 cellId={addressDomId(address)}
+                rowIndex={rowIndex + 2}
                 colIndex={columnIndex + 1}
                 selected={selected}
                 editing={isEditing}
