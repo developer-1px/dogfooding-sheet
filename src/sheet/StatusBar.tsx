@@ -42,6 +42,10 @@ const statusRegionProps = {
   'aria-atomic': 'true',
 } as const
 
+function AggregateMetric({ code, title, value }: { code: string; title: string; value: number }) {
+  return <span title={title} aria-label={`${title}: ${value}`}>{code}: <b>{value}</b></span>
+}
+
 export function StatusBar(props: Props) {
   const model = statusBarViewModel(props)
   const saved = persistencePresentation(props.persistence)
@@ -61,15 +65,15 @@ export function StatusBar(props: Props) {
     <footer className="status-bar" {...statusRegionProps}>
       <span>{model.summary}</span>
       {saveStatus}
-      <span title={aggregateTitles.nonEmpty}>COUNTA: <b>{model.nonEmpty}</b></span>
+      <AggregateMetric code="COUNTA" title={aggregateTitles.nonEmpty} value={model.nonEmpty} />
       {model.numeric && (
         <>
-          <span title={aggregateTitles.sum}>SUM: <b>{fmt(model.numeric.sum)}</b></span>
-          <span title={aggregateTitles.avg}>AVG: <b>{fmt(model.numeric.avg)}</b></span>
-          <span title={aggregateTitles.min}>MIN: <b>{fmt(model.numeric.min)}</b></span>
-          <span title={aggregateTitles.max}>MAX: <b>{fmt(model.numeric.max)}</b></span>
-          <span title={aggregateTitles.count}>COUNT: <b>{model.numeric.count}</b></span>
-          <span title={aggregateTitles.median}>MEDIAN: <b>{fmt(model.numeric.median)}</b></span>
+          <AggregateMetric code="SUM" title={aggregateTitles.sum} value={fmt(model.numeric.sum)} />
+          <AggregateMetric code="AVG" title={aggregateTitles.avg} value={fmt(model.numeric.avg)} />
+          <AggregateMetric code="MIN" title={aggregateTitles.min} value={fmt(model.numeric.min)} />
+          <AggregateMetric code="MAX" title={aggregateTitles.max} value={fmt(model.numeric.max)} />
+          <AggregateMetric code="COUNT" title={aggregateTitles.count} value={model.numeric.count} />
+          <AggregateMetric code="MEDIAN" title={aggregateTitles.median} value={fmt(model.numeric.median)} />
         </>
       )}
     </footer>
