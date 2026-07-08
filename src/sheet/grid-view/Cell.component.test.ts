@@ -186,6 +186,18 @@ describe('Cell component', () => {
     expect(cell?.className).toContain('ref-hi')
   })
 
+  it('exposes fill preview state through the gridcell label', () => {
+    renderCell({
+      label: '42',
+      previewing: true,
+    })
+
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"]')
+
+    expect(cell?.getAttribute('aria-label')).toBe('A1 42 자동 채우기 미리보기')
+    expect(cell?.className).toContain('preview')
+  })
+
   it('keeps validation select keyboard events inside the select control', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()

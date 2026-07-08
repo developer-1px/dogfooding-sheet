@@ -85,6 +85,7 @@ export function createCellDisplayModel(args: CellDisplayArgs): CellDisplayModel 
     args.checkbox ? '체크박스 셀' : '',
     args.formula ? '수식 셀' : '',
     args.highlighted ? '수식 참조 강조됨' : '',
+    args.previewing ? '자동 채우기 미리보기' : '',
     args.selected ? '선택됨' : '',
     args.focused ? '현재 셀' : '',
     args.editing ? '편집 중' : '',
