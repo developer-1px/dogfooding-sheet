@@ -243,7 +243,9 @@ describe('OverflowMenu component', () => {
     const css = overlaysCss()
     const listRule = css.match(/\.overflow-list\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-overflow-menu-border: 1px;')
     expect(rootCss).toContain('--sheet-size-overflow-menu-width: 160px;')
+    expect(listRule).toContain('border: var(--sheet-size-overflow-menu-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(listRule).toContain('min-width: min(var(--sheet-size-overflow-menu-width, 160px), max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))));')
     expect(listRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));')
     expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
