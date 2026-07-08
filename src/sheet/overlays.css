@@ -113,7 +113,8 @@
   overflow: auto;
 }
 .confirm-dialog p { margin: 0 0 var(--sheet-space-6, 16px); font-size: var(--sheet-font-size-control, 14px); }
-.confirm-actions { display: flex; justify-content: flex-end; gap: var(--sheet-space-3, 8px); }
+.confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sheet-space-3, 8px); }
+.confirm-actions button { max-width: 100%; overflow-wrap: anywhere; }
 .confirm-actions .danger { background: var(--sheet-color-danger, #d93025); color: var(--sheet-color-surface, #fff); border-color: var(--sheet-color-danger, #d93025); }
 .help-dialog h2 { margin: 0 0 var(--sheet-space-5, 12px); font-size: var(--sheet-font-size-title, 16px); }
 .help-dialog table { border-collapse: collapse; width: 100%; }

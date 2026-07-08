@@ -90,4 +90,11 @@ describe('ConfirmDialog component', () => {
     expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
     expect(css.match(/overflow: auto/g)?.length).toBeGreaterThanOrEqual(2)
   })
+
+  it('keeps confirm dialog actions contained on narrow viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('.confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sheet-space-3, 8px); }')
+    expect(css).toContain('.confirm-actions button { max-width: 100%; overflow-wrap: anywhere; }')
+  })
 })
