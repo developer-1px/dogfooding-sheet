@@ -138,8 +138,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const mergeLabel = canMerge ? '선택 셀 병합 또는 병합 해제' : '병합 가능한 셀 범위 없음'
   const mergeTitle = canMerge ? '선택 셀 병합 / 병합 해제 (Alt+Shift+M)' : mergeLabel
   const canAutoSum = focus ? autoSumFormula(focus.col, focus.row, display) !== null : false
-  const autoSumLabel = canAutoSum ? '자동 합계' : '자동 합계할 숫자 범위 없음'
-  const autoSumTitle = canAutoSum ? '자동 합계 (위쪽 연속 숫자 합)' : autoSumLabel
+  const autoSumLabel = canAutoSum && focusKey ? `${focusKey}에 자동 합계` : '자동 합계할 숫자 범위 없음'
+  const autoSumTitle = canAutoSum && focusKey ? `${autoSumLabel} (위쪽 연속 숫자 합)` : autoSumLabel
   const applyF = (format: Format) => applyToolbarFormat({ selectedIds, focusKey, format, setFormat })
   const toggle = (flag: ToolbarStyleFlag) => toggleToolbarStyle({ selectedIds, focusKey, flag, styleOf, updateStyle })
   const setAlign = (alignment: CellStyle['a']) => setToolbarAlignment({ selectedIds, focusKey, alignment, updateStyle })
