@@ -109,9 +109,12 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const listValidationLabel = hasCellTarget ? '드롭다운 목록 유효성 검사 설정' : '드롭다운 목록을 설정할 셀 없음'
   const listValidationTitle = hasCellTarget ? '유효성 검사 (드롭다운 목록)' : listValidationLabel
   const checkboxLabel = hasCellTarget ? '체크박스로 변환' : '체크박스로 변환할 셀 없음'
-  const leftAlignLabel = hasCellTarget ? '왼쪽 정렬' : '왼쪽 정렬할 셀 없음'
-  const centerAlignLabel = hasCellTarget ? '가운데 정렬' : '가운데 정렬할 셀 없음'
-  const rightAlignLabel = hasCellTarget ? '오른쪽 정렬' : '오른쪽 정렬할 셀 없음'
+  const leftAlignPressed = focusedStyle?.a === 'left'
+  const centerAlignPressed = focusedStyle?.a === 'center'
+  const rightAlignPressed = focusedStyle?.a === 'right'
+  const leftAlignLabel = hasCellTarget ? `왼쪽 정렬 ${leftAlignPressed ? '켜짐' : '꺼짐'}` : '왼쪽 정렬할 셀 없음'
+  const centerAlignLabel = hasCellTarget ? `가운데 정렬 ${centerAlignPressed ? '켜짐' : '꺼짐'}` : '가운데 정렬할 셀 없음'
+  const rightAlignLabel = hasCellTarget ? `오른쪽 정렬 ${rightAlignPressed ? '켜짐' : '꺼짐'}` : '오른쪽 정렬할 셀 없음'
   const clearFormatLabel = hasCellTarget ? '서식 모두 해제' : '서식을 해제할 셀 없음'
   const canSort = !!focus && rowCount > 1
   const canToggleFreezeRows = rowCount > 1 || freeze.rows > 0
@@ -154,9 +157,9 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'asc')} disabled={!canSort} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'desc')} disabled={!canSort} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
       <button {...toolbarCommandButtonProps} onClick={runAutoSum} disabled={!canAutoSum} title={autoSumTitle} aria-label={autoSumLabel}>Σ</button>
       <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} disabled={!hasCellTarget} />
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'left'} title={leftAlignLabel} aria-label={leftAlignLabel}>⇤</button>
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'center'} title={centerAlignLabel} aria-label={centerAlignLabel}>⇔</button>
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'right'} title={rightAlignLabel} aria-label={rightAlignLabel}>⇥</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={leftAlignPressed} title={leftAlignLabel} aria-label={leftAlignLabel}>⇤</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={centerAlignPressed} title={centerAlignLabel} aria-label={centerAlignLabel}>⇔</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={rightAlignPressed} title={rightAlignLabel} aria-label={rightAlignLabel}>⇥</button>
       <label className="color-pick" title={bgColorLabel}>🎨<input type="color" value={bgColorValue} title={bgColorLabel} aria-label={bgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
       <label className="color-pick" title={fgColorLabel}>A<input type="color" value={fgColorValue} title={fgColorLabel} aria-label={fgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
       <button {...toolbarCommandButtonProps} onClick={clearStyle} disabled={!hasCellTarget} title={clearFormatLabel} aria-label={clearFormatLabel} aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button {...toolbarCommandButtonProps} onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title={mergeTitle} aria-label={mergeLabel} aria-keyshortcuts="Alt+Shift+M">⊞병합</button>

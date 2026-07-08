@@ -141,7 +141,21 @@ describe('Toolbar component', () => {
     expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.getAttribute('title')).toBe('굵게 꺼짐 (Ctrl/⌘+B)')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
+    const leftAlign = document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬 꺼짐"]')
+    const centerAlign = document.querySelector<HTMLButtonElement>('button[aria-label="가운데 정렬 꺼짐"]')
+    const rightAlign = document.querySelector<HTMLButtonElement>('button[aria-label="오른쪽 정렬 꺼짐"]')
+    expect(leftAlign?.textContent).toBe('⇤')
+    expect(leftAlign?.disabled).toBe(false)
+    expect(leftAlign?.getAttribute('aria-pressed')).toBe('false')
+    expect(leftAlign?.getAttribute('title')).toBe('왼쪽 정렬 꺼짐')
+    expect(centerAlign?.textContent).toBe('⇔')
+    expect(centerAlign?.disabled).toBe(false)
+    expect(centerAlign?.getAttribute('aria-pressed')).toBe('false')
+    expect(centerAlign?.getAttribute('title')).toBe('가운데 정렬 꺼짐')
+    expect(rightAlign?.textContent).toBe('⇥')
+    expect(rightAlign?.disabled).toBe(false)
+    expect(rightAlign?.getAttribute('aria-pressed')).toBe('false')
+    expect(rightAlign?.getAttribute('title')).toBe('오른쪽 정렬 꺼짐')
     const defaultBgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
     const defaultFgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
     expect(defaultBgColor?.disabled).toBe(false)
@@ -178,6 +192,22 @@ describe('Toolbar component', () => {
     expect(redoButton?.disabled).toBe(true)
     expect(redoButton?.getAttribute('title')).toBe('다시 실행할 작업 없음 (Ctrl/⌘+Shift+Z)')
     expect(redoButton?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
+  })
+
+  it('labels the active alignment button state', () => {
+    renderToolbar({ styleOf: () => ({ a: 'center' }) })
+
+    const leftAlign = document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬 꺼짐"]')
+    const centerAlign = document.querySelector<HTMLButtonElement>('button[aria-label="가운데 정렬 켜짐"]')
+    const rightAlign = document.querySelector<HTMLButtonElement>('button[aria-label="오른쪽 정렬 꺼짐"]')
+
+    expect(leftAlign?.getAttribute('aria-pressed')).toBe('false')
+    expect(leftAlign?.getAttribute('title')).toBe('왼쪽 정렬 꺼짐')
+    expect(centerAlign?.textContent).toBe('⇔')
+    expect(centerAlign?.getAttribute('aria-pressed')).toBe('true')
+    expect(centerAlign?.getAttribute('title')).toBe('가운데 정렬 켜짐')
+    expect(rightAlign?.getAttribute('aria-pressed')).toBe('false')
+    expect(rightAlign?.getAttribute('title')).toBe('오른쪽 정렬 꺼짐')
   })
 
   it('keeps toolbar color picker activation keys inside the color controls', () => {
@@ -278,7 +308,7 @@ describe('Toolbar component', () => {
       document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="2행 위에 행 삽입"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬 꺼짐"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="첫 행 고정 토글 (현재 1행 고정)"]'),
@@ -636,7 +666,7 @@ describe('Toolbar component', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬 꺼짐"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')?.disabled).toBe(false)
