@@ -196,6 +196,44 @@ describe('EditableGrid', () => {
     }
   })
 
+  it('keeps keyboard navigation at grid bounds without redundant selection changes', () => {
+    const { host, root, onSelectionChange } = setup()
+    try {
+      const cells = gridCells()
+      const [first] = cells
+      act(() => first.focus())
+      onSelectionChange.mockClear()
+
+      act(() => keyDown(first, 'ArrowLeft'))
+      act(() => keyDown(first, 'ArrowUp'))
+
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expectFocusedGridCell(cells, first)
+
+      act(() => keyDown(first, 'ArrowRight'))
+      const qtyCell = cells[1]
+      expect(onSelectionChange).toHaveBeenCalledTimes(1)
+      expectFocusedGridCell(cells, qtyCell)
+
+      act(() => keyDown(qtyCell, 'ArrowRight'))
+      const lastColumnCell = cells[2]
+      act(() => keyDown(lastColumnCell, 'ArrowRight'))
+
+      expect(onSelectionChange).toHaveBeenCalledTimes(2)
+      expectFocusedGridCell(cells, lastColumnCell)
+
+      act(() => keyDown(lastColumnCell, 'ArrowDown'))
+      const lastCell = cells[5]
+      act(() => keyDown(lastCell, 'ArrowDown'))
+      act(() => keyDown(lastCell, 'ArrowRight'))
+
+      expect(onSelectionChange).toHaveBeenCalledTimes(3)
+      expectFocusedGridCell(cells, lastCell)
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
   it('moves serializable selection and DOM focus with pointer selection', () => {
     const { host, root, onSelectionChange } = setup()
     try {

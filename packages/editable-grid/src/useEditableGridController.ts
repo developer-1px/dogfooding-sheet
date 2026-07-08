@@ -16,6 +16,7 @@ import {
   formatCellValue,
   getEditableGridCellId,
   isReadonlyColumn,
+  sameAddress,
 } from './editableGridFieldModel'
 
 export type UseEditableGridControllerArgs<TValue = unknown, TMeta = unknown> =
@@ -52,6 +53,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
   }
 
   const focusCell = (address: EditableGridAddress) => {
+    if (sameAddress(activeSelection.focus, address)) return
     setSelection(selectionForAddress(address))
   }
 
@@ -126,6 +128,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     const nextColumn = surface.columns[nextCol]
     if (!nextColumn) return
     const nextAddress = { rowIndex: nextRow, columnId: nextColumn.id }
+    if (nextAddress.rowIndex === address.rowIndex && nextAddress.columnId === address.columnId) return
     focusCellWithDomFocus(nextAddress)
   }
 
