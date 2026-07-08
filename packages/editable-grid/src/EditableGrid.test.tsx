@@ -132,6 +132,9 @@ describe('EditableGrid', () => {
       expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect([...document.querySelectorAll('[role="row"]')].map((row) => row.getAttribute('aria-rowindex'))).toEqual(['1', '2', '3'])
       expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.textContent)).toEqual(['Name', 'Qty', 'Total'])
+      expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.getAttribute('aria-colindex'))).toEqual(['1', '2', '3'])
+      expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.getAttribute('aria-label'))).toEqual(['Name column 1', 'Qty column 2', 'Total column 3'])
+      expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.getAttribute('title'))).toEqual(['Name column 1', 'Qty column 2', 'Total column 3'])
       const cells = gridCells()
       const [nameCell, qtyCell, totalCell] = cells
       expect(cells.map((cell) => cell.textContent)).toEqual(['Apple', '3', '3.00', 'Bread', '2', '4.00'])
