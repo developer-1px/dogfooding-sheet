@@ -395,9 +395,13 @@ describe('EditableGrid', () => {
     try {
       const statusCell = gridCells()[1]
       expect(statusCell.textContent).toBe('Todo')
+      expect(statusCell.getAttribute('aria-haspopup')).toBe('listbox')
+      expect(statusCell.getAttribute('aria-expanded')).toBe('false')
 
       act(() => statusCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
       const select = document.querySelector<HTMLSelectElement>('select.editable-grid-input')
+      expect(statusCell.hasAttribute('aria-haspopup')).toBe(false)
+      expect(statusCell.hasAttribute('aria-expanded')).toBe(false)
       expect(select?.value).toBe('todo')
 
       act(() => setSelectValue(select!, 'done'))
