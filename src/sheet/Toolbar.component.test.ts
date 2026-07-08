@@ -174,7 +174,9 @@ describe('Toolbar component', () => {
 
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')?.disabled).toBe(false)
+    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
+    expect(addCondFormat?.disabled).toBe(false)
+    expect(addCondFormat?.getAttribute('title')).toBe('B열 조건부 서식 추가')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.disabled).toBe(false)
   })
 
@@ -256,7 +258,7 @@ describe('Toolbar component', () => {
 
     const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게 켜짐"]')
     const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율 켜짐"]')
-    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
+    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
 
     expect(bold?.disabled).toBe(false)
@@ -268,6 +270,7 @@ describe('Toolbar component', () => {
     expect(percent?.getAttribute('title')).toBe('백분율 켜짐 (Ctrl/⌘+Shift+5)')
     expect(percent?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+5 Meta+Shift+5')
     expect(addCondFormat?.disabled).toBe(false)
+    expect(addCondFormat?.getAttribute('title')).toBe('B열 조건부 서식 추가')
     expect(clearCondFormat?.disabled).toBe(false)
 
     act(() => keyDown(bold!, 'Enter'))
@@ -704,10 +707,11 @@ describe('Toolbar component', () => {
   it('disables conditional format clear when no rules exist', () => {
     renderToolbar({ hasCondRules: false })
 
-    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
+    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="해제할 조건부 서식 없음"]')
 
     expect(addCondFormat?.disabled).toBe(false)
+    expect(addCondFormat?.getAttribute('title')).toBe('B열 조건부 서식 추가')
     expect(clearCondFormat?.textContent).toBe('✕조건')
     expect(clearCondFormat?.disabled).toBe(true)
     expect(clearCondFormat?.getAttribute('title')).toBe('해제할 조건부 서식 없음')

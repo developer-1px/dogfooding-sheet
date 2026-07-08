@@ -13,7 +13,7 @@ export function CondFmtButtons({ col, hasRules, addCondRule, clearCondRules, ask
   const onAdd = () => {
     void promptCondFormatRule({ col, ask, addCondRule })
   }
-  const addLabel = col ? '조건부 서식 추가' : '조건부 서식을 추가할 열 없음'
+  const addLabel = col ? `${col}열 조건부 서식 추가` : '조건부 서식을 추가할 열 없음'
   const clearLabel = hasRules ? '조건부 서식 모두 해제' : '해제할 조건부 서식 없음'
 
   return (
