@@ -58,6 +58,7 @@ describe('Cell component', () => {
     expect(checkbox?.getAttribute('aria-label')).toBe('A1 TRUE 체크박스 셀')
     expect(checkbox?.getAttribute('title')).toBe('A1 TRUE 체크박스 셀')
     expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-label')).toBe('A1 TRUE 체크박스 셀')
+    expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-keyshortcuts')).toBe('Enter')
 
     act(() => checkbox!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true })))
 
@@ -224,6 +225,7 @@ describe('Cell component', () => {
     expect(select?.getAttribute('aria-label')).toBe('A1 편집')
     expect(select?.getAttribute('title')).toBe('A1 편집 (Enter=저장 / Esc=취소)')
     expect(select?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
+    expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-keyshortcuts')).toBeNull()
     expect([...select!.querySelectorAll('option')].map((option) => option.value)).toEqual(['', 'Open', 'Closed'])
 
     act(() => select!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))

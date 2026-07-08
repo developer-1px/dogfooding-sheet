@@ -112,6 +112,7 @@ export function Cell(p: Props) {
       aria-invalid={display.error || undefined}
       aria-colspan={p.mergeCols && p.mergeCols > 1 ? p.mergeCols : undefined}
       aria-rowspan={p.mergeRows && p.mergeRows > 1 ? p.mergeRows : undefined}
+      aria-keyshortcuts={p.editing ? undefined : 'Enter'}
       className={className}
       style={p.styleInline}
       data-formula-ref-index={p.formulaReference?.index}
