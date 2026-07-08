@@ -65,7 +65,7 @@
   outline-offset: var(--sheet-focus-offset, 2px);
 }
 .tab-add { background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); margin-left: var(--sheet-space-1, 4px); }
-.tab-add:hover { background: var(--sheet-color-hover, #f1f3f4); }
+.tab-add:hover:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); }
 
 .status-bar {
   display: flex; gap: var(--sheet-space-6, 16px); align-items: center;
@@ -154,7 +154,11 @@
   background: transparent; border: none; padding: 0 var(--sheet-space-1, 4px);
   color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-control-xs, 11px); cursor: pointer;
 }
-.tab-dup:hover { color: var(--sheet-color-accent, #1a73e8); }
+.tab-dup:hover:not(:disabled) { color: var(--sheet-color-accent, #1a73e8); }
+.tab-dup:disabled, .tab-add:disabled {
+  color: var(--sheet-color-disabled, #9aa0a6);
+  cursor: not-allowed;
+}
 .tab-dup:focus-visible {
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: var(--sheet-focus-offset, 2px);

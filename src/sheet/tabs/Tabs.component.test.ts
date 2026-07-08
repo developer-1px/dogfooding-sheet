@@ -191,6 +191,14 @@ describe('Tabs component', () => {
     expect(css).toMatch(/\.tab:focus-within\s+\.tab-color\s*\{\s*opacity:\s*1;\s*\}/)
   })
 
+  it('keeps disabled tab creation controls from showing enabled hover affordances', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('.tab-dup:hover:not(:disabled)')
+    expect(css).toContain('.tab-add:hover:not(:disabled)')
+    expect(css).toMatch(/\.tab-dup:disabled,\s*\.tab-add:disabled\s*\{\s*color:\s*var\(--sheet-color-disabled,\s*#9aa0a6\);\s*cursor:\s*not-allowed;\s*\}/)
+  })
+
   it('keeps add-sheet activation keys inside the tab add control', () => {
     const parentKeys: string[] = []
     const calls = renderTabs({
