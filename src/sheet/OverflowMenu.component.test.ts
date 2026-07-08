@@ -79,6 +79,16 @@ describe('OverflowMenu component', () => {
     expect(items.find((item) => item.textContent === 'CSV 내보내기 (Ctrl/⌘+S)')?.getAttribute('aria-keyshortcuts')).toBe('Control+S Meta+S')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.getAttribute('title')).toBe('CSV 가져오기')
     expect(items.find((item) => item.textContent === 'CSV 가져오기')?.hasAttribute('aria-keyshortcuts')).toBe(false)
+
+    const csvInput = document.querySelector<HTMLInputElement>('input[type="file"][accept=".csv,text/csv"]')
+    const jsonInput = document.querySelector<HTMLInputElement>('input[type="file"][accept=".json,application/json"]')
+
+    expect(csvInput?.getAttribute('aria-label')).toBe('CSV 파일 가져오기')
+    expect(csvInput?.getAttribute('title')).toBe('CSV 파일 가져오기')
+    expect(csvInput?.style.display).toBe('none')
+    expect(jsonInput?.getAttribute('aria-label')).toBe('JSON 파일 가져오기')
+    expect(jsonInput?.getAttribute('title')).toBe('JSON 파일 가져오기')
+    expect(jsonInput?.style.display).toBe('none')
   })
 
   it('keeps overflow menu activation keys inside the menu controls', () => {

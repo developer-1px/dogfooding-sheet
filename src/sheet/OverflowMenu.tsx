@@ -129,9 +129,9 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
           })}
         </div>
       )}
-      <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }}
+      <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} title="CSV 파일 가져오기" aria-label="CSV 파일 가져오기"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) importCsvFile(f); e.target.value = '' }} />
-      <input ref={jsonRef} type="file" accept=".json,application/json" style={{ display: 'none' }}
+      <input ref={jsonRef} type="file" accept=".json,application/json" style={{ display: 'none' }} title="JSON 파일 가져오기" aria-label="JSON 파일 가져오기"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) importJson(f); e.target.value = '' }} />
     </span>
   )
