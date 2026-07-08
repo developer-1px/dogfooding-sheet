@@ -84,16 +84,16 @@ function setup(onChange = vi.fn(), onSelectionChange = vi.fn(), onKeyDown?: Keyb
   return { host, root, onChange, onSelectionChange }
 }
 
-function setupDatabase(onChange = vi.fn(), onKeyDown?: KeyboardEventHandler<HTMLDivElement>) {
+function setupDatabase(onChange = vi.fn(), onKeyDown?: KeyboardEventHandler<HTMLDivElement>, onSelectionChange = vi.fn()) {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const host = document.createElement('div')
   document.body.append(host)
   const root = createRoot(host)
   act(() => {
-    const grid = createElement(EditableGrid, { surface: databaseSurface, value: databaseValue, onChange })
+    const grid = createElement(EditableGrid, { surface: databaseSurface, value: databaseValue, onChange, onSelectionChange })
     root.render(onKeyDown ? createElement('div', { onKeyDown }, grid) : grid)
   })
-  return { host, root, onChange }
+  return { host, root, onChange, onSelectionChange }
 }
 
 const cleanup = (root: Root, host: HTMLElement) => {
@@ -321,6 +321,49 @@ describe('EditableGrid', () => {
           ranges: [{
             anchor: { rowIndex: 0, columnId: 'score' },
             focus: { rowIndex: 0, columnId: 'score' },
+          }],
+        },
+      })
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('keeps checkbox cell keys inside the checkbox control', () => {
+    const parentKeys: string[] = []
+    const onSelectionChange = vi.fn()
+    const { host, root, onChange } = setupDatabase(
+      vi.fn(),
+      (event) => parentKeys.push(event.key),
+      onSelectionChange,
+    )
+    try {
+      const doneCell = gridCells()[2]
+      const checkbox = doneCell.querySelector<HTMLInputElement>('input[type="checkbox"]')
+
+      expect(checkbox?.getAttribute('aria-label')).toBe('Done')
+      expect(checkbox?.disabled).toBe(false)
+      expect(checkbox?.checked).toBe(false)
+
+      act(() => keyDown(checkbox!, 'ArrowRight'))
+      act(() => keyDown(checkbox!, ' '))
+
+      expect(parentKeys).toEqual([])
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expect(onChange).not.toHaveBeenCalled()
+
+      act(() => checkbox!.dispatchEvent(new MouseEvent('click', { bubbles: true })))
+
+      expect(parentKeys).toEqual([])
+      expect(onSelectionChange).toHaveBeenCalledTimes(1)
+      expect(onChange).toHaveBeenCalledWith({
+        patches: [{ op: 'replace', path: '/records/0/done', value: true }],
+        source: 'cell-edit',
+        selection: {
+          focus: { rowIndex: 0, columnId: 'done' },
+          ranges: [{
+            anchor: { rowIndex: 0, columnId: 'done' },
+            focus: { rowIndex: 0, columnId: 'done' },
           }],
         },
       })
