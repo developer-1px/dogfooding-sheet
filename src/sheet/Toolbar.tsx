@@ -153,6 +153,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       : `${mergeTarget} 병합 해제`
     : '병합 가능한 셀 범위 없음'
   const mergeTitle = canMerge ? `${mergeLabel} (Alt+Shift+M)` : mergeLabel
+  const mergeKeyShortcuts = canMerge ? 'Alt+Shift+M' : undefined
   const canAutoSum = focus ? autoSumFormula(focus.col, focus.row, display) !== null : false
   const autoSumLabel = canAutoSum && focusKey ? `${focusKey}에 자동 합계` : '자동 합계할 숫자 범위 없음'
   const autoSumTitle = canAutoSum && focusKey ? `${autoSumLabel} (위쪽 연속 숫자 합)` : autoSumLabel
@@ -181,7 +182,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={rightAlignPressed} title={rightAlignLabel} aria-label={rightAlignLabel}>⇥</button>
       <label className="color-pick" title={bgColorLabel}>🎨<input type="color" value={bgColorValue} title={bgColorLabel} aria-label={bgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
       <label className="color-pick" title={fgColorLabel}>A<input type="color" value={fgColorValue} title={fgColorLabel} aria-label={fgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
-      <button {...toolbarCommandButtonProps} onClick={clearStyle} disabled={!hasCellTarget} title={clearFormatLabel} aria-label={clearFormatLabel} aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button {...toolbarCommandButtonProps} onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title={mergeTitle} aria-label={mergeLabel} aria-keyshortcuts="Alt+Shift+M">⊞병합</button>
+      <button {...toolbarCommandButtonProps} onClick={clearStyle} disabled={!hasCellTarget} title={clearFormatLabel} aria-label={clearFormatLabel} aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button {...toolbarCommandButtonProps} onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title={mergeTitle} aria-label={mergeLabel} aria-keyshortcuts={mergeKeyShortcuts}>⊞병합</button>
       <button {...toolbarCommandButtonProps} onClick={toggleFreezeRows} disabled={!canToggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freezeRowsPressed} style={freezeRowsPressed ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button {...toolbarCommandButtonProps} onClick={toggleFreezeCols} disabled={!canToggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freezeColsPressed} style={freezeColsPressed ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button {...toolbarCommandButtonProps} onClick={openFilterPrompt} disabled={!canOpenFilterPrompt} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button {...toolbarCommandButtonProps} onClick={clearFilter} title={clearFilterLabel} aria-label={clearFilterLabel}>✕</button>}
