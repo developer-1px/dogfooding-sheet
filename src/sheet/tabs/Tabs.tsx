@@ -55,55 +55,59 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
 
   return (
     <div {...rootProps} className="tabs-bar">
-      {state.order.map((name) => (
-        <span
-          key={name}
-          {...tabProps(name)}
-          {...reorder.getItemHandlers(name)}
-          className={`tab${name === state.active ? ' active' : ''}${reorder.overId === name ? ` reorder-over-${reorder.overPosition}` : ''}`}
-          aria-label={name}
-          onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
-          style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
-          title="더블클릭=이름 변경 / 드래그=순서 변경"
-        >
-          {ed.editing === name ? (
-            <input className="tab-rename" {...renameInputProps} title={`${name} 시트 이름 편집 (Enter=저장 / Esc=취소)`} aria-label={`${name} 시트 이름 편집`} aria-keyshortcuts="Enter Escape" />
-          ) : name}
-          <input
-            type="color"
-            className="tab-color"
-            value={state.colors[name] ?? '#cccccc'}
-            onChange={(e) => setTabColor(name, e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={stopTabUtilityKeyDown}
-            title={`${name} 탭 색상 변경`}
-            aria-label={`${name} 탭 색상 변경`}
-          />
-          <button
-            type="button"
-            className="tab-dup"
-            onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }}
-            onKeyDown={stopTabUtilityKeyDown}
-            title={`${name} 시트 복제`}
-            aria-label={`${name} 시트 복제`}
-          >⎘</button>
-          {state.order.length > 1 && (
+      {state.order.map((name) => {
+        const tabColor = state.colors[name] ?? '#cccccc'
+        const colorPickerLabel = `${name} 탭 색상 변경 (현재 색상 ${tabColor})`
+        return (
+          <span
+            key={name}
+            {...tabProps(name)}
+            {...reorder.getItemHandlers(name)}
+            className={`tab${name === state.active ? ' active' : ''}${reorder.overId === name ? ` reorder-over-${reorder.overPosition}` : ''}`}
+            aria-label={name}
+            onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
+            style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
+            title="더블클릭=이름 변경 / 드래그=순서 변경"
+          >
+            {ed.editing === name ? (
+              <input className="tab-rename" {...renameInputProps} title={`${name} 시트 이름 편집 (Enter=저장 / Esc=취소)`} aria-label={`${name} 시트 이름 편집`} aria-keyshortcuts="Enter Escape" />
+            ) : name}
+            <input
+              type="color"
+              className="tab-color"
+              value={tabColor}
+              onChange={(e) => setTabColor(name, e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={stopTabUtilityKeyDown}
+              title={colorPickerLabel}
+              aria-label={colorPickerLabel}
+            />
             <button
               type="button"
-              className="tab-close"
-              onClick={(e) => {
-                e.stopPropagation()
-                confirm({ message: `"${name}" 시트를 삭제하시겠습니까?`, confirmLabel: '삭제' })
-                  .then((ok) => { if (ok) deleteSheet(name) })
-                  .catch(() => {})
-              }}
+              className="tab-dup"
+              onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }}
               onKeyDown={stopTabUtilityKeyDown}
-              title={`${name} 시트 삭제`}
-              aria-label={`${name} 시트 삭제`}
-            >×</button>
-          )}
-        </span>
-      ))}
+              title={`${name} 시트 복제`}
+              aria-label={`${name} 시트 복제`}
+            >⎘</button>
+            {state.order.length > 1 && (
+              <button
+                type="button"
+                className="tab-close"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  confirm({ message: `"${name}" 시트를 삭제하시겠습니까?`, confirmLabel: '삭제' })
+                    .then((ok) => { if (ok) deleteSheet(name) })
+                    .catch(() => {})
+                }}
+                onKeyDown={stopTabUtilityKeyDown}
+                title={`${name} 시트 삭제`}
+                aria-label={`${name} 시트 삭제`}
+              >×</button>
+            )}
+          </span>
+        )
+      })}
       <button type="button" className="tab-add" onClick={addSheet} onKeyDown={stopTabUtilityKeyDown} title="시트 추가" aria-label="시트 추가">+</button>
     </div>
   )
