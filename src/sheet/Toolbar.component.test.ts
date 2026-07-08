@@ -565,7 +565,9 @@ describe('Toolbar component', () => {
     const bgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
     const fgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
     const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="서식을 해제할 셀 없음"]')
-    const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')
+    const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 적용할 셀 없음"]')
+    const percentFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율 적용할 셀 없음"]')
+    const eurFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: EUR 적용할 셀 없음"]')
 
     expect(bold?.textContent).toBe('B')
     expect(bold?.disabled).toBe(true)
@@ -608,7 +610,16 @@ describe('Toolbar component', () => {
     expect(clearFormat?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
     expect(plainFormat?.textContent).toBe('123')
     expect(plainFormat?.disabled).toBe(true)
-    expect(plainFormat?.getAttribute('title')).toBe('일반 (Ctrl/⌘+Shift+1)')
+    expect(plainFormat?.getAttribute('title')).toBe('일반 적용할 셀 없음 (Ctrl/⌘+Shift+1)')
+    expect(plainFormat?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+1 Meta+Shift+1')
+    expect(percentFormat?.textContent).toBe('%')
+    expect(percentFormat?.disabled).toBe(true)
+    expect(percentFormat?.getAttribute('title')).toBe('백분율 적용할 셀 없음 (Ctrl/⌘+Shift+5)')
+    expect(percentFormat?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+5 Meta+Shift+5')
+    expect(eurFormat?.textContent).toBe('€')
+    expect(eurFormat?.disabled).toBe(true)
+    expect(eurFormat?.getAttribute('title')).toBe('EUR 적용할 셀 없음')
+    expect(eurFormat?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 
   it('keeps formatting controls enabled for selected cells without focus', () => {
