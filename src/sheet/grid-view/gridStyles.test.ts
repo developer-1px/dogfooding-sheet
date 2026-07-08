@@ -129,6 +129,16 @@ describe('grid styles', () => {
     expect(colDividerRule).toContain(`border-left: ${divider} solid var(--sheet-color-accent, #1a73e8);`)
   })
 
+  it('keeps formatted cell borders token-sized with the muted border color', () => {
+    const root = appCss()
+    const source = gridCss()
+    const borderedRule = source.match(/\.cell\.bordered\s*\{[^}]+\}/)?.[0] ?? ''
+    const border = 'var(--sheet-size-formatted-cell-border, 1px)'
+
+    expect(root).toContain('--sheet-size-formatted-cell-border: 1px;')
+    expect(borderedRule).toContain(`border: ${border} solid var(--sheet-color-muted, #5f6368);`)
+  })
+
   it('keeps cell links constrained to the cell inline size', () => {
     const source = gridCss()
     const linkRule = source.match(/\.cell-link\s*\{[^}]+\}/)?.[0] ?? ''
