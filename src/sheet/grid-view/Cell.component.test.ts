@@ -283,6 +283,7 @@ describe('Cell component', () => {
 
     expect(editor?.className).toBe('cell-input')
     expect(editor?.getAttribute('aria-label')).toBe('A1 편집')
+    expect(editor?.getAttribute('aria-multiline')).toBe('false')
     expect(editor?.getAttribute('title')).toBe('A1 편집 (Enter=저장 / Esc=취소)')
     expect(editor?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
 
