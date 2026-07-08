@@ -21,6 +21,7 @@ describe('ConfirmDialog component', () => {
     const message = messageId ? document.getElementById(messageId) : null
 
     expect(dialog?.getAttribute('role')).toBe('alertdialog')
+    expect(dialog?.getAttribute('aria-label')).toBe('삭제 확인')
     expect(messageId).toBeTruthy()
     expect(message?.textContent).toBe('선택한 시트를 삭제하시겠습니까?')
   })
