@@ -59,6 +59,8 @@ export function RecDevToolsOverlay() {
 
   const minutes = Math.floor(elapsed / 60)
   const seconds = String(elapsed % 60).padStart(2, '0')
+  const elapsedLabel = `${minutes}:${seconds}`
+  const actionLabel = recording ? `REC 녹화 중지, 경과 시간 ${elapsedLabel}` : 'REC 녹화 시작'
 
   return (
     <button
@@ -66,10 +68,11 @@ export function RecDevToolsOverlay() {
       className={`rec-devtools${recording ? ' recording' : ''}`}
       onClick={toggle}
       title={`${hotkey}로 ${recording ? '녹화 중지' : '녹화 시작'}`}
+      aria-label={actionLabel}
       aria-pressed={recording}
     >
       <span className="rec-dot" />
-      {recording ? `STOP ${minutes}:${seconds}` : 'REC'}
+      {recording ? `STOP ${elapsedLabel}` : 'REC'}
     </button>
   )
 }
