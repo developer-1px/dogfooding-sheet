@@ -490,11 +490,11 @@ describe('Toolbar component', () => {
     expect(freezeRows?.textContent).toBe('📌행')
     expect(freezeRows?.disabled).toBe(true)
     expect(freezeRows?.getAttribute('title')).toBe('첫 행 고정 토글 꺼짐 (현재 0행 고정)')
-    expect(freezeRows?.getAttribute('aria-pressed')).toBe('false')
+    expect(freezeRows?.hasAttribute('aria-pressed')).toBe(false)
     expect(freezeCols?.textContent).toBe('📌열')
     expect(freezeCols?.disabled).toBe(true)
     expect(freezeCols?.getAttribute('title')).toBe('첫 열 고정 토글 꺼짐 (현재 0열 고정)')
-    expect(freezeCols?.getAttribute('aria-pressed')).toBe('false')
+    expect(freezeCols?.hasAttribute('aria-pressed')).toBe(false)
   })
 
   it('keeps active freeze toggles enabled on a single row or column so they can be cleared', () => {
