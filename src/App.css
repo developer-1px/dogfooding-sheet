@@ -149,6 +149,8 @@ body, html, #root {
 .sheet-toolbar button:disabled { opacity: .4; cursor: not-allowed; }
 .color-pick {
   display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--sheet-space-1);
+  min-width: 0; max-width: min(100%, var(--sheet-size-toolbar-button-max, 96px));
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   padding: var(--sheet-space-1) var(--sheet-space-3); border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
   background: var(--sheet-color-surface); font-size: var(--sheet-font-size-ui); cursor: pointer;
 }
