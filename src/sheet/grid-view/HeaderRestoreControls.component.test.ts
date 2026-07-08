@@ -1,4 +1,5 @@
 import { act, createElement } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { setupReactDOM } from '../test-utils'
 import { GridHeader } from './GridHeader'
@@ -6,6 +7,8 @@ import { RowHeader } from './RowHeader'
 
 describe('header restore controls', () => {
   const dom = setupReactDOM()
+  const appCss = () => readFileSync('src/App.css', 'utf8')
+  const gridCss = () => readFileSync('src/sheet/grid-view/grid.css', 'utf8')
 
   it('makes the select-all corner header keyboard-operable', () => {
     const setSelectedIds = vi.fn()
@@ -301,6 +304,15 @@ describe('header restore controls', () => {
     expect(showRow).toHaveBeenNthCalledWith(1, 1)
     expect(showRow).toHaveBeenNthCalledWith(2, 3)
     expect(setSelectedIds).not.toHaveBeenCalled()
+  })
+
+  it('keeps hidden restore control borders on a design token', () => {
+    const rootCss = appCss()
+    const css = gridCss()
+    const restoreRule = css.match(/\.unhide-col,\s*\.unhide-row\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(rootCss).toContain('--sheet-size-hidden-restore-border: 1px;')
+    expect(restoreRule).toContain('border: var(--sheet-size-hidden-restore-border, 1px) solid var(--sheet-color-border, #dadce0);')
   })
 
   it('exposes selected and current row state on the row header label', () => {
