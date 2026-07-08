@@ -34,10 +34,10 @@
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: var(--sheet-focus-offset, 2px);
 }
-.unhide-col.left { left: -8px; top: 50%; transform: translateY(-50%); }
-.unhide-col.right { right: -8px; top: 50%; transform: translateY(-50%); }
-.unhide-row.top { top: -8px; left: 50%; transform: translateX(-50%); }
-.unhide-row.bottom { bottom: -8px; left: 50%; transform: translateX(-50%); }
+.unhide-col.left { left: calc(-1 * var(--sheet-size-control-sm, 16px) / 2); top: 50%; transform: translateY(-50%); }
+.unhide-col.right { right: calc(-1 * var(--sheet-size-control-sm, 16px) / 2); top: 50%; transform: translateY(-50%); }
+.unhide-row.top { top: calc(-1 * var(--sheet-size-control-sm, 16px) / 2); left: 50%; transform: translateX(-50%); }
+.unhide-row.bottom { bottom: calc(-1 * var(--sheet-size-control-sm, 16px) / 2); left: 50%; transform: translateX(-50%); }
 .col-resizer {
   position: absolute; top: 0; right: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px)); width: var(--sheet-size-grid-resizer-hit-area, 6px); height: 100%;
   cursor: col-resize; user-select: none; z-index: 3;
