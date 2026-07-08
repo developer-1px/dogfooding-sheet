@@ -23,6 +23,8 @@ interface Props {
 const stopControlActivationKeyDown = (event: KeyboardEvent<HTMLElement>) => {
   if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
 }
+const inputShortcutTitle = 'Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기'
+const inputKeyShortcuts = 'Enter Shift+Enter Escape'
 
 export function Find({ open, mode, onClose, cells, display, onJump, writeCell, writeCells, replaceCellsByQuery, replaceCellText, skipIds, rowCount, colLetters }: Props) {
   const [q, setQ] = useState('')
@@ -85,7 +87,9 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
         onChange={(e) => { setQ(e.target.value); resetIdx() }}
         onKeyDown={onTextInputKeyDown}
         placeholder="찾기"
+        title={`찾을 내용 (${inputShortcutTitle})`}
         aria-label="찾을 내용"
+        aria-keyshortcuts={inputKeyShortcuts}
       />
       {mode === 'replace' && (
         <input
@@ -93,7 +97,9 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
           onChange={(e) => setR(e.target.value)}
           onKeyDown={onTextInputKeyDown}
           placeholder="바꾸기"
+          title={`바꿀 내용 (${inputShortcutTitle})`}
           aria-label="바꿀 내용"
+          aria-keyshortcuts={inputKeyShortcuts}
         />
       )}
       <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label="대소문자 구분" />Aa</label>
