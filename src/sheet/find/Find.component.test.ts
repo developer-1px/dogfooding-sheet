@@ -138,6 +138,16 @@ describe('Find component', () => {
     expect(buttonRule).toContain('padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px);')
   })
 
+  it('keeps the find bar vertically contained within the viewport', () => {
+    const css = overlaysCss()
+    const findBarRule = css.match(/\.find-bar\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(findBarRule).toContain('max-width: calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px));')
+    expect(findBarRule).toContain('max-height: calc(100vh - 60px - var(--sheet-space-8, 24px));')
+    expect(findBarRule).toContain('overflow-x: hidden;')
+    expect(findBarRule).toContain('overflow-y: auto;')
+  })
+
   it('announces no-match and matched result counts as status text', () => {
     renderFind('find', { A1: 'Alpha', B1: 'Beta' })
 
