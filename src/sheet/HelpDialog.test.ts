@@ -36,7 +36,7 @@ describe('HelpDialog', () => {
     const close = document.querySelector<HTMLButtonElement>('button[aria-label="키보드 단축키 도움말 닫기"]')
     expect(close?.textContent).toBe('닫기')
     expect(close?.type).toBe('button')
-    expect(close?.getAttribute('title')).toBe('닫기 (Esc)')
+    expect(close?.getAttribute('title')).toBe('키보드 단축키 도움말 닫기 (Esc)')
     expect(close?.getAttribute('aria-keyshortcuts')).toBe('Escape')
 
     act(() => keyDown(close!, 'Enter'))
