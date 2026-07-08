@@ -119,7 +119,7 @@ export function RowHeader({ id, rIdx, focusId, setFocusId, setSelectAnchor, setS
       title={`${headerLabel} - 클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정`}
     >
       {topRestore && restoreButton(topRestore)}
-      {rIdx + 1}
+      <span className="row-header-label">{rIdx + 1}</span>
       {bottomRestore && restoreButton(bottomRestore)}
       <RowResizer rIdx={rIdx} heightOf={heightOf} onResize={onResize} onResizeEnd={onResizeEnd} resetRowHeight={resetRowHeight} />
     </span>

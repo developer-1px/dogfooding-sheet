@@ -163,6 +163,8 @@ describe('header restore controls', () => {
 
     const unfiltered = document.querySelector<HTMLElement>('.header-cell[aria-label="A열"]')
     const filtered = document.querySelector<HTMLElement>('.header-cell.filtered')
+    const filteredLabel = filtered?.querySelector<HTMLElement>('.header-cell-label')
+    const filteredText = filtered?.querySelector<HTMLElement>('.header-cell-text')
     const filterMark = filtered?.querySelector<HTMLElement>('.filter-mark')
 
     expect(unfiltered?.getAttribute('aria-label')).toBe('A열')
@@ -171,6 +173,8 @@ describe('header restore controls', () => {
     expect(filtered?.getAttribute('title')).toBe('B열, 필터 적용, 선택됨, 현재 위치 - 클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
     expect(filtered?.getAttribute('aria-selected')).toBe('true')
     expect(filtered?.getAttribute('aria-current')).toBe('true')
+    expect(filteredLabel?.textContent).toBe('B▾')
+    expect(filteredText?.textContent).toBe('B')
     expect(filterMark?.textContent).toBe('▾')
     expect(filterMark?.getAttribute('aria-hidden')).toBe('true')
   })
@@ -319,11 +323,13 @@ describe('header restore controls', () => {
     })))
 
     const header = document.querySelector<HTMLElement>('.row-header')
+    const rowLabel = header?.querySelector<HTMLElement>('.row-header-label')
 
     expect(header?.getAttribute('aria-label')).toBe('3행, 선택됨, 현재 위치')
     expect(header?.getAttribute('title')).toBe('3행, 선택됨, 현재 위치 - 클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정')
     expect(header?.getAttribute('aria-selected')).toBe('true')
     expect(header?.getAttribute('aria-current')).toBe('true')
+    expect(rowLabel?.textContent).toBe('3')
   })
 
   it('makes row headers keyboard-operable without stealing nested control keys', () => {

@@ -62,4 +62,20 @@ describe('grid styles', () => {
     expect(checkboxRule).toContain('vertical-align: middle;')
     expect(checkboxRule).toContain('accent-color: var(--sheet-color-accent, #1a73e8);')
   })
+
+  it('keeps header label content contained inside header tracks', () => {
+    const source = gridCss()
+    const headerLabelRule = source.match(/\.header-cell-label\s*\{[^}]+\}/)?.[0] ?? ''
+    const headerTextRule = source.match(/\.header-cell-text,\s*\.row-header-label\s*\{[^}]+\}/)?.[0] ?? ''
+    const rowLabelRule = source.match(/(?:^|\n)\.row-header-label\s*\{[^}]+\}/)?.[0] ?? ''
+    const filterMarkRule = source.match(/\.filter-mark\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(headerLabelRule).toContain('display: inline-flex;')
+    expect(headerLabelRule).toContain('max-width: 100%;')
+    expect(headerLabelRule).toContain('overflow: hidden;')
+    expect(headerTextRule).toContain('text-overflow: ellipsis;')
+    expect(headerTextRule).toContain('white-space: nowrap;')
+    expect(rowLabelRule).toContain('display: inline-block;')
+    expect(filterMarkRule).toContain('flex: 0 0 auto;')
+  })
 })

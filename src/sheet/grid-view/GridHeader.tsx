@@ -161,8 +161,10 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             title={`${headerLabel} - 클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정`}
           >
             {leftRestore && restoreButton(leftRestore)}
-            {c}
-            {isFiltered && <span className="filter-mark" aria-hidden>▾</span>}
+            <span className="header-cell-label">
+              <span className="header-cell-text">{c}</span>
+              {isFiltered && <span className="filter-mark" aria-hidden>▾</span>}
+            </span>
             {rightRestore && restoreButton(rightRestore)}
             <ColResizer col={c} widthOf={widthOf} onResize={onResize} onResizeEnd={onResizeEnd} autoFitCol={autoFitCol} />
           </span>
