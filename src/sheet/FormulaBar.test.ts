@@ -39,11 +39,14 @@ describe('FormulaBar', () => {
     expect(document.querySelector('button[aria-label="다시 실행"]')?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
   })
 
-  it('keeps the address control stable while the formula input flexes', () => {
+  it('keeps the toolbar title and address controls stable while the formula input flexes', () => {
     const css = appCss()
+    const titleRule = css.match(/\.sheet-toolbar > strong\s*\{[^}]+\}/)?.[0] ?? ''
     const addressRule = css.match(/\.sheet-toolbar \.addr\s*\{[^}]+\}/)?.[0] ?? ''
     const formulaRule = css.match(/\.sheet-toolbar \.formula\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(titleRule).toContain('flex: 0 0 auto;')
+    expect(titleRule).toContain('white-space: nowrap;')
     expect(addressRule).toContain('flex: 0 0 auto;')
     expect(addressRule).toContain('min-width: 56px;')
     expect(formulaRule).toContain('flex: 1 1 200px;')
