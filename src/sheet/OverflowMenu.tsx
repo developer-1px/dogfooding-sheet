@@ -17,9 +17,6 @@ import {
 const recordEntryCount = (record: Record<string, unknown>): number =>
   Object.keys(record).length
 
-const hasRecordEntries = (record: Record<string, unknown>): boolean =>
-  recordEntryCount(record) > 0
-
 const isActivationKey = (key: string): boolean => key === 'Enter' || key === ' '
 
 const keepActivationKeysLocal = <T extends { onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void }>(props: T) => ({
@@ -60,13 +57,15 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
 
   const items = useMemo(() => {
     const cellValueCount = recordEntryCount(sheet.cells)
+    const formatEntryCount = recordEntryCount(sheet.styles) + recordEntryCount(sheet.formats) + sheet.condFormat.length
     return overflowMenuItems({
       showFormulas,
       showGridlines,
       canInsertLink,
       canClearValues: cellValueCount > 0,
       cellValueCount,
-      canClearFormats: hasRecordEntries(sheet.styles) || hasRecordEntries(sheet.formats) || sheet.condFormat.length > 0,
+      canClearFormats: formatEntryCount > 0,
+      formatEntryCount,
     })
   }, [canInsertLink, sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
   const data = fromList(items.map(({ id, label, disabled, kind, checked }) => ({ id, label, disabled, kind, checked })))

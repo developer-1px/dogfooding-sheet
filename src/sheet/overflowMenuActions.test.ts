@@ -38,6 +38,8 @@ describe('overflowMenuActions', () => {
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false }).map((item) => item.label)).toContain('전체 값 지우기')
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false, canClearValues: true, cellValueCount: 2 })
       .find((item) => item.id === 'clear-values')?.label).toBe('전체 값 2개 지우기')
+    expect(overflowMenuItems({ showFormulas: false, showGridlines: false, canClearFormats: true, formatEntryCount: 3 })
+      .find((item) => item.id === 'clear-formats')?.label).toBe('전체 서식 3개 지우기')
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false, canInsertLink: false })
       .find((item) => item.id === 'link')?.disabled).toBe(true)
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false, canInsertLink: true })

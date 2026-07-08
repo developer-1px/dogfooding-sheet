@@ -38,6 +38,7 @@ interface OverflowMenuState {
   canClearValues?: boolean
   cellValueCount?: number
   canClearFormats?: boolean
+  formatEntryCount?: number
 }
 
 export interface DownloadFile {
@@ -46,6 +47,9 @@ export interface DownloadFile {
 
 const clearValuesLabel = (count?: number): string =>
   count !== undefined && count > 0 ? `전체 값 ${count}개 지우기` : '전체 값 지우기'
+
+const clearFormatsLabel = (count?: number): string =>
+  count !== undefined && count > 0 ? `전체 서식 ${count}개 지우기` : '전체 서식 지우기'
 
 export const overflowMenuItems = (state: OverflowMenuState): OverflowMenuItem[] => [
   { id: 'help', label: '도움말 (F1)', keyShortcuts: 'F1' },
@@ -58,7 +62,7 @@ export const overflowMenuItems = (state: OverflowMenuState): OverflowMenuItem[] 
   { id: 'json-export', label: 'JSON 내보내기' },
   { id: 'json-import', label: 'JSON 가져오기' },
   { id: 'clear-values', label: clearValuesLabel(state.cellValueCount), disabled: state.canClearValues === false, disabledLabel: '지울 셀 값 없음' },
-  { id: 'clear-formats', label: '전체 서식 지우기', disabled: state.canClearFormats === false, disabledLabel: '지울 서식 없음' },
+  { id: 'clear-formats', label: clearFormatsLabel(state.formatEntryCount), disabled: state.canClearFormats === false, disabledLabel: '지울 서식 없음' },
 ]
 
 export const overflowMenuItemId = (id: string): OverflowMenuItemId | null =>
