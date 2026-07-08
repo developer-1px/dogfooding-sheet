@@ -16,7 +16,7 @@
   outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));
 }
 .ctx-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }
-.ctx-sep { height: 1px; background: var(--sheet-color-border-subtle, #e0e0e0); margin: var(--sheet-space-1, 4px) 0; }
+.ctx-sep { height: var(--sheet-size-context-menu-separator-height, 1px); background: var(--sheet-color-border-subtle, #e0e0e0); margin: var(--sheet-space-1, 4px) 0; }
 
 .find-bar {
   position: fixed; top: var(--sheet-inset-find-bar-top, 60px); right: var(--sheet-inset-find-bar-inline, 16px); z-index: 10;

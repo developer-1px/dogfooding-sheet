@@ -154,6 +154,15 @@ describe('ContextMenu component', () => {
     expect(menuRule).toContain('overflow-y: auto;')
   })
 
+  it('keeps context menu separator height on a design token', () => {
+    const rootCss = appCss()
+    const css = overlaysCss()
+    const separatorRule = css.match(/\.ctx-sep\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(rootCss).toContain('--sheet-size-context-menu-separator-height: 1px;')
+    expect(separatorRule).toContain('height: var(--sheet-size-context-menu-separator-height, 1px);')
+  })
+
   it('keeps long context menu labels contained on narrow viewports', () => {
     const css = overlaysCss()
 
