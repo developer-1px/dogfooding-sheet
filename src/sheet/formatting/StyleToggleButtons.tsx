@@ -1,4 +1,5 @@
 import type { StyleLookup } from './useStyles'
+import { stopToolbarActivationKeyDown } from '../toolbarKeyEvents'
 
 type Flag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
 const TOGGLES: Array<[Flag, string, string, React.ReactNode, string?, string?]> = [
@@ -21,7 +22,7 @@ export function StyleToggleButtons({ toggle, styleOf, focusKey, disabled = false
   return (
     <>
       {TOGGLES.map(([k, , title, node, keyShortcuts, shortcutLabel]) => (
-        <button type="button" key={k} onClick={() => toggle(k)} disabled={disabled} aria-pressed={!!(focusKey && styleOf(focusKey)?.[k])} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={title} aria-keyshortcuts={keyShortcuts}>{node}</button>
+        <button type="button" key={k} onKeyDown={stopToolbarActivationKeyDown} onClick={() => toggle(k)} disabled={disabled} aria-pressed={!!(focusKey && styleOf(focusKey)?.[k])} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={title} aria-keyshortcuts={keyShortcuts}>{node}</button>
       ))}
     </>
   )
