@@ -58,6 +58,14 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
   )
 }
 
+const rowHeaderLabel = (rowNumber: number, { selected, current }: { selected: boolean, current: boolean }) => {
+  const states = [
+    selected ? '선택됨' : null,
+    current ? '현재 위치' : null,
+  ].filter(Boolean)
+  return states.length ? `${rowNumber}행, ${states.join(', ')}` : `${rowNumber}행`
+}
+
 export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected, active }: Props) {
   const restoreControls = rowRestoreControls(rIdx, hiddenRows)
   const topRestore = restoreControls.find((control) => control.className === 'unhide-row top')
@@ -87,7 +95,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
       className={`row-header${selected ? ' selected-header' : ''}`}
       role="rowheader"
       tabIndex={0}
-      aria-label={`${rIdx + 1}행`}
+      aria-label={rowHeaderLabel(rIdx + 1, { selected, current: active })}
       aria-current={active ? 'true' : undefined}
       aria-selected={selected}
       onClick={(e) => selectRow(e.shiftKey)}
