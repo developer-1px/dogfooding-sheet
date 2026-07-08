@@ -160,7 +160,7 @@ describe('OverflowMenu component', () => {
     act(() => trigger!.click())
 
     const link = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
-      .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
+      .find((item) => item.textContent === '하이퍼링크 삽입')
 
     expect(link?.disabled).toBe(true)
     expect(link?.getAttribute('aria-disabled')).toBe('true')
