@@ -165,6 +165,6 @@
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: var(--sheet-focus-offset, 2px);
 }
-.tab:hover .tab-color, .tab.active .tab-color { opacity: 1; }
+.tab:hover .tab-color, .tab.active .tab-color, .tab:focus-within .tab-color { opacity: 1; }
 .tab .tab-dup, .tab .tab-close { opacity: 0; transition: opacity .15s; }
 .tab:hover .tab-dup, .tab:hover .tab-close, .tab.active .tab-dup, .tab.active .tab-close, .tab:focus-within .tab-dup, .tab:focus-within .tab-close { opacity: 1; }
