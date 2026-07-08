@@ -161,4 +161,10 @@ describe('PromptDialog component', () => {
 
     expect(css).toContain('.prompt-dialog input { min-width: 0; max-width: 100%;')
   })
+
+  it('keeps prompt labels contained on narrow viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('.prompt-dialog label { font-size: var(--sheet-font-size-ui, 13px); color: var(--sheet-color-muted, #5f6368); overflow-wrap: anywhere; }')
+  })
 })
