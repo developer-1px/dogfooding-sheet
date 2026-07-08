@@ -57,6 +57,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
 
   if (!open) return null
 
+  const counterLabel = !q ? undefined : matches.length === 0 ? '찾기 결과 없음' : `찾기 결과 ${counter}`
   const sub = (s: string): string => replaceFindText(s, q, r, { caseSensitive, regex })
   const replaceOne = () => {
     if (!current || !q) return
@@ -104,7 +105,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
       )}
       <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label="대소문자 구분" />Aa</label>
       <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label="정규식 사용" />.*</label>
-      <span className="count" role="status" aria-live="polite" aria-atomic="true">{counter}</span>
+      <span className="count" role="status" aria-live="polite" aria-atomic="true" title={counterLabel} aria-label={counterLabel}>{counter}</span>
       <button type="button" onClick={() => jump(-1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title="이전 찾기 결과 (Shift+Enter)" aria-label="이전 찾기 결과" aria-keyshortcuts="Shift+Enter">↑</button>
       <button type="button" onClick={() => jump(1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title="다음 찾기 결과 (Enter)" aria-label="다음 찾기 결과" aria-keyshortcuts="Enter">↓</button>
       {mode === 'replace' && (
