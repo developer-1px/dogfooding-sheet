@@ -82,6 +82,7 @@
   --sheet-size-cell-state-outline: 2px;
   --sheet-size-formula-input-accent-strip: 3px;
   --sheet-size-freeze-divider: 2px;
+  --sheet-size-gridline: 1px;
   --sheet-size-grid-resizer-hit-area: 6px;
   --sheet-size-grid-resizer-offset: 3px;
   --sheet-size-fill-handle: 7px;

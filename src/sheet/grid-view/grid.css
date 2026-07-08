@@ -1,12 +1,12 @@
 .grid { flex: 1; overflow: auto; background: var(--sheet-color-surface, #fff); }
-.grid-row { display: grid; width: max-content; min-width: 100%; border-bottom: 1px solid var(--sheet-color-border-subtle, #e0e0e0); }
+.grid-row { display: grid; width: max-content; min-width: 100%; border-bottom: var(--sheet-size-gridline, 1px) solid var(--sheet-color-border-subtle, #e0e0e0); }
 .header-row {
   position: sticky; top: 0; z-index: 2;
   background: var(--sheet-color-surface-muted, #f8f9fa); font-weight: var(--sheet-font-weight-medium, 500); color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-sm, 12px);
 }
 .corner-cell, .row-header, .header-cell {
   padding: var(--sheet-space-2, 6px) var(--sheet-space-3, 8px); text-align: center; user-select: none;
-  border-right: 1px solid var(--sheet-color-border-subtle, #e0e0e0);
+  border-right: var(--sheet-size-gridline, 1px) solid var(--sheet-color-border-subtle, #e0e0e0);
 }
 .corner-cell, .row-header { background: var(--sheet-color-surface-muted, #f8f9fa); color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-sm, 12px); cursor: pointer; }
 .corner-cell:hover, .row-header:hover { background: var(--sheet-color-accent-muted, #e8f0fe); }
@@ -51,7 +51,7 @@
 
 .cell {
   position: relative; padding: var(--sheet-space-2, 6px) var(--sheet-space-3, 8px); min-height: var(--sheet-size-cell-min-height, 28px); cursor: cell; outline: none;
-  border-right: 1px solid var(--sheet-color-border-subtle, #e0e0e0);
+  border-right: var(--sheet-size-gridline, 1px) solid var(--sheet-color-border-subtle, #e0e0e0);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }
