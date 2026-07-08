@@ -221,12 +221,16 @@ describe('OverflowMenu component', () => {
   })
 
   it('keeps the overflow menu wrapper anchored in wrapping toolbars', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const menuRule = css.match(/\.overflow-menu\s*\{[^}]+\}/)?.[0] ?? ''
+    const triggerRule = css.match(/\.overflow-trigger\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-overflow-trigger-border: 1px;')
     expect(menuRule).toContain('position: relative;')
     expect(menuRule).toContain('display: inline-block;')
     expect(menuRule).toContain('flex: 0 0 auto;')
+    expect(triggerRule).toContain('border: var(--sheet-size-overflow-trigger-border, 1px) solid transparent;')
   })
 
   it('keeps long overflow menus vertically scrollable and horizontally clipped', () => {
