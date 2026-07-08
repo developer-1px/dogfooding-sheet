@@ -93,4 +93,22 @@ describe('grid styles', () => {
     expect(restoreRule).toContain('line-height: 1;')
     expect(restoreRule).not.toContain('line-height: 14px;')
   })
+
+  it('keeps grid resize handles token-sized around header edges', () => {
+    const root = appCss()
+    const source = gridCss()
+    const colResizerRule = source.match(/\.col-resizer\s*\{[^}]+\}/)?.[0] ?? ''
+    const rowResizerRule = source.match(/\.row-resizer\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-size-grid-resizer-hit-area: 6px;')
+    expect(root).toContain('--sheet-size-grid-resizer-offset: 3px;')
+    expect(colResizerRule).toContain('right: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px));')
+    expect(colResizerRule).toContain('width: var(--sheet-size-grid-resizer-hit-area, 6px);')
+    expect(colResizerRule).toContain('height: 100%;')
+    expect(rowResizerRule).toContain('bottom: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px));')
+    expect(rowResizerRule).toContain('width: 100%;')
+    expect(rowResizerRule).toContain('height: var(--sheet-size-grid-resizer-hit-area, 6px);')
+    expect(colResizerRule).toContain('cursor: col-resize;')
+    expect(rowResizerRule).toContain('cursor: row-resize;')
+  })
 })
