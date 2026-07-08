@@ -104,6 +104,10 @@ const cleanup = (root: Root, host: HTMLElement) => {
 }
 
 const gridCells = () => [...document.querySelectorAll<HTMLElement>('[role="gridcell"]')]
+const expectFocusedGridCell = (cells: readonly HTMLElement[], focusedCell: HTMLElement) => {
+  expect(document.activeElement).toBe(focusedCell)
+  expect(cells.filter((cell) => cell.tabIndex === 0)).toEqual([focusedCell])
+}
 const keyDown = (target: HTMLElement, key: string) => {
   target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }))
 }
@@ -162,10 +166,11 @@ describe('EditableGrid', () => {
     }
   })
 
-  it('moves serializable selection with keyboard navigation', () => {
+  it('moves serializable selection and DOM focus with keyboard navigation', () => {
     const { host, root, onSelectionChange } = setup()
     try {
-      const [first] = gridCells()
+      const cells = gridCells()
+      const [first, qtyCell] = cells
       act(() => first.focus())
       act(() => keyDown(first, 'ArrowRight'))
 
@@ -176,7 +181,16 @@ describe('EditableGrid', () => {
           focus: { rowIndex: 0, columnId: 'qty' },
         }],
       })
-      expect(document.activeElement).toBe(first)
+      expectFocusedGridCell(cells, qtyCell)
+
+      act(() => keyDown(qtyCell, 'ArrowDown'))
+      expectFocusedGridCell(cells, cells[4])
+
+      act(() => keyDown(cells[4], 'ArrowLeft'))
+      expectFocusedGridCell(cells, cells[3])
+
+      act(() => keyDown(cells[3], 'ArrowUp'))
+      expectFocusedGridCell(cells, first)
     } finally {
       cleanup(root, host)
     }

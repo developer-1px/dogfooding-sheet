@@ -120,7 +120,9 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     const nextCol = Math.max(0, Math.min(surface.columns.length - 1, currentCol + dCol))
     const nextColumn = surface.columns[nextCol]
     if (!nextColumn) return
-    focusCell({ rowIndex: nextRow, columnId: nextColumn.id })
+    const nextAddress = { rowIndex: nextRow, columnId: nextColumn.id }
+    domFocus.requestCellFocusRestore(addressDomId(nextAddress))
+    focusCell(nextAddress)
   }
 
   const onCellKeyDown = (
