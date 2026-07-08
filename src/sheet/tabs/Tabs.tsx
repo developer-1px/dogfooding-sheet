@@ -95,7 +95,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           )}
         </span>
       ))}
-      <button type="button" className="tab-add" onClick={addSheet} title="시트 추가" aria-label="시트 추가">+</button>
+      <button type="button" className="tab-add" onClick={addSheet} onKeyDown={stopTabUtilityKeyDown} title="시트 추가" aria-label="시트 추가">+</button>
     </div>
   )
 }
