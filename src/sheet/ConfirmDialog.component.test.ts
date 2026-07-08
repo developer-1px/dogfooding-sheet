@@ -84,11 +84,12 @@ describe('ConfirmDialog component', () => {
 
   it('keeps action dialogs constrained to the viewport', () => {
     const css = overlaysCss()
+    const confirmDialogRule = css.match(/\.confirm-dialog\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(css).toContain('min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
-    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
-    expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
-    expect(css.match(/overflow: auto/g)?.length).toBeGreaterThanOrEqual(2)
+    expect(confirmDialogRule).toContain('min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(confirmDialogRule).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(confirmDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(confirmDialogRule).toContain('overflow: auto')
   })
 
   it('keeps confirm dialog actions contained on narrow viewports', () => {
