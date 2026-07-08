@@ -37,6 +37,7 @@ describe('StatusBar component', () => {
     expect(saveStatus?.textContent).toBe('저장됨')
     expect(saveStatus?.getAttribute('title')).toBe('마지막 저장: 2026-07-08T06:30:00.000Z')
     expect(saveStatus?.getAttribute('aria-label')).toBe('마지막 저장: 2026-07-08T06:30:00.000Z')
+    expect(saveStatus?.hasAttribute('aria-busy')).toBe(false)
   })
 
   it('marks detailed aggregate updates as atomic live-region updates', () => {
@@ -60,6 +61,7 @@ describe('StatusBar component', () => {
     expect(saveStatus?.textContent).toBe('저장 중')
     expect(saveStatus?.getAttribute('title')).toBe('변경 사항 저장 중')
     expect(saveStatus?.getAttribute('aria-label')).toBe('변경 사항 저장 중')
+    expect(saveStatus?.getAttribute('aria-busy')).toBe('true')
     expect(footer().textContent).toContain('SUM: 30')
     expect(metric('COUNTA:')?.getAttribute('title')).toBe('선택 영역의 비어 있지 않은 셀 수')
     expect(metric('COUNTA:')?.getAttribute('aria-label')).toBe('선택 영역의 비어 있지 않은 셀 수: 2')
@@ -97,6 +99,7 @@ describe('StatusBar component', () => {
     expect(saveStatus?.textContent).toBe('저장 대기')
     expect(saveStatus?.getAttribute('title')).toBe('자동 저장 대기 중')
     expect(saveStatus?.getAttribute('aria-label')).toBe('자동 저장 대기 중')
+    expect(saveStatus?.hasAttribute('aria-busy')).toBe(false)
   })
 
   it('labels saved status even when there is no saved timestamp', () => {
@@ -135,6 +138,7 @@ describe('StatusBar component', () => {
     expect(saveStatus?.textContent).toBe('저장 실패')
     expect(saveStatus?.getAttribute('title')).toBe('저장 실패: Quota exceeded')
     expect(saveStatus?.getAttribute('aria-label')).toBe('저장 실패: Quota exceeded')
+    expect(saveStatus?.hasAttribute('aria-busy')).toBe(false)
   })
 
   it('labels save failure status even when there is no failure reason', () => {
