@@ -27,8 +27,8 @@
 
 .rec-dot {
   flex: 0 0 auto;
-  width: 7px;
-  height: 7px;
+  width: var(--sheet-size-rec-dot, 7px);
+  height: var(--sheet-size-rec-dot, 7px);
   border-radius: var(--sheet-radius-round, 999px);
   background: var(--sheet-color-danger, #d93025);
 }
