@@ -29,8 +29,10 @@ export function FormatButtons({ apply, current, targetLabel, disabled = false }:
         const stateLabel = pressed ? '켜짐' : '꺼짐'
         const accessibleLabel = disabled ? `숫자 형식: ${title} 적용할 셀 없음` : `${targetLabel} 숫자 형식: ${title} ${stateLabel}`
         const titleLabel = disabled ? `${title} 적용할 셀 없음` : `${targetLabel} ${title} ${stateLabel}`
+        const activeKeyShortcuts = disabled ? undefined : keyShortcuts
+        const activeShortcutLabel = disabled ? undefined : shortcutLabel
         return (
-          <button type="button" key={f} onKeyDown={stopToolbarActivationKeyDown} onClick={() => apply(f)} disabled={disabled} aria-pressed={pressed} title={shortcutLabel ? `${titleLabel} (${shortcutLabel})` : titleLabel} aria-label={accessibleLabel} aria-keyshortcuts={keyShortcuts}>{label}</button>
+          <button type="button" key={f} onKeyDown={stopToolbarActivationKeyDown} onClick={() => apply(f)} disabled={disabled} aria-pressed={pressed} title={activeShortcutLabel ? `${titleLabel} (${activeShortcutLabel})` : titleLabel} aria-label={accessibleLabel} aria-keyshortcuts={activeKeyShortcuts}>{label}</button>
         )
       })}
     </>
