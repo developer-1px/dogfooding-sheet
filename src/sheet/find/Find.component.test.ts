@@ -199,7 +199,7 @@ describe('Find component', () => {
   })
 
   it('labels replace mode inputs and actions', () => {
-    renderFind('replace')
+    renderFind('replace', { A1: 'Alpha' })
 
     const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')
     const replacement = document.querySelector<HTMLInputElement>('input[aria-label="바꿀 내용"]')
@@ -216,8 +216,17 @@ describe('Find component', () => {
 
     expect(replaceOne?.textContent).toBe('바꾸기')
     expect(replaceOne?.disabled).toBe(true)
+    expect(replaceOne?.getAttribute('title')).toBe('현재 찾기 결과 바꾸기')
+    expect(replaceOne?.getAttribute('aria-label')).toBe('현재 찾기 결과 바꾸기')
     expect(replaceAll?.textContent).toBe('전체')
     expect(replaceAll?.disabled).toBe(true)
+
+    act(() => setInputValue(query!, 'Alpha'))
+    expect(replaceOne?.textContent).toBe('바꾸기')
+    expect(replaceOne?.disabled).toBe(false)
+    expect(replaceOne?.getAttribute('title')).toBe('현재 찾기 결과 바꾸기, 현재 셀 A1')
+    expect(replaceOne?.getAttribute('aria-label')).toBe('현재 찾기 결과 바꾸기, 현재 셀 A1')
+
     const close = document.querySelector<HTMLButtonElement>('button[aria-label="찾기 및 바꾸기 닫기"]')
     expect(close?.textContent).toBe('✕')
     expect(close?.type).toBe('button')
