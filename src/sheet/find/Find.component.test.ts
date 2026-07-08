@@ -144,11 +144,16 @@ describe('Find component', () => {
   })
 
   it('keeps the find bar vertically contained within the viewport', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const findBarRule = css.match(/\.find-bar\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(findBarRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px)));')
-    expect(findBarRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - 60px - var(--sheet-space-8, 24px)));')
+    expect(rootCss).toContain('--sheet-inset-find-bar-top: 60px;')
+    expect(rootCss).toContain('--sheet-inset-find-bar-inline: 16px;')
+    expect(findBarRule).toContain('top: var(--sheet-inset-find-bar-top, 60px);')
+    expect(findBarRule).toContain('right: var(--sheet-inset-find-bar-inline, 16px);')
+    expect(findBarRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-inset-find-bar-inline, 16px) - var(--sheet-inset-find-bar-inline, 16px)));')
+    expect(findBarRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-inset-find-bar-top, 60px) - var(--sheet-space-8, 24px)));')
     expect(findBarRule).toContain('overflow-x: hidden;')
     expect(findBarRule).toContain('overflow-y: auto;')
   })
@@ -334,7 +339,7 @@ describe('Find component', () => {
 
     expect(css).toContain('display: flex; flex-wrap: wrap;')
     expect(css).toContain(
-      'max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px)))',
+      'max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-inset-find-bar-inline, 16px) - var(--sheet-inset-find-bar-inline, 16px)))',
     )
     expect(css).toContain('flex: 1 1 var(--sheet-size-find-input-width, 200px); width: var(--sheet-size-find-input-width, 200px); max-width: 100%;')
   })
