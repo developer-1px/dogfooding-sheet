@@ -50,10 +50,10 @@ function CellContentView({ content }: { content: CellContent }) {
     return <img className="cell-img" src={content.src} alt="" onClick={(e) => e.stopPropagation()} />
   }
   if (content.kind === 'link') {
-    return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
+    return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" title={content.label} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
   }
   if (content.kind === 'email') {
-    return <a className="cell-link" href={content.href} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
+    return <a className="cell-link" href={content.href} title={content.label} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
   }
   return content.text
 }
