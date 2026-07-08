@@ -78,6 +78,7 @@
   --sheet-size-control-sm: 16px;
   --sheet-size-control-md: 18px;
   --sheet-size-cell-min-height: 28px;
+  --sheet-size-toolbar-button-max: 96px;
 }
 
 * { box-sizing: border-box; }
@@ -126,6 +127,10 @@ body, html, #root {
 .sheet-toolbar button {
   padding: var(--sheet-space-2) var(--sheet-space-5); font-size: var(--sheet-font-size-ui); cursor: pointer; background: var(--sheet-color-surface);
   border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
+}
+.sheet-toolbar > button, .sheet-toolbar > .overflow-menu > .overflow-trigger {
+  min-width: 0; max-width: min(100%, var(--sheet-size-toolbar-button-max, 96px));
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .sheet-toolbar button[aria-pressed="true"] { background: var(--sheet-color-selected); border-color: var(--sheet-color-accent); }
 .sheet-toolbar button:hover:not(:disabled) { background: var(--sheet-color-hover); }
