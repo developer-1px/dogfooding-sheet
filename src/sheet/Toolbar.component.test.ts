@@ -599,12 +599,12 @@ describe('Toolbar component', () => {
   it('disables conditional format add without a focused column but keeps clearing available', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
-    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
+    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식을 추가할 열 없음"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
 
     expect(addCondFormat?.textContent).toBe('🎨조건')
     expect(addCondFormat?.disabled).toBe(true)
-    expect(addCondFormat?.getAttribute('title')).toBe('조건부 서식 추가')
+    expect(addCondFormat?.getAttribute('title')).toBe('조건부 서식을 추가할 열 없음')
     expect(clearCondFormat?.textContent).toBe('✕조건')
     expect(clearCondFormat?.disabled).toBe(false)
     expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 모두 해제')
@@ -614,12 +614,12 @@ describe('Toolbar component', () => {
     renderToolbar({ hasCondRules: false })
 
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
-    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
+    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="해제할 조건부 서식 없음"]')
 
     expect(addCondFormat?.disabled).toBe(false)
     expect(clearCondFormat?.textContent).toBe('✕조건')
     expect(clearCondFormat?.disabled).toBe(true)
-    expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 모두 해제')
+    expect(clearCondFormat?.getAttribute('title')).toBe('해제할 조건부 서식 없음')
   })
 
   it('clarifies disabled structure command labels without focus', () => {
