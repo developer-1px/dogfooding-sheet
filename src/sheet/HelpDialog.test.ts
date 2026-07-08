@@ -19,6 +19,13 @@ describe('HelpDialog', () => {
       }),
     )))
 
+    const dialog = document.querySelector<HTMLElement>('.help-dialog')
+    const titleId = dialog?.getAttribute('aria-labelledby')
+    const title = titleId ? document.getElementById(titleId) : null
+
+    expect(dialog?.getAttribute('role')).toBe('dialog')
+    expect(titleId).toBe('help-title')
+    expect(title?.textContent).toBe('키보드 단축키')
     expect(document.querySelector('caption')?.textContent).toBe('키보드 단축키 목록')
     const columnHeaders = [...document.querySelectorAll('thead th')]
     expect(columnHeaders.map((th) => th.textContent)).toEqual(['단축키', '동작'])
