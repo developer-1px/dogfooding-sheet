@@ -93,9 +93,12 @@ describe('ConfirmDialog component', () => {
 
   it('keeps confirm dialog actions contained on narrow viewports', () => {
     const css = overlaysCss()
+    const actionButtonRule = css.match(/\.confirm-actions button\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(css).toContain('.confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sheet-space-3, 8px); }')
-    expect(css).toContain('.confirm-actions button { max-width: 100%; overflow-wrap: anywhere; }')
+    expect(actionButtonRule).toContain('flex: 0 0 auto;')
+    expect(actionButtonRule).toContain('max-width: 100%;')
+    expect(actionButtonRule).toContain('overflow-wrap: anywhere;')
   })
 
   it('keeps confirm dialog messages contained on narrow viewports', () => {
