@@ -75,6 +75,8 @@ export function createCellDisplayModel(args: CellDisplayArgs): CellDisplayModel 
     args.address,
     args.label === '' ? '빈 셀' : args.label,
     content.kind === 'image' ? '이미지' : '',
+    content.kind === 'link' ? '링크' : '',
+    content.kind === 'email' ? '이메일 링크' : '',
     error ? '오류' : '',
     args.mergeRange ? `병합 셀 ${args.mergeRange}` : '',
     args.note ? '메모 있음' : '',
