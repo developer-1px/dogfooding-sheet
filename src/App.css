@@ -119,7 +119,7 @@ body, html, #root {
   font: var(--sheet-font-size-ui) var(--sheet-font-mono);
 }
 .sheet-toolbar .formula {
-  flex: 1; min-width: 200px; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
+  flex: 1 1 200px; min-width: 0; max-width: 100%; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
   border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); outline: none;
 }
 .sheet-toolbar .formula:focus { border-color: var(--sheet-color-accent); }
