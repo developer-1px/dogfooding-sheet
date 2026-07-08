@@ -34,7 +34,7 @@ const toSheetCell = (cell: { key: Key; value: string; state: { selected: boolean
   selected: cell.state.selected,
 })
 
-export function useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
+export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
   const dragAnchor = useRef<string | null>(null)
   const dragging = useRef(false)
   const suppressNextSelect = useRef(false)
@@ -120,6 +120,9 @@ export function useSheetGrid({ data, setFocusId, setSelectedIds, setSelectAnchor
 
   const rootProps: SheetGridItemProps = {
     ...(grid.gridProps as SheetGridItemProps),
+    'aria-label': '스프레드시트 그리드',
+    'aria-rowcount': rowCount + 1,
+    'aria-colcount': colCount + 1,
     onKeyDown: (event) => {
       if (event.defaultPrevented) return
       const active = dataWithLastReason.state?.activeKey
