@@ -103,6 +103,11 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     const nextSelection = selectionForAddress(address)
     const committedValue = commitValueForField(draft, column)
     if (opts.restoreFocus) domFocus.requestCellFocusRestore(addressDomId(address))
+    if (Object.is(previousValue, committedValue)) {
+      setSelection(nextSelection)
+      setEditing(null)
+      return
+    }
     onChange({
       patches: [{
         op: previousValue === undefined ? 'add' : 'replace',
