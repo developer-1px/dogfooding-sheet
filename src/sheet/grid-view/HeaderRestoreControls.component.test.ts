@@ -315,6 +315,7 @@ describe('header restore controls', () => {
     const header = document.querySelector<HTMLElement>('.row-header')
 
     expect(header?.getAttribute('aria-label')).toBe('3행, 선택됨, 현재 위치')
+    expect(header?.getAttribute('title')).toBe('3행, 선택됨, 현재 위치 - 클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정')
     expect(header?.getAttribute('aria-selected')).toBe('true')
     expect(header?.getAttribute('aria-current')).toBe('true')
   })
@@ -354,6 +355,7 @@ describe('header restore controls', () => {
 
     expect(header?.getAttribute('role')).toBe('rowheader')
     expect(header?.getAttribute('aria-label')).toBe('3행')
+    expect(header?.getAttribute('title')).toBe('3행 - 클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정')
     expect(header?.tabIndex).toBe(0)
     expect(resizer?.getAttribute('aria-label')).toBe('3행 높이 조정, 현재 24px')
     expect(resizer?.getAttribute('title')).toBe('3행 높이 조정, 현재 24px / 드래그=높이 조정 / ↑ ↓ 키로 10px 조정 / Shift+↑ ↓ 키로 50px 조정 / 더블클릭=기본값 복원')

@@ -70,6 +70,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
   const restoreControls = rowRestoreControls(rIdx, hiddenRows)
   const topRestore = restoreControls.find((control) => control.className === 'unhide-row top')
   const bottomRestore = restoreControls.find((control) => control.className === 'unhide-row bottom')
+  const headerLabel = rowHeaderLabel(rIdx + 1, { selected, current: active })
   const selectRow = (extend: boolean) => {
     const selection = selectRowHeader(rIdx, extend ? focusId : null, colLetters)
     setSelectedIds(selection.selectedIds)
@@ -95,7 +96,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
       className={`row-header${selected ? ' selected-header' : ''}`}
       role="rowheader"
       tabIndex={0}
-      aria-label={rowHeaderLabel(rIdx + 1, { selected, current: active })}
+      aria-label={headerLabel}
       aria-current={active ? 'true' : undefined}
       aria-selected={selected}
       onClick={(e) => selectRow(e.shiftKey)}
@@ -107,7 +108,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
         selectRow(e.shiftKey)
       }}
       onContextMenu={onContextMenu}
-      title="클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정"
+      title={`${headerLabel} - 클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정`}
     >
       {topRestore && restoreButton(topRestore)}
       {rIdx + 1}
