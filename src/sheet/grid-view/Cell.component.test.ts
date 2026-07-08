@@ -169,6 +169,59 @@ describe('Cell component', () => {
     expect(gridKeyDown).not.toHaveBeenCalled()
   })
 
+  it('keeps contenteditable editor keyboard events inside the editor control', () => {
+    const gridKeyDown = vi.fn()
+    const contextKeyDown = vi.fn()
+    const formulaPickKeyDown = vi.fn()
+
+    renderCell({
+      cellProps: { role: 'gridcell', tabIndex: 0, onKeyDown: gridKeyDown },
+      ctxHandlers: { onContextMenu: vi.fn(), onKeyDown: contextKeyDown },
+      editing: true,
+      label: 'plain',
+      draft: 'plain',
+      onFormulaPickKeyDown: formulaPickKeyDown,
+    })
+
+    const editor = document.querySelector<HTMLElement>('[data-nano-inline-edit="true"]')
+
+    expect(editor?.className).toBe('cell-input')
+    expect(editor?.getAttribute('aria-label')).toBe('A1 편집')
+
+    act(() => editor!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))
+
+    expect(formulaPickKeyDown).toHaveBeenCalledTimes(1)
+    expect(contextKeyDown).not.toHaveBeenCalled()
+    expect(gridKeyDown).not.toHaveBeenCalled()
+  })
+
+  it('keeps default-prevented contenteditable editor keys inside the editor control', () => {
+    const gridKeyDown = vi.fn()
+    const contextKeyDown = vi.fn()
+    const formulaPickKeyDown = vi.fn((event: KeyboardEvent) => event.preventDefault())
+
+    renderCell({
+      cellProps: { role: 'gridcell', tabIndex: 0, onKeyDown: gridKeyDown },
+      ctxHandlers: { onContextMenu: vi.fn(), onKeyDown: contextKeyDown },
+      editing: true,
+      label: '=A1',
+      draft: '=A1',
+      onFormulaPickKeyDown: formulaPickKeyDown,
+    })
+
+    const editor = document.querySelector<HTMLElement>('[data-nano-inline-edit="true"]')
+
+    expect(editor?.className).toContain('formula-input')
+
+    const event = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })
+    act(() => editor!.dispatchEvent(event))
+
+    expect(event.defaultPrevented).toBe(true)
+    expect(formulaPickKeyDown).toHaveBeenCalledTimes(1)
+    expect(contextKeyDown).not.toHaveBeenCalled()
+    expect(gridKeyDown).not.toHaveBeenCalled()
+  })
+
   it('keeps non-checkbox cell keyboard handling on the parent gridcell', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()

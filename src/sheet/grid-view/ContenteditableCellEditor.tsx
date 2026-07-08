@@ -120,8 +120,7 @@ export function ContenteditableCellEditor({
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event)
-        if (event.defaultPrevented) return
-        if (event.key === 'Backspace' || event.key === 'Delete') event.stopPropagation()
+        event.stopPropagation()
       }}
     />
   )
