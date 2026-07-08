@@ -24,7 +24,7 @@
   max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-inset-find-bar-inline, 16px) - var(--sheet-inset-find-bar-inline, 16px)));
   max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-inset-find-bar-top, 60px) - var(--sheet-space-8, 24px)));
   overflow-x: hidden; overflow-y: auto;
-  padding: var(--sheet-space-3, 8px); background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-panel, 8px);
+  padding: var(--sheet-space-3, 8px); background: var(--sheet-color-surface, #fff); border: var(--sheet-size-find-bar-border, 1px) solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-panel, 8px);
   box-shadow: var(--sheet-shadow-panel, 0 4px 12px rgba(0, 0, 0, .15));
 }
 .find-bar input[type="text"] {
