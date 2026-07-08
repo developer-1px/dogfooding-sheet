@@ -225,6 +225,17 @@ describe('Tabs component', () => {
     expect(css).toContain('.tab-add { flex: 0 0 auto;')
   })
 
+  it('keeps tab utility controls from shrinking inside tabs', () => {
+    const css = overlaysCss()
+    const closeAndAddRule = css.match(/\.tab-close,\s*\.tab-add\s*\{[^}]+\}/)?.[0] ?? ''
+    const duplicateRule = css.match(/\.tab-dup\s*\{[^}]+\}/)?.[0] ?? ''
+    const colorRule = css.match(/\.tab-color\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(closeAndAddRule).toContain('flex: 0 0 auto;')
+    expect(duplicateRule).toContain('flex: 0 0 auto;')
+    expect(colorRule).toContain('flex: 0 0 auto;')
+  })
+
   it('keeps long sheet tab labels truncated inside a stable tab width', () => {
     const css = overlaysCss()
 
