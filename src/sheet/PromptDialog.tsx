@@ -14,7 +14,7 @@ interface Props {
 const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
   if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
 }
-const inputShortcutTitle = 'Enter=적용 / Esc=취소'
+const inputShortcutTitle = (submitLabel: string) => `Enter=${submitLabel} / Esc=취소`
 const inputKeyShortcuts = 'Enter Escape'
 
 export function PromptDialog({ open, label, placeholder, initial = '', submitLabel = '확인', onSubmit, onCancel }: Props) {
@@ -56,7 +56,7 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
             }
             e.stopPropagation()
           }}
-          title={`${label} (${inputShortcutTitle})`}
+          title={`${label} (${inputShortcutTitle(submitLabel)})`}
           aria-keyshortcuts={inputKeyShortcuts}
         />
         <div className="confirm-actions">
