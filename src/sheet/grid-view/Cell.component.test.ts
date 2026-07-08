@@ -56,6 +56,7 @@ describe('Cell component', () => {
 
     expect(checkbox?.checked).toBe(true)
     expect(checkbox?.getAttribute('aria-label')).toBe('A1 TRUE 체크박스 셀')
+    expect(checkbox?.getAttribute('aria-keyshortcuts')).toBe('Space')
     expect(checkbox?.getAttribute('title')).toBe('A1 TRUE 체크박스 셀')
     expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-label')).toBe('A1 TRUE 체크박스 셀')
     expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-keyshortcuts')).toBe('Enter')
