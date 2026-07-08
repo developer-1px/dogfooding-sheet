@@ -19,7 +19,7 @@ describe('REC devtools styles', () => {
     expect(source).toContain('top: var(--sheet-space-3, 8px);')
     expect(source).toContain('right: var(--sheet-space-3, 8px);')
     expect(source).toContain('gap: var(--sheet-space-2, 6px);')
-    expect(source).toContain('max-width: calc(100vw - var(--sheet-space-3, 8px) - var(--sheet-space-3, 8px));')
+    expect(source).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-3, 8px) - var(--sheet-space-3, 8px)));')
     expect(source).toContain('min-width: 0;')
     expect(source).toContain('min-height: var(--sheet-size-cell-min-height, 28px);')
     expect(source).toContain('padding: var(--sheet-space-1, 4px) var(--sheet-space-4, 10px);')
