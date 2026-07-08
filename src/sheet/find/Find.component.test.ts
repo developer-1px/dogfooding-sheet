@@ -139,10 +139,12 @@ describe('Find component', () => {
     const buttonRule = css.match(/\.find-bar button\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(rootCss).toContain('--sheet-size-find-count-width: 50px;')
+    expect(rootCss).toContain('--sheet-size-find-button-border: 1px;')
     expect(countRule).toContain('flex: 0 0 auto;')
     expect(countRule).toContain('min-width: var(--sheet-size-find-count-width, 50px);')
     expect(buttonRule).toContain('flex: 0 0 auto;')
     expect(buttonRule).toContain('padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px);')
+    expect(buttonRule).toContain('border: var(--sheet-size-find-button-border, 1px) solid var(--sheet-color-border, #dadce0);')
   })
 
   it('keeps the find bar vertically contained within the viewport', () => {
