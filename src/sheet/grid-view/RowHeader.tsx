@@ -23,6 +23,8 @@ interface Props {
 
 function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: Pick<Props, 'rIdx' | 'heightOf' | 'onResize' | 'onResizeEnd' | 'resetRowHeight'>) {
   const height = heightOf(rIdx)
+  const roundedHeight = Math.round(height)
+  const resizeLabel = `${rIdx + 1}행 높이 조정, 현재 ${roundedHeight}px`
   const { handleProps } = useResizeGesture({
     axis: 'y',
     initial: () => heightOf(rIdx),
@@ -37,12 +39,12 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
       {...handleProps}
       role="separator"
       tabIndex={0}
-      aria-label={`${rIdx + 1}행 높이 조정`}
+      aria-label={resizeLabel}
       aria-keyshortcuts="ArrowUp ArrowDown Shift+ArrowUp Shift+ArrowDown"
       aria-orientation="horizontal"
       aria-valuemin={ROW_HEIGHT_BOUNDS.min}
       aria-valuemax={ROW_HEIGHT_BOUNDS.max}
-      aria-valuenow={Math.round(height)}
+      aria-valuenow={roundedHeight}
       onKeyDown={(e) => {
         const next = resizeValueForKey(heightOf(rIdx), e.key, e.shiftKey, 'y', ROW_HEIGHT_BOUNDS)
         if (next === null) return
@@ -51,7 +53,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
         onResizeEnd(rIdx, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); resetRowHeight(rIdx) }}
-      title="드래그=높이 조정 / ↑ ↓ 키로 10px 조정 / Shift+↑ ↓ 키로 50px 조정 / 더블클릭=기본값 복원"
+      title={`${resizeLabel} / 드래그=높이 조정 / ↑ ↓ 키로 10px 조정 / Shift+↑ ↓ 키로 50px 조정 / 더블클릭=기본값 복원`}
     />
   )
 }
