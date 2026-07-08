@@ -128,4 +128,22 @@ describe('grid styles', () => {
     expect(colResizerRule).toContain('cursor: col-resize;')
     expect(rowResizerRule).toContain('cursor: row-resize;')
   })
+
+  it('keeps the fill handle token-sized at the focused cell corner', () => {
+    const root = appCss()
+    const source = gridCss()
+    const fillHandleRule = source.match(/\.fill-handle\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-size-fill-handle: 7px;')
+    expect(root).toContain('--sheet-size-fill-handle-offset: 3px;')
+    expect(fillHandleRule).toContain('position: absolute;')
+    expect(fillHandleRule).toContain('right: calc(-1 * var(--sheet-size-fill-handle-offset, 3px));')
+    expect(fillHandleRule).toContain('bottom: calc(-1 * var(--sheet-size-fill-handle-offset, 3px));')
+    expect(fillHandleRule).toContain('width: var(--sheet-size-fill-handle, 7px);')
+    expect(fillHandleRule).toContain('height: var(--sheet-size-fill-handle, 7px);')
+    expect(fillHandleRule).toContain('background: var(--sheet-color-accent, #1a73e8);')
+    expect(fillHandleRule).toContain('border: 1px solid var(--sheet-color-surface, #fff);')
+    expect(fillHandleRule).toContain('cursor: crosshair;')
+    expect(fillHandleRule).toContain('z-index: 2;')
+  })
 })
