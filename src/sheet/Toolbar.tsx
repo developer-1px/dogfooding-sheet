@@ -12,7 +12,7 @@ import { OverflowMenu, type OverflowProps } from './OverflowMenu'
 import { CondFmtButtons } from './formatting/CondFmtButtons'
 import { FormatButtons } from './formatting/FormatButtons'
 import { StyleToggleButtons } from './formatting/StyleToggleButtons'
-import { cellId, MAX_COL_COUNT, MAX_ROW_COUNT, parseA1 } from './schema'
+import { cellId, cellIdToKey, MAX_COL_COUNT, MAX_ROW_COUNT, parseA1 } from './schema'
 import { canMergeSelection } from './structure/mergeSelection'
 import {
   applyCheckboxValidation,
@@ -41,6 +41,12 @@ const colorInputValue = (color: string | undefined, fallback: string): string =>
   if (hex.length === 3 || hex.length === 4) return `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`.toLowerCase()
   if (hex.length === 6 || hex.length === 8) return `#${hex.slice(0, 6)}`.toLowerCase()
   return fallback
+}
+
+const mergeTargetLabel = (selectedIds: string[], focusKey: string | null): string => {
+  if (selectedIds.length > 1) return `선택 셀 ${selectedIds.length}개`
+  if (focusKey) return focusKey
+  return selectedIds[0] ? cellIdToKey(selectedIds[0]) : '선택 셀'
 }
 
 interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
@@ -135,8 +141,13 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       : filterActionLabel
   const filterLabel = canOpenFilterPrompt ? filterActionLabel : disabledFilterLabel
   const canMerge = canMergeSelection(selectedIds, focus ? cellId(focus.col, focus.row) : null, sheet.merges)
-  const mergeLabel = canMerge ? '선택 셀 병합 또는 병합 해제' : '병합 가능한 셀 범위 없음'
-  const mergeTitle = canMerge ? '선택 셀 병합 / 병합 해제 (Alt+Shift+M)' : mergeLabel
+  const mergeTarget = mergeTargetLabel(selectedIds, focusKey)
+  const mergeLabel = canMerge
+    ? selectedIds.length > 1
+      ? `${mergeTarget} 병합 또는 병합 해제`
+      : `${mergeTarget} 병합 해제`
+    : '병합 가능한 셀 범위 없음'
+  const mergeTitle = canMerge ? `${mergeLabel} (Alt+Shift+M)` : mergeLabel
   const canAutoSum = focus ? autoSumFormula(focus.col, focus.row, display) !== null : false
   const autoSumLabel = canAutoSum && focusKey ? `${focusKey}에 자동 합계` : '자동 합계할 숫자 범위 없음'
   const autoSumTitle = canAutoSum && focusKey ? `${autoSumLabel} (위쪽 연속 숫자 합)` : autoSumLabel

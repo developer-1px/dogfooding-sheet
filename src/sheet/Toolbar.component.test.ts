@@ -314,7 +314,7 @@ describe('Toolbar component', () => {
       document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬 꺼짐"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 병합 또는 병합 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="첫 행 고정 토글 켜짐 (현재 1행 고정)"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="필터 켜짐, B열 필터: needle 수정"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]'),
@@ -392,10 +392,10 @@ describe('Toolbar component', () => {
   it('enables toolbar merge for a supported multi-cell selection', () => {
     const props = renderToolbar({ selectedIds: ['r1-B', 'r1-C'] })
 
-    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 병합 또는 병합 해제"]')
 
     expect(mergeButton?.disabled).toBe(false)
-    expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
+    expect(mergeButton?.getAttribute('title')).toBe('선택 셀 2개 병합 또는 병합 해제 (Alt+Shift+M)')
     expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
 
     act(() => mergeButton!.click())
@@ -410,9 +410,10 @@ describe('Toolbar component', () => {
       sheet: { ...initialSheet, merges: [[1, 1, 1, 2]] },
     })
 
-    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="C2 병합 해제"]')
 
     expect(mergeButton?.disabled).toBe(false)
+    expect(mergeButton?.getAttribute('title')).toBe('C2 병합 해제 (Alt+Shift+M)')
 
     act(() => mergeButton!.click())
 
