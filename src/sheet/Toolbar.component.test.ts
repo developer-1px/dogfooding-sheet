@@ -164,7 +164,7 @@ describe('Toolbar component', () => {
     expect(defaultFgColor?.disabled).toBe(false)
     expect(defaultFgColor?.value).toBe(DEFAULT_CELL_TEXT_COLOR)
     expect(defaultFgColor?.getAttribute('title')).toBe(`B2 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 켜짐"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="B2 숫자 형식: 일반 켜짐"]')?.disabled).toBe(false)
 
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="병합 가능한 셀 범위 없음"]')
     expect(mergeButton?.textContent).toBe('⊞병합')
@@ -261,7 +261,7 @@ describe('Toolbar component', () => {
     }, { onKeyDown: (event) => parentKeys.push(event.key) })
 
     const bold = document.querySelector<HTMLButtonElement>('button[aria-label="B2 굵게 켜짐"]')
-    const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율 켜짐"]')
+    const percent = document.querySelector<HTMLButtonElement>('button[aria-label="B2 숫자 형식: 백분율 켜짐"]')
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
 
@@ -271,7 +271,7 @@ describe('Toolbar component', () => {
     expect(bold?.getAttribute('aria-keyshortcuts')).toBe('Control+B Meta+B')
     expect(percent?.disabled).toBe(false)
     expect(percent?.getAttribute('aria-pressed')).toBe('true')
-    expect(percent?.getAttribute('title')).toBe('백분율 켜짐 (Ctrl/⌘+Shift+5)')
+    expect(percent?.getAttribute('title')).toBe('B2 백분율 켜짐 (Ctrl/⌘+Shift+5)')
     expect(percent?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+5 Meta+Shift+5')
     expect(addCondFormat?.disabled).toBe(false)
     expect(addCondFormat?.getAttribute('title')).toBe('B열 조건부 서식 추가')
@@ -322,6 +322,9 @@ describe('Toolbar component', () => {
     expect(bgColor?.getAttribute('title')).toBe(`선택 셀 2개 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})`)
     expect(fgColor?.disabled).toBe(false)
     expect(fgColor?.getAttribute('title')).toBe(`선택 셀 2개 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
+    const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 숫자 형식: 일반 켜짐"]')
+    expect(plainFormat?.disabled).toBe(false)
+    expect(plainFormat?.getAttribute('title')).toBe('선택 셀 2개 일반 켜짐 (Ctrl/⌘+Shift+1)')
 
     const directButtons = [
       document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]'),
@@ -713,7 +716,9 @@ describe('Toolbar component', () => {
     const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B2 서식 모두 해제"]')
     expect(clearFormat?.disabled).toBe(false)
     expect(clearFormat?.getAttribute('title')).toBe('B2 서식 모두 해제')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 켜짐"]')?.disabled).toBe(false)
+    const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B2 숫자 형식: 일반 켜짐"]')
+    expect(plainFormat?.disabled).toBe(false)
+    expect(plainFormat?.getAttribute('title')).toBe('B2 일반 켜짐 (Ctrl/⌘+Shift+1)')
   })
 
   it('disables conditional format add without a focused column but keeps clearing available', () => {
