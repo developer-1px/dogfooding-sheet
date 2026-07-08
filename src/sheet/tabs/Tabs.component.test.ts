@@ -1,4 +1,4 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEventHandler } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { blankBundle } from '../schema'
@@ -7,6 +7,7 @@ import type { Confirm } from '../useConfirm'
 import type { TabsState } from './useTabs'
 
 const flush = () => Promise.resolve()
+type RenderTabsOptions = { onKeyDown?: KeyboardEventHandler<HTMLDivElement> }
 
 describe('Tabs component', () => {
   let host: HTMLDivElement
@@ -24,20 +25,22 @@ describe('Tabs component', () => {
     host.remove()
   })
 
-  const renderTabs = (state: TabsState, confirm: Confirm = () => Promise.resolve(false)) => {
+  const renderTabs = (state: TabsState, confirm: Confirm = () => Promise.resolve(false), options: RenderTabsOptions = {}) => {
     const calls: string[] = []
 
-    act(() => root.render(createElement(Tabs, {
-      state,
-      switchTab: (name) => calls.push(`switch:${name}`),
-      addSheet: () => calls.push('add'),
-      deleteSheet: (name) => calls.push(`delete:${name}`),
-      renameSheet: (oldName, newName) => calls.push(`rename:${oldName}:${newName}`),
-      duplicateSheet: (name) => calls.push(`duplicate:${name}`),
-      setTabColor: (name, color) => calls.push(`color:${name}:${color}`),
-      reorderTab: (from, to) => calls.push(`reorder:${from}:${to}`),
-      confirm,
-    })))
+    act(() => root.render(createElement('div', { onKeyDown: options.onKeyDown },
+      createElement(Tabs, {
+        state,
+        switchTab: (name) => calls.push(`switch:${name}`),
+        addSheet: () => calls.push('add'),
+        deleteSheet: (name) => calls.push(`delete:${name}`),
+        renameSheet: (oldName, newName) => calls.push(`rename:${oldName}:${newName}`),
+        duplicateSheet: (name) => calls.push(`duplicate:${name}`),
+        setTabColor: (name, color) => calls.push(`color:${name}:${color}`),
+        reorderTab: (from, to) => calls.push(`reorder:${from}:${to}`),
+        confirm,
+      }),
+    )))
 
     return calls
   }
@@ -107,6 +110,33 @@ describe('Tabs component', () => {
     act(() => duplicate!.click())
 
     expect(calls).toEqual(['duplicate:Budget'])
+  })
+
+  it('keeps add-sheet activation keys inside the tab add control', () => {
+    const parentKeys: string[] = []
+    const calls = renderTabs({
+      order: ['Budget', 'Forecast'],
+      active: 'Budget',
+      saved: { Forecast: blankBundle() },
+      colors: {},
+    }, () => Promise.resolve(false), { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const add = document.querySelector<HTMLButtonElement>('.tab-add')
+
+    expect(add?.type).toBe('button')
+    expect(add?.textContent).toBe('+')
+    expect(add?.getAttribute('title')).toBe('시트 추가')
+    expect(add?.getAttribute('aria-label')).toBe('시트 추가')
+
+    act(() => add!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })))
+    act(() => add!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true })))
+
+    expect(parentKeys).toEqual([])
+    expect(calls).toEqual([])
+
+    act(() => add!.click())
+
+    expect(calls).toEqual(['add'])
   })
 
   it('does not leak a rejected delete confirmation', async () => {
