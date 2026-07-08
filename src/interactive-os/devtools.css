@@ -8,13 +8,13 @@
   gap: 6px;
   min-height: 28px;
   padding: 4px 10px;
-  border: 1px solid rgba(0, 0, 0, .18);
+  border: 1px solid var(--sheet-color-border, #dadce0);
   border-radius: 6px;
-  background: rgba(255, 255, 255, .92);
+  background: var(--sheet-color-surface, #fff);
   color: var(--sheet-color-text, #202124);
   font: 700 11px/1 system-ui, sans-serif;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .14);
+  box-shadow: var(--sheet-shadow-menu, 0 2px 8px rgba(0, 0, 0, .1));
 }
 
 .rec-devtools.recording {
