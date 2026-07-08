@@ -67,6 +67,34 @@ describe('Cell component', () => {
     expect(onCheckboxToggle).toHaveBeenCalledTimes(1)
   })
 
+  it('keeps the pointer-only fill handle hidden from assistive technology', () => {
+    const onFillHandleMouseDown = vi.fn()
+
+    renderCell({
+      isFillCorner: true,
+      onFillHandleMouseDown,
+      note: 'Needs review',
+      validationOptions: ['Open', 'Closed'],
+    })
+
+    const fillHandle = document.querySelector<HTMLElement>('.fill-handle')
+    const noteMark = document.querySelector<HTMLElement>('.note-mark')
+    const dropdownMark = document.querySelector<HTMLElement>('.dropdown-mark')
+
+    expect(fillHandle).not.toBeNull()
+    expect(fillHandle?.getAttribute('aria-hidden')).toBe('true')
+    expect(noteMark?.getAttribute('aria-hidden')).toBe('true')
+    expect(dropdownMark?.getAttribute('aria-hidden')).toBe('true')
+
+    act(() => fillHandle!.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })))
+
+    expect(onFillHandleMouseDown).toHaveBeenCalledTimes(1)
+
+    renderCell({ isFillCorner: true, editing: true })
+
+    expect(document.querySelector('.fill-handle')).toBeNull()
+  })
+
   it('keeps URL link keyboard events inside the link control', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()
