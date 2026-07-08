@@ -130,6 +130,9 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const leftAlignPressed = focusedStyle?.a === 'left'
   const centerAlignPressed = focusedStyle?.a === 'center'
   const rightAlignPressed = focusedStyle?.a === 'right'
+  const activeLeftAlignPressed = hasCellTarget ? leftAlignPressed : undefined
+  const activeCenterAlignPressed = hasCellTarget ? centerAlignPressed : undefined
+  const activeRightAlignPressed = hasCellTarget ? rightAlignPressed : undefined
   const leftAlignLabel = hasCellTarget ? `${cellTarget} 왼쪽 정렬 ${leftAlignPressed ? '켜짐' : '꺼짐'}` : '왼쪽 정렬할 셀 없음'
   const centerAlignLabel = hasCellTarget ? `${cellTarget} 가운데 정렬 ${centerAlignPressed ? '켜짐' : '꺼짐'}` : '가운데 정렬할 셀 없음'
   const rightAlignLabel = hasCellTarget ? `${cellTarget} 오른쪽 정렬 ${rightAlignPressed ? '켜짐' : '꺼짐'}` : '오른쪽 정렬할 셀 없음'
@@ -182,9 +185,9 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'asc')} disabled={!canSort} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'desc')} disabled={!canSort} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
       <button {...toolbarCommandButtonProps} onClick={runAutoSum} disabled={!canAutoSum} title={autoSumTitle} aria-label={autoSumLabel}>Σ</button>
       <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} targetLabel={cellTarget} disabled={!hasCellTarget} />
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={leftAlignPressed} title={leftAlignLabel} aria-label={leftAlignLabel}>⇤</button>
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={centerAlignPressed} title={centerAlignLabel} aria-label={centerAlignLabel}>⇔</button>
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={rightAlignPressed} title={rightAlignLabel} aria-label={rightAlignLabel}>⇥</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={activeLeftAlignPressed} title={leftAlignLabel} aria-label={leftAlignLabel}>⇤</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={activeCenterAlignPressed} title={centerAlignLabel} aria-label={centerAlignLabel}>⇔</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={activeRightAlignPressed} title={rightAlignLabel} aria-label={rightAlignLabel}>⇥</button>
       <label className="color-pick" title={bgColorLabel}>🎨<input type="color" value={bgColorValue} title={bgColorLabel} aria-label={bgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
       <label className="color-pick" title={fgColorLabel}>A<input type="color" value={fgColorValue} title={fgColorLabel} aria-label={fgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
       <button {...toolbarCommandButtonProps} onClick={clearStyle} disabled={!hasCellTarget} title={clearFormatLabel} aria-label={clearFormatLabel} aria-keyshortcuts={clearFormatKeyShortcuts}>✕서식</button><button {...toolbarCommandButtonProps} onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title={mergeTitle} aria-label={mergeLabel} aria-keyshortcuts={mergeKeyShortcuts}>⊞병합</button>
