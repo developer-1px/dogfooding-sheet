@@ -424,9 +424,11 @@ describe('EditableGrid', () => {
     const { host, root, onChange } = setupDatabase(vi.fn(), (event) => parentKeys.push(event.key))
     try {
       const titleCell = gridCells()[0]
+      expect(titleCell.getAttribute('aria-keyshortcuts')).toBe('Enter')
       act(() => titleCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
 
       const input = document.querySelector<HTMLInputElement>('input.editable-grid-input')
+      expect(titleCell.hasAttribute('aria-keyshortcuts')).toBe(false)
       expect(input?.getAttribute('aria-label')).toBe('Title row 1 편집')
       expect(input?.getAttribute('title')).toBe('Title row 1 편집 (Enter=저장 / Esc=취소)')
       expect(input?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')

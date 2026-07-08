@@ -132,7 +132,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 focusable={selected || (!controller.activeSelection.focus && rowIndex === 0 && columnIndex === 0)}
                 aria-readonly={readonlyCell || undefined}
                 aria-describedby={columnHeaderId(columnIndex)}
-                aria-keyshortcuts={cellKeyShortcuts}
+                aria-keyshortcuts={isEditing ? undefined : cellKeyShortcuts}
                 onFocus={() => controller.focusCell(address)}
                 onClick={() => controller.focusCellWithDomFocus(address)}
                 onDoubleClick={() => controller.startEdit(address, cellValue, column, { caret: 'end' })}
