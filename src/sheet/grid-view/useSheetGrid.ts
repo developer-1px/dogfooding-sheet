@@ -23,6 +23,18 @@ const directionsByArrow: Record<string, Extract<PatternEvent, { type: 'navigate'
   ArrowUp: 'up',
 }
 
+const gridKeyShortcuts = [
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'Shift+ArrowUp',
+  'Shift+ArrowDown',
+  'Shift+ArrowLeft',
+  'Shift+ArrowRight',
+  'Enter',
+].join(' ')
+
 const toItemProps = (props: SheetGridItemProps | undefined, id?: string): SheetGridItemProps => ({
   ...(props ?? {}),
   ...(id ? { 'data-id': id } : {}),
@@ -130,6 +142,7 @@ export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelected
     'aria-label': '스프레드시트 그리드',
     'aria-rowcount': rowCount + 1,
     'aria-colcount': colCount + 1,
+    'aria-keyshortcuts': gridKeyShortcuts,
     onKeyDown: (event) => {
       if (event.defaultPrevented) return
       const active = dataWithLastReason.state?.activeKey
