@@ -86,6 +86,7 @@
 .status-bar > span {
   min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.persistence-status { flex: 0 0 auto; }
 .status-bar b { color: var(--sheet-color-text, #202124); font-weight: var(--sheet-font-weight-strong, 600); }
 
 .dialog-backdrop {
