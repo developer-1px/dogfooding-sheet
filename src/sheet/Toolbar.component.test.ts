@@ -145,10 +145,10 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
 
-    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="병합 가능한 셀 범위 없음"]')
     expect(mergeButton?.textContent).toBe('⊞병합')
     expect(mergeButton?.disabled).toBe(true)
-    expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
+    expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
     expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
 
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')?.disabled).toBe(false)
@@ -324,15 +324,27 @@ describe('Toolbar component', () => {
   it('disables toolbar merge for a single unmerged focused cell', () => {
     const props = renderToolbar()
 
-    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="병합 가능한 셀 범위 없음"]')
 
     expect(mergeButton?.textContent).toBe('⊞병합')
     expect(mergeButton?.disabled).toBe(true)
-    expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
+    expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
+    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
 
     act(() => mergeButton!.click())
 
     expect(props.mergeSelection).not.toHaveBeenCalled()
+  })
+
+  it('disables toolbar merge for unsupported multi-row selections', () => {
+    renderToolbar({ focusKey: null, selectedIds: ['r1-B', 'r1-C', 'r2-B', 'r2-C'] })
+
+    const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="병합 가능한 셀 범위 없음"]')
+
+    expect(mergeButton?.textContent).toBe('⊞병합')
+    expect(mergeButton?.disabled).toBe(true)
+    expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
+    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
   })
 
   it('enables toolbar merge for a supported multi-cell selection', () => {
@@ -341,6 +353,8 @@ describe('Toolbar component', () => {
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
 
     expect(mergeButton?.disabled).toBe(false)
+    expect(mergeButton?.getAttribute('title')).toBe('선택 셀 병합 / 병합 해제 (Alt+Shift+M)')
+    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
 
     act(() => mergeButton!.click())
 
