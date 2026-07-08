@@ -537,7 +537,7 @@ describe('Toolbar component', () => {
       .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
 
     expect(link?.disabled).toBe(true)
-    expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
+    expect(link?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 
   it('disables toolbar filter setup without a focused column but keeps clearing available', () => {
@@ -769,21 +769,21 @@ describe('Toolbar component', () => {
 
     expect(insertRow?.textContent).toBe('+행')
     expect(insertRow?.disabled).toBe(true)
-    expect(insertRow?.getAttribute('title')).toBe('삽입할 기준 행 없음 (Ctrl/⌘+Alt+=)')
-    expect(insertRow?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+= Meta+Alt+=')
+    expect(insertRow?.getAttribute('title')).toBe('삽입할 기준 행 없음')
+    expect(insertRow?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(deleteRow?.textContent).toBe('−행')
     expect(deleteRow?.disabled).toBe(true)
-    expect(deleteRow?.getAttribute('title')).toBe('삭제할 행 없음 (Ctrl/⌘+Alt+-)')
-    expect(deleteRow?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+- Meta+Alt+-')
+    expect(deleteRow?.getAttribute('title')).toBe('삭제할 행 없음')
+    expect(deleteRow?.hasAttribute('aria-keyshortcuts')).toBe(false)
 
     expect(insertCol?.textContent).toBe('+열')
     expect(insertCol?.disabled).toBe(true)
-    expect(insertCol?.getAttribute('title')).toBe('삽입할 기준 열 없음 (Ctrl/⌘+Alt+Shift+=)')
-    expect(insertCol?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+Shift+= Meta+Alt+Shift+=')
+    expect(insertCol?.getAttribute('title')).toBe('삽입할 기준 열 없음')
+    expect(insertCol?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(deleteCol?.textContent).toBe('−열')
     expect(deleteCol?.disabled).toBe(true)
-    expect(deleteCol?.getAttribute('title')).toBe('삭제할 열 없음 (Ctrl/⌘+Alt+Shift+-)')
-    expect(deleteCol?.getAttribute('aria-keyshortcuts')).toBe('Control+Alt+Shift+- Meta+Alt+Shift+-')
+    expect(deleteCol?.getAttribute('title')).toBe('삭제할 열 없음')
+    expect(deleteCol?.hasAttribute('aria-keyshortcuts')).toBe(false)
 
     act(() => insertRow!.click())
     act(() => deleteRow!.click())
