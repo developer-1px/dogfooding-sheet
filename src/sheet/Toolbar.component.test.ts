@@ -562,7 +562,7 @@ describe('Toolbar component', () => {
     expect(filterButton?.textContent).toBe('🔽필터')
     expect(filterButton?.disabled).toBe(true)
     expect(filterButton?.getAttribute('title')).toBe('필터 꺼짐, 필터를 적용할 열 없음')
-    expect(filterButton?.getAttribute('aria-pressed')).toBe('false')
+    expect(filterButton?.hasAttribute('aria-pressed')).toBe(false)
   })
 
   it('labels an enabled inactive filter setup as off', () => {
@@ -598,7 +598,7 @@ describe('Toolbar component', () => {
     expect(filterButton?.textContent).toBe('🔽필터')
     expect(filterButton?.disabled).toBe(true)
     expect(filterButton?.getAttribute('title')).toBe('필터 꺼짐, B열에 필터할 데이터 행 없음')
-    expect(filterButton?.getAttribute('aria-pressed')).toBe('false')
+    expect(filterButton?.hasAttribute('aria-pressed')).toBe(false)
   })
 
   it('disables validation commands without target cells', () => {
