@@ -219,10 +219,13 @@ describe('OverflowMenu component', () => {
     expect(css).toContain('.overflow-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }')
   })
 
-  it('keeps long overflow menus scrollable on short viewports', () => {
+  it('keeps long overflow menus vertically scrollable and horizontally clipped', () => {
     const css = overlaysCss()
+    const listRule = css.match(/\.overflow-list\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)); overflow-y: auto;')
+    expect(listRule).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));')
+    expect(listRule).toContain('overflow-x: hidden;')
+    expect(listRule).toContain('overflow-y: auto;')
   })
 
   it('keeps long overflow menu labels contained on narrow viewports', () => {
