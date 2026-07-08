@@ -77,6 +77,44 @@ describe('PromptDialog component', () => {
     expect(onCancel).toHaveBeenCalledTimes(2)
   })
 
+  it('keeps prompt input editing keys inside the input while preserving Escape cancel', () => {
+    const onSubmit = vi.fn()
+    const onCancel = vi.fn()
+    const parentKeys: string[] = []
+
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(PromptDialog, {
+        open: true,
+        label: '하이퍼링크 URL',
+        placeholder: 'https://...',
+        initial: 'https://example.com',
+        submitLabel: '삽입',
+        onSubmit,
+        onCancel,
+      }),
+    )))
+
+    const input = document.querySelector<HTMLInputElement>('.prompt-dialog input')!
+
+    expect(input.placeholder).toBe('https://...')
+    expect(input.value).toBe('https://example.com')
+    expect(input.getAttribute('aria-keyshortcuts')).toBe('Enter')
+
+    act(() => keyDown(input, 'ArrowLeft'))
+    act(() => keyDown(input, 'x'))
+
+    expect(parentKeys).toEqual([])
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(onCancel).not.toHaveBeenCalled()
+
+    act(() => keyDown(input, 'Escape'))
+
+    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(parentKeys).toEqual([])
+  })
+
   it('resets the input value when a new initial value is supplied', () => {
     const onSubmit = vi.fn()
     const onCancel = vi.fn()
