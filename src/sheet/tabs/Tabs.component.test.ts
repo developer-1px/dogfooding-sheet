@@ -219,9 +219,13 @@ describe('Tabs component', () => {
   })
 
   it('keeps overflowing sheet tabs contained in a horizontal tab strip', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
+    const tabsBarRule = css.match(/\.tabs-bar\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-tab-strip-border: 1px;')
     expect(css).toContain('overflow-x: auto; max-width: 100%; min-width: 0;')
+    expect(tabsBarRule).toContain('border-top: var(--sheet-size-tab-strip-border, 1px) solid var(--sheet-color-border-subtle, #e0e0e0);')
     expect(css).toContain('display: inline-flex; flex: 0 0 auto; align-items: center;')
     expect(css).toContain('.tab-add { flex: 0 0 auto;')
   })
