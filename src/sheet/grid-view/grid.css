@@ -121,7 +121,11 @@
 
 .cell.errcell { color: var(--sheet-color-danger, #d93025); font-weight: var(--sheet-font-weight-strong, 600); }
 
-.cell-link { color: var(--sheet-color-accent, #1a73e8); text-decoration: underline; cursor: pointer; }
+.cell-link {
+  color: var(--sheet-color-accent, #1a73e8); text-decoration: underline; cursor: pointer;
+  display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  white-space: inherit; vertical-align: bottom;
+}
 
 .cell.wrap { white-space: pre-wrap; word-break: break-word; }
 
