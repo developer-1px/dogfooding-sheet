@@ -162,6 +162,7 @@ describe('Cell component', () => {
     expect(cell?.getAttribute('aria-label')).toBe('A1 https://example.com/chart.png 이미지')
     expect(cell?.getAttribute('title')).toBe('https://example.com/chart.png')
     expect(image?.getAttribute('src')).toBe('https://example.com/chart.png')
+    expect(image?.getAttribute('title')).toBe('https://example.com/chart.png')
     expect(image?.getAttribute('alt')).toBe('')
   })
 
