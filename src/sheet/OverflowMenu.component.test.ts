@@ -166,7 +166,7 @@ describe('OverflowMenu component', () => {
     expect(link?.getAttribute('aria-disabled')).toBe('true')
     expect(link?.getAttribute('title')).toBe('하이퍼링크를 삽입할 셀 없음')
     expect(link?.getAttribute('aria-label')).toBe('하이퍼링크를 삽입할 셀 없음')
-    expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
+    expect(link?.hasAttribute('aria-keyshortcuts')).toBe(false)
 
     act(() => link!.click())
 

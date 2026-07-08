@@ -114,6 +114,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
                 ? `${visibleLabel} ${it.checked ? '켜짐' : '꺼짐'}`
                 : it.label
             const ariaLabel = it.disabled || it.kind === 'menuitemcheckbox' ? itemLabel : undefined
+            const keyShortcuts = it.disabled ? undefined : it.keyShortcuts
             return (
               <button
                 key={it.id}
@@ -123,7 +124,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
                 disabled={it.disabled}
                 title={itemLabel}
                 aria-label={ariaLabel}
-                aria-keyshortcuts={it.keyShortcuts}
+                aria-keyshortcuts={keyShortcuts}
               >{it.label}</button>
             )
           })}
