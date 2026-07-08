@@ -47,13 +47,15 @@ describe('cell display model', () => {
       highlighted: true,
       previewing: true,
       styleClass: 'bold',
+      note: '검토 필요',
     })
 
     expect(isErrorLabel('#DIV/0!')).toBe(true)
     expect(model.error).toBe(true)
-    expect(model.ariaLabel).toBe('A1 #N/A 오류 병합 셀 A1:B1 선택됨 현재 셀 편집 중')
+    expect(model.ariaLabel).toBe('A1 #N/A 오류 병합 셀 A1:B1 메모 있음 선택됨 현재 셀 편집 중')
     expect(model.editLabel).toBe('A1 편집')
     expect(model.className).toBe('cell selected focused merged errcell ref-hi preview bold')
+    expect(model.title).toBe('검토 필요')
   })
 
   it('marks negative numeric cells and prefers note over tooltip over long label title', () => {
