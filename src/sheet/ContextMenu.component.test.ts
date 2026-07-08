@@ -39,8 +39,10 @@ describe('ContextMenu component', () => {
     expect(items.map((item) => item.textContent)).toEqual(['열기', '삭제'])
     expect(items.every((item) => item.type === 'button')).toBe(true)
     expect(items[0]?.getAttribute('title')).toBe('열기')
+    expect(items[0]?.getAttribute('aria-label')).toBe('열기')
     expect(items[0]?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
-    expect(items[1]?.getAttribute('title')).toBe('삭제')
+    expect(items[1]?.getAttribute('title')).toBe('삭제 사용할 수 없음')
+    expect(items[1]?.getAttribute('aria-label')).toBe('삭제 사용할 수 없음')
     expect(items[1]?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(items[1]?.disabled).toBe(true)
 
