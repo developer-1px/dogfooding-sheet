@@ -99,9 +99,14 @@ export function Cell(p: Props) {
       e.stopPropagation()
     },
   } as React.SelectHTMLAttributes<HTMLSelectElement> & { ref?: React.Ref<HTMLSelectElement> }
+  const markerClassName = [
+    p.note && !p.editing ? 'has-note-marker' : '',
+    p.validationOptions && !p.editing ? 'has-dropdown-marker' : '',
+  ].filter(Boolean).join(' ')
   const className = p.formulaReference
     ? `${display.className} ${p.formulaReference.className}`
     : display.className
+  const cellClassName = markerClassName ? `${className} ${markerClassName}` : className
 
   return (
     <span
@@ -115,7 +120,7 @@ export function Cell(p: Props) {
       aria-keyshortcuts={p.editing ? undefined : 'Enter'}
       aria-haspopup={p.validationOptions && !p.editing ? 'listbox' : undefined}
       aria-expanded={p.validationOptions && !p.editing ? false : undefined}
-      className={className}
+      className={cellClassName}
       style={p.styleInline}
       data-formula-ref-index={p.formulaReference?.index}
       data-formula-ref={p.formulaReference?.token}

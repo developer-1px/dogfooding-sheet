@@ -34,4 +34,10 @@ describe('grid styles', () => {
     }
     expect(formulaRefRules.join('\n')).not.toMatch(/#[0-9a-fA-F]{3,8}|rgba\(/)
   })
+
+  it('reserves inline-end space for cell note and dropdown markers', () => {
+    const source = gridCss()
+
+    expect(source).toContain('.cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }')
+  })
 })
