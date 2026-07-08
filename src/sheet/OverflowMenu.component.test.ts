@@ -150,7 +150,8 @@ describe('OverflowMenu component', () => {
 
     expect(link?.disabled).toBe(true)
     expect(link?.getAttribute('aria-disabled')).toBe('true')
-    expect(link?.getAttribute('title')).toBe('하이퍼링크 삽입 (Ctrl/⌘+K)')
+    expect(link?.getAttribute('title')).toBe('하이퍼링크 삽입 (Ctrl/⌘+K) 사용할 수 없음')
+    expect(link?.getAttribute('aria-label')).toBe('하이퍼링크 삽입 (Ctrl/⌘+K) 사용할 수 없음')
     expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
 
     act(() => link!.click())
@@ -169,6 +170,7 @@ describe('OverflowMenu component', () => {
 
     expect(link?.disabled).toBe(false)
     expect(link?.hasAttribute('aria-disabled')).toBe(false)
+    expect(link?.hasAttribute('aria-label')).toBe(false)
     expect(link?.getAttribute('aria-keyshortcuts')).toBe('Control+K Meta+K')
   })
 
@@ -185,10 +187,12 @@ describe('OverflowMenu component', () => {
 
     expect(clearValues?.disabled).toBe(true)
     expect(clearValues?.getAttribute('aria-disabled')).toBe('true')
-    expect(clearValues?.getAttribute('title')).toBe('전체 값 지우기')
+    expect(clearValues?.getAttribute('title')).toBe('전체 값 지우기 사용할 수 없음')
+    expect(clearValues?.getAttribute('aria-label')).toBe('전체 값 지우기 사용할 수 없음')
     expect(clearFormats?.disabled).toBe(true)
     expect(clearFormats?.getAttribute('aria-disabled')).toBe('true')
-    expect(clearFormats?.getAttribute('title')).toBe('전체 서식 지우기')
+    expect(clearFormats?.getAttribute('title')).toBe('전체 서식 지우기 사용할 수 없음')
+    expect(clearFormats?.getAttribute('aria-label')).toBe('전체 서식 지우기 사용할 수 없음')
   })
 
   it('enables destructive clear items when matching sheet data exists', () => {
