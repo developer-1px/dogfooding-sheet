@@ -86,6 +86,7 @@ describe('StatusBar component', () => {
   it('keeps detailed metrics wrapping and contained within the status bar', () => {
     const css = overlaysCss()
     const statusItemRule = css.match(/\.status-bar > span\s*\{[^}]+\}/)?.[0] ?? ''
+    const persistenceRule = css.match(/\.persistence-status\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(css).toMatch(
       /\.status-bar\s*\{\s*display: flex; flex-wrap: wrap; gap: var\(--sheet-space-1, 4px\) var\(--sheet-space-6, 16px\); align-items: center;/,
@@ -95,6 +96,7 @@ describe('StatusBar component', () => {
     expect(statusItemRule).toContain('overflow: hidden;')
     expect(statusItemRule).toContain('text-overflow: ellipsis;')
     expect(statusItemRule).toContain('white-space: nowrap;')
+    expect(persistenceRule).toContain('flex: 0 0 auto;')
   })
 
   it('distinguishes pending autosave from active saving', () => {
