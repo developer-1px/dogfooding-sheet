@@ -50,10 +50,10 @@ function CellContentView({ address, content }: { address: string; content: CellC
     return <img className="cell-img" src={content.src} alt={`${address} 이미지: ${content.src}`} title={content.src} onClick={(e) => e.stopPropagation()} />
   }
   if (content.kind === 'link') {
-    return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" title={content.label} aria-label={`${address} 링크 열기: ${content.label}`} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
+    return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" title={content.label} aria-label={`${address} 링크 열기: ${content.label}`} aria-keyshortcuts="Enter" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
   }
   if (content.kind === 'email') {
-    return <a className="cell-link" href={content.href} title={content.label} aria-label={`${address} 이메일 작성: ${content.label}`} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
+    return <a className="cell-link" href={content.href} title={content.label} aria-label={`${address} 이메일 작성: ${content.label}`} aria-keyshortcuts="Enter" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
   }
   return content.text
 }
