@@ -479,29 +479,51 @@ describe('Toolbar component', () => {
   it('disables toolbar filter setup without a focused column but keeps clearing available', () => {
     renderToolbar({ focusKey: null, selectedIds: [], filter: { col: 'B', text: 'needle' } })
 
-    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 수정"]')
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="필터를 수정할 열 없음"]')
     const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]')
 
     expect(filterButton?.textContent).toBe('🔽필터 B')
     expect(filterButton?.disabled).toBe(true)
-    expect(filterButton?.getAttribute('title')).toBe('B열 필터: needle 수정')
+    expect(filterButton?.getAttribute('title')).toBe('필터를 수정할 열 없음')
     expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
     expect(clearFilter?.disabled).toBe(false)
     expect(clearFilter?.getAttribute('title')).toBe('B열 필터: needle 해제')
   })
 
+  it('disables toolbar filter setup without a focused column or active filter', () => {
+    renderToolbar({ focusKey: null, selectedIds: [], filter: null })
+
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="필터를 적용할 열 없음"]')
+
+    expect(filterButton?.textContent).toBe('🔽필터')
+    expect(filterButton?.disabled).toBe(true)
+    expect(filterButton?.getAttribute('title')).toBe('필터를 적용할 열 없음')
+    expect(filterButton?.getAttribute('aria-pressed')).toBe('false')
+  })
+
   it('disables toolbar filter setup on a single-row sheet but keeps clearing available', () => {
     renderToolbar({ rowCount: 1, focusKey: 'B1', selectedIds: ['B1'], filter: { col: 'B', text: 'needle' } })
 
-    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 수정"]')
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터를 수정할 데이터 행 없음"]')
     const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]')
 
     expect(filterButton?.textContent).toBe('🔽필터 B')
     expect(filterButton?.disabled).toBe(true)
-    expect(filterButton?.getAttribute('title')).toBe('B열 필터: needle 수정')
+    expect(filterButton?.getAttribute('title')).toBe('B열 필터를 수정할 데이터 행 없음')
     expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
     expect(clearFilter?.disabled).toBe(false)
     expect(clearFilter?.getAttribute('title')).toBe('B열 필터: needle 해제')
+  })
+
+  it('disables toolbar filter setup on a single-row sheet without an active filter', () => {
+    renderToolbar({ rowCount: 1, focusKey: 'B1', selectedIds: ['B1'], filter: null })
+
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열에 필터할 데이터 행 없음"]')
+
+    expect(filterButton?.textContent).toBe('🔽필터')
+    expect(filterButton?.disabled).toBe(true)
+    expect(filterButton?.getAttribute('title')).toBe('B열에 필터할 데이터 행 없음')
+    expect(filterButton?.getAttribute('aria-pressed')).toBe('false')
   })
 
   it('disables validation commands without target cells', () => {
