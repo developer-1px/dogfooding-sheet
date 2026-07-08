@@ -74,7 +74,7 @@ export function RecDevToolsOverlay() {
       aria-pressed={recording}
     >
       <span className="rec-dot" aria-hidden="true" />
-      {recording ? `STOP ${elapsedLabel}` : 'REC'}
+      <span className="rec-label">{recording ? `STOP ${elapsedLabel}` : 'REC'}</span>
     </button>
   )
 }

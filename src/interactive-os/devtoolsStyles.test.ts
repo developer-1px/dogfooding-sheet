@@ -19,6 +19,8 @@ describe('REC devtools styles', () => {
     expect(source).toContain('top: var(--sheet-space-3, 8px);')
     expect(source).toContain('right: var(--sheet-space-3, 8px);')
     expect(source).toContain('gap: var(--sheet-space-2, 6px);')
+    expect(source).toContain('max-width: calc(100vw - var(--sheet-space-3, 8px) - var(--sheet-space-3, 8px));')
+    expect(source).toContain('min-width: 0;')
     expect(source).toContain('min-height: var(--sheet-size-cell-min-height, 28px);')
     expect(source).toContain('padding: var(--sheet-space-1, 4px) var(--sheet-space-4, 10px);')
     expect(source).toContain('border-radius: var(--sheet-radius-tab, 6px);')
@@ -33,6 +35,20 @@ describe('REC devtools styles', () => {
     expect(source).toContain('background: var(--sheet-color-danger, #d93025);')
     expect(source).toContain('color: var(--sheet-color-surface, #fff);')
     expect(source).toContain('border-color: var(--sheet-color-danger, #d93025);')
+  })
+
+  it('keeps the overlay dot stable and clips only the text label', () => {
+    const source = css()
+    const dotRule = source.match(/\.rec-dot\s*\{[^}]+\}/)?.[0] ?? ''
+    const labelRule = source.match(/\.rec-label\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(dotRule).toContain('flex: 0 0 auto;')
+    expect(dotRule).toContain('width: 7px;')
+    expect(dotRule).toContain('height: 7px;')
+    expect(labelRule).toContain('min-width: 0;')
+    expect(labelRule).toContain('overflow: hidden;')
+    expect(labelRule).toContain('text-overflow: ellipsis;')
+    expect(labelRule).toContain('white-space: nowrap;')
   })
 
   it('does not reintroduce replaced direct REC style values', () => {
