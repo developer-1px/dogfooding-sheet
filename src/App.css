@@ -86,6 +86,7 @@
   --sheet-size-grid-resizer-hit-area: 6px;
   --sheet-size-grid-resizer-offset: 3px;
   --sheet-size-fill-handle: 7px;
+  --sheet-size-fill-handle-border: 1px;
   --sheet-size-fill-handle-offset: 3px;
   --sheet-size-note-marker: 6px;
   --sheet-size-rec-dot: 7px;
