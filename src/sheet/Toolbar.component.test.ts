@@ -164,7 +164,7 @@ describe('Toolbar component', () => {
     expect(defaultFgColor?.disabled).toBe(false)
     expect(defaultFgColor?.value).toBe(DEFAULT_CELL_TEXT_COLOR)
     expect(defaultFgColor?.getAttribute('aria-label')).toBe(`글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 켜짐"]')?.disabled).toBe(false)
 
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="병합 가능한 셀 범위 없음"]')
     expect(mergeButton?.textContent).toBe('⊞병합')
@@ -255,7 +255,7 @@ describe('Toolbar component', () => {
     }, { onKeyDown: (event) => parentKeys.push(event.key) })
 
     const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게 켜짐"]')
-    const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율"]')
+    const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율 켜짐"]')
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
 
@@ -265,6 +265,7 @@ describe('Toolbar component', () => {
     expect(bold?.getAttribute('aria-keyshortcuts')).toBe('Control+B Meta+B')
     expect(percent?.disabled).toBe(false)
     expect(percent?.getAttribute('aria-pressed')).toBe('true')
+    expect(percent?.getAttribute('title')).toBe('백분율 켜짐 (Ctrl/⌘+Shift+5)')
     expect(percent?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+5 Meta+Shift+5')
     expect(addCondFormat?.disabled).toBe(false)
     expect(clearCondFormat?.disabled).toBe(false)
@@ -670,7 +671,7 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 켜짐"]')?.disabled).toBe(false)
   })
 
   it('disables conditional format add without a focused column but keeps clearing available', () => {

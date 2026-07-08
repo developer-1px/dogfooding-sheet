@@ -18,10 +18,12 @@ export function FormatButtons({ apply, current, disabled = false }: { apply: (f:
   return (
     <>
       {FORMATS.map(([f, label, title, keyShortcuts, shortcutLabel]) => {
-        const accessibleLabel = disabled ? `숫자 형식: ${title} 적용할 셀 없음` : `숫자 형식: ${title}`
-        const titleLabel = disabled ? `${title} 적용할 셀 없음` : title
+        const pressed = current === f
+        const stateLabel = pressed ? '켜짐' : '꺼짐'
+        const accessibleLabel = disabled ? `숫자 형식: ${title} 적용할 셀 없음` : `숫자 형식: ${title} ${stateLabel}`
+        const titleLabel = disabled ? `${title} 적용할 셀 없음` : `${title} ${stateLabel}`
         return (
-          <button type="button" key={f} onKeyDown={stopToolbarActivationKeyDown} onClick={() => apply(f)} disabled={disabled} aria-pressed={current === f} title={shortcutLabel ? `${titleLabel} (${shortcutLabel})` : titleLabel} aria-label={accessibleLabel} aria-keyshortcuts={keyShortcuts}>{label}</button>
+          <button type="button" key={f} onKeyDown={stopToolbarActivationKeyDown} onClick={() => apply(f)} disabled={disabled} aria-pressed={pressed} title={shortcutLabel ? `${titleLabel} (${shortcutLabel})` : titleLabel} aria-label={accessibleLabel} aria-keyshortcuts={keyShortcuts}>{label}</button>
         )
       })}
     </>
