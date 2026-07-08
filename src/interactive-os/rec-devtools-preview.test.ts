@@ -55,7 +55,10 @@ describe('REC devtools overlay', () => {
   it('renders a visible REC button in dev', () => {
     act(() => root.render(createElement(DevToolsOverlayDev)))
 
-    expect(document.querySelector<HTMLButtonElement>('.rec-devtools')?.textContent).toBe('REC')
+    const button = document.querySelector<HTMLButtonElement>('.rec-devtools')
+    expect(button?.textContent).toBe('REC')
+    expect(button?.getAttribute('aria-label')).toBe('REC 녹화 시작')
+    expect(button?.title).toBe('Ctrl/⌘+Shift+\\로 녹화 시작')
   })
 
   it('keeps the recorder active after starting', () => {
@@ -67,7 +70,10 @@ describe('REC devtools overlay', () => {
 
     expect(recorderMock.start).toHaveBeenCalledTimes(1)
     expect(recorderMock.stop).toHaveBeenCalledTimes(0)
-    expect(document.querySelector<HTMLButtonElement>('.rec-devtools')?.getAttribute('aria-pressed')).toBe('true')
+    expect(button?.textContent).toBe('STOP 0:00')
+    expect(button?.getAttribute('aria-label')).toBe('REC 녹화 중지, 경과 시간 0:00')
+    expect(button?.title).toBe('Ctrl/⌘+Shift+\\로 녹화 중지')
+    expect(button?.getAttribute('aria-pressed')).toBe('true')
   })
 
   it('stops an active recorder when the overlay unmounts', () => {
