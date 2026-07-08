@@ -83,13 +83,15 @@ function colMenuItems(a: CellMenuActions, col: string): CellMenuEntry[] {
 
 function cellMenuItemsForAddress(a: CellMenuActions, row: number, col: string): CellMenuEntry[] {
   const key = cellKey(col, row)
+  const value = a.sheet.cells[key] ?? ''
+  const canClearValue = value !== ''
   const note = a.noteOf(key)
 
   return [
-    { label: '잘라내기 (Ctrl/⌘+X)', onClick: () => cutSingleCell(a.sheet.cells[key] ?? '', key, a.writeCell, a.clipboardText), keyShortcuts: 'Control+X Meta+X' },
-    { label: '복사 (Ctrl/⌘+C)', onClick: () => copySingleCell(a.sheet.cells[key] ?? '', a.clipboardText), keyShortcuts: 'Control+C Meta+C' },
+    { label: '잘라내기 (Ctrl/⌘+X)', onClick: () => cutSingleCell(value, key, a.writeCell, a.clipboardText), keyShortcuts: 'Control+X Meta+X' },
+    { label: '복사 (Ctrl/⌘+C)', onClick: () => copySingleCell(value, a.clipboardText), keyShortcuts: 'Control+C Meta+C' },
     { label: '붙여넣기 (Ctrl/⌘+V)', onClick: () => pasteSingleCell(key, a.writeCell, a.clipboardText), keyShortcuts: 'Control+V Meta+V' },
-    { label: '지우기 (Delete/Backspace)', onClick: () => a.writeCell(key, ''), keyShortcuts: 'Delete Backspace' },
+    { label: '지우기 (Delete/Backspace)', onClick: () => { if (canClearValue) a.writeCell(key, '') }, disabled: !canClearValue, disabledLabel: '지울 셀 값 없음', keyShortcuts: 'Delete Backspace' },
     'separator',
     { label: note ? '노트 편집 (Ctrl/⌘+Shift+M)' : '노트 추가 (Ctrl/⌘+Shift+M)', onClick: () => a.editNote(key), keyShortcuts: 'Control+Shift+M Meta+Shift+M' },
     ...(note ? [{ label: '노트 삭제', onClick: () => a.setNote(key, '') }] : []),
