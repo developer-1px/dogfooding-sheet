@@ -33,8 +33,13 @@ describe('useSheetGrid', () => {
     expect(grid?.getAttribute('aria-multiselectable')).toBe('true')
     expect(grid?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown ArrowLeft ArrowRight Shift+ArrowUp Shift+ArrowDown Shift+ArrowLeft Shift+ArrowRight Enter')
     expect(document.querySelector<HTMLElement>('[role="row"][data-row-id="r0"]')?.getAttribute('aria-rowindex')).toBe('2')
-    expect(document.querySelector<HTMLElement>('[role="columnheader"][data-id="h-A"]')?.getAttribute('aria-colindex')).toBe('2')
-    expect(document.querySelector<HTMLElement>('[role="gridcell"][data-id="r0-A"]')?.getAttribute('aria-colindex')).toBe('2')
+    const columnHeader = document.querySelector<HTMLElement>('[role="columnheader"][data-id="h-A"]')
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"][data-id="r0-A"]')
+
+    expect(columnHeader?.id).toBeTruthy()
+    expect(columnHeader?.getAttribute('aria-colindex')).toBe('2')
+    expect(cell?.getAttribute('aria-colindex')).toBe('2')
+    expect(cell?.getAttribute('aria-describedby')).toBe(columnHeader?.id)
   })
 
   it('keeps unmodified arrow keys routed through the grid pattern', () => {

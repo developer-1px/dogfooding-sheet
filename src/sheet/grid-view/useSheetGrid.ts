@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { gridDefinition, reducePatternData, type Key, type PatternData, type PatternEvent, type PatternEventReason } from '@interactive-os/aria'
 import { useGridPattern } from '@interactive-os/aria/react'
 import { idsBetween } from '@spredsheet/grid'
@@ -53,7 +53,17 @@ const toSheetCell = (cell: { key: Key; value: string; state: { selected: boolean
   selected: cell.state.selected,
 })
 
+const sheetColumnHeaderDomId = (gridId: string, headerId: string): string =>
+  `${gridId}-${headerId}`
+
+const sheetColumnHeaderIdForCell = (gridId: string, cellId: string): string | undefined => {
+  const separator = cellId.indexOf('-')
+  if (separator < 0) return undefined
+  return sheetColumnHeaderDomId(gridId, `h-${cellId.slice(separator + 1)}`)
+}
+
 export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
+  const gridId = useId()
   const dragAnchor = useRef<string | null>(null)
   const dragging = useRef(false)
   const suppressNextSelect = useRef(false)
@@ -187,8 +197,17 @@ export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelected
   return {
     rootProps,
     rowProps: (id: string) => rowPropsById.get(id) ?? { role: 'row', 'data-row-id': id },
-    columnHeaderProps: (id: string) => cellPropsById.get(id) ?? { role: 'columnheader', 'data-id': id },
-    cellProps: (id: string) => cellPropsById.get(id) ?? { role: 'gridcell', tabIndex: -1, 'data-id': id },
+    columnHeaderProps: (id: string) => ({
+      ...(cellPropsById.get(id) ?? { role: 'columnheader', 'data-id': id }),
+      id: sheetColumnHeaderDomId(gridId, id),
+    }),
+    cellProps: (id: string) => {
+      const describedBy = sheetColumnHeaderIdForCell(gridId, id)
+      return {
+        ...(cellPropsById.get(id) ?? { role: 'gridcell', tabIndex: -1, 'data-id': id }),
+        ...(describedBy ? { 'aria-describedby': describedBy } : {}),
+      }
+    },
     rows,
     getCellHandlers,
   }
