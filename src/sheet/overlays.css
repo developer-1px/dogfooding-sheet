@@ -147,11 +147,13 @@
   position: absolute; top: 100%; right: 0;
   background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px);
   box-shadow: var(--sheet-shadow-menu, 0 2px 8px rgba(0, 0, 0, .1)); z-index: 50; min-width: 160px;
+  max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
   max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)); overflow-y: auto;
   display: flex; flex-direction: column; padding: var(--sheet-space-1, 4px) 0;
 }
 .overflow-item {
   background: transparent; border: none; padding: var(--sheet-space-2, 6px) var(--sheet-space-5, 12px); text-align: left;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   cursor: pointer; font-size: var(--sheet-font-size-ui, 13px);
 }
 .overflow-item:hover:not(:disabled), .overflow-item:focus:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); outline: none; }

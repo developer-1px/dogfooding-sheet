@@ -225,6 +225,13 @@ describe('OverflowMenu component', () => {
     expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)); overflow-y: auto;')
   })
 
+  it('keeps long overflow menu labels contained on narrow viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));')
+    expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
+  })
+
   it('enables destructive clear items when matching sheet data exists', () => {
     renderOverflowMenu({
       ...emptySheet,
