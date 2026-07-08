@@ -114,8 +114,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const fgColorValue = colorInputValue(focusedStyle?.fg, DEFAULT_CELL_TEXT_COLOR)
   const hasCellTarget = selectedIds.length > 0 || !!focusKey
   const cellTarget = cellTargetLabel(selectedIds, focusKey)
-  const bgColorLabel = hasCellTarget ? `배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})` : '배경색을 적용할 셀 없음'
-  const fgColorLabel = hasCellTarget ? `글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})` : '글자색을 적용할 셀 없음'
+  const bgColorLabel = hasCellTarget ? `${cellTarget} 배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})` : '배경색을 적용할 셀 없음'
+  const fgColorLabel = hasCellTarget ? `${cellTarget} 글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})` : '글자색을 적용할 셀 없음'
   const listValidationLabel = hasCellTarget ? `${cellTarget} 드롭다운 목록 유효성 검사 설정` : '드롭다운 목록을 설정할 셀 없음'
   const listValidationTitle = listValidationLabel
   const checkboxLabel = hasCellTarget ? `${cellTarget} 체크박스로 변환` : '체크박스로 변환할 셀 없음'

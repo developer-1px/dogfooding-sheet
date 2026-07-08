@@ -156,14 +156,14 @@ describe('Toolbar component', () => {
     expect(rightAlign?.disabled).toBe(false)
     expect(rightAlign?.getAttribute('aria-pressed')).toBe('false')
     expect(rightAlign?.getAttribute('title')).toBe('B2 오른쪽 정렬 꺼짐')
-    const defaultBgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
-    const defaultFgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
+    const defaultBgColor = document.querySelector<HTMLInputElement>(`input[aria-label="B2 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})"]`)
+    const defaultFgColor = document.querySelector<HTMLInputElement>(`input[aria-label="B2 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})"]`)
     expect(defaultBgColor?.disabled).toBe(false)
     expect(defaultBgColor?.value).toBe(DEFAULT_CELL_BACKGROUND_COLOR)
-    expect(defaultBgColor?.getAttribute('aria-label')).toBe(`배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})`)
+    expect(defaultBgColor?.getAttribute('title')).toBe(`B2 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})`)
     expect(defaultFgColor?.disabled).toBe(false)
     expect(defaultFgColor?.value).toBe(DEFAULT_CELL_TEXT_COLOR)
-    expect(defaultFgColor?.getAttribute('aria-label')).toBe(`글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
+    expect(defaultFgColor?.getAttribute('title')).toBe(`B2 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 켜짐"]')?.disabled).toBe(false)
 
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="병합 가능한 셀 범위 없음"]')
@@ -224,17 +224,17 @@ describe('Toolbar component', () => {
       styleOf: () => ({ bg: '#ffeeaa', fg: '#001122' }),
     }, { onKeyDown: (event) => parentKeys.push(event.key) })
 
-    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
-    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
+    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label="B2 배경색 선택 (현재 색상 #ffeeaa)"]')
+    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label="B2 글자색 선택 (현재 색상 #001122)"]')
 
     expect(bgColor?.disabled).toBe(false)
     expect(bgColor?.value).toBe('#ffeeaa')
-    expect(bgColor?.getAttribute('aria-label')).toBe('배경색 선택 (현재 색상 #ffeeaa)')
-    expect(bgColor?.getAttribute('title')).toBe('배경색 선택 (현재 색상 #ffeeaa)')
+    expect(bgColor?.getAttribute('aria-label')).toBe('B2 배경색 선택 (현재 색상 #ffeeaa)')
+    expect(bgColor?.getAttribute('title')).toBe('B2 배경색 선택 (현재 색상 #ffeeaa)')
     expect(fgColor?.disabled).toBe(false)
     expect(fgColor?.value).toBe('#001122')
-    expect(fgColor?.getAttribute('aria-label')).toBe('글자색 선택 (현재 색상 #001122)')
-    expect(fgColor?.getAttribute('title')).toBe('글자색 선택 (현재 색상 #001122)')
+    expect(fgColor?.getAttribute('aria-label')).toBe('B2 글자색 선택 (현재 색상 #001122)')
+    expect(fgColor?.getAttribute('title')).toBe('B2 글자색 선택 (현재 색상 #001122)')
 
     act(() => keyDown(bgColor!, 'Enter'))
     act(() => keyDown(fgColor!, ' '))
@@ -311,6 +311,13 @@ describe('Toolbar component', () => {
       sheet: { ...initialSheet, merges: [] },
       freeze: { rows: 1, cols: 0 },
     }, { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const bgColor = document.querySelector<HTMLInputElement>(`input[aria-label="선택 셀 2개 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})"]`)
+    const fgColor = document.querySelector<HTMLInputElement>(`input[aria-label="선택 셀 2개 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})"]`)
+    expect(bgColor?.disabled).toBe(false)
+    expect(bgColor?.getAttribute('title')).toBe(`선택 셀 2개 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})`)
+    expect(fgColor?.disabled).toBe(false)
+    expect(fgColor?.getAttribute('title')).toBe(`선택 셀 2개 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
 
     const directButtons = [
       document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]'),
@@ -693,8 +700,12 @@ describe('Toolbar component', () => {
     const leftAlign = document.querySelector<HTMLButtonElement>('button[aria-label="B2 왼쪽 정렬 꺼짐"]')
     expect(leftAlign?.disabled).toBe(false)
     expect(leftAlign?.getAttribute('title')).toBe('B2 왼쪽 정렬 꺼짐')
-    expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
+    const bgColor = document.querySelector<HTMLInputElement>(`input[aria-label="B2 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})"]`)
+    const fgColor = document.querySelector<HTMLInputElement>(`input[aria-label="B2 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})"]`)
+    expect(bgColor?.disabled).toBe(false)
+    expect(bgColor?.getAttribute('title')).toBe(`B2 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})`)
+    expect(fgColor?.disabled).toBe(false)
+    expect(fgColor?.getAttribute('title')).toBe(`B2 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
     const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B2 서식 모두 해제"]')
     expect(clearFormat?.disabled).toBe(false)
     expect(clearFormat?.getAttribute('title')).toBe('B2 서식 모두 해제')
