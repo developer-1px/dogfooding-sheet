@@ -113,4 +113,28 @@ describe('toolbar formatting controls', () => {
     expect(strike?.getAttribute('title')).toBe('취소선 적용할 셀 없음')
     expect(strike?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
+
+  it('hides number format shortcut hints when there is no target cell', () => {
+    act(() => dom.root.render(createElement(FormatButtons, {
+      apply: vi.fn(),
+      current: 'plain',
+      targetLabel: '선택된 셀 없음',
+      disabled: true,
+    })))
+
+    const plain = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 적용할 셀 없음"]')
+    const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율 적용할 셀 없음"]')
+    const currency = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: USD 적용할 셀 없음"]')
+    const date = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: epoch → 날짜 적용할 셀 없음"]')
+
+    expect(plain?.disabled).toBe(true)
+    expect(plain?.getAttribute('title')).toBe('일반 적용할 셀 없음')
+    expect(plain?.hasAttribute('aria-keyshortcuts')).toBe(false)
+    expect(percent?.getAttribute('title')).toBe('백분율 적용할 셀 없음')
+    expect(percent?.hasAttribute('aria-keyshortcuts')).toBe(false)
+    expect(currency?.getAttribute('title')).toBe('USD 적용할 셀 없음')
+    expect(currency?.hasAttribute('aria-keyshortcuts')).toBe(false)
+    expect(date?.getAttribute('title')).toBe('epoch → 날짜 적용할 셀 없음')
+    expect(date?.hasAttribute('aria-keyshortcuts')).toBe(false)
+  })
 })
