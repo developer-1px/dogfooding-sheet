@@ -57,7 +57,9 @@ describe('REC devtools overlay', () => {
 
     const button = document.querySelector<HTMLButtonElement>('.rec-devtools')
     const dot = document.querySelector<HTMLElement>('.rec-dot')
+    const label = document.querySelector<HTMLElement>('.rec-label')
     expect(button?.textContent).toBe('REC')
+    expect(label?.textContent).toBe('REC')
     expect(button?.getAttribute('aria-label')).toBe('REC 녹화 시작')
     expect(button?.getAttribute('aria-keyshortcuts')).toBe(['Control+Shift+\\', 'Meta+Shift+\\'].join(' '))
     expect(button?.title).toBe('Ctrl/⌘+Shift+\\로 녹화 시작')
@@ -70,10 +72,12 @@ describe('REC devtools overlay', () => {
     const button = document.querySelector<HTMLButtonElement>('.rec-devtools')
     expect(button).not.toBeNull()
     act(() => button!.click())
+    const label = document.querySelector<HTMLElement>('.rec-label')
 
     expect(recorderMock.start).toHaveBeenCalledTimes(1)
     expect(recorderMock.stop).toHaveBeenCalledTimes(0)
     expect(button?.textContent).toBe('STOP 0:00')
+    expect(label?.textContent).toBe('STOP 0:00')
     expect(button?.getAttribute('aria-label')).toBe('REC 녹화 중지, 경과 시간 0:00')
     expect(button?.getAttribute('aria-keyshortcuts')).toBe(['Control+Shift+\\', 'Meta+Shift+\\'].join(' '))
     expect(button?.title).toBe('Ctrl/⌘+Shift+\\로 녹화 중지')

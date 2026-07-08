@@ -6,6 +6,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sheet-space-2, 6px);
+  max-width: calc(100vw - var(--sheet-space-3, 8px) - var(--sheet-space-3, 8px));
+  min-width: 0;
   min-height: var(--sheet-size-cell-min-height, 28px);
   padding: var(--sheet-space-1, 4px) var(--sheet-space-4, 10px);
   border: 1px solid var(--sheet-color-border, #dadce0);
@@ -24,10 +26,18 @@
 }
 
 .rec-dot {
+  flex: 0 0 auto;
   width: 7px;
   height: 7px;
   border-radius: var(--sheet-radius-round, 999px);
   background: var(--sheet-color-danger, #d93025);
+}
+
+.rec-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rec-devtools.recording .rec-dot {
