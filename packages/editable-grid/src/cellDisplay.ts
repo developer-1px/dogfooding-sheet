@@ -24,6 +24,7 @@ interface CellDisplayArgs {
   note?: string
   tooltip?: string
   validationList?: boolean
+  checkbox?: boolean
 }
 
 export interface CellDisplayModel {
@@ -76,6 +77,7 @@ export function createCellDisplayModel(args: CellDisplayArgs): CellDisplayModel 
     args.mergeRange ? `병합 셀 ${args.mergeRange}` : '',
     args.note ? '메모 있음' : '',
     args.validationList ? '드롭다운 목록 있음' : '',
+    args.checkbox ? '체크박스 셀' : '',
     args.selected ? '선택됨' : '',
     args.focused ? '현재 셀' : '',
     args.editing ? '편집 중' : '',

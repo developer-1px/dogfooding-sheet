@@ -55,7 +55,8 @@ describe('Cell component', () => {
     const checkbox = document.querySelector<HTMLInputElement>('.cell-checkbox')
 
     expect(checkbox?.checked).toBe(true)
-    expect(checkbox?.getAttribute('aria-label')).toBe('A1 TRUE')
+    expect(checkbox?.getAttribute('aria-label')).toBe('A1 TRUE 체크박스 셀')
+    expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-label')).toBe('A1 TRUE 체크박스 셀')
 
     act(() => checkbox!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true })))
 

@@ -73,6 +73,7 @@ export function Cell(p: Props) {
     note: p.note,
     tooltip: p.tooltip,
     validationList: !!p.validationOptions,
+    checkbox: !!p.isCheckbox,
   })
   const textareaProps = {
     ...p.inputProps,
