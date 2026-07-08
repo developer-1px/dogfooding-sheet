@@ -1,4 +1,5 @@
 import { act, createElement, type KeyboardEventHandler } from 'react'
+import { readFileSync } from 'node:fs'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { MAX_SHEET_TABS, blankBundle } from '../schema'
@@ -8,6 +9,7 @@ import type { Confirm } from '../useConfirm'
 import type { TabsState } from './useTabs'
 
 const flush = () => Promise.resolve()
+const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 type RenderTabsOptions = { onKeyDown?: KeyboardEventHandler<HTMLDivElement> }
 
 describe('Tabs component', () => {
@@ -175,6 +177,12 @@ describe('Tabs component', () => {
     act(() => duplicate!.click())
 
     expect(calls).toEqual(['duplicate:Budget'])
+  })
+
+  it('keeps inactive tab utility controls visible while keyboard focus is inside the tab', () => {
+    const css = overlaysCss()
+
+    expect(css).toMatch(/\.tab:focus-within\s+\.tab-dup,\s*\.tab:focus-within\s+\.tab-close\s*\{\s*opacity:\s*1;\s*\}/)
   })
 
   it('keeps add-sheet activation keys inside the tab add control', () => {
