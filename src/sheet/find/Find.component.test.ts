@@ -49,7 +49,10 @@ describe('Find component', () => {
   it('labels find mode controls and disables navigation without matches', () => {
     renderFind('find')
 
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')?.placeholder).toBe('찾기')
+    const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')
+    expect(query?.placeholder).toBe('찾기')
+    expect(query?.getAttribute('title')).toBe('찾을 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
+    expect(query?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
     expect(document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분"]')?.type).toBe('checkbox')
     expect(document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용"]')?.type).toBe('checkbox')
 
@@ -194,8 +197,15 @@ describe('Find component', () => {
   it('labels replace mode inputs and actions', () => {
     renderFind('replace')
 
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')?.placeholder).toBe('찾기')
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="바꿀 내용"]')?.placeholder).toBe('바꾸기')
+    const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')
+    const replacement = document.querySelector<HTMLInputElement>('input[aria-label="바꿀 내용"]')
+
+    expect(query?.placeholder).toBe('찾기')
+    expect(query?.getAttribute('title')).toBe('찾을 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
+    expect(query?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
+    expect(replacement?.placeholder).toBe('바꾸기')
+    expect(replacement?.getAttribute('title')).toBe('바꿀 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
+    expect(replacement?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
 
     const replaceOne = document.querySelector<HTMLButtonElement>('button[aria-label="현재 찾기 결과 바꾸기"]')
     const replaceAll = document.querySelector<HTMLButtonElement>('button[aria-label="모든 찾기 결과 바꾸기"]')
