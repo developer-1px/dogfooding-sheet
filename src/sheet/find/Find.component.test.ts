@@ -123,7 +123,19 @@ describe('Find component', () => {
     expect(checkboxRule).toContain('height: var(--sheet-size-control-sm, 16px);')
     expect(checkboxRule).toContain('margin: 0;')
     expect(labelRule).toContain('display: inline-flex;')
+    expect(labelRule).toContain('flex: 0 0 auto;')
     expect(labelRule).toContain('align-items: center;')
+  })
+
+  it('keeps find count and action buttons from shrinking', () => {
+    const css = overlaysCss()
+    const countRule = css.match(/\.find-bar \.count\s*\{[^}]+\}/)?.[0] ?? ''
+    const buttonRule = css.match(/\.find-bar button\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(countRule).toContain('flex: 0 0 auto;')
+    expect(countRule).toContain('min-width: 50px;')
+    expect(buttonRule).toContain('flex: 0 0 auto;')
+    expect(buttonRule).toContain('padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px);')
   })
 
   it('announces no-match and matched result counts as status text', () => {
