@@ -4,6 +4,10 @@ import { isSafeCellText } from '../cellValue'
 
 export type CondFormatActionResult = 'applied' | 'cancelled' | 'invalid' | 'no-column'
 
+export const COND_FORMAT_GREATER_THAN_EXAMPLE_COLOR = '#ffeb3b'
+export const COND_FORMAT_CONTAINS_EXAMPLE_COLOR = '#c8e6c9'
+export const DEFAULT_COND_FORMAT_COLOR = '#fff59d'
+
 const COND_SPEC_RE = /^\s*(>|<|=|!=|contains)\s*(.+?)\s+(#[0-9a-fA-F]{3,8})\s*$/
 
 export function parseCondFormatSpec(col: string, spec: string): CondRule | null {
@@ -35,8 +39,8 @@ export async function promptCondFormatRule({
   let spec: string | null
   try {
     spec = await ask({
-      label: `${col}열 조건부 서식 (예: >100 #ffeb3b 또는 contains foo #c8e6c9)`,
-      initial: '>0 #fff59d',
+      label: `${col}열 조건부 서식 (예: >100 ${COND_FORMAT_GREATER_THAN_EXAMPLE_COLOR} 또는 contains foo ${COND_FORMAT_CONTAINS_EXAMPLE_COLOR})`,
+      initial: `>0 ${DEFAULT_COND_FORMAT_COLOR}`,
       submitLabel: '추가',
     })
   } catch {
