@@ -14,14 +14,21 @@ const FORMATS: Array<[Format, string, string, string?, string?]> = [
   ['plain', '123', '일반', 'Control+Shift+1 Meta+Shift+1', 'Ctrl/⌘+Shift+1'],
 ]
 
-export function FormatButtons({ apply, current, disabled = false }: { apply: (f: Format) => void; current: Format; disabled?: boolean }) {
+interface Props {
+  apply: (f: Format) => void
+  current: Format
+  targetLabel: string
+  disabled?: boolean
+}
+
+export function FormatButtons({ apply, current, targetLabel, disabled = false }: Props) {
   return (
     <>
       {FORMATS.map(([f, label, title, keyShortcuts, shortcutLabel]) => {
         const pressed = current === f
         const stateLabel = pressed ? '켜짐' : '꺼짐'
-        const accessibleLabel = disabled ? `숫자 형식: ${title} 적용할 셀 없음` : `숫자 형식: ${title} ${stateLabel}`
-        const titleLabel = disabled ? `${title} 적용할 셀 없음` : `${title} ${stateLabel}`
+        const accessibleLabel = disabled ? `숫자 형식: ${title} 적용할 셀 없음` : `${targetLabel} 숫자 형식: ${title} ${stateLabel}`
+        const titleLabel = disabled ? `${title} 적용할 셀 없음` : `${targetLabel} ${title} ${stateLabel}`
         return (
           <button type="button" key={f} onKeyDown={stopToolbarActivationKeyDown} onClick={() => apply(f)} disabled={disabled} aria-pressed={pressed} title={shortcutLabel ? `${titleLabel} (${shortcutLabel})` : titleLabel} aria-label={accessibleLabel} aria-keyshortcuts={keyShortcuts}>{label}</button>
         )
