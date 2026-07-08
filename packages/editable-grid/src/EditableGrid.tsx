@@ -108,6 +108,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
             const editorKeyShortcuts = 'Enter Escape'
             const checkboxLabel = `${columnLabel} row ${rowIndex + 1}`
             const checkboxTitle = readonlyCell ? `${checkboxLabel} 읽기 전용 체크박스` : `${checkboxLabel} 체크박스 (Space=토글)`
+            const cellKeyShortcuts = readonlyCell ? undefined : fieldType === 'checkbox' ? 'Enter Space' : 'Enter'
             const onEditorKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
               event.stopPropagation()
               if (event.key === 'Enter') {
@@ -131,6 +132,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 focusable={selected || (!controller.activeSelection.focus && rowIndex === 0 && columnIndex === 0)}
                 aria-readonly={readonlyCell || undefined}
                 aria-describedby={columnHeaderId(columnIndex)}
+                aria-keyshortcuts={cellKeyShortcuts}
                 onFocus={() => controller.focusCell(address)}
                 onClick={() => controller.focusCellWithDomFocus(address)}
                 onDoubleClick={() => controller.startEdit(address, cellValue, column, { caret: 'end' })}
