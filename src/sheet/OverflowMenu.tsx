@@ -101,8 +101,9 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
             const patternProps = it.disabled
               ? { role: 'menuitem' as const, 'aria-disabled': true, tabIndex: -1 }
               : itemProps(it.id)
+            const itemLabel = it.disabled ? `${it.label} 사용할 수 없음` : it.label
             return (
-              <button key={it.id} {...keepActivationKeysLocal(patternProps)} type="button" className="overflow-item" disabled={it.disabled} title={it.label} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
+              <button key={it.id} {...keepActivationKeysLocal(patternProps)} type="button" className="overflow-item" disabled={it.disabled} title={itemLabel} aria-label={it.disabled ? itemLabel : undefined} aria-keyshortcuts={it.keyShortcuts}>{it.label}</button>
             )
           })}
         </div>
