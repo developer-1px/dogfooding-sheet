@@ -99,6 +99,24 @@ describe('StatusBar component', () => {
     expect(saveStatus?.getAttribute('aria-label')).toBe('자동 저장 대기 중')
   })
 
+  it('labels saved status even when there is no saved timestamp', () => {
+    act(() => dom.root.render(createElement(StatusBar, {
+      selectedIds: [],
+      focusId: cellId('A', 0),
+      rowCount: 10,
+      colCount: 10,
+      display: () => '123',
+      parseId: parseCellId,
+      persistence: { status: 'saved', dirty: false, savedAt: null, error: null },
+    })))
+
+    const saveStatus = document.querySelector<HTMLElement>('.persistence-status')
+
+    expect(saveStatus?.textContent).toBe('저장됨')
+    expect(saveStatus?.getAttribute('title')).toBe('저장됨')
+    expect(saveStatus?.getAttribute('aria-label')).toBe('저장됨')
+  })
+
   it('keeps save failure text terse while exposing the failure reason', () => {
     act(() => dom.root.render(createElement(StatusBar, {
       selectedIds: [],
@@ -117,5 +135,23 @@ describe('StatusBar component', () => {
     expect(saveStatus?.textContent).toBe('저장 실패')
     expect(saveStatus?.getAttribute('title')).toBe('저장 실패: Quota exceeded')
     expect(saveStatus?.getAttribute('aria-label')).toBe('저장 실패: Quota exceeded')
+  })
+
+  it('labels save failure status even when there is no failure reason', () => {
+    act(() => dom.root.render(createElement(StatusBar, {
+      selectedIds: [],
+      focusId: cellId('A', 0),
+      rowCount: 10,
+      colCount: 10,
+      display: () => '123',
+      parseId: parseCellId,
+      persistence: { status: 'error', dirty: true, savedAt: null, error: null },
+    })))
+
+    const saveStatus = document.querySelector<HTMLElement>('.persistence-status')
+
+    expect(saveStatus?.textContent).toBe('저장 실패')
+    expect(saveStatus?.getAttribute('title')).toBe('저장 실패')
+    expect(saveStatus?.getAttribute('aria-label')).toBe('저장 실패')
   })
 })
