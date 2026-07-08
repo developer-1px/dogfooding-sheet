@@ -87,7 +87,9 @@ describe('cellMenuItems', () => {
 
   it('disables filter setup in column menus on single-row sheets while keeping clear available', () => {
     const inactiveItems = cellMenuItems(actions({ rowCount: 1, filterCol: null }), 'r0-B', 'col')
-    expect(item(inactiveItems, '필터 적용…').disabled).toBe(true)
+    const applyFilter = item(inactiveItems, '필터 적용…')
+    expect(applyFilter.disabled).toBe(true)
+    expect(applyFilter.disabledLabel).toBe('B열에 필터할 데이터 행 없음')
 
     const calls: string[] = []
     const activeItems = cellMenuItems(actions({ rowCount: 1, filterCol: 'B' }, calls), 'r0-B', 'col')
@@ -95,6 +97,7 @@ describe('cellMenuItems', () => {
     const clearFilter = item(activeItems, '필터 해제')
 
     expect(editFilter.disabled).toBe(true)
+    expect(editFilter.disabledLabel).toBe('B열 필터를 수정할 데이터 행 없음')
     expect(clearFilter.disabled).toBeUndefined()
 
     clearFilter.onClick()
@@ -125,9 +128,13 @@ describe('cellMenuItems', () => {
     const colItems = cellMenuItems(actions({ rowCount: 1 }), 'r0-B', 'col')
 
     expect(item(cellItems, 'B 오름차순 정렬').disabled).toBe(true)
+    expect(item(cellItems, 'B 오름차순 정렬').disabledLabel).toBe('B열 오름차순 정렬할 데이터 행 없음')
     expect(item(cellItems, 'B 내림차순 정렬').disabled).toBe(true)
+    expect(item(cellItems, 'B 내림차순 정렬').disabledLabel).toBe('B열 내림차순 정렬할 데이터 행 없음')
     expect(item(colItems, 'B 오름차순 정렬').disabled).toBe(true)
+    expect(item(colItems, 'B 오름차순 정렬').disabledLabel).toBe('B열 오름차순 정렬할 데이터 행 없음')
     expect(item(colItems, 'B 내림차순 정렬').disabled).toBe(true)
+    expect(item(colItems, 'B 내림차순 정렬').disabledLabel).toBe('B열 내림차순 정렬할 데이터 행 없음')
   })
 
   it('disables inactive freeze actions in cell and header menus on single-axis sheets', () => {
@@ -176,6 +183,7 @@ describe('cellMenuItems', () => {
     const merge = item(cellMenuItems(actions({}, calls), 'r1-B'), '셀 병합 / 해제 (Alt+Shift+M)')
 
     expect(merge.disabled).toBe(true)
+    expect(merge.disabledLabel).toBe('병합 가능한 셀 범위 없음')
 
     merge.onClick()
 
