@@ -34,7 +34,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
   const redoLabel = canRedo ? '다시 실행' : '다시 실행할 작업 없음'
 
   return (
-    <header className="sheet-toolbar">
+    <header className="sheet-toolbar" role="toolbar" aria-label="스프레드시트 도구 모음">
       <strong>Sheet</strong>
       <button
         type="button"
