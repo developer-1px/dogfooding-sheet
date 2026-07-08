@@ -102,7 +102,16 @@ describe('Toolbar component', () => {
 
     expect(buttons.length).toBeGreaterThan(20)
     expect(buttons.every((button) => button.type === 'button')).toBe(true)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
+    const undoButton = document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')
+    const redoButton = document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')
+    expect(undoButton?.type).toBe('button')
+    expect(undoButton?.disabled).toBe(false)
+    expect(undoButton?.getAttribute('title')).toBe('실행 취소 (Ctrl/⌘+Z)')
+    expect(undoButton?.getAttribute('aria-keyshortcuts')).toBe('Control+Z Meta+Z')
+    expect(redoButton?.type).toBe('button')
+    expect(redoButton?.disabled).toBe(false)
+    expect(redoButton?.getAttribute('title')).toBe('다시 실행 (Ctrl/⌘+Shift+Z)')
+    expect(redoButton?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
     const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 수정"]')
     expect(filterButton?.type).toBe('button')
     expect(filterButton?.disabled).toBe(false)
@@ -145,6 +154,22 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.disabled).toBe(false)
+  })
+
+  it('clarifies disabled toolbar undo and redo labels', () => {
+    renderToolbar({ canUndo: false, canRedo: false })
+
+    const undoButton = document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')
+    const redoButton = document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')
+
+    expect(undoButton?.textContent).toBe('↶')
+    expect(undoButton?.disabled).toBe(true)
+    expect(undoButton?.getAttribute('title')).toBe('실행 취소할 작업 없음 (Ctrl/⌘+Z)')
+    expect(undoButton?.getAttribute('aria-keyshortcuts')).toBe('Control+Z Meta+Z')
+    expect(redoButton?.textContent).toBe('↷')
+    expect(redoButton?.disabled).toBe(true)
+    expect(redoButton?.getAttribute('title')).toBe('다시 실행할 작업 없음 (Ctrl/⌘+Shift+Z)')
+    expect(redoButton?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
   })
 
   it('keeps toolbar color picker activation keys inside the color controls', () => {
