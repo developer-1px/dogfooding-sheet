@@ -151,7 +151,7 @@ export function Cell(p: Props) {
           {p.note && <span className="note-mark" aria-hidden />}
           {p.validationOptions && !p.editing && <span className="dropdown-mark" aria-hidden>▾</span>}
           {p.isFillCorner && !p.editing && (
-            <span className="fill-handle" onMouseDown={p.onFillHandleMouseDown} />
+            <span className="fill-handle" onMouseDown={p.onFillHandleMouseDown} aria-hidden />
           )}
         </>
       )}
