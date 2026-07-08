@@ -22,6 +22,8 @@
   position: fixed; top: 60px; right: 16px; z-index: 10;
   display: flex; flex-wrap: wrap; gap: var(--sheet-space-1, 4px); align-items: center;
   max-width: calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px));
+  max-height: calc(100vh - 60px - var(--sheet-space-8, 24px));
+  overflow-x: hidden; overflow-y: auto;
   padding: var(--sheet-space-3, 8px); background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-panel, 8px);
   box-shadow: var(--sheet-shadow-panel, 0 4px 12px rgba(0, 0, 0, .15));
 }
