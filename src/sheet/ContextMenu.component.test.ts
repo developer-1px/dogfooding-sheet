@@ -37,6 +37,8 @@ describe('ContextMenu component', () => {
 
     expect(menu?.getAttribute('role')).toBe('menu')
     expect(menu?.getAttribute('aria-label')).toBe('셀 메뉴')
+    expect(menu?.style.left).toBe('max(var(--sheet-space-1, 4px), min(12px, calc(100vw - 180px - var(--sheet-space-8, 24px))))')
+    expect(menu?.style.maxWidth).toBe('max(180px, calc(100vw - 12px - var(--sheet-space-8, 24px)))')
     expect(menu?.style.maxHeight).toBe('max(var(--sheet-space-8, 24px), calc(100vh - 34px - var(--sheet-space-8, 24px)))')
     expect(separator?.getAttribute('role')).toBe('separator')
     expect(separator?.textContent).toBe('')
@@ -119,5 +121,11 @@ describe('ContextMenu component', () => {
     const css = overlaysCss()
 
     expect(css).toMatch(/\.ctx-menu\s*\{[^}]*overflow-y:\s*auto;/)
+  })
+
+  it('keeps long context menu labels contained on narrow viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
   })
 })
