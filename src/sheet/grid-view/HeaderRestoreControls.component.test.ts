@@ -42,6 +42,7 @@ describe('header restore controls', () => {
 
     expect(corner?.getAttribute('role')).toBe('columnheader')
     expect(corner?.getAttribute('aria-label')).toBe('전체 시트 선택')
+    expect(corner?.getAttribute('title')).toBe('전체 시트 선택')
     expect(corner?.tabIndex).toBe(0)
 
     act(() => corner!.click())
@@ -87,6 +88,7 @@ describe('header restore controls', () => {
     const corner = document.querySelector<HTMLElement>('.corner-cell')
 
     expect(corner?.getAttribute('aria-label')).toBe('전체 시트 선택, 선택됨')
+    expect(corner?.getAttribute('title')).toBe('전체 시트 선택, 선택됨')
     expect(corner?.getAttribute('aria-selected')).toBe('true')
   })
 
