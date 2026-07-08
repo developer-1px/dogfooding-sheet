@@ -162,6 +162,18 @@ describe('Cell component', () => {
     expect(image?.getAttribute('alt')).toBe('')
   })
 
+  it('exposes formula-backed cells through the gridcell label', () => {
+    renderCell({
+      label: '42',
+      tooltip: '=SUM(A1:A3)',
+    })
+
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"]')
+
+    expect(cell?.getAttribute('aria-label')).toBe('A1 42 수식 셀')
+    expect(cell?.getAttribute('title')).toBe('=SUM(A1:A3)')
+  })
+
   it('keeps validation select keyboard events inside the select control', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()
