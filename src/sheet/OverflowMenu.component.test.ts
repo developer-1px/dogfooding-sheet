@@ -202,7 +202,7 @@ describe('OverflowMenu component', () => {
   it('enables destructive clear items when matching sheet data exists', () => {
     renderOverflowMenu({
       ...emptySheet,
-      cells: { A1: 'value' },
+      cells: { A1: 'value', B2: 'next' },
       styles: { A1: { b: true } },
     })
 
@@ -210,11 +210,12 @@ describe('OverflowMenu component', () => {
     act(() => trigger!.click())
 
     const clearValues = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
-      .find((item) => item.textContent === '전체 값 지우기')
+      .find((item) => item.textContent === '전체 값 2개 지우기')
     const clearFormats = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
       .find((item) => item.textContent === '전체 서식 지우기')
 
     expect(clearValues?.disabled).toBe(false)
+    expect(clearValues?.getAttribute('title')).toBe('전체 값 2개 지우기')
     expect(clearFormats?.disabled).toBe(false)
   })
 })

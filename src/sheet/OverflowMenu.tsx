@@ -14,8 +14,11 @@ import {
   runOverflowMenuCommand,
 } from './overflowMenuActions'
 
+const recordEntryCount = (record: Record<string, unknown>): number =>
+  Object.keys(record).length
+
 const hasRecordEntries = (record: Record<string, unknown>): boolean =>
-  Object.keys(record).length > 0
+  recordEntryCount(record) > 0
 
 const isActivationKey = (key: string): boolean => key === 'Enter' || key === ' '
 
@@ -55,13 +58,17 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
   const exportJson = () => exportOverflowJson({ sheet, downloadFile })
   const importJson = (file: File) => importOverflowJson({ file, confirm, previewSheetReplacement, applySheetReplacement })
 
-  const items = useMemo(() => overflowMenuItems({
-    showFormulas,
-    showGridlines,
-    canInsertLink,
-    canClearValues: hasRecordEntries(sheet.cells),
-    canClearFormats: hasRecordEntries(sheet.styles) || hasRecordEntries(sheet.formats) || sheet.condFormat.length > 0,
-  }), [canInsertLink, sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
+  const items = useMemo(() => {
+    const cellValueCount = recordEntryCount(sheet.cells)
+    return overflowMenuItems({
+      showFormulas,
+      showGridlines,
+      canInsertLink,
+      canClearValues: cellValueCount > 0,
+      cellValueCount,
+      canClearFormats: hasRecordEntries(sheet.styles) || hasRecordEntries(sheet.formats) || sheet.condFormat.length > 0,
+    })
+  }, [canInsertLink, sheet.cells, sheet.condFormat, sheet.formats, sheet.styles, showFormulas, showGridlines])
   const data = fromList(items.map(({ id, label, disabled, kind, checked }) => ({ id, label, disabled, kind, checked })))
 
   const onEvent = (e: UiEvent) => {

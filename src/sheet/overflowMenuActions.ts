@@ -36,12 +36,16 @@ interface OverflowMenuState {
   showGridlines: boolean
   canInsertLink?: boolean
   canClearValues?: boolean
+  cellValueCount?: number
   canClearFormats?: boolean
 }
 
 export interface DownloadFile {
   (name: string, content: string): boolean
 }
+
+const clearValuesLabel = (count?: number): string =>
+  count !== undefined && count > 0 ? `전체 값 ${count}개 지우기` : '전체 값 지우기'
 
 export const overflowMenuItems = (state: OverflowMenuState): OverflowMenuItem[] => [
   { id: 'help', label: '도움말 (F1)', keyShortcuts: 'F1' },
@@ -53,7 +57,7 @@ export const overflowMenuItems = (state: OverflowMenuState): OverflowMenuItem[] 
   { id: 'csv-import', label: 'CSV 가져오기' },
   { id: 'json-export', label: 'JSON 내보내기' },
   { id: 'json-import', label: 'JSON 가져오기' },
-  { id: 'clear-values', label: '전체 값 지우기', disabled: state.canClearValues === false, disabledLabel: '지울 셀 값 없음' },
+  { id: 'clear-values', label: clearValuesLabel(state.cellValueCount), disabled: state.canClearValues === false, disabledLabel: '지울 셀 값 없음' },
   { id: 'clear-formats', label: '전체 서식 지우기', disabled: state.canClearFormats === false, disabledLabel: '지울 서식 없음' },
 ]
 

@@ -36,6 +36,8 @@ describe('overflowMenuActions', () => {
       .find((item) => item.id === 'show-gridlines')).toMatchObject({ kind: 'menuitemcheckbox', checked: false })
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false }).map((item) => item.label)).toContain('CSV 내보내기 (Ctrl/⌘+S)')
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false }).map((item) => item.label)).toContain('전체 값 지우기')
+    expect(overflowMenuItems({ showFormulas: false, showGridlines: false, canClearValues: true, cellValueCount: 2 })
+      .find((item) => item.id === 'clear-values')?.label).toBe('전체 값 2개 지우기')
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false, canInsertLink: false })
       .find((item) => item.id === 'link')?.disabled).toBe(true)
     expect(overflowMenuItems({ showFormulas: false, showGridlines: false, canInsertLink: true })
