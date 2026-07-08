@@ -87,6 +87,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         onKeyDown={(e) => {
           if (e.key !== 'Enter' && e.key !== ' ') return
           e.preventDefault()
+          e.stopPropagation()
           selectAll()
         }}
       />
@@ -128,6 +129,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
               if (e.currentTarget !== e.target) return
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault()
+                e.stopPropagation()
                 selectColumn(e.shiftKey)
                 return
               }
