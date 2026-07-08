@@ -28,6 +28,8 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
   const canJumpToAddress = !!onAddrClick
   const addressLabel = canJumpToAddress ? (addr ? `${addr} 셀로 이동` : '셀 주소') : addr ? `${addr} 셀 주소` : '선택된 셀 없음'
   const addressTitle = canJumpToAddress ? '셀로 이동 (Ctrl/⌘+G)' : addressLabel
+  const formulaInputLabel = addr ? '수식 입력줄' : '수식 입력줄, 선택된 셀 없음'
+  const formulaInputTitle = addr ? '수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)' : formulaInputLabel
   const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
   const redoLabel = canRedo ? '다시 실행' : '다시 실행할 작업 없음'
 
@@ -46,9 +48,9 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
       >{addr ?? '—'}</button>
       <input
         className="formula"
-        aria-label="수식 입력줄"
+        aria-label={formulaInputLabel}
         aria-keyshortcuts="Enter Escape F4"
-        title="수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)"
+        title={formulaInputTitle}
         value={draft}
         onMouseDown={(e) => e.currentTarget.focus()}
         onChange={(e) => setDraft(e.target.value)}
