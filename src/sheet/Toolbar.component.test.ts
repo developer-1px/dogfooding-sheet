@@ -127,6 +127,7 @@ describe('Toolbar component', () => {
     expect(sortDesc?.getAttribute('title')).toBe('B열 내림차순 정렬')
     expect(autoSum?.textContent).toBe('Σ')
     expect(autoSum?.disabled).toBe(false)
+    expect(autoSum?.getAttribute('aria-label')).toBe('자동 합계')
     expect(autoSum?.getAttribute('title')).toBe('자동 합계 (위쪽 연속 숫자 합)')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('.overflow-trigger')?.type).toBe('button')
@@ -441,11 +442,11 @@ describe('Toolbar component', () => {
       display: () => '',
     })
 
-    const autoSum = document.querySelector<HTMLButtonElement>('button[aria-label="자동 합계"]')
+    const autoSum = document.querySelector<HTMLButtonElement>('button[aria-label="자동 합계할 숫자 범위 없음"]')
 
     expect(autoSum?.textContent).toBe('Σ')
     expect(autoSum?.disabled).toBe(true)
-    expect(autoSum?.getAttribute('title')).toBe('자동 합계 (위쪽 연속 숫자 합)')
+    expect(autoSum?.getAttribute('title')).toBe('자동 합계할 숫자 범위 없음')
   })
 
   it('disables the overflow hyperlink command without a focused cell', () => {
