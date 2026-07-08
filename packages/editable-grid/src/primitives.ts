@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { RefCallback } from 'react'
 export * from './domPrimitives'
 
@@ -49,6 +49,7 @@ export function useEditableGridDomFocus<TId extends string = string>({
   const editorElement = useRef<EditableGridEditorElement | null>(null)
   const pendingCaretMode = useRef<EditableGridCaretMode | null>(null)
   const pendingFocusRestoreId = useRef<TId | null>(null)
+  const [focusRestoreVersion, setFocusRestoreVersion] = useState(0)
 
   const editorRef = useCallback<RefCallback<EditableGridEditorElement>>((element) => {
     editorElement.current = element
@@ -60,6 +61,7 @@ export function useEditableGridDomFocus<TId extends string = string>({
 
   const requestCellFocusRestore = useCallback((id: TId | null | undefined) => {
     pendingFocusRestoreId.current = id ?? null
+    setFocusRestoreVersion((version) => version + 1)
   }, [])
 
   useEffect(() => {
@@ -82,7 +84,7 @@ export function useEditableGridDomFocus<TId extends string = string>({
     const cell = [...document.querySelectorAll<HTMLElement>(cellSelector)]
       .find((element) => getCellId(element) === id)
     cell?.focus()
-  }, [activeId, cellSelector, editingId, getCellId])
+  }, [activeId, cellSelector, editingId, focusRestoreVersion, getCellId])
 
   return {
     editorRef,
