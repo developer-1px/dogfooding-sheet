@@ -80,6 +80,18 @@ describe('grid styles', () => {
     expect(inputRule).toContain('box-sizing: border-box;')
   })
 
+  it('keeps cell inset outlines token-sized', () => {
+    const root = appCss()
+    const source = gridCss()
+    const mergedRule = source.match(/\.cell\.merged\s*\{[^}]+\}/)?.[0] ?? ''
+    const formulaPickRule = source.match(/\.grid\.formula-pick-active\s+\.cell\.selected\.formula-ref\s*\{[^}]+\}/)?.[0] ?? ''
+    const insetOutline = 'var(--sheet-size-cell-inset-outline, 1px)'
+
+    expect(root).toContain('--sheet-size-cell-inset-outline: 1px;')
+    expect(mergedRule).toContain(`box-shadow: inset 0 0 0 ${insetOutline} var(--sheet-state-accent-outline, rgba(26, 115, 232, .35));`)
+    expect(formulaPickRule).toContain(`box-shadow: inset 0 0 0 ${insetOutline} var(--formula-ref-color);`)
+  })
+
   it('keeps formula input accent strips token-sized', () => {
     const root = appCss()
     const source = gridCss()

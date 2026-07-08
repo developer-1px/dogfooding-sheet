@@ -78,6 +78,7 @@
   --sheet-size-control-sm: 16px;
   --sheet-size-control-md: 18px;
   --sheet-size-cell-min-height: 28px;
+  --sheet-size-cell-inset-outline: 1px;
   --sheet-size-cell-state-outline: 2px;
   --sheet-size-formula-input-accent-strip: 3px;
   --sheet-size-freeze-divider: 2px;
