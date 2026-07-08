@@ -170,7 +170,7 @@ describe('Toolbar component', () => {
     expect(mergeButton?.textContent).toBe('⊞병합')
     expect(mergeButton?.disabled).toBe(true)
     expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
-    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
+    expect(mergeButton?.hasAttribute('aria-keyshortcuts')).toBe(false)
 
     const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="B2 드롭다운 목록 유효성 검사 설정"]')
     const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="B2 체크박스로 변환"]')
@@ -389,7 +389,7 @@ describe('Toolbar component', () => {
     expect(mergeButton?.textContent).toBe('⊞병합')
     expect(mergeButton?.disabled).toBe(true)
     expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
-    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
+    expect(mergeButton?.hasAttribute('aria-keyshortcuts')).toBe(false)
 
     act(() => mergeButton!.click())
 
@@ -404,7 +404,7 @@ describe('Toolbar component', () => {
     expect(mergeButton?.textContent).toBe('⊞병합')
     expect(mergeButton?.disabled).toBe(true)
     expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
-    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
+    expect(mergeButton?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 
   it('enables toolbar merge for a supported multi-cell selection', () => {
@@ -432,6 +432,7 @@ describe('Toolbar component', () => {
 
     expect(mergeButton?.disabled).toBe(false)
     expect(mergeButton?.getAttribute('title')).toBe('C2 병합 해제 (Alt+Shift+M)')
+    expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
 
     act(() => mergeButton!.click())
 
