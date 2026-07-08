@@ -144,9 +144,13 @@ describe('cellMenuItems', () => {
     const colItems = cellMenuItems(singleAxisActions, 'r0-A', 'col')
 
     expect(item(cellItems, '1행까지 고정').disabled).toBe(true)
+    expect(item(cellItems, '1행까지 고정').disabledLabel).toBe('1행까지 고정할 추가 행 없음')
     expect(item(cellItems, 'A열까지 고정').disabled).toBe(true)
+    expect(item(cellItems, 'A열까지 고정').disabledLabel).toBe('A열까지 고정할 추가 열 없음')
     expect(item(rowItems, '1행까지 고정').disabled).toBe(true)
+    expect(item(rowItems, '1행까지 고정').disabledLabel).toBe('1행까지 고정할 추가 행 없음')
     expect(item(colItems, 'A열까지 고정').disabled).toBe(true)
+    expect(item(colItems, 'A열까지 고정').disabledLabel).toBe('A열까지 고정할 추가 열 없음')
   })
 
   it('keeps active freeze actions enabled on single-axis sheets so they can be cleared', () => {
@@ -255,7 +259,9 @@ describe('cellMenuItems', () => {
     const cellItems = cellMenuItems(actions({ rowCount: 1 }), 'r0-B')
 
     expect(item(rowItems, '1행 숨기기 (Ctrl/⌘+Alt+9)').disabled).toBe(true)
+    expect(item(rowItems, '1행 숨기기 (Ctrl/⌘+Alt+9)').disabledLabel).toBe('숨기려면 하나 이상의 행이 더 필요함')
     expect(item(cellItems, '1행 숨기기 (Ctrl/⌘+Alt+9)').disabled).toBe(true)
+    expect(item(cellItems, '1행 숨기기 (Ctrl/⌘+Alt+9)').disabledLabel).toBe('숨기려면 하나 이상의 행이 더 필요함')
   })
 
   it('disables insert-below row actions on the final row', () => {
@@ -263,7 +269,9 @@ describe('cellMenuItems', () => {
     const cellItems = cellMenuItems(actions({ rowCount: 2 }), 'r1-B')
 
     expect(item(rowItems, '아래 행 삽입').disabled).toBe(true)
+    expect(item(rowItems, '아래 행 삽입').disabledLabel).toBe('아래에 삽입할 행 위치 없음')
     expect(item(cellItems, '아래 행 삽입').disabled).toBe(true)
+    expect(item(cellItems, '아래 행 삽입').disabledLabel).toBe('아래에 삽입할 행 위치 없음')
   })
 
   it('exposes column structure shortcut metadata on column and cell menus', () => {
@@ -295,7 +303,9 @@ describe('cellMenuItems', () => {
     const cellItems = cellMenuItems(actions({ colLetters: ['A'] }), 'r0-A')
 
     expect(item(colItems, 'A열 숨기기 (Ctrl/⌘+Alt+0)').disabled).toBe(true)
+    expect(item(colItems, 'A열 숨기기 (Ctrl/⌘+Alt+0)').disabledLabel).toBe('숨기려면 하나 이상의 열이 더 필요함')
     expect(item(cellItems, 'A열 숨기기 (Ctrl/⌘+Alt+0)').disabled).toBe(true)
+    expect(item(cellItems, 'A열 숨기기 (Ctrl/⌘+Alt+0)').disabledLabel).toBe('숨기려면 하나 이상의 열이 더 필요함')
   })
 
   it('exposes the hyperlink shortcut metadata and keeps its action wired', () => {
