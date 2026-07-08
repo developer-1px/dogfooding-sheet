@@ -71,11 +71,15 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
       aria-label={ariaLabel}
     >
       <EditableGridRow header rowIndex={1}>
-        {surface.columns.map((column, columnIndex) => (
-          <EditableGridColumnHeader key={column.id} colIndex={columnIndex + 1}>
-            {column.label ?? column.id}
-          </EditableGridColumnHeader>
-        ))}
+        {surface.columns.map((column, columnIndex) => {
+          const columnLabel = column.label ?? column.id
+          const headerLabel = `${columnLabel} column ${columnIndex + 1}`
+          return (
+            <EditableGridColumnHeader key={column.id} colIndex={columnIndex + 1} aria-label={headerLabel} title={headerLabel}>
+              {columnLabel}
+            </EditableGridColumnHeader>
+          )
+        })}
       </EditableGridRow>
       {controller.rows.map((row, rowIndex) => (
         <EditableGridRow key={rowIndex} rowIndex={rowIndex + 2}>
