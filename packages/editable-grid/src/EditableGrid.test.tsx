@@ -130,6 +130,7 @@ describe('EditableGrid', () => {
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe('3')
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-label')).toBe('Editable grid')
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-readonly')).toBeNull()
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown ArrowLeft ArrowRight Enter')
       expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect([...document.querySelectorAll('[role="row"]')].map((row) => row.getAttribute('aria-rowindex'))).toEqual(['1', '2', '3'])
       const columnHeaders = [...document.querySelectorAll<HTMLElement>('[role="columnheader"]')]

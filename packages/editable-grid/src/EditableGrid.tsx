@@ -25,6 +25,8 @@ import {
   sameAddress,
 } from './editableGridFieldModel'
 
+const gridKeyShortcuts = 'ArrowUp ArrowDown ArrowLeft ArrowRight Enter'
+
 export interface EditableGridRenderCell {
   readonly address: EditableGridAddress
   readonly column: EditableGridColumn
@@ -72,6 +74,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
       className={className}
       aria-label={ariaLabel}
       aria-readonly={readonly || undefined}
+      aria-keyshortcuts={gridKeyShortcuts}
     >
       <EditableGridRow header rowIndex={1}>
         {surface.columns.map((column, columnIndex) => {
