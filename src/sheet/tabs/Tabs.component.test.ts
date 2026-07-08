@@ -248,8 +248,12 @@ describe('Tabs component', () => {
   it('keeps long sheet tab labels truncated inside a stable tab width', () => {
     const rootCss = appCss()
     const css = overlaysCss()
+    const tabRule = css.match(/\.tab\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-tab-border: 1px;')
     expect(rootCss).toContain('--sheet-size-tab-max: 220px;')
+    expect(tabRule).toContain('border: var(--sheet-size-tab-border, 1px) solid var(--sheet-color-border, #dadce0);')
+    expect(tabRule).toContain('border-bottom: none;')
     expect(css).toContain('max-width: var(--sheet-size-tab-max, 220px);')
     expect(css).toContain('.tab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }')
   })
