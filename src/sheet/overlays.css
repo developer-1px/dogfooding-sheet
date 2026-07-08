@@ -175,7 +175,7 @@
 
 .tab-rename {
   background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-accent, #1a73e8); border-radius: var(--sheet-radius-tight, 2px);
-  padding: 1px var(--sheet-space-1, 4px); font-size: var(--sheet-font-size-ui, 13px); width: 90px; outline: none;
+  padding: 1px var(--sheet-space-1, 4px); font-size: var(--sheet-font-size-ui, 13px); width: 90px; min-width: 0; max-width: 100%; flex: 1 1 90px; outline: none;
 }
 
 .tab-dup {

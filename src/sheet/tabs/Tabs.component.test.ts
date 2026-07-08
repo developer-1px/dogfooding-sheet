@@ -232,6 +232,16 @@ describe('Tabs component', () => {
     expect(css).toContain('.tab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }')
   })
 
+  it('keeps the tab rename input contained inside the tab width', () => {
+    const css = overlaysCss()
+    const renameRule = css.match(/\.tab-rename\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(renameRule).toContain('width: 90px;')
+    expect(renameRule).toContain('min-width: 0;')
+    expect(renameRule).toContain('max-width: 100%;')
+    expect(renameRule).toContain('flex: 1 1 90px;')
+  })
+
   it('keeps add-sheet activation keys inside the tab add control', () => {
     const parentKeys: string[] = []
     const calls = renderTabs({
