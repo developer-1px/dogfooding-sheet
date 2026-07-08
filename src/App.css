@@ -92,6 +92,7 @@
   --sheet-size-note-marker: 6px;
   --sheet-size-rec-dot: 7px;
   --sheet-size-toolbar-button-max: 96px;
+  --sheet-size-toolbar-control-border: 1px;
   --sheet-size-toolbar-address-min-width: 56px;
   --sheet-size-toolbar-formula-basis: 200px;
   --sheet-size-context-menu-width: 180px;
@@ -150,17 +151,17 @@ body, html, #root {
 }
 .sheet-toolbar .addr {
   flex: 0 0 auto; min-width: var(--sheet-size-toolbar-address-min-width, 56px); padding: var(--sheet-space-1) var(--sheet-space-3); text-align: center;
-  border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); background: var(--sheet-color-surface-muted);
+  border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); background: var(--sheet-color-surface-muted);
   font: var(--sheet-font-size-ui) var(--sheet-font-mono);
 }
 .sheet-toolbar .formula {
   flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px); min-width: 0; max-width: 100%; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
-  border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); outline: none;
+  border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); outline: none;
 }
 .sheet-toolbar .formula:focus { border-color: var(--sheet-color-accent); }
 .sheet-toolbar button {
   padding: var(--sheet-space-2) var(--sheet-space-5); font-size: var(--sheet-font-size-ui); cursor: pointer; background: var(--sheet-color-surface);
-  border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
+  border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
 }
 .sheet-toolbar > button, .sheet-toolbar > .overflow-menu > .overflow-trigger {
   min-width: 0; max-width: min(100%, var(--sheet-size-toolbar-button-max, 96px));
@@ -177,7 +178,7 @@ body, html, #root {
   display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--sheet-space-1);
   min-width: 0; max-width: min(100%, var(--sheet-size-toolbar-button-max, 96px));
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  padding: var(--sheet-space-1) var(--sheet-space-3); border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
+  padding: var(--sheet-space-1) var(--sheet-space-3); border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
   background: var(--sheet-color-surface); font-size: var(--sheet-font-size-ui); cursor: pointer;
 }
 .color-pick[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }

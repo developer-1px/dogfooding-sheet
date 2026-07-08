@@ -746,6 +746,21 @@ describe('Toolbar component', () => {
     expect(colorInputRule).toContain('height: var(--sheet-size-control-md);')
   })
 
+  it('keeps toolbar control borders token-sized', () => {
+    const css = appCss()
+    const addressRule = css.match(/\.sheet-toolbar \.addr\s*\{[^}]+\}/)?.[0] ?? ''
+    const formulaRule = css.match(/\.sheet-toolbar \.formula\s*\{[^}]+\}/)?.[0] ?? ''
+    const buttonRule = css.match(/\.sheet-toolbar button\s*\{[^}]+\}/)?.[0] ?? ''
+    const colorPickRule = css.match(/\.color-pick\s*\{[^}]+\}/)?.[0] ?? ''
+    const border = 'var(--sheet-size-toolbar-control-border, 1px)'
+
+    expect(css).toContain('--sheet-size-toolbar-control-border: 1px;')
+    expect(addressRule).toContain(`border: ${border} solid var(--sheet-color-border);`)
+    expect(formulaRule).toContain(`border: ${border} solid var(--sheet-color-border);`)
+    expect(buttonRule).toContain(`border: ${border} solid var(--sheet-color-border);`)
+    expect(colorPickRule).toContain(`border: ${border} solid var(--sheet-color-border);`)
+  })
+
   it('keeps the toolbar formula input contained on narrow rows', () => {
     const css = appCss()
 
