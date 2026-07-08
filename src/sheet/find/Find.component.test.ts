@@ -54,6 +54,7 @@ describe('Find component', () => {
 
     const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')
     const status = document.querySelector<HTMLElement>('.count')
+    expect(query?.type).toBe('text')
     expect(query?.placeholder).toBe('찾기')
     expect(query?.getAttribute('title')).toBe('찾을 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
     expect(query?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
@@ -107,6 +108,22 @@ describe('Find component', () => {
     const enabledRegex = document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용 켜짐"]')
     expect(enabledRegex?.checked).toBe(true)
     expect(enabledRegex?.parentElement?.getAttribute('title')).toBe('정규식 사용 켜짐')
+  })
+
+  it('keeps find text fields and option checkboxes on separate sizing rules', () => {
+    const css = overlaysCss()
+    const textInputRule = css.match(/\.find-bar input\[type="text"\]\s*\{[^}]+\}/)?.[0] ?? ''
+    const checkboxRule = css.match(/\.find-bar input\[type="checkbox"\]\s*\{[^}]+\}/)?.[0] ?? ''
+    const labelRule = css.match(/\.find-bar label\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(textInputRule).toContain('flex: 1 1 200px;')
+    expect(textInputRule).toContain('width: 200px;')
+    expect(checkboxRule).toContain('flex: 0 0 auto;')
+    expect(checkboxRule).toContain('width: var(--sheet-size-control-sm, 16px);')
+    expect(checkboxRule).toContain('height: var(--sheet-size-control-sm, 16px);')
+    expect(checkboxRule).toContain('margin: 0;')
+    expect(labelRule).toContain('display: inline-flex;')
+    expect(labelRule).toContain('align-items: center;')
   })
 
   it('announces no-match and matched result counts as status text', () => {
@@ -244,11 +261,13 @@ describe('Find component', () => {
     const replacement = document.querySelector<HTMLInputElement>('input[aria-label="바꿀 내용"]')
     const status = document.querySelector<HTMLElement>('.count')
 
+    expect(query?.type).toBe('text')
     expect(query?.placeholder).toBe('찾기')
     expect(query?.getAttribute('title')).toBe('찾을 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
     expect(query?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
     expect(status?.id).toBeTruthy()
     expect(query?.getAttribute('aria-describedby')).toBe(status?.id)
+    expect(replacement?.type).toBe('text')
     expect(replacement?.placeholder).toBe('바꾸기')
     expect(replacement?.getAttribute('title')).toBe('바꿀 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
     expect(replacement?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
