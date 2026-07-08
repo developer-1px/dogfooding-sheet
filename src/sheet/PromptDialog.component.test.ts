@@ -158,9 +158,13 @@ describe('PromptDialog component', () => {
   })
 
   it('keeps prompt inputs contained on narrow viewports', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
+    const inputRule = css.match(/\.prompt-dialog input\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-prompt-input-border: 1px;')
     expect(css).toContain('.prompt-dialog input { min-width: 0; max-width: 100%;')
+    expect(inputRule).toContain('border: var(--sheet-size-prompt-input-border, 1px) solid var(--sheet-color-border, #dadce0);')
   })
 
   it('keeps prompt dialogs constrained to the viewport', () => {
