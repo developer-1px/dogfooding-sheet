@@ -87,7 +87,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const freezeRowsLabel = `첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`
   const freezeColsLabel = `첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`
   const filterCriteriaLabel = filter ? `${filter.col}열 필터: ${filter.text}` : null
-  const filterLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 수정` : '현재 열로 행 필터'
+  const filterActionLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 수정` : '현재 열로 행 필터'
   const clearFilterLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 해제` : '필터 해제'
   const showAllTitle = '숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)'
   const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
@@ -109,6 +109,17 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const canToggleFreezeRows = rowCount > 1 || freeze.rows > 0
   const canToggleFreezeCols = colCount > 1 || freeze.cols > 0
   const canOpenFilterPrompt = !!focus && rowCount > 1
+  const filterColumnLabel = filter?.col ?? focus?.col ?? '현재'
+  const disabledFilterLabel = !focus
+    ? filterCriteriaLabel
+      ? '필터를 수정할 열 없음'
+      : '필터를 적용할 열 없음'
+    : rowCount <= 1
+      ? filterCriteriaLabel
+        ? `${filterColumnLabel}열 필터를 수정할 데이터 행 없음`
+        : `${focus.col}열에 필터할 데이터 행 없음`
+      : filterActionLabel
+  const filterLabel = canOpenFilterPrompt ? filterActionLabel : disabledFilterLabel
   const canMerge = canMergeSelection(selectedIds, focus ? cellId(focus.col, focus.row) : null, sheet.merges)
   const mergeLabel = canMerge ? '선택 셀 병합 또는 병합 해제' : '병합 가능한 셀 범위 없음'
   const mergeTitle = canMerge ? '선택 셀 병합 / 병합 해제 (Alt+Shift+M)' : mergeLabel
