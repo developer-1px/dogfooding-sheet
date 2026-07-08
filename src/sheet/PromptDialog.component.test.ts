@@ -25,7 +25,8 @@ describe('PromptDialog component', () => {
     expect(label?.htmlFor).toBe(input?.id)
     expect(input?.placeholder).toBe('A,B,C')
     expect(input?.value).toBe('A')
-    expect(input?.getAttribute('aria-keyshortcuts')).toBe('Enter')
+    expect(input?.getAttribute('title')).toBe('허용 값 (Enter=적용 / Esc=취소)')
+    expect(input?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
   })
 
   it('keeps submit, Enter, and cancel interactions unchanged', () => {
@@ -100,7 +101,8 @@ describe('PromptDialog component', () => {
 
     expect(input.placeholder).toBe('https://...')
     expect(input.value).toBe('https://example.com')
-    expect(input.getAttribute('aria-keyshortcuts')).toBe('Enter')
+    expect(input.getAttribute('title')).toBe('하이퍼링크 URL (Enter=적용 / Esc=취소)')
+    expect(input.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
 
     act(() => keyDown(input, 'ArrowLeft'))
     act(() => keyDown(input, 'x'))
