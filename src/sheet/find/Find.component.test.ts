@@ -96,8 +96,8 @@ describe('Find component', () => {
 
     act(() => setInputValue(query!, 'Alpha'))
     expect(status?.textContent).toBe('1/1')
-    expect(status?.getAttribute('title')).toBe('찾기 결과 1/1')
-    expect(status?.getAttribute('aria-label')).toBe('찾기 결과 1/1')
+    expect(status?.getAttribute('title')).toBe('찾기 결과 1/1, 현재 셀 A1')
+    expect(status?.getAttribute('aria-label')).toBe('찾기 결과 1/1, 현재 셀 A1')
     expect(next?.disabled).toBe(false)
   })
 

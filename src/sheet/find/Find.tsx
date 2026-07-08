@@ -57,7 +57,14 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
 
   if (!open) return null
 
-  const counterLabel = !q ? undefined : matches.length === 0 ? '찾기 결과 없음' : `찾기 결과 ${counter}`
+  const currentKey = current ? cellIdToKey(current) : null
+  const counterLabel = !q
+    ? undefined
+    : matches.length === 0
+      ? '찾기 결과 없음'
+      : currentKey
+        ? `찾기 결과 ${counter}, 현재 셀 ${currentKey}`
+        : `찾기 결과 ${counter}`
   const sub = (s: string): string => replaceFindText(s, q, r, { caseSensitive, regex })
   const replaceOne = () => {
     if (!current || !q) return
