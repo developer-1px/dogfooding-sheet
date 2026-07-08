@@ -493,15 +493,15 @@ describe('Toolbar component', () => {
   it('disables validation commands without target cells', () => {
     renderToolbar({ focusKey: null, selectedIds: [], filter: null })
 
-    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')
-    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')
+    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록을 설정할 셀 없음"]')
+    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환할 셀 없음"]')
 
     expect(listValidation?.textContent).toBe('▾목록')
     expect(listValidation?.disabled).toBe(true)
-    expect(listValidation?.getAttribute('title')).toBe('유효성 검사 (드롭다운 목록)')
+    expect(listValidation?.getAttribute('title')).toBe('드롭다운 목록을 설정할 셀 없음')
     expect(checkbox?.textContent).toBe('☑체크')
     expect(checkbox?.disabled).toBe(true)
-    expect(checkbox?.getAttribute('title')).toBe('체크박스로 변환')
+    expect(checkbox?.getAttribute('title')).toBe('체크박스로 변환할 셀 없음')
   })
 
   it('keeps validation commands enabled for selected cells without focus', () => {
