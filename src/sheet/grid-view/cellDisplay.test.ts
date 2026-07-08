@@ -110,4 +110,34 @@ describe('cell display model', () => {
     expect(model.ariaLabel).toBe('B2 https://example.com/chart.png 이미지')
     expect(model.title).toBe('https://example.com/chart.png')
   })
+
+  it('exposes link-rendered cells in the accessible label', () => {
+    const url = createCellDisplayModel({
+      address: 'C3',
+      label: 'https://example.com',
+      selected: false,
+      focused: false,
+      editing: false,
+      numeric: false,
+      highlighted: false,
+      previewing: false,
+      styleClass: '',
+    })
+    const email = createCellDisplayModel({
+      address: 'D4',
+      label: 'ops@example.com',
+      selected: false,
+      focused: false,
+      editing: false,
+      numeric: false,
+      highlighted: false,
+      previewing: false,
+      styleClass: '',
+    })
+
+    expect(url.content).toMatchObject({ kind: 'link', href: 'https://example.com/' })
+    expect(url.ariaLabel).toBe('C3 https://example.com 링크')
+    expect(email.content).toMatchObject({ kind: 'email', href: 'mailto:ops@example.com' })
+    expect(email.ariaLabel).toBe('D4 ops@example.com 이메일 링크')
+  })
 })

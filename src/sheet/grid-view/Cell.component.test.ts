@@ -110,7 +110,9 @@ describe('Cell component', () => {
     })
 
     const link = document.querySelector<HTMLAnchorElement>('.cell-link')
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"]')
 
+    expect(cell?.getAttribute('aria-label')).toBe('A1 https://example.com 링크')
     expect(link?.textContent).toBe('https://example.com')
     expect(link?.getAttribute('href')).toBe('https://example.com/')
     expect(link?.getAttribute('target')).toBe('_blank')
@@ -133,7 +135,9 @@ describe('Cell component', () => {
     })
 
     const link = document.querySelector<HTMLAnchorElement>('.cell-link')
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"]')
 
+    expect(cell?.getAttribute('aria-label')).toBe('A1 person@example.com 이메일 링크')
     expect(link?.textContent).toBe('person@example.com')
     expect(link?.getAttribute('href')).toBe('mailto:person@example.com')
     expect(link?.hasAttribute('target')).toBe(false)
