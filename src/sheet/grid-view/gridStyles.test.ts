@@ -80,6 +80,17 @@ describe('grid styles', () => {
     expect(inputRule).toContain('box-sizing: border-box;')
   })
 
+  it('keeps formula input accent strips token-sized', () => {
+    const root = appCss()
+    const source = gridCss()
+    const formulaInputRule = source.match(/\.cell-input\.formula-input\s*\{[^}]+\}/)?.[0] ?? ''
+    const accentStrip = 'var(--sheet-size-formula-input-accent-strip, 3px)'
+
+    expect(root).toContain('--sheet-size-formula-input-accent-strip: 3px;')
+    expect(formulaInputRule).toContain('border-color: var(--sheet-color-success, #188038);')
+    expect(formulaInputRule).toContain(`box-shadow: inset ${accentStrip} 0 0 var(--sheet-color-success, #188038);`)
+  })
+
   it('keeps freeze dividers token-sized between frozen and scrolling panes', () => {
     const root = appCss()
     const source = gridCss()
