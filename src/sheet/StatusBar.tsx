@@ -6,12 +6,22 @@ type Props = StatusBarModelProps & {
 }
 
 const fmt = (n: number) => Math.round(n * 1e6) / 1e6
-const persistenceText = (state?: SheetPersistenceState): string | null => {
+interface PersistencePresentation {
+  text: string
+  detail?: string
+}
+
+const persistencePresentation = (state?: SheetPersistenceState): PersistencePresentation | null => {
   if (!state) return null
-  if (state.status === 'error') return '저장 실패'
-  if (state.status === 'saving') return '저장 중'
-  if (state.status === 'pending' || state.dirty) return '저장 대기'
-  return '저장됨'
+  if (state.status === 'error') {
+    return {
+      text: '저장 실패',
+      detail: state.error ? `저장 실패: ${state.error}` : undefined,
+    }
+  }
+  if (state.status === 'saving') return { text: '저장 중' }
+  if (state.status === 'pending' || state.dirty) return { text: '저장 대기' }
+  return { text: '저장됨' }
 }
 const statusRegionProps = {
   role: 'status',
@@ -22,12 +32,15 @@ const statusRegionProps = {
 
 export function StatusBar(props: Props) {
   const model = statusBarViewModel(props)
-  const saved = persistenceText(props.persistence)
+  const saved = persistencePresentation(props.persistence)
+  const saveStatus = saved && (
+    <span className="persistence-status" title={saved.detail} aria-label={saved.detail}>{saved.text}</span>
+  )
   if (!model.showDetails) {
     return (
       <footer className="status-bar" {...statusRegionProps}>
         <span>{model.summary}</span>
-        {saved && <span>{saved}</span>}
+        {saveStatus}
       </footer>
     )
   }
@@ -35,7 +48,7 @@ export function StatusBar(props: Props) {
   return (
     <footer className="status-bar" {...statusRegionProps}>
       <span>{model.summary}</span>
-      {saved && <span>{saved}</span>}
+      {saveStatus}
       <span>COUNTA: <b>{model.nonEmpty}</b></span>
       {model.numeric && (
         <>

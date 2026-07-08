@@ -69,4 +69,24 @@ describe('StatusBar component', () => {
     expect(footer().textContent).toContain('저장 대기')
     expect(footer().textContent).not.toContain('저장 중')
   })
+
+  it('keeps save failure text terse while exposing the failure reason', () => {
+    act(() => dom.root.render(createElement(StatusBar, {
+      selectedIds: [],
+      focusId: cellId('A', 0),
+      rowCount: 10,
+      colCount: 10,
+      display: () => '123',
+      parseId: parseCellId,
+      persistence: { status: 'error', dirty: true, savedAt: null, error: 'Quota exceeded' },
+    })))
+
+    const saveStatus = document.querySelector<HTMLElement>('.persistence-status')
+
+    expect(footer().getAttribute('role')).toBe('status')
+    expect(footer().getAttribute('aria-live')).toBe('polite')
+    expect(saveStatus?.textContent).toBe('저장 실패')
+    expect(saveStatus?.getAttribute('title')).toBe('저장 실패: Quota exceeded')
+    expect(saveStatus?.getAttribute('aria-label')).toBe('저장 실패: Quota exceeded')
+  })
 })
