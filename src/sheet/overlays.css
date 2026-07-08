@@ -52,7 +52,7 @@
 .tabs-bar {
   display: flex; gap: var(--sheet-space-half, 2px); align-items: center; padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px) 0;
   overflow-x: auto; max-width: 100%; min-width: 0;
-  background: var(--sheet-color-surface-muted, #f8f9fa); border-top: 1px solid var(--sheet-color-border-subtle, #e0e0e0);
+  background: var(--sheet-color-surface-muted, #f8f9fa); border-top: var(--sheet-size-tab-strip-border, 1px) solid var(--sheet-color-border-subtle, #e0e0e0);
 }
 .tab {
   display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--sheet-space-2, 6px); padding: var(--sheet-space-2, 6px) var(--sheet-space-5, 12px);
