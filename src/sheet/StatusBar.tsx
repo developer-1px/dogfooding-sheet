@@ -6,6 +6,15 @@ type Props = StatusBarModelProps & {
 }
 
 const fmt = (n: number) => Math.round(n * 1e6) / 1e6
+const aggregateTitles = {
+  nonEmpty: '선택 영역의 비어 있지 않은 셀 수',
+  sum: '선택 영역 숫자 값 합계',
+  avg: '선택 영역 숫자 값 평균',
+  min: '선택 영역 숫자 값 최솟값',
+  max: '선택 영역 숫자 값 최댓값',
+  count: '선택 영역 숫자 값 개수',
+  median: '선택 영역 숫자 값 중앙값',
+} as const
 interface PersistencePresentation {
   text: string
   detail?: string
@@ -52,15 +61,15 @@ export function StatusBar(props: Props) {
     <footer className="status-bar" {...statusRegionProps}>
       <span>{model.summary}</span>
       {saveStatus}
-      <span>COUNTA: <b>{model.nonEmpty}</b></span>
+      <span title={aggregateTitles.nonEmpty}>COUNTA: <b>{model.nonEmpty}</b></span>
       {model.numeric && (
         <>
-          <span>SUM: <b>{fmt(model.numeric.sum)}</b></span>
-          <span>AVG: <b>{fmt(model.numeric.avg)}</b></span>
-          <span>MIN: <b>{fmt(model.numeric.min)}</b></span>
-          <span>MAX: <b>{fmt(model.numeric.max)}</b></span>
-          <span>COUNT: <b>{model.numeric.count}</b></span>
-          <span>MEDIAN: <b>{fmt(model.numeric.median)}</b></span>
+          <span title={aggregateTitles.sum}>SUM: <b>{fmt(model.numeric.sum)}</b></span>
+          <span title={aggregateTitles.avg}>AVG: <b>{fmt(model.numeric.avg)}</b></span>
+          <span title={aggregateTitles.min}>MIN: <b>{fmt(model.numeric.min)}</b></span>
+          <span title={aggregateTitles.max}>MAX: <b>{fmt(model.numeric.max)}</b></span>
+          <span title={aggregateTitles.count}>COUNT: <b>{model.numeric.count}</b></span>
+          <span title={aggregateTitles.median}>MEDIAN: <b>{fmt(model.numeric.median)}</b></span>
         </>
       )}
     </footer>
