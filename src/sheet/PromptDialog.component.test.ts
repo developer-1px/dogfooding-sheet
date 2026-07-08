@@ -1,7 +1,10 @@
 import { act, createElement, type KeyboardEvent } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { PromptDialog } from './PromptDialog'
 import { keyDown, setInputValue, setupReactDOM } from './test-utils'
+
+const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('PromptDialog component', () => {
   const dom = setupReactDOM()
@@ -151,5 +154,11 @@ describe('PromptDialog component', () => {
     })))
 
     expect(document.querySelector<HTMLInputElement>('.prompt-dialog input')?.value).toBe('new')
+  })
+
+  it('keeps prompt inputs contained on narrow viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('.prompt-dialog input { min-width: 0; max-width: 100%;')
   })
 })

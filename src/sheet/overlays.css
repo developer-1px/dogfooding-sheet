@@ -101,7 +101,7 @@
   display: flex; flex-direction: column; gap: var(--sheet-space-3, 8px);
 }
 .prompt-dialog label { font-size: var(--sheet-font-size-ui, 13px); color: var(--sheet-color-muted, #5f6368); }
-.prompt-dialog input { padding: var(--sheet-space-2, 6px) var(--sheet-space-3, 8px); font-size: var(--sheet-font-size-control, 14px); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px); }
+.prompt-dialog input { min-width: 0; max-width: 100%; padding: var(--sheet-space-2, 6px) var(--sheet-space-3, 8px); font-size: var(--sheet-font-size-control, 14px); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px); }
 .prompt-dialog input:focus { border-color: var(--sheet-color-accent, #1a73e8); outline: none; }
 .prompt-dialog .primary { background: var(--sheet-color-accent, #1a73e8); color: var(--sheet-color-surface, #fff); border-color: var(--sheet-color-accent, #1a73e8); }
 .confirm-dialog {
