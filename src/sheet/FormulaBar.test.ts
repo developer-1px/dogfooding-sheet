@@ -63,6 +63,32 @@ describe('FormulaBar', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.getAttribute('title')).toBe('다시 실행할 작업 없음 (Ctrl/⌘+Shift+Z)')
   })
 
+  it('clarifies the address control when Go To is available without a selected address', () => {
+    const onAddrClick = vi.fn()
+
+    act(() => dom.root.render(createElement(FormulaBar, {
+      addr: null,
+      value: '',
+      onCommit: vi.fn(),
+      onUndo: vi.fn(),
+      onRedo: vi.fn(),
+      canUndo: false,
+      canRedo: false,
+      onAddrClick,
+    })))
+
+    const address = document.querySelector<HTMLButtonElement>('button.addr')
+    expect(address?.disabled).toBe(false)
+    expect(address?.textContent).toBe('—')
+    expect(address?.getAttribute('aria-label')).toBe('셀 또는 범위로 이동')
+    expect(address?.getAttribute('title')).toBe('셀 또는 범위로 이동 (Ctrl/⌘+G)')
+    expect(address?.getAttribute('aria-keyshortcuts')).toBe('Control+G Meta+G')
+
+    act(() => address!.click())
+
+    expect(onAddrClick).toHaveBeenCalledTimes(1)
+  })
+
   it('describes the current address without a jump action when address jumping is unavailable', () => {
     act(() => dom.root.render(createElement(FormulaBar, {
       addr: 'C3',
