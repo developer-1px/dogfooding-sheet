@@ -18,6 +18,8 @@ describe('FormulaBar', () => {
       onAddrClick: vi.fn(),
     })))
 
+    expect(document.querySelector('.sheet-toolbar')?.getAttribute('role')).toBe('toolbar')
+    expect(document.querySelector('.sheet-toolbar')?.getAttribute('aria-label')).toBe('스프레드시트 도구 모음')
     expect(document.querySelector('button.addr')?.getAttribute('aria-label')).toBe('B12 셀로 이동')
     expect(document.querySelector('button.addr')?.getAttribute('title')).toBe('셀로 이동 (Ctrl/⌘+G)')
     expect(document.querySelector('button.addr')?.getAttribute('aria-keyshortcuts')).toBe('Control+G Meta+G')
