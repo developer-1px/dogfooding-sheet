@@ -104,6 +104,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
             const editorTitle = `${editorLabel} (Enter=저장 / Esc=취소)`
             const editorKeyShortcuts = 'Enter Escape'
             const checkboxLabel = `${columnLabel} row ${rowIndex + 1}`
+            const checkboxTitle = readonlyCell ? `${checkboxLabel} 읽기 전용 체크박스` : `${checkboxLabel} 체크박스 (Space=토글)`
             const onEditorKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
               event.stopPropagation()
               if (event.key === 'Enter') {
@@ -166,6 +167,8 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                   <input
                     type="checkbox"
                     aria-label={checkboxLabel}
+                    aria-keyshortcuts={readonlyCell ? undefined : 'Space'}
+                    title={checkboxTitle}
                     checked={checkedValue(cellValue)}
                     disabled={readonlyCell}
                     onChange={() => {

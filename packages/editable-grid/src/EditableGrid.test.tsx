@@ -596,6 +596,8 @@ describe('EditableGrid', () => {
       const checkbox = doneCell.querySelector<HTMLInputElement>('input[type="checkbox"]')
 
       expect(checkbox?.getAttribute('aria-label')).toBe('Done row 1')
+      expect(checkbox?.getAttribute('aria-keyshortcuts')).toBe('Space')
+      expect(checkbox?.getAttribute('title')).toBe('Done row 1 체크박스 (Space=토글)')
       expect(checkbox?.disabled).toBe(false)
       expect(checkbox?.checked).toBe(false)
 
@@ -635,6 +637,8 @@ describe('EditableGrid', () => {
 
       expect(doneCell.getAttribute('aria-readonly')).toBe('true')
       expect(checkbox?.getAttribute('aria-label')).toBe('Done row 1')
+      expect(checkbox?.hasAttribute('aria-keyshortcuts')).toBe(false)
+      expect(checkbox?.getAttribute('title')).toBe('Done row 1 읽기 전용 체크박스')
       expect(checkbox?.disabled).toBe(true)
       expect(checkbox?.checked).toBe(false)
 
