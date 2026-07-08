@@ -23,7 +23,7 @@ describe('toolbar formatting controls', () => {
       }),
       createElement(CondFmtButtons, {
         col: 'A',
-        hasRules: true,
+        ruleCount: 1,
         addCondRule: vi.fn(),
         clearCondRules: vi.fn(),
         ask: () => Promise.resolve(null),
@@ -65,9 +65,9 @@ describe('toolbar formatting controls', () => {
     expect(document.querySelector('button[aria-label="A열 조건부 서식 추가"]')).not.toBeNull()
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="A열 조건부 서식 추가"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="A열 조건부 서식 추가"]')?.getAttribute('title')).toBe('A열 조건부 서식 추가')
-    expect(document.querySelector('button[aria-label="조건부 서식 모두 해제"]')).not.toBeNull()
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.type).toBe('button')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.getAttribute('title')).toBe('조건부 서식 모두 해제')
+    expect(document.querySelector('button[aria-label="조건부 서식 1개 모두 해제"]')).not.toBeNull()
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 1개 모두 해제"]')?.type).toBe('button')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 1개 모두 해제"]')?.getAttribute('title')).toBe('조건부 서식 1개 모두 해제')
   })
 
   it('includes on state in style toggle labels and titles', () => {
