@@ -523,7 +523,7 @@ describe('Toolbar component', () => {
     const rightAlign = document.querySelector<HTMLButtonElement>('button[aria-label="오른쪽 정렬할 셀 없음"]')
     const bgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
     const fgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
-    const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')
+    const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="서식을 해제할 셀 없음"]')
     const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')
 
     expect(bold?.textContent).toBe('B')
@@ -542,6 +542,8 @@ describe('Toolbar component', () => {
     expect(fgColor?.disabled).toBe(true)
     expect(clearFormat?.textContent).toBe('✕서식')
     expect(clearFormat?.disabled).toBe(true)
+    expect(clearFormat?.getAttribute('title')).toBe('서식을 해제할 셀 없음')
+    expect(clearFormat?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
     expect(plainFormat?.textContent).toBe('123')
     expect(plainFormat?.disabled).toBe(true)
     expect(plainFormat?.getAttribute('title')).toBe('일반 (Ctrl/⌘+Shift+1)')
