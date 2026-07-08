@@ -80,6 +80,18 @@ describe('grid styles', () => {
     expect(inputRule).toContain('box-sizing: border-box;')
   })
 
+  it('keeps freeze dividers token-sized between frozen and scrolling panes', () => {
+    const root = appCss()
+    const source = gridCss()
+    const rowDividerRule = source.match(/\.grid-row\.freeze-row\s*\+\s*\.grid-row:not\(\.freeze-row\)\s*\{[^}]+\}/)?.[0] ?? ''
+    const colDividerRule = source.match(/\.cell\.freeze-col\s*\+\s*\.cell:not\(\.freeze-col\)\s*\{[^}]+\}/)?.[0] ?? ''
+    const divider = 'var(--sheet-size-freeze-divider, 2px)'
+
+    expect(root).toContain('--sheet-size-freeze-divider: 2px;')
+    expect(rowDividerRule).toContain(`border-top: ${divider} solid var(--sheet-color-accent, #1a73e8);`)
+    expect(colDividerRule).toContain(`border-left: ${divider} solid var(--sheet-color-accent, #1a73e8);`)
+  })
+
   it('keeps cell links constrained to the cell inline size', () => {
     const source = gridCss()
     const linkRule = source.match(/\.cell-link\s*\{[^}]+\}/)?.[0] ?? ''
