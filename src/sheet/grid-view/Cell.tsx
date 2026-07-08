@@ -76,10 +76,13 @@ export function Cell(p: Props) {
     checkbox: !!p.isCheckbox,
     formula: p.tooltip?.startsWith('='),
   })
+  const editTitle = `${display.editLabel} (Enter=저장 / Esc=취소)`
+  const editKeyShortcuts = 'Enter Escape'
   const textareaProps = {
     ...p.inputProps,
     'aria-label': display.editLabel,
-    title: display.editLabel,
+    'aria-keyshortcuts': editKeyShortcuts,
+    title: editTitle,
     onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       p.onFormulaPickKeyDown(e)
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
@@ -87,9 +90,10 @@ export function Cell(p: Props) {
     },
   } as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> }
   const selectProps = {
-    'aria-label': display.editLabel,
-    title: display.editLabel,
     ...p.selectProps,
+    'aria-label': display.editLabel,
+    'aria-keyshortcuts': editKeyShortcuts,
+    title: editTitle,
     onKeyDown: (e: React.KeyboardEvent<HTMLSelectElement>) => {
       p.selectProps.onKeyDown?.(e)
       e.stopPropagation()
@@ -142,7 +146,8 @@ export function Cell(p: Props) {
             : (
               <ContenteditableCellEditor
                 ariaLabel={display.editLabel}
-                title={display.editLabel}
+                ariaKeyShortcuts={editKeyShortcuts}
+                title={editTitle}
                 draft={p.draft}
                 setDraft={p.setDraft}
                 textDecorations={p.formulaReferenceText}

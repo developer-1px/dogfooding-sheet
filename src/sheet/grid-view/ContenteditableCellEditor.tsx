@@ -13,6 +13,7 @@ interface CommitOptions {
 
 interface Props {
   readonly ariaLabel: string
+  readonly ariaKeyShortcuts?: string
   readonly title?: string
   readonly draft: string
   readonly setDraft: (draft: string) => void
@@ -30,6 +31,7 @@ interface EditorCallbacks {
 
 export function ContenteditableCellEditor({
   ariaLabel,
+  ariaKeyShortcuts,
   title,
   draft,
   setDraft,
@@ -114,6 +116,7 @@ export function ContenteditableCellEditor({
       className={`cell-input${formulaMode ? ' formula-input' : ''}`}
       data-formula-editor={formulaMode || undefined}
       tabIndex={0}
+      aria-keyshortcuts={ariaKeyShortcuts}
       title={title}
       onBlur={() => {
         if (completedRef.current) return
