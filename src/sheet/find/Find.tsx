@@ -75,6 +75,8 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
   const nextTargetKey = nextTarget ? cellIdToKey(nextTarget) : null
   const previousFindLabel = previousTargetKey ? `이전 찾기 결과, 이동 셀 ${previousTargetKey}` : '이동할 이전 찾기 결과 없음'
   const nextFindLabel = nextTargetKey ? `다음 찾기 결과, 이동 셀 ${nextTargetKey}` : '이동할 다음 찾기 결과 없음'
+  const caseSensitiveLabel = `대소문자 구분 ${caseSensitive ? '켜짐' : '꺼짐'}`
+  const regexLabel = `정규식 사용 ${regex ? '켜짐' : '꺼짐'}`
   const sub = (s: string): string => replaceFindText(s, q, r, { caseSensitive, regex })
   const replaceOne = () => {
     if (!current || !q) return
@@ -120,8 +122,8 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
           aria-keyshortcuts={inputKeyShortcuts}
         />
       )}
-      <label title="대소문자 구분"><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label="대소문자 구분" />Aa</label>
-      <label title="정규식"><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label="정규식 사용" />.*</label>
+      <label title={caseSensitiveLabel}><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label={caseSensitiveLabel} />Aa</label>
+      <label title={regexLabel}><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label={regexLabel} />.*</label>
       <span className="count" role="status" aria-live="polite" aria-atomic="true" title={counterLabel} aria-label={counterLabel}>{counter}</span>
       <button type="button" onClick={() => jump(-1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title={`${previousFindLabel} (Shift+Enter)`} aria-label={previousFindLabel} aria-keyshortcuts="Shift+Enter">↑</button>
       <button type="button" onClick={() => jump(1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title={`${nextFindLabel} (Enter)`} aria-label={nextFindLabel} aria-keyshortcuts="Enter">↓</button>

@@ -53,8 +53,12 @@ describe('Find component', () => {
     expect(query?.placeholder).toBe('찾기')
     expect(query?.getAttribute('title')).toBe('찾을 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
     expect(query?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분"]')?.type).toBe('checkbox')
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용"]')?.type).toBe('checkbox')
+    const caseSensitive = document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분 꺼짐"]')
+    const regex = document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용 꺼짐"]')
+    expect(caseSensitive?.type).toBe('checkbox')
+    expect(caseSensitive?.parentElement?.getAttribute('title')).toBe('대소문자 구분 꺼짐')
+    expect(regex?.type).toBe('checkbox')
+    expect(regex?.parentElement?.getAttribute('title')).toBe('정규식 사용 꺼짐')
 
     const previous = document.querySelector<HTMLButtonElement>('button[aria-label="이동할 이전 찾기 결과 없음"]')
     const next = document.querySelector<HTMLButtonElement>('button[aria-label="이동할 다음 찾기 결과 없음"]')
@@ -76,6 +80,25 @@ describe('Find component', () => {
     expect(close?.type).toBe('button')
     expect(close?.getAttribute('title')).toBe('찾기 닫기 (Esc)')
     expect(close?.getAttribute('aria-keyshortcuts')).toBe('Escape')
+  })
+
+  it('updates option checkbox labels when toggled', () => {
+    renderFind('find')
+
+    const caseSensitive = document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분 꺼짐"]')!
+    const regex = document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용 꺼짐"]')!
+    expect(caseSensitive.parentElement?.textContent).toBe('Aa')
+    expect(regex.parentElement?.textContent).toBe('.*')
+
+    act(() => caseSensitive.click())
+    const enabledCaseSensitive = document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분 켜짐"]')
+    expect(enabledCaseSensitive?.checked).toBe(true)
+    expect(enabledCaseSensitive?.parentElement?.getAttribute('title')).toBe('대소문자 구분 켜짐')
+
+    act(() => regex.click())
+    const enabledRegex = document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용 켜짐"]')
+    expect(enabledRegex?.checked).toBe(true)
+    expect(enabledRegex?.parentElement?.getAttribute('title')).toBe('정규식 사용 켜짐')
   })
 
   it('announces no-match and matched result counts as status text', () => {
@@ -139,8 +162,8 @@ describe('Find component', () => {
     })
 
     const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')!
-    const caseSensitive = document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분"]')!
-    const regex = document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용"]')!
+    const caseSensitive = document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분 꺼짐"]')!
+    const regex = document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용 꺼짐"]')!
 
     act(() => setInputValue(query, 'Alpha'))
     expect(jumps).toEqual(['r0-A'])
