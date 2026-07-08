@@ -65,15 +65,16 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
       : currentKey
         ? `찾기 결과 ${counter}, 현재 셀 ${currentKey}`
         : `찾기 결과 ${counter}`
-  const replaceOneLabel = currentKey ? `현재 찾기 결과 바꾸기, 현재 셀 ${currentKey}` : '현재 찾기 결과 바꾸기'
-  const replaceAllLabel = matches.length > 0 ? `모든 찾기 결과 바꾸기, ${matches.length}개 셀` : '모든 찾기 결과 바꾸기'
+  const hasMatches = matches.length > 0
+  const replaceOneLabel = currentKey ? `현재 찾기 결과 바꾸기, 현재 셀 ${currentKey}` : '바꿀 현재 찾기 결과 없음'
+  const replaceAllLabel = hasMatches ? `모든 찾기 결과 바꾸기, ${matches.length}개 셀` : '바꿀 찾기 결과 없음'
   const currentIndex = current ? matches.indexOf(current) : -1
   const previousTarget = currentIndex >= 0 ? matches[(currentIndex - 1 + matches.length) % matches.length] : null
   const nextTarget = currentIndex >= 0 ? matches[(currentIndex + 1) % matches.length] : null
   const previousTargetKey = previousTarget ? cellIdToKey(previousTarget) : null
   const nextTargetKey = nextTarget ? cellIdToKey(nextTarget) : null
-  const previousFindLabel = previousTargetKey ? `이전 찾기 결과, 이동 셀 ${previousTargetKey}` : '이전 찾기 결과'
-  const nextFindLabel = nextTargetKey ? `다음 찾기 결과, 이동 셀 ${nextTargetKey}` : '다음 찾기 결과'
+  const previousFindLabel = previousTargetKey ? `이전 찾기 결과, 이동 셀 ${previousTargetKey}` : '이동할 이전 찾기 결과 없음'
+  const nextFindLabel = nextTargetKey ? `다음 찾기 결과, 이동 셀 ${nextTargetKey}` : '이동할 다음 찾기 결과 없음'
   const sub = (s: string): string => replaceFindText(s, q, r, { caseSensitive, regex })
   const replaceOne = () => {
     if (!current || !q) return
