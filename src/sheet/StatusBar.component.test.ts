@@ -7,6 +7,7 @@ import { setupReactDOM } from './test-utils'
 
 describe('StatusBar component', () => {
   const dom = setupReactDOM()
+  const appCss = () => readFileSync('src/App.css', 'utf8')
   const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
   const footer = (): HTMLElement => {
@@ -84,13 +85,17 @@ describe('StatusBar component', () => {
   })
 
   it('keeps detailed metrics wrapping and contained within the status bar', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
+    const statusBarRule = css.match(/\.status-bar\s*\{[^}]+\}/)?.[0] ?? ''
     const statusItemRule = css.match(/\.status-bar > span\s*\{[^}]+\}/)?.[0] ?? ''
     const persistenceRule = css.match(/\.persistence-status\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-status-bar-border: 1px;')
     expect(css).toMatch(
       /\.status-bar\s*\{\s*display: flex; flex-wrap: wrap; gap: var\(--sheet-space-1, 4px\) var\(--sheet-space-6, 16px\); align-items: center;/,
     )
+    expect(statusBarRule).toContain('border-top: var(--sheet-size-status-bar-border, 1px) solid var(--sheet-color-border-subtle, #e0e0e0);')
     expect(statusItemRule).toContain('min-width: 0;')
     expect(statusItemRule).toContain('max-width: 100%;')
     expect(statusItemRule).toContain('overflow: hidden;')
