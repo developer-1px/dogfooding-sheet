@@ -88,4 +88,29 @@ describe('toolbar formatting controls', () => {
     expect(wrap?.getAttribute('aria-pressed')).toBe('true')
     expect(wrap?.getAttribute('title')).toBe('A1 텍스트 줄바꿈 켜짐')
   })
+
+  it('hides style toggle shortcut hints when there is no target cell', () => {
+    act(() => dom.root.render(createElement(StyleToggleButtons, {
+      toggle: vi.fn(),
+      styleOf: () => undefined,
+      focusKey: null,
+      targetLabel: '선택된 셀 없음',
+      disabled: true,
+    })))
+
+    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게 적용할 셀 없음"]')
+    const italic = document.querySelector<HTMLButtonElement>('button[aria-label="기울임 적용할 셀 없음"]')
+    const underline = document.querySelector<HTMLButtonElement>('button[aria-label="밑줄 적용할 셀 없음"]')
+    const strike = document.querySelector<HTMLButtonElement>('button[aria-label="취소선 적용할 셀 없음"]')
+
+    expect(bold?.disabled).toBe(true)
+    expect(bold?.getAttribute('title')).toBe('굵게 적용할 셀 없음')
+    expect(bold?.hasAttribute('aria-keyshortcuts')).toBe(false)
+    expect(italic?.getAttribute('title')).toBe('기울임 적용할 셀 없음')
+    expect(italic?.hasAttribute('aria-keyshortcuts')).toBe(false)
+    expect(underline?.getAttribute('title')).toBe('밑줄 적용할 셀 없음')
+    expect(underline?.hasAttribute('aria-keyshortcuts')).toBe(false)
+    expect(strike?.getAttribute('title')).toBe('취소선 적용할 셀 없음')
+    expect(strike?.hasAttribute('aria-keyshortcuts')).toBe(false)
+  })
 })
