@@ -141,6 +141,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                     disabled={isReadonlyColumn(readonly, column)}
                     onChange={() => controller.commitDirectValue(address, cellValue, column, !checkedValue(cellValue))}
                     onClick={(event) => event.stopPropagation()}
+                    onKeyDown={(event) => event.stopPropagation()}
                   />
                 ) : renderCell ? (
                   renderCell({ address, column, value: cellValue, selected, editing: false })
