@@ -1,7 +1,10 @@
 import { act, createElement, type KeyboardEvent } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfirmDialog } from './ConfirmDialog'
 import { keyDown, setupReactDOM } from './test-utils'
+
+const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('ConfirmDialog component', () => {
   const dom = setupReactDOM()
@@ -77,5 +80,14 @@ describe('ConfirmDialog component', () => {
 
     act(() => confirm!.click())
     expect(onConfirm).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps action dialogs constrained to the viewport', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(css.match(/overflow: auto/g)?.length).toBeGreaterThanOrEqual(2)
   })
 })
