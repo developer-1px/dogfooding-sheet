@@ -220,7 +220,8 @@ describe('Cell component', () => {
     const select = document.querySelector<HTMLSelectElement>('select.cell-input')
 
     expect(select?.getAttribute('aria-label')).toBe('A1 편집')
-    expect(select?.getAttribute('title')).toBe('A1 편집')
+    expect(select?.getAttribute('title')).toBe('A1 편집 (Enter=저장 / Esc=취소)')
+    expect(select?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
     expect([...select!.querySelectorAll('option')].map((option) => option.value)).toEqual(['', 'Open', 'Closed'])
 
     act(() => select!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))
@@ -250,7 +251,8 @@ describe('Cell component', () => {
     const textarea = document.querySelector<HTMLTextAreaElement>('textarea.cell-input')
 
     expect(textarea?.getAttribute('aria-label')).toBe('A1 편집')
-    expect(textarea?.getAttribute('title')).toBe('A1 편집')
+    expect(textarea?.getAttribute('title')).toBe('A1 편집 (Enter=저장 / Esc=취소)')
+    expect(textarea?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
     expect(textarea?.value).toBe('wrapped')
 
     act(() => textarea!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))
@@ -279,7 +281,8 @@ describe('Cell component', () => {
 
     expect(editor?.className).toBe('cell-input')
     expect(editor?.getAttribute('aria-label')).toBe('A1 편집')
-    expect(editor?.getAttribute('title')).toBe('A1 편집')
+    expect(editor?.getAttribute('title')).toBe('A1 편집 (Enter=저장 / Esc=취소)')
+    expect(editor?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
 
     act(() => editor!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))
 
