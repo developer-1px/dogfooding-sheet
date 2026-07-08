@@ -16,6 +16,7 @@ interface CommitOptions {
 
 interface Props {
   rIdx: number
+  rowHeaderId: string
   rowItemProps: SheetGridRow
   rowProps: SheetGridItemProps
   cellPropsFor: (id: string) => SheetGridItemProps
@@ -79,6 +80,7 @@ export function GridRow(p: Props) {
       }}
     >
       <RowHeader
+        id={p.rowHeaderId}
         rIdx={p.rIdx}
         focusId={p.focusId}
         setFocusId={p.setFocusId}

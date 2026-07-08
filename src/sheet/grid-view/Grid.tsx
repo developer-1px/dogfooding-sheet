@@ -55,7 +55,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
   })
   const fillSource = fillSourceRect(selectedIds, focusId)
   const previewIds = rectToIdSet(fill.preview)
-  const { rootProps, rowProps, columnHeaderProps, cellProps, rows, getCellHandlers } = useSheetGrid({
+  const { rootProps, rowProps, columnHeaderProps, rowHeaderId, cellProps, rows, getCellHandlers } = useSheetGrid({
     data,
     rowCount: ctx.rowCount,
     colCount: ctx.colLetters.length,
@@ -111,6 +111,7 @@ export function Grid({ ctx }: { ctx: GridController }) {
           <GridRow
             key={row.id}
             rIdx={rIdx}
+            rowHeaderId={rowHeaderId(row.id)}
             rowItemProps={row}
             rowProps={rowProps(row.id)}
             cellPropsFor={cellProps}
