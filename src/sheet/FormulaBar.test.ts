@@ -46,6 +46,10 @@ describe('FormulaBar', () => {
     const formulaRule = css.match(/\.sheet-toolbar \.formula\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(titleRule).toContain('flex: 0 0 auto;')
+    expect(titleRule).toContain('min-width: 0;')
+    expect(titleRule).toContain('max-width: min(100%, var(--sheet-size-toolbar-button-max, 96px));')
+    expect(titleRule).toContain('overflow: hidden;')
+    expect(titleRule).toContain('text-overflow: ellipsis;')
     expect(titleRule).toContain('white-space: nowrap;')
     expect(addressRule).toContain('flex: 0 0 auto;')
     expect(addressRule).toContain('min-width: 56px;')
