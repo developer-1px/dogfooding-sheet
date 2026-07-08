@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { createAutoSave, type AutoSaveSnapshot } from '@zod-crud/autosave'
+import { createAutoSave } from '@zod-crud/autosave'
 import { createBulkEdit } from '@zod-crud/bulk-edit'
 import { createClearContents } from '@zod-crud/clear-contents'
 import { createWebClipboard, type WebClipboardCodec } from '@zod-crud/clipboard-web'
@@ -30,15 +30,7 @@ import type { SheetCountMutationCommands } from './structure/sheetMutations'
 import type { Rule, ValidationMutationCommands } from './validation/useValidation'
 import type { FreezeMutationCommands } from './visibility/useFreeze'
 import type { HiddenMutationCommands } from './visibility/useHidden'
-
-export type SheetPersistenceStatus = 'saving' | 'saved' | 'error'
-
-export interface SheetPersistenceState {
-  status: SheetPersistenceStatus
-  dirty: boolean
-  savedAt: string | null
-  error: string | null
-}
+import { initialPersistenceState, persistenceFromAutoSave, type SheetPersistenceState } from './sheetPersistence'
 
 export interface SheetRecordMutationCommands {
   cells: RecordMutationCommands<string>
@@ -56,13 +48,6 @@ export interface ReplaceCellTextOptions {
   search: string
   replacement: string
   caseSensitive?: boolean
-}
-
-const initialPersistenceState: SheetPersistenceState = {
-  status: 'saved',
-  dirty: false,
-  savedAt: null,
-  error: null,
 }
 
 const cellValuePointer = (key: string): Pointer =>
@@ -125,22 +110,6 @@ const rawTextClipboardCodec: WebClipboardCodec = {
   encode: ({ payload }) => typeof payload === 'string' ? payload : JSON.stringify(payload),
   decode: (text) => ({ payload: text, source: null, sources: null }),
 }
-
-const persistenceErrorMessage = (error: unknown): string | null => {
-  if (error == null) return null
-  return error instanceof Error ? error.message : String(error)
-}
-
-const persistenceFromAutoSave = (snapshot: AutoSaveSnapshot): SheetPersistenceState => ({
-  status: snapshot.state === 'error'
-    ? 'error'
-    : snapshot.pending || snapshot.saving
-      ? 'saving'
-      : 'saved',
-  dirty: snapshot.pending || snapshot.saving || snapshot.state === 'error',
-  savedAt: snapshot.lastSavedAt,
-  error: persistenceErrorMessage(snapshot.error),
-})
 
 export function useSheetDocument() {
   const initial = useMemo(() => loadInitial(), [])

@@ -51,4 +51,22 @@ describe('StatusBar component', () => {
     expect(footer().textContent).toContain('저장 중')
     expect(footer().textContent).toContain('SUM: 30')
   })
+
+  it('distinguishes pending autosave from active saving', () => {
+    act(() => dom.root.render(createElement(StatusBar, {
+      selectedIds: [],
+      focusId: cellId('A', 0),
+      rowCount: 10,
+      colCount: 10,
+      display: () => '123',
+      parseId: parseCellId,
+      persistence: { status: 'pending', dirty: true, savedAt: null, error: null },
+    })))
+
+    expect(footer().getAttribute('role')).toBe('status')
+    expect(footer().getAttribute('aria-live')).toBe('polite')
+    expect(footer().getAttribute('aria-atomic')).toBe('true')
+    expect(footer().textContent).toContain('저장 대기')
+    expect(footer().textContent).not.toContain('저장 중')
+  })
 })
