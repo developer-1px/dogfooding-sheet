@@ -30,6 +30,7 @@ describe('useSheetGrid', () => {
     expect(grid?.getAttribute('aria-label')).toBe('스프레드시트 그리드')
     expect(grid?.getAttribute('aria-rowcount')).toBe('3')
     expect(grid?.getAttribute('aria-colcount')).toBe('4')
+    expect(grid?.getAttribute('aria-multiselectable')).toBe('true')
     expect(grid?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown ArrowLeft ArrowRight Shift+ArrowUp Shift+ArrowDown Shift+ArrowLeft Shift+ArrowRight Enter')
     expect(document.querySelector<HTMLElement>('[role="row"][data-row-id="r0"]')?.getAttribute('aria-rowindex')).toBe('2')
     expect(document.querySelector<HTMLElement>('[role="columnheader"][data-id="h-A"]')?.getAttribute('aria-colindex')).toBe('2')

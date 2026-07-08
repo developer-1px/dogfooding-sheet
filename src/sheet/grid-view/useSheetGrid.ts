@@ -142,6 +142,7 @@ export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelected
     'aria-label': '스프레드시트 그리드',
     'aria-rowcount': rowCount + 1,
     'aria-colcount': colCount + 1,
+    'aria-multiselectable': true,
     'aria-keyshortcuts': gridKeyShortcuts,
     onKeyDown: (event) => {
       if (event.defaultPrevented) return
