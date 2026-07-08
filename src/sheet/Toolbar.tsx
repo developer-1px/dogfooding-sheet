@@ -33,6 +33,8 @@ const toolbarCommandButtonProps = {
   type: 'button',
   onKeyDown: stopToolbarActivationKeyDown,
 } as const
+export const DEFAULT_CELL_BACKGROUND_COLOR = '#ffffff'
+export const DEFAULT_CELL_TEXT_COLOR = '#000000'
 const colorInputValue = (color: string | undefined, fallback: string): string => {
   if (!color) return fallback
   const hex = color.slice(1)
@@ -99,8 +101,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
   const redoLabel = canRedo ? '다시 실행' : '다시 실행할 작업 없음'
   const focusedStyle = focusKey ? styleOf(focusKey) : undefined
-  const bgColorValue = colorInputValue(focusedStyle?.bg, '#ffffff')
-  const fgColorValue = colorInputValue(focusedStyle?.fg, '#000000')
+  const bgColorValue = colorInputValue(focusedStyle?.bg, DEFAULT_CELL_BACKGROUND_COLOR)
+  const fgColorValue = colorInputValue(focusedStyle?.fg, DEFAULT_CELL_TEXT_COLOR)
   const hasCellTarget = selectedIds.length > 0 || !!focusKey
   const bgColorLabel = hasCellTarget ? `배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})` : '배경색을 적용할 셀 없음'
   const fgColorLabel = hasCellTarget ? `글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})` : '글자색을 적용할 셀 없음'

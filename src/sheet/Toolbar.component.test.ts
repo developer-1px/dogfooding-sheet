@@ -1,7 +1,7 @@
 import { act, createElement, type ComponentProps, type KeyboardEventHandler } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { keyDown, setInputValue, setupReactDOM } from './test-utils'
-import { Toolbar } from './Toolbar'
+import { DEFAULT_CELL_BACKGROUND_COLOR, DEFAULT_CELL_TEXT_COLOR, Toolbar } from './Toolbar'
 import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from './schema'
 
 const toolbarActionMocks = vi.hoisted(() => ({
@@ -141,8 +141,14 @@ describe('Toolbar component', () => {
     expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
+    const defaultBgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
+    const defaultFgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
+    expect(defaultBgColor?.disabled).toBe(false)
+    expect(defaultBgColor?.value).toBe(DEFAULT_CELL_BACKGROUND_COLOR)
+    expect(defaultBgColor?.getAttribute('aria-label')).toBe(`배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})`)
+    expect(defaultFgColor?.disabled).toBe(false)
+    expect(defaultFgColor?.value).toBe(DEFAULT_CELL_TEXT_COLOR)
+    expect(defaultFgColor?.getAttribute('aria-label')).toBe(`글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
 
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="병합 가능한 셀 범위 없음"]')
