@@ -177,8 +177,10 @@ describe('header restore controls', () => {
     expect(header?.getAttribute('role')).toBe('columnheader')
     expect(header?.tabIndex).toBe(0)
     expect(header?.getAttribute('title')).toBe('클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
-    expect(resizer?.getAttribute('title')).toBe('드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤')
+    expect(resizer?.getAttribute('aria-label')).toBe('B열 너비 조정, 현재 80px')
+    expect(resizer?.getAttribute('title')).toBe('B열 너비 조정, 현재 80px / 드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤')
     expect(resizer?.getAttribute('aria-keyshortcuts')).toBe('ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight')
+    expect(resizer?.getAttribute('aria-valuenow')).toBe('80')
 
     act(() => header!.click())
     expect(setSelectedIds).toHaveBeenLastCalledWith(['r0-B', 'r1-B'])
@@ -293,8 +295,10 @@ describe('header restore controls', () => {
     expect(header?.getAttribute('role')).toBe('rowheader')
     expect(header?.getAttribute('aria-label')).toBe('3행')
     expect(header?.tabIndex).toBe(0)
-    expect(resizer?.getAttribute('title')).toBe('드래그=높이 조정 / ↑ ↓ 키로 10px 조정 / Shift+↑ ↓ 키로 50px 조정 / 더블클릭=기본값 복원')
+    expect(resizer?.getAttribute('aria-label')).toBe('3행 높이 조정, 현재 24px')
+    expect(resizer?.getAttribute('title')).toBe('3행 높이 조정, 현재 24px / 드래그=높이 조정 / ↑ ↓ 키로 10px 조정 / Shift+↑ ↓ 키로 50px 조정 / 더블클릭=기본값 복원')
     expect(resizer?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown Shift+ArrowUp Shift+ArrowDown')
+    expect(resizer?.getAttribute('aria-valuenow')).toBe('24')
     expect(resizer?.getAttribute('aria-valuemax')).toBe('1000')
 
     act(() => header!.click())

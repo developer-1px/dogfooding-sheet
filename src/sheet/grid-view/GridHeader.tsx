@@ -33,6 +33,8 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
   autoFitCol: (col: string) => void
 }) {
   const width = widthOf(col)
+  const roundedWidth = Math.round(width)
+  const resizeLabel = `${col}열 너비 조정, 현재 ${roundedWidth}px`
   const { handleProps } = useResizeGesture({
     axis: 'x',
     initial: () => widthOf(col),
@@ -47,12 +49,12 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
       {...handleProps}
       role="separator"
       tabIndex={0}
-      aria-label={`${col}열 너비 조정`}
+      aria-label={resizeLabel}
       aria-keyshortcuts="ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight"
       aria-orientation="vertical"
       aria-valuemin={COLUMN_WIDTH_BOUNDS.min}
       aria-valuemax={COLUMN_WIDTH_BOUNDS.max}
-      aria-valuenow={Math.round(width)}
+      aria-valuenow={roundedWidth}
       onKeyDown={(e) => {
         const next = resizeValueForKey(widthOf(col), e.key, e.shiftKey, 'x', COLUMN_WIDTH_BOUNDS)
         if (next === null) return
@@ -61,7 +63,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
         onResizeEnd(col, next)
       }}
       onDoubleClick={(e) => { e.stopPropagation(); autoFitCol(col) }}
-      title="드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤"
+      title={`${resizeLabel} / 드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤`}
     />
   )
 }
