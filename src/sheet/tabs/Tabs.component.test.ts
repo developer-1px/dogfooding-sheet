@@ -1,7 +1,7 @@
 import { act, createElement, type KeyboardEventHandler } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { blankBundle } from '../schema'
+import { MAX_SHEET_TABS, blankBundle } from '../schema'
 import { keyDown, setInputValue } from '../test-utils'
 import { DEFAULT_TAB_COLOR, Tabs } from './Tabs'
 import type { Confirm } from '../useConfirm'
@@ -69,8 +69,12 @@ describe('Tabs component', () => {
     expect(colorPickers[1]?.getAttribute('aria-label')).toBe('Forecast 탭 색상 변경 (현재 기본 색상)')
     expect(colorPickers[1]?.getAttribute('title')).toBe('Forecast 탭 색상 변경 (현재 기본 색상)')
     expect(document.querySelector<HTMLButtonElement>('.tab-dup')?.getAttribute('aria-label')).toBe('Budget 시트 복제')
+    expect(document.querySelector<HTMLButtonElement>('.tab-dup')?.getAttribute('title')).toBe('Budget 시트 복제')
+    expect(document.querySelector<HTMLButtonElement>('.tab-dup')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('.tab-close')?.getAttribute('aria-label')).toBe('Budget 시트 삭제')
     expect(document.querySelector<HTMLButtonElement>('.tab-add')?.getAttribute('aria-label')).toBe('시트 추가')
+    expect(document.querySelector<HTMLButtonElement>('.tab-add')?.getAttribute('title')).toBe('시트 추가')
+    expect(document.querySelector<HTMLButtonElement>('.tab-add')?.disabled).toBe(false)
   })
 
   it('exposes rename input shortcuts after entering tab name edit mode', () => {
@@ -198,6 +202,32 @@ describe('Tabs component', () => {
     act(() => add!.click())
 
     expect(calls).toEqual(['add'])
+  })
+
+  it('disables tab creation controls at the maximum tab count', () => {
+    const order = Array.from({ length: MAX_SHEET_TABS }, (_unused, index) => `Sheet${index + 1}`)
+    const calls = renderTabs({
+      order,
+      active: 'Sheet1',
+      saved: {},
+      colors: {},
+    })
+
+    const duplicateButtons = [...document.querySelectorAll<HTMLButtonElement>('.tab-dup')]
+    const add = document.querySelector<HTMLButtonElement>('.tab-add')
+
+    expect(duplicateButtons).toHaveLength(MAX_SHEET_TABS)
+    expect(duplicateButtons.every((button) => button.disabled)).toBe(true)
+    expect(duplicateButtons[0]?.getAttribute('aria-label')).toBe(`Sheet1 시트 복제 불가, 시트 최대 개수 ${MAX_SHEET_TABS}개 도달`)
+    expect(duplicateButtons[0]?.getAttribute('title')).toBe(`Sheet1 시트 복제 불가, 시트 최대 개수 ${MAX_SHEET_TABS}개 도달`)
+    expect(add?.disabled).toBe(true)
+    expect(add?.getAttribute('aria-label')).toBe(`시트 최대 개수 ${MAX_SHEET_TABS}개 도달`)
+    expect(add?.getAttribute('title')).toBe(`시트 최대 개수 ${MAX_SHEET_TABS}개 도달`)
+
+    act(() => duplicateButtons[0]!.click())
+    act(() => add!.click())
+
+    expect(calls).toEqual([])
   })
 
   it('does not leak a rejected delete confirmation', async () => {
