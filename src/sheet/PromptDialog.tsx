@@ -40,7 +40,20 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
           value={value}
           placeholder={placeholder}
           onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); submit() } }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              e.stopPropagation()
+              submit()
+              return
+            }
+            if (e.key === 'Escape') {
+              e.stopPropagation()
+              onCancel()
+              return
+            }
+            e.stopPropagation()
+          }}
           aria-keyshortcuts="Enter"
         />
         <div className="confirm-actions">
