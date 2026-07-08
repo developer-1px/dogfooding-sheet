@@ -279,12 +279,13 @@ describe('EditableGrid', () => {
   })
 
   it('emits grouped JSON Pointer patches when a cell edit commits', () => {
-    const { host, root, onChange } = setup()
+    const { host, root, onChange, onSelectionChange } = setup()
     try {
       const [first] = gridCells()
       act(() => first.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
       const input = document.querySelector<HTMLInputElement>('.editable-grid-input')
       expect(input?.value).toBe('Apple')
+      onSelectionChange.mockClear()
 
       act(() => {
         setInputValue(input!, 'Apples')
@@ -302,6 +303,7 @@ describe('EditableGrid', () => {
           }],
         },
       })
+      expect(onSelectionChange).not.toHaveBeenCalled()
     } finally {
       cleanup(root, host)
     }
@@ -415,11 +417,14 @@ describe('EditableGrid', () => {
   })
 
   it('commits checkbox and number fields with typed patch values', () => {
-    const { host, root, onChange } = setupDatabase()
+    const onSelectionChange = vi.fn()
+    const { host, root, onChange } = setupDatabase(vi.fn(), undefined, onSelectionChange)
     try {
       const doneCell = gridCells()[2]
       const checkbox = doneCell.querySelector<HTMLInputElement>('input[type="checkbox"]')
       expect(checkbox?.checked).toBe(false)
+      act(() => doneCell.dispatchEvent(new MouseEvent('click', { bubbles: true })))
+      onSelectionChange.mockClear()
 
       act(() => checkbox!.dispatchEvent(new MouseEvent('click', { bubbles: true })))
       expect(onChange).toHaveBeenCalledWith({
@@ -433,6 +438,7 @@ describe('EditableGrid', () => {
           }],
         },
       })
+      expect(onSelectionChange).not.toHaveBeenCalled()
 
       const scoreCell = gridCells()[3]
       act(() => scoreCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
