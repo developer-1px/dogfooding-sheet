@@ -2,6 +2,7 @@ import { act, createElement, type KeyboardEventHandler } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { blankBundle } from '../schema'
+import { keyDown, setInputValue } from '../test-utils'
 import { Tabs } from './Tabs'
 import type { Confirm } from '../useConfirm'
 import type { TabsState } from './useTabs'
@@ -76,6 +77,53 @@ describe('Tabs component', () => {
     expect(rename?.getAttribute('aria-label')).toBe('Budget 시트 이름 편집')
     expect(rename?.getAttribute('title')).toBe('Budget 시트 이름 편집 (Enter=저장 / Esc=취소)')
     expect(rename?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
+  })
+
+  it('keeps rename input keys inside the tab rename field', () => {
+    const parentKeys: string[] = []
+    const calls = renderTabs({
+      order: ['Budget', 'Forecast'],
+      active: 'Budget',
+      saved: { Forecast: blankBundle() },
+      colors: {},
+    }, () => Promise.resolve(false), { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const tab = document.querySelector<HTMLElement>('.tab')
+    act(() => tab!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+
+    const rename = document.querySelector<HTMLInputElement>('.tab-rename')
+    expect(rename?.getAttribute('aria-label')).toBe('Budget 시트 이름 편집')
+    expect(rename?.getAttribute('title')).toBe('Budget 시트 이름 편집 (Enter=저장 / Esc=취소)')
+    expect(rename?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
+
+    act(() => keyDown(rename!, 'ArrowRight'))
+    act(() => keyDown(rename!, 'B'))
+    act(() => setInputValue(rename!, 'Budget Q1'))
+    act(() => keyDown(rename!, 'Enter'))
+
+    expect(parentKeys).toEqual([])
+    expect(calls).toEqual(['rename:Budget:Budget Q1'])
+  })
+
+  it('keeps rename input escape inside the tab rename field while cancelling', () => {
+    const parentKeys: string[] = []
+    const calls = renderTabs({
+      order: ['Budget', 'Forecast'],
+      active: 'Budget',
+      saved: { Forecast: blankBundle() },
+      colors: {},
+    }, () => Promise.resolve(false), { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const tab = document.querySelector<HTMLElement>('.tab')
+    act(() => tab!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+
+    const rename = document.querySelector<HTMLInputElement>('.tab-rename')
+    act(() => setInputValue(rename!, 'Budget Q2'))
+    act(() => keyDown(rename!, 'Escape'))
+
+    expect(parentKeys).toEqual([])
+    expect(calls).toEqual([])
+    expect(document.querySelector<HTMLInputElement>('.tab-rename')).toBeNull()
   })
 
   it('does not render delete controls for the last remaining sheet', () => {

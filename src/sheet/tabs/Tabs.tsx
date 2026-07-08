@@ -26,6 +26,14 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
       if (draft && draft !== oldName) renameSheet(oldName, draft)
     },
   })
+  const stopRenameInputKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    ed.inputProps.onKeyDown?.(e)
+    e.stopPropagation()
+  }
+  const renameInputProps = {
+    ...ed.inputProps,
+    onKeyDown: stopRenameInputKeyDown,
+  }
 
   const data = fromList(state.order.map((name) => ({ id: name, label: name })))
 
@@ -58,7 +66,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           title="더블클릭=이름 변경 / 드래그=순서 변경"
         >
           {ed.editing === name ? (
-            <input className="tab-rename" {...ed.inputProps} title={`${name} 시트 이름 편집 (Enter=저장 / Esc=취소)`} aria-label={`${name} 시트 이름 편집`} aria-keyshortcuts="Enter Escape" />
+            <input className="tab-rename" {...renameInputProps} title={`${name} 시트 이름 편집 (Enter=저장 / Esc=취소)`} aria-label={`${name} 시트 이름 편집`} aria-keyshortcuts="Enter Escape" />
           ) : name}
           <input
             type="color"
