@@ -20,6 +20,9 @@ interface Props {
 }
 
 const isActivationKey = (key: string): boolean => key === 'Enter' || key === ' '
+const contextMenuPreferredWidth = '180px'
+const contextMenuViewportWidth = 'max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-1, 4px) - var(--sheet-space-8, 24px)))'
+const contextMenuWidth = `min(${contextMenuPreferredWidth}, ${contextMenuViewportWidth})`
 
 const keepActivationKeysLocal = <T extends { onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void }>(props: T) => ({
   ...props,
@@ -33,9 +36,9 @@ const contextMenuStyle = (x: number, y: number): CSSProperties => {
   const left = Math.max(0, x)
   const top = Math.max(0, y)
   return {
-    left: `max(var(--sheet-space-1, 4px), min(${left}px, calc(100vw - 180px - var(--sheet-space-8, 24px))))`,
+    left: `max(var(--sheet-space-1, 4px), min(${left}px, calc(100vw - ${contextMenuWidth} - var(--sheet-space-8, 24px))))`,
     top: `max(var(--sheet-space-1, 4px), min(${top}px, calc(100vh - var(--sheet-space-8, 24px))))`,
-    maxWidth: `max(180px, calc(100vw - ${left}px - var(--sheet-space-8, 24px)))`,
+    maxWidth: `min(max(${contextMenuPreferredWidth}, calc(100vw - ${left}px - var(--sheet-space-8, 24px))), ${contextMenuViewportWidth})`,
     maxHeight: `max(var(--sheet-space-8, 24px), calc(100vh - ${top}px - var(--sheet-space-8, 24px)))`,
   }
 }
