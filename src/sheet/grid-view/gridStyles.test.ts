@@ -78,4 +78,19 @@ describe('grid styles', () => {
     expect(rowLabelRule).toContain('display: inline-block;')
     expect(filterMarkRule).toContain('flex: 0 0 auto;')
   })
+
+  it('keeps hidden header restore controls token-sized and centered', () => {
+    const source = gridCss()
+    const restoreRule = source.match(/\.unhide-col,\s*\.unhide-row\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(restoreRule).toContain('position: absolute;')
+    expect(restoreRule).toContain('display: inline-flex;')
+    expect(restoreRule).toContain('align-items: center;')
+    expect(restoreRule).toContain('justify-content: center;')
+    expect(restoreRule).toContain('width: var(--sheet-size-control-sm, 16px);')
+    expect(restoreRule).toContain('height: var(--sheet-size-control-sm, 16px);')
+    expect(restoreRule).toContain('padding: 0;')
+    expect(restoreRule).toContain('line-height: 1;')
+    expect(restoreRule).not.toContain('line-height: 14px;')
+  })
 })
