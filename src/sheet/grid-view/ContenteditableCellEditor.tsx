@@ -116,6 +116,7 @@ export function ContenteditableCellEditor({
       className={`cell-input${formulaMode ? ' formula-input' : ''}`}
       data-formula-editor={formulaMode || undefined}
       tabIndex={0}
+      aria-multiline={false}
       aria-keyshortcuts={ariaKeyShortcuts}
       title={title}
       onBlur={() => {
