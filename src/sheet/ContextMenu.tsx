@@ -56,6 +56,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
           runMenuItemAction(it.onClick)
           onClose()
         }
+        const itemLabel = it.disabled ? `${it.label} 사용할 수 없음` : it.label
         return (
           <button
             key={`m${i}`}
@@ -63,7 +64,8 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
             type="button"
             className="ctx-item"
             disabled={it.disabled}
-            title={it.label}
+            title={itemLabel}
+            aria-label={itemLabel}
             aria-keyshortcuts={it.keyShortcuts}
             onClick={onClick}
           >
