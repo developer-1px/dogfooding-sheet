@@ -35,6 +35,9 @@ describe('HelpDialog', () => {
     expect(document.body.textContent).toContain('행/열 헤더 드래그 또는 화살표')
     expect(document.body.textContent).toContain('너비/높이 조정 (Shift+화살표 = 크게 조정, 더블클릭 = 자동 맞춤 / 기본값 복원)')
 
+    const backdrop = document.querySelector<HTMLElement>('.dialog-backdrop')
+    expect(backdrop?.getAttribute('aria-hidden')).toBe('true')
+
     const close = document.querySelector<HTMLButtonElement>('button[aria-label="키보드 단축키 도움말 닫기"]')
     expect(close?.textContent).toBe('닫기')
     expect(close?.type).toBe('button')
@@ -50,5 +53,8 @@ describe('HelpDialog', () => {
 
     act(() => close!.click())
     expect(onClose).toHaveBeenCalledTimes(2)
+
+    act(() => backdrop!.click())
+    expect(onClose).toHaveBeenCalledTimes(3)
   })
 })
