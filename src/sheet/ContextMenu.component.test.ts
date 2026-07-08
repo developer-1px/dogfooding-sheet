@@ -146,8 +146,10 @@ describe('ContextMenu component', () => {
     const css = overlaysCss()
     const menuRule = css.match(/\.ctx-menu\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-context-menu-border: 1px;')
     expect(rootCss).toContain('--sheet-size-context-menu-width: 180px;')
     expect(menuRule).toContain(`min-width: ${contextMenuWidth};`)
+    expect(menuRule).toContain('border: var(--sheet-size-context-menu-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(menuRule).toContain('overflow-x: hidden;')
     expect(menuRule).toContain('overflow-y: auto;')
   })
