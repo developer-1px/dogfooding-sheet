@@ -138,6 +138,8 @@ describe('EditableGrid', () => {
       const cells = gridCells()
       const [nameCell, qtyCell, totalCell] = cells
       expect(cells.map((cell) => cell.textContent)).toEqual(['Apple', '3', '3.00', 'Bread', '2', '4.00'])
+      expect(cells.map((cell) => cell.getAttribute('aria-rowindex'))).toEqual(['2', '2', '2', '3', '3', '3'])
+      expect(cells.map((cell) => cell.getAttribute('aria-colindex'))).toEqual(['1', '2', '3', '1', '2', '3'])
       expect(nameCell.getAttribute('aria-readonly')).toBeNull()
       expect(qtyCell.getAttribute('aria-readonly')).toBeNull()
       expect(totalCell.getAttribute('aria-readonly')).toBe('true')

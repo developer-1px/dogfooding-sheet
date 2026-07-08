@@ -75,6 +75,7 @@ export const EditableGridColumnHeader = forwardRef<HTMLDivElement, EditableGridC
 
 export interface EditableGridCellProps extends ComponentPropsWithoutRef<'div'> {
   readonly cellId: string
+  readonly rowIndex: number
   readonly colIndex: number
   readonly selected: boolean
   readonly editing?: boolean
@@ -83,6 +84,7 @@ export interface EditableGridCellProps extends ComponentPropsWithoutRef<'div'> {
 
 export const EditableGridCell = forwardRef<HTMLDivElement, EditableGridCellProps>(function EditableGridCell({
   cellId,
+  rowIndex,
   colIndex,
   selected,
   editing = false,
@@ -95,6 +97,7 @@ export const EditableGridCell = forwardRef<HTMLDivElement, EditableGridCellProps
       {...props}
       ref={ref}
       role="gridcell"
+      aria-rowindex={rowIndex}
       aria-colindex={colIndex}
       aria-selected={selected}
       tabIndex={focusable ? 0 : -1}
