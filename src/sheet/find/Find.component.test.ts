@@ -119,6 +119,8 @@ describe('Find component', () => {
     const labelRule = css.match(/\.find-bar label\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(rootCss).toContain('--sheet-size-find-input-width: 200px;')
+    expect(rootCss).toContain('--sheet-size-find-input-border: 1px;')
+    expect(textInputRule).toContain('border: var(--sheet-size-find-input-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(textInputRule).toContain('flex: 1 1 var(--sheet-size-find-input-width, 200px);')
     expect(textInputRule).toContain('width: var(--sheet-size-find-input-width, 200px);')
     expect(checkboxRule).toContain('flex: 0 0 auto;')
