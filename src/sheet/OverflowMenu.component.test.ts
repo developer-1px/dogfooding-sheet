@@ -239,8 +239,10 @@ describe('OverflowMenu component', () => {
 
   it('keeps long overflow menu labels contained on narrow viewports', () => {
     const css = overlaysCss()
+    const listRule = css.match(/\.overflow-list\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));')
+    expect(listRule).toContain('min-width: min(160px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))));')
+    expect(listRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));')
     expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
   })
 
