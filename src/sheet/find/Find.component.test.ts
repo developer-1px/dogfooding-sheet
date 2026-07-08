@@ -220,12 +220,18 @@ describe('Find component', () => {
     expect(replaceOne?.getAttribute('aria-label')).toBe('현재 찾기 결과 바꾸기')
     expect(replaceAll?.textContent).toBe('전체')
     expect(replaceAll?.disabled).toBe(true)
+    expect(replaceAll?.getAttribute('title')).toBe('모든 찾기 결과 바꾸기')
+    expect(replaceAll?.getAttribute('aria-label')).toBe('모든 찾기 결과 바꾸기')
 
     act(() => setInputValue(query!, 'Alpha'))
     expect(replaceOne?.textContent).toBe('바꾸기')
     expect(replaceOne?.disabled).toBe(false)
     expect(replaceOne?.getAttribute('title')).toBe('현재 찾기 결과 바꾸기, 현재 셀 A1')
     expect(replaceOne?.getAttribute('aria-label')).toBe('현재 찾기 결과 바꾸기, 현재 셀 A1')
+    expect(replaceAll?.textContent).toBe('전체')
+    expect(replaceAll?.disabled).toBe(false)
+    expect(replaceAll?.getAttribute('title')).toBe('모든 찾기 결과 바꾸기, 1개 셀')
+    expect(replaceAll?.getAttribute('aria-label')).toBe('모든 찾기 결과 바꾸기, 1개 셀')
 
     const close = document.querySelector<HTMLButtonElement>('button[aria-label="찾기 및 바꾸기 닫기"]')
     expect(close?.textContent).toBe('✕')
