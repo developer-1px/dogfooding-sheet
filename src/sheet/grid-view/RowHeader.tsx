@@ -66,6 +66,8 @@ const rowHeaderLabel = (rowNumber: number, { selected, current }: { selected: bo
   return states.length ? `${rowNumber}행, ${states.join(', ')}` : `${rowNumber}행`
 }
 
+const rowHeaderSelectionKeyShortcuts = 'Enter Space'
+
 export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected, active }: Props) {
   const restoreControls = rowRestoreControls(rIdx, hiddenRows)
   const topRestore = restoreControls.find((control) => control.className === 'unhide-row top')
@@ -101,6 +103,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
       aria-label={headerLabel}
       aria-current={active ? 'true' : undefined}
       aria-selected={selected}
+      aria-keyshortcuts={rowHeaderSelectionKeyShortcuts}
       onClick={(e) => selectRow(e.shiftKey)}
       onKeyDown={(e) => {
         if (e.currentTarget !== e.target) return
