@@ -72,8 +72,8 @@ describe('HelpDialog', () => {
     const css = overlaysCss()
     const helpDialogRule = css.match(/\.help-dialog\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(helpDialogRule).toContain('min-width: min(360px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
-    expect(helpDialogRule).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(helpDialogRule).toContain('min-width: min(360px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))))')
+    expect(helpDialogRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(helpDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(helpDialogRule).toContain('overflow: auto')
   })

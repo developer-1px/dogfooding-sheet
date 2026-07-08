@@ -166,8 +166,8 @@ describe('PromptDialog component', () => {
     const css = overlaysCss()
     const promptDialogRule = css.match(/\.prompt-dialog\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(promptDialogRule).toContain('min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
-    expect(promptDialogRule).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(promptDialogRule).toContain('min-width: min(320px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))))')
+    expect(promptDialogRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(promptDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(promptDialogRule).toContain('overflow: auto')
   })
