@@ -46,7 +46,9 @@ describe('ConfirmDialog component', () => {
 
     const cancel = document.querySelector<HTMLButtonElement>('.confirm-actions button:not(.danger)')
     const confirm = document.querySelector<HTMLButtonElement>('.confirm-actions .danger')
+    const backdrop = document.querySelector<HTMLElement>('.dialog-backdrop')
 
+    expect(backdrop?.getAttribute('aria-hidden')).toBe('true')
     expect(cancel?.type).toBe('button')
     expect(cancel?.textContent).toBe('아니요')
     expect(cancel?.getAttribute('aria-label')).toBe('아니요')
@@ -67,6 +69,10 @@ describe('ConfirmDialog component', () => {
 
     act(() => cancel!.click())
     expect(onCancel).toHaveBeenCalledTimes(2)
+    expect(onConfirm).not.toHaveBeenCalled()
+
+    act(() => backdrop!.click())
+    expect(onCancel).toHaveBeenCalledTimes(3)
     expect(onConfirm).not.toHaveBeenCalled()
 
     act(() => confirm!.click())

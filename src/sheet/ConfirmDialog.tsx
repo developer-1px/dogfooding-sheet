@@ -26,7 +26,7 @@ export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLa
   if (!open) return null
   return (
     <>
-      <div className="dialog-backdrop" onClick={onCancel} />
+      <div className="dialog-backdrop" aria-hidden="true" onClick={onCancel} />
       <div {...rootProps} aria-describedby={messageId} className="confirm-dialog">
         <p id={messageId}>{message}</p>
         <div className="confirm-actions">
