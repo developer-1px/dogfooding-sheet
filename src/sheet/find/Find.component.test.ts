@@ -143,7 +143,7 @@ describe('Find component', () => {
     const findBarRule = css.match(/\.find-bar\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(findBarRule).toContain('max-width: calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px));')
-    expect(findBarRule).toContain('max-height: calc(100vh - 60px - var(--sheet-space-8, 24px));')
+    expect(findBarRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - 60px - var(--sheet-space-8, 24px)));')
     expect(findBarRule).toContain('overflow-x: hidden;')
     expect(findBarRule).toContain('overflow-y: auto;')
   })
