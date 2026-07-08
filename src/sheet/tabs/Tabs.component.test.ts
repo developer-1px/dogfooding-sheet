@@ -79,6 +79,24 @@ describe('Tabs component', () => {
     expect(document.querySelector<HTMLButtonElement>('.tab-add')?.disabled).toBe(false)
   })
 
+  it('keeps long sheet names compact while exposing the full tab name', () => {
+    const longName = 'Quarterly Forecast With A Very Long Scenario Name'
+
+    renderTabs({
+      order: [longName, 'Forecast'],
+      active: longName,
+      saved: { Forecast: blankBundle() },
+      colors: {},
+    })
+
+    const tab = document.querySelector<HTMLElement>('.tab')
+    const label = document.querySelector<HTMLElement>('.tab-label')
+
+    expect(label?.textContent).toBe(longName)
+    expect(tab?.getAttribute('aria-label')).toBe(`${longName} 시트 탭, 현재 선택됨`)
+    expect(tab?.getAttribute('title')).toBe(`${longName} 시트 탭 (현재 선택됨) - 더블클릭=이름 변경 / 드래그=순서 변경`)
+  })
+
   it('exposes rename input shortcuts after entering tab name edit mode', () => {
     renderTabs({
       order: ['Budget', 'Forecast'],
@@ -205,6 +223,13 @@ describe('Tabs component', () => {
     expect(css).toContain('overflow-x: auto; max-width: 100%; min-width: 0;')
     expect(css).toContain('display: inline-flex; flex: 0 0 auto; align-items: center;')
     expect(css).toContain('.tab-add { flex: 0 0 auto;')
+  })
+
+  it('keeps long sheet tab labels truncated inside a stable tab width', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('max-width: 220px;')
+    expect(css).toContain('.tab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }')
   })
 
   it('keeps add-sheet activation keys inside the tab add control', () => {
