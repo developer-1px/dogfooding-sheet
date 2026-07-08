@@ -40,6 +40,18 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
     onOpenChange: (next) => { if (!next) onClose() },
     on: { Enter: () => jump(1), 'shift+Enter': () => jump(-1) },
   })
+  const onTextInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    event.stopPropagation()
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      jump(event.shiftKey ? -1 : 1)
+      return
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      onClose()
+    }
+  }
 
   if (!open) return null
 
@@ -71,6 +83,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
       <input
         value={q}
         onChange={(e) => { setQ(e.target.value); resetIdx() }}
+        onKeyDown={onTextInputKeyDown}
         placeholder="찾기"
         aria-label="찾을 내용"
       />
@@ -78,6 +91,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
         <input
           value={r}
           onChange={(e) => setR(e.target.value)}
+          onKeyDown={onTextInputKeyDown}
           placeholder="바꾸기"
           aria-label="바꿀 내용"
         />
