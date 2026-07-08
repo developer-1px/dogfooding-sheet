@@ -55,6 +55,7 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
       aria-valuemin={COLUMN_WIDTH_BOUNDS.min}
       aria-valuemax={COLUMN_WIDTH_BOUNDS.max}
       aria-valuenow={roundedWidth}
+      aria-valuetext={`${roundedWidth}px`}
       onKeyDown={(e) => {
         const next = resizeValueForKey(widthOf(col), e.key, e.shiftKey, 'x', COLUMN_WIDTH_BOUNDS)
         if (next === null) return
