@@ -25,7 +25,7 @@
 .filter-mark { flex: 0 0 auto; margin-left: var(--sheet-space-1, 4px); font-size: var(--sheet-font-size-xs, 10px); color: var(--sheet-color-accent, #1a73e8); }
 .unhide-col, .unhide-row {
   position: absolute; display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid var(--sheet-color-border, #dadce0); background: var(--sheet-color-surface, #fff); color: var(--sheet-color-accent, #1a73e8);
+  border: var(--sheet-size-hidden-restore-border, 1px) solid var(--sheet-color-border, #dadce0); background: var(--sheet-color-surface, #fff); color: var(--sheet-color-accent, #1a73e8);
   width: var(--sheet-size-control-sm, 16px); height: var(--sheet-size-control-sm, 16px); padding: 0; border-radius: var(--sheet-radius-panel, 8px); font-size: var(--sheet-font-size-control-xs, 11px); line-height: 1;
   cursor: pointer; z-index: 4;
 }
