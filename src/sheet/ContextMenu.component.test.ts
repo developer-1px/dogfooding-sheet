@@ -22,7 +22,7 @@ describe('ContextMenu component', () => {
         items: [
           { label: '열기', onClick: onOpen, keyShortcuts: 'Alt+Shift+M' },
           'separator',
-          { label: '삭제', onClick: onDisabled, disabled: true, disabledLabel: '삭제할 항목 없음' },
+          { label: '삭제', onClick: onDisabled, disabled: true, disabledLabel: '삭제할 항목 없음', keyShortcuts: 'Delete' },
         ],
         onClose,
       }),
