@@ -17,8 +17,9 @@ const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) =>
 export function ConfirmDialog({ open, message, confirmLabel = '확인', cancelLabel = '취소', onConfirm, onCancel }: Props) {
   const messageId = useId()
   const cancelRef = useRef<HTMLButtonElement | null>(null)
+  const dialogLabel = confirmLabel === '확인' ? '확인' : `${confirmLabel} 확인`
   const { rootProps } = useAlertdialogPattern({
-    open, label: '확인',
+    open, label: dialogLabel,
     cancelRef,
     onOpenChange: (next) => { if (!next) onCancel() },
   })
