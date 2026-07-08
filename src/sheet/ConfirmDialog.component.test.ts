@@ -86,8 +86,8 @@ describe('ConfirmDialog component', () => {
     const css = overlaysCss()
     const confirmDialogRule = css.match(/\.confirm-dialog\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(confirmDialogRule).toContain('min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
-    expect(confirmDialogRule).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(confirmDialogRule).toContain('min-width: min(320px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))))')
+    expect(confirmDialogRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(confirmDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(confirmDialogRule).toContain('overflow: auto')
   })
