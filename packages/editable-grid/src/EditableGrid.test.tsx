@@ -43,6 +43,7 @@ const databaseSurface = defineEditableGridSurface({
       done: z.boolean(),
       score: z.number(),
       summary: z.string(),
+      aggregate: z.string(),
     })),
   }),
   dataPath: '/records',
@@ -63,12 +64,13 @@ const databaseSurface = defineEditableGridSurface({
     { id: 'done', path: '/done', label: 'Done', field: { type: 'checkbox' } },
     { id: 'score', path: '/score', label: 'Score', field: { type: 'number' } },
     { id: 'summary', path: '/summary', label: 'Summary', field: { type: 'formula', formula: '=title' } },
+    { id: 'aggregate', path: '/aggregate', label: 'Aggregate', field: { type: 'rollup' } },
   ],
 })
 
 const databaseValue = {
   records: [
-    { title: 'Spec', status: 'todo', done: false, score: 3, summary: 'Spec / Todo' },
+    { title: 'Spec', status: 'todo', done: false, score: 3, summary: 'Spec / Todo', aggregate: '1 linked' },
   ],
 }
 
@@ -126,7 +128,12 @@ describe('EditableGrid', () => {
       expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect([...document.querySelectorAll('[role="row"]')].map((row) => row.getAttribute('aria-rowindex'))).toEqual(['1', '2', '3'])
       expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.textContent)).toEqual(['Name', 'Qty', 'Total'])
-      expect(gridCells().map((cell) => cell.textContent)).toEqual(['Apple', '3', '3.00', 'Bread', '2', '4.00'])
+      const cells = gridCells()
+      const [nameCell, qtyCell, totalCell] = cells
+      expect(cells.map((cell) => cell.textContent)).toEqual(['Apple', '3', '3.00', 'Bread', '2', '4.00'])
+      expect(nameCell.getAttribute('aria-readonly')).toBeNull()
+      expect(qtyCell.getAttribute('aria-readonly')).toBeNull()
+      expect(totalCell.getAttribute('aria-readonly')).toBe('true')
     } finally {
       cleanup(root, host)
     }
@@ -401,7 +408,12 @@ describe('EditableGrid', () => {
     const { host, root, onChange } = setupDatabase()
     try {
       const summaryCell = gridCells()[4]
+      const aggregateCell = gridCells()[5]
+      expect(summaryCell.getAttribute('aria-readonly')).toBe('true')
+      expect(aggregateCell.getAttribute('aria-readonly')).toBe('true')
+
       act(() => summaryCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+      act(() => aggregateCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
 
       expect(document.querySelector('.editable-grid-input')).toBeNull()
       expect(onChange).not.toHaveBeenCalled()

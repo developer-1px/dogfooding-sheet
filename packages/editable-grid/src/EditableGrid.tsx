@@ -85,6 +85,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
             const selected = sameAddress(controller.activeSelection.focus, address)
             const isEditing = sameAddress(controller.editing ?? undefined, address)
             const fieldType = fieldTypeOf(column)
+            const readonlyCell = isReadonlyColumn(readonly, column)
             const onEditorKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
               event.stopPropagation()
               if (event.key === 'Enter') {
@@ -105,6 +106,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 selected={selected}
                 editing={isEditing}
                 focusable={selected || (!controller.activeSelection.focus && rowIndex === 0 && columnIndex === 0)}
+                aria-readonly={readonlyCell || undefined}
                 onFocus={() => controller.focusCell(address)}
                 onClick={() => controller.focusCell(address)}
                 onDoubleClick={() => controller.startEdit(address, cellValue, column, { caret: 'end' })}
@@ -141,7 +143,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                     type="checkbox"
                     aria-label={column.label ?? column.id}
                     checked={checkedValue(cellValue)}
-                    disabled={isReadonlyColumn(readonly, column)}
+                    disabled={readonlyCell}
                     onChange={() => controller.commitDirectValue(address, cellValue, column, !checkedValue(cellValue))}
                     onClick={(event) => event.stopPropagation()}
                     onKeyDown={(event) => event.stopPropagation()}
