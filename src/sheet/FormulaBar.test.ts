@@ -52,6 +52,7 @@ describe('FormulaBar', () => {
     expect(address?.textContent).toBe('—')
     expect(address?.getAttribute('aria-label')).toBe('선택된 셀 없음')
     expect(address?.getAttribute('title')).toBe('선택된 셀 없음')
+    expect(address?.hasAttribute('aria-keyshortcuts')).toBe(false)
     const formula = document.querySelector<HTMLInputElement>('input.formula')
     expect(formula?.disabled).toBe(true)
     expect(formula?.placeholder).toBe('값 또는 =A1+B1')
@@ -107,6 +108,7 @@ describe('FormulaBar', () => {
     expect(address?.textContent).toBe('C3')
     expect(address?.getAttribute('aria-label')).toBe('C3 셀 주소')
     expect(address?.getAttribute('title')).toBe('C3 셀 주소')
+    expect(address?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 
   it('keeps button activation keys inside the formula bar controls', () => {
