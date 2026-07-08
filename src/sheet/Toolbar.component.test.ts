@@ -131,8 +131,8 @@ describe('Toolbar component', () => {
     expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
 
     const mergeButton = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]')
@@ -151,13 +151,21 @@ describe('Toolbar component', () => {
     const parentKeys: string[] = []
     toolbarActionMocks.setToolbarColor.mockClear()
 
-    renderToolbar({}, { onKeyDown: (event) => parentKeys.push(event.key) })
+    renderToolbar({
+      styleOf: () => ({ bg: '#ffeeaa', fg: '#001122' }),
+    }, { onKeyDown: (event) => parentKeys.push(event.key) })
 
-    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')
-    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')
+    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
+    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
 
     expect(bgColor?.disabled).toBe(false)
+    expect(bgColor?.value).toBe('#ffeeaa')
+    expect(bgColor?.getAttribute('aria-label')).toBe('배경색 선택 (현재 색상 #ffeeaa)')
+    expect(bgColor?.getAttribute('title')).toBe('배경색 선택 (현재 색상 #ffeeaa)')
     expect(fgColor?.disabled).toBe(false)
+    expect(fgColor?.value).toBe('#001122')
+    expect(fgColor?.getAttribute('aria-label')).toBe('글자색 선택 (현재 색상 #001122)')
+    expect(fgColor?.getAttribute('title')).toBe('글자색 선택 (현재 색상 #001122)')
 
     act(() => keyDown(bgColor!, 'Enter'))
     act(() => keyDown(fgColor!, ' '))
@@ -483,8 +491,8 @@ describe('Toolbar component', () => {
 
     const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')
     const leftAlign = document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')
-    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')
-    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')
+    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
+    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
     const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')
     const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')
 
@@ -507,8 +515,8 @@ describe('Toolbar component', () => {
 
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반"]')?.disabled).toBe(false)
   })

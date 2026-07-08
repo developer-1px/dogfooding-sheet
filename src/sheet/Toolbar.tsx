@@ -33,6 +33,13 @@ const toolbarCommandButtonProps = {
   type: 'button',
   onKeyDown: stopToolbarActivationKeyDown,
 } as const
+const colorInputValue = (color: string | undefined, fallback: string): string => {
+  if (!color) return fallback
+  const hex = color.slice(1)
+  if (hex.length === 3 || hex.length === 4) return `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`.toLowerCase()
+  if (hex.length === 6 || hex.length === 8) return `#${hex.slice(0, 6)}`.toLowerCase()
+  return fallback
+}
 
 interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
   focusKey: string | null
@@ -71,6 +78,11 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const freezeColsLabel = `첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`
   const filterLabel = filter ? `${filter.col}열 필터 수정` : '현재 열로 행 필터'
   const showAllTitle = '숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)'
+  const focusedStyle = focusKey ? styleOf(focusKey) : undefined
+  const bgColorValue = colorInputValue(focusedStyle?.bg, '#ffffff')
+  const fgColorValue = colorInputValue(focusedStyle?.fg, '#000000')
+  const bgColorLabel = `배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})`
+  const fgColorLabel = `글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})`
   const hasCellTarget = selectedIds.length > 0 || !!focusKey
   const canAppendRows = rowCount < MAX_ROW_COUNT
   const canAppendCols = colCount < MAX_COL_COUNT
@@ -100,11 +112,11 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'asc')} disabled={!canSort} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'desc')} disabled={!canSort} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
       <button {...toolbarCommandButtonProps} onClick={runAutoSum} disabled={!canAutoSum} title="자동 합계 (위쪽 연속 숫자 합)" aria-label="자동 합계">Σ</button>
       <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} disabled={!hasCellTarget} />
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬" aria-label="왼쪽 정렬">⇤</button>
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'center' : false} title="가운데 정렬" aria-label="가운데 정렬">⇔</button>
-      <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'right' : false} title="오른쪽 정렬" aria-label="오른쪽 정렬">⇥</button>
-      <label className="color-pick" title="배경색">🎨<input type="color" aria-label="배경색 선택" disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
-      <label className="color-pick" title="글자색">A<input type="color" aria-label="글자색 선택" disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'left'} title="왼쪽 정렬" aria-label="왼쪽 정렬">⇤</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'center'} title="가운데 정렬" aria-label="가운데 정렬">⇔</button>
+      <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'right'} title="오른쪽 정렬" aria-label="오른쪽 정렬">⇥</button>
+      <label className="color-pick" title={bgColorLabel}>🎨<input type="color" value={bgColorValue} title={bgColorLabel} aria-label={bgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
+      <label className="color-pick" title={fgColorLabel}>A<input type="color" value={fgColorValue} title={fgColorLabel} aria-label={fgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
       <button {...toolbarCommandButtonProps} onClick={clearStyle} disabled={!hasCellTarget} title="서식 모두 해제" aria-label="서식 모두 해제" aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button {...toolbarCommandButtonProps} onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title="선택 셀 병합 / 병합 해제 (Alt+Shift+M)" aria-label="선택 셀 병합 또는 병합 해제" aria-keyshortcuts="Alt+Shift+M">⊞병합</button>
       <button {...toolbarCommandButtonProps} onClick={toggleFreezeRows} disabled={!canToggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button {...toolbarCommandButtonProps} onClick={toggleFreezeCols} disabled={!canToggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button {...toolbarCommandButtonProps} onClick={openFilterPrompt} disabled={!canOpenFilterPrompt} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
