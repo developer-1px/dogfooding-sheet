@@ -507,8 +507,13 @@ describe('EditableGrid', () => {
   })
 
   it('toggles checkbox cells from gridcell keyboard activation', () => {
+    const parentKeys: string[] = []
     const onSelectionChange = vi.fn()
-    const { host, root, onChange } = setupDatabase(vi.fn(), undefined, onSelectionChange)
+    const { host, root, onChange } = setupDatabase(
+      vi.fn(),
+      (event) => parentKeys.push(event.key),
+      onSelectionChange,
+    )
     try {
       const cells = gridCells()
       const doneCell = cells[2]
@@ -530,6 +535,7 @@ describe('EditableGrid', () => {
           }],
         },
       })
+      expect(parentKeys).toEqual([])
 
       act(() => keyDown(doneCell, 'Enter'))
 
@@ -546,6 +552,7 @@ describe('EditableGrid', () => {
           }],
         },
       })
+      expect(parentKeys).toEqual([])
     } finally {
       cleanup(root, host)
     }
