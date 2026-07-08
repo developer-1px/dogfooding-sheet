@@ -185,6 +185,12 @@ describe('Tabs component', () => {
     expect(css).toMatch(/\.tab:focus-within\s+\.tab-dup,\s*\.tab:focus-within\s+\.tab-close\s*\{\s*opacity:\s*1;\s*\}/)
   })
 
+  it('keeps inactive tab color pickers visible while keyboard focus is inside the tab', () => {
+    const css = overlaysCss()
+
+    expect(css).toMatch(/\.tab:focus-within\s+\.tab-color\s*\{\s*opacity:\s*1;\s*\}/)
+  })
+
   it('keeps add-sheet activation keys inside the tab add control', () => {
     const parentKeys: string[] = []
     const calls = renderTabs({
