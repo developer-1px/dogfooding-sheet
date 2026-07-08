@@ -1,7 +1,10 @@
 import { act, createElement } from 'react'
+import { readFileSync } from 'node:fs'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { AppErrorBoundary } from './AppErrorBoundary'
+
+const appCss = () => readFileSync('src/App.css', 'utf8')
 
 function Ok() {
   return createElement('div', null, 'ok')
@@ -47,5 +50,17 @@ describe('AppErrorBoundary', () => {
 
     expect(document.querySelector('[role="alert"]')).toBeNull()
     expect(host.textContent).toBe('ok')
+  })
+
+  it('keeps the fallback message and retry action wrapped on narrow screens', () => {
+    const css = appCss()
+    const errorRule = css.match(/\.app-error\s*\{[^}]+\}/)?.[0] ?? ''
+    const buttonRule = css.match(/\.app-error button\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(errorRule).toContain('display: flex;')
+    expect(errorRule).toContain('flex-wrap: wrap;')
+    expect(errorRule).toContain('padding: var(--sheet-space-8);')
+    expect(errorRule).toContain('text-align: center;')
+    expect(buttonRule).toContain('flex: 0 0 auto;')
   })
 })
