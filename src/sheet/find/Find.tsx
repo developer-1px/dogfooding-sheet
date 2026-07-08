@@ -66,6 +66,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
         ? `찾기 결과 ${counter}, 현재 셀 ${currentKey}`
         : `찾기 결과 ${counter}`
   const replaceOneLabel = currentKey ? `현재 찾기 결과 바꾸기, 현재 셀 ${currentKey}` : '현재 찾기 결과 바꾸기'
+  const replaceAllLabel = matches.length > 0 ? `모든 찾기 결과 바꾸기, ${matches.length}개 셀` : '모든 찾기 결과 바꾸기'
   const sub = (s: string): string => replaceFindText(s, q, r, { caseSensitive, regex })
   const replaceOne = () => {
     if (!current || !q) return
@@ -119,7 +120,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
       {mode === 'replace' && (
         <>
           <button type="button" onClick={replaceOne} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title={replaceOneLabel} aria-label={replaceOneLabel}>바꾸기</button>
-          <button type="button" onClick={replaceAll} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title="모든 찾기 결과 바꾸기" aria-label="모든 찾기 결과 바꾸기">전체</button>
+          <button type="button" onClick={replaceAll} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title={replaceAllLabel} aria-label={replaceAllLabel}>전체</button>
         </>
       )}
       <button type="button" onClick={onClose} onKeyDown={stopControlActivationKeyDown} title={`${dialogLabel} 닫기 (Esc)`} aria-label={`${dialogLabel} 닫기`} aria-keyshortcuts="Escape">✕</button>
