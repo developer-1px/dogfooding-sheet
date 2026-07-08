@@ -6,6 +6,7 @@ import { Find } from './Find'
 import type { Cells, Display } from '../schema'
 import { keyDown, setInputValue } from '../test-utils'
 
+const appCss = () => readFileSync('src/App.css', 'utf8')
 const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('Find component', () => {
@@ -111,13 +112,15 @@ describe('Find component', () => {
   })
 
   it('keeps find text fields and option checkboxes on separate sizing rules', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const textInputRule = css.match(/\.find-bar input\[type="text"\]\s*\{[^}]+\}/)?.[0] ?? ''
     const checkboxRule = css.match(/\.find-bar input\[type="checkbox"\]\s*\{[^}]+\}/)?.[0] ?? ''
     const labelRule = css.match(/\.find-bar label\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(textInputRule).toContain('flex: 1 1 200px;')
-    expect(textInputRule).toContain('width: 200px;')
+    expect(rootCss).toContain('--sheet-size-find-input-width: 200px;')
+    expect(textInputRule).toContain('flex: 1 1 var(--sheet-size-find-input-width, 200px);')
+    expect(textInputRule).toContain('width: var(--sheet-size-find-input-width, 200px);')
     expect(checkboxRule).toContain('flex: 0 0 auto;')
     expect(checkboxRule).toContain('width: var(--sheet-size-control-sm, 16px);')
     expect(checkboxRule).toContain('height: var(--sheet-size-control-sm, 16px);')
@@ -128,12 +131,14 @@ describe('Find component', () => {
   })
 
   it('keeps find count and action buttons from shrinking', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const countRule = css.match(/\.find-bar \.count\s*\{[^}]+\}/)?.[0] ?? ''
     const buttonRule = css.match(/\.find-bar button\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-find-count-width: 50px;')
     expect(countRule).toContain('flex: 0 0 auto;')
-    expect(countRule).toContain('min-width: 50px;')
+    expect(countRule).toContain('min-width: var(--sheet-size-find-count-width, 50px);')
     expect(buttonRule).toContain('flex: 0 0 auto;')
     expect(buttonRule).toContain('padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px);')
   })
@@ -331,6 +336,6 @@ describe('Find component', () => {
     expect(css).toContain(
       'max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-6, 16px) - var(--sheet-space-6, 16px)))',
     )
-    expect(css).toContain('flex: 1 1 200px; width: 200px; max-width: 100%;')
+    expect(css).toContain('flex: 1 1 var(--sheet-size-find-input-width, 200px); width: var(--sheet-size-find-input-width, 200px); max-width: 100%;')
   })
 })

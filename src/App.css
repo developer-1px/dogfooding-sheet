@@ -81,6 +81,8 @@
   --sheet-size-toolbar-button-max: 96px;
   --sheet-size-context-menu-width: 180px;
   --sheet-size-overflow-menu-width: 160px;
+  --sheet-size-find-input-width: 200px;
+  --sheet-size-find-count-width: 50px;
   --sheet-size-tab-max: 220px;
   --sheet-size-tab-rename-width: 90px;
   --sheet-size-tab-color-swatch: 14px;
