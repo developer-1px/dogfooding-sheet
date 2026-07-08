@@ -394,15 +394,15 @@ describe('Toolbar component', () => {
   it('disables append buttons at sheet limits', () => {
     renderToolbar({ rowCount: MAX_ROW_COUNT, colCount: MAX_COL_COUNT })
 
-    const appendRows = document.querySelector<HTMLButtonElement>(`button[aria-label="아래에 행 20개 추가 (현재 ${MAX_ROW_COUNT}행)"]`)
-    const appendCols = document.querySelector<HTMLButtonElement>(`button[aria-label="오른쪽에 열 1개 추가 (현재 ${MAX_COL_COUNT}열)"]`)
+    const appendRows = document.querySelector<HTMLButtonElement>(`button[aria-label="행 최대 개수 도달 (현재 ${MAX_ROW_COUNT}행)"]`)
+    const appendCols = document.querySelector<HTMLButtonElement>(`button[aria-label="열 최대 개수 도달 (현재 ${MAX_COL_COUNT}열)"]`)
 
     expect(appendRows?.textContent).toBe('+20행')
     expect(appendRows?.disabled).toBe(true)
-    expect(appendRows?.getAttribute('title')).toBe(`아래에 행 20개 추가 (현재 ${MAX_ROW_COUNT}행)`)
+    expect(appendRows?.getAttribute('title')).toBe(`행 최대 개수 도달 (현재 ${MAX_ROW_COUNT}행)`)
     expect(appendCols?.textContent).toBe('+끝열')
     expect(appendCols?.disabled).toBe(true)
-    expect(appendCols?.getAttribute('title')).toBe(`오른쪽에 열 1개 추가 (현재 ${MAX_COL_COUNT}열)`)
+    expect(appendCols?.getAttribute('title')).toBe(`열 최대 개수 도달 (현재 ${MAX_COL_COUNT}열)`)
   })
 
   it('disables inactive freeze toggles when a single row or column cannot be meaningfully frozen', () => {
