@@ -115,7 +115,7 @@ body, html, #root {
   border-bottom: 1px solid var(--sheet-color-border-subtle);
 }
 .sheet-toolbar .addr {
-  min-width: 56px; padding: var(--sheet-space-1) var(--sheet-space-3); text-align: center;
+  flex: 0 0 auto; min-width: 56px; padding: var(--sheet-space-1) var(--sheet-space-3); text-align: center;
   border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); background: var(--sheet-color-surface-muted);
   font: var(--sheet-font-size-ui) var(--sheet-font-mono);
 }
