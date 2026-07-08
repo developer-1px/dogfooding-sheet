@@ -30,6 +30,8 @@ describe('HelpDialog', () => {
     expect(document.querySelector('tbody tr td')?.textContent).toBe('실행 취소')
     expect(document.body.textContent).toContain('F4 (수식 입력 중)')
     expect(document.body.textContent).toContain('마지막 셀 참조의 절대/상대 형식 순환')
+    expect(document.body.textContent).toContain('찾기창 Enter / Shift+Enter / Esc')
+    expect(document.body.textContent).toContain('다음 결과 / 이전 결과 / 찾기창 닫기')
 
     const close = document.querySelector<HTMLButtonElement>('button[aria-label="키보드 단축키 도움말 닫기"]')
     expect(close?.textContent).toBe('닫기')
