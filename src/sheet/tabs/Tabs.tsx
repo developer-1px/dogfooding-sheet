@@ -56,18 +56,20 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
   return (
     <div {...rootProps} className="tabs-bar">
       {state.order.map((name) => {
+        const isActive = name === state.active
         const tabColor = state.colors[name] ?? '#cccccc'
         const colorPickerLabel = `${name} 탭 색상 변경 (현재 색상 ${tabColor})`
+        const tabTitle = `${name} 시트 탭${isActive ? ' (현재 선택됨)' : ''} - 더블클릭=이름 변경 / 드래그=순서 변경`
         return (
           <span
             key={name}
             {...tabProps(name)}
             {...reorder.getItemHandlers(name)}
-            className={`tab${name === state.active ? ' active' : ''}${reorder.overId === name ? ` reorder-over-${reorder.overPosition}` : ''}`}
+            className={`tab${isActive ? ' active' : ''}${reorder.overId === name ? ` reorder-over-${reorder.overPosition}` : ''}`}
             aria-label={name}
             onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
             style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
-            title="더블클릭=이름 변경 / 드래그=순서 변경"
+            title={tabTitle}
           >
             {ed.editing === name ? (
               <input className="tab-rename" {...renameInputProps} title={`${name} 시트 이름 편집 (Enter=저장 / Esc=취소)`} aria-label={`${name} 시트 이름 편집`} aria-keyshortcuts="Enter Escape" />
