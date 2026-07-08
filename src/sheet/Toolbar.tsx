@@ -96,6 +96,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const canOpenFilterPrompt = !!focus && rowCount > 1
   const canMerge = canMergeSelection(selectedIds, focus ? cellId(focus.col, focus.row) : null, sheet.merges)
   const canAutoSum = focus ? autoSumFormula(focus.col, focus.row, display) !== null : false
+  const autoSumLabel = canAutoSum ? '자동 합계' : '자동 합계할 숫자 범위 없음'
+  const autoSumTitle = canAutoSum ? '자동 합계 (위쪽 연속 숫자 합)' : autoSumLabel
   const applyF = (format: Format) => applyToolbarFormat({ selectedIds, focusKey, format, setFormat })
   const toggle = (flag: ToolbarStyleFlag) => toggleToolbarStyle({ selectedIds, focusKey, flag, styleOf, updateStyle })
   const setAlign = (alignment: CellStyle['a']) => setToolbarAlignment({ selectedIds, focusKey, alignment, updateStyle })
@@ -114,7 +116,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={() => focus && insertCol(focus.col)} disabled={!focus} title={insertColTitle} aria-label={`${focusColLabel} 왼쪽에 열 삽입`} aria-keyshortcuts="Control+Alt+Shift+= Meta+Alt+Shift+=">+열</button><button {...toolbarCommandButtonProps} onClick={() => focus && deleteCol(focus.col)} disabled={!focus} title={deleteColTitle} aria-label={`${focusColLabel} 삭제`} aria-keyshortcuts="Control+Alt+Shift+- Meta+Alt+Shift+-">−열</button>
       <button {...toolbarCommandButtonProps} onClick={() => appendRows(20)} disabled={!canAppendRows} title={appendRowsLabel} aria-label={appendRowsLabel}>+20행</button><button {...toolbarCommandButtonProps} onClick={() => appendCols(1)} disabled={!canAppendCols} title={appendColsLabel} aria-label={appendColsLabel}>+끝열</button>
       <button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'asc')} disabled={!canSort} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'desc')} disabled={!canSort} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
-      <button {...toolbarCommandButtonProps} onClick={runAutoSum} disabled={!canAutoSum} title="자동 합계 (위쪽 연속 숫자 합)" aria-label="자동 합계">Σ</button>
+      <button {...toolbarCommandButtonProps} onClick={runAutoSum} disabled={!canAutoSum} title={autoSumTitle} aria-label={autoSumLabel}>Σ</button>
       <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} disabled={!hasCellTarget} />
       <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'left'} title="왼쪽 정렬" aria-label="왼쪽 정렬">⇤</button>
       <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={focusedStyle?.a === 'center'} title="가운데 정렬" aria-label="가운데 정렬">⇔</button>
