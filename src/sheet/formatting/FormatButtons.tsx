@@ -1,4 +1,5 @@
 import type { Format } from './formatTypes'
+import { stopToolbarActivationKeyDown } from '../toolbarKeyEvents'
 
 const FORMATS: Array<[Format, string, string, string?, string?]> = [
   ['currency', '$', 'USD', 'Control+Shift+4 Meta+Shift+4', 'Ctrl/⌘+Shift+4'],
@@ -17,7 +18,7 @@ export function FormatButtons({ apply, current, disabled = false }: { apply: (f:
   return (
     <>
       {FORMATS.map(([f, label, title, keyShortcuts, shortcutLabel]) => (
-        <button type="button" key={f} onClick={() => apply(f)} disabled={disabled} aria-pressed={current === f} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={`숫자 형식: ${title}`} aria-keyshortcuts={keyShortcuts}>{label}</button>
+        <button type="button" key={f} onKeyDown={stopToolbarActivationKeyDown} onClick={() => apply(f)} disabled={disabled} aria-pressed={current === f} title={shortcutLabel ? `${title} (${shortcutLabel})` : title} aria-label={`숫자 형식: ${title}`} aria-keyshortcuts={keyShortcuts}>{label}</button>
       ))}
     </>
   )

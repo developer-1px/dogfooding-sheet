@@ -1,5 +1,4 @@
 import { autoSumFormula } from '@spredsheet/grid'
-import type { KeyboardEvent } from 'react'
 import type { Format, FormatLookup } from './formatting/useFormats'
 import type { SheetMutations } from './structure/sheetMutations'
 import type { FreezeState, FreezeActions } from './visibility/useFreeze'
@@ -27,11 +26,8 @@ import {
   toggleToolbarStyle,
   type ToolbarStyleFlag,
 } from './toolbarActions'
+import { stopToolbarActivationKeyDown } from './toolbarKeyEvents'
 import { activeToolbarStateStyle } from './toolbarStyles'
-
-const stopColorPickerActivationKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-  if (event.key === 'Enter' || event.key === ' ') event.stopPropagation()
-}
 
 interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
   focusKey: string | null
@@ -102,8 +98,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button type="button" onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'left' : false} title="왼쪽 정렬" aria-label="왼쪽 정렬">⇤</button>
       <button type="button" onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'center' : false} title="가운데 정렬" aria-label="가운데 정렬">⇔</button>
       <button type="button" onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={focusKey ? styleOf(focusKey)?.a === 'right' : false} title="오른쪽 정렬" aria-label="오른쪽 정렬">⇥</button>
-      <label className="color-pick" title="배경색">🎨<input type="color" aria-label="배경색 선택" disabled={!hasCellTarget} onKeyDown={stopColorPickerActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
-      <label className="color-pick" title="글자색">A<input type="color" aria-label="글자색 선택" disabled={!hasCellTarget} onKeyDown={stopColorPickerActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
+      <label className="color-pick" title="배경색">🎨<input type="color" aria-label="배경색 선택" disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
+      <label className="color-pick" title="글자색">A<input type="color" aria-label="글자색 선택" disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
       <button type="button" onClick={clearStyle} disabled={!hasCellTarget} title="서식 모두 해제" aria-label="서식 모두 해제" aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button type="button" onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title="선택 셀 병합 / 병합 해제 (Alt+Shift+M)" aria-label="선택 셀 병합 또는 병합 해제" aria-keyshortcuts="Alt+Shift+M">⊞병합</button>
       <button type="button" onClick={toggleFreezeRows} disabled={!canToggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button type="button" onClick={toggleFreezeCols} disabled={!canToggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button type="button" onClick={openFilterPrompt} disabled={!canOpenFilterPrompt} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>

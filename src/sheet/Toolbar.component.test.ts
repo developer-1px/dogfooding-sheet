@@ -5,19 +5,21 @@ import { Toolbar } from './Toolbar'
 import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from './schema'
 
 const toolbarActionMocks = vi.hoisted(() => ({
+  applyToolbarFormat: vi.fn(() => false),
   setToolbarColor: vi.fn(() => false),
+  toggleToolbarStyle: vi.fn(() => false),
 }))
 
 vi.mock('./toolbarActions', () => ({
   applyCheckboxValidation: () => false,
   applyToolbarAutoSum: () => false,
-  applyToolbarFormat: () => false,
+  applyToolbarFormat: toolbarActionMocks.applyToolbarFormat,
   clearToolbarStyle: () => false,
   promptListValidation: () => Promise.resolve('cancelled'),
   promptToolbarFilter: () => Promise.resolve('cancelled'),
   setToolbarAlignment: () => false,
   setToolbarColor: toolbarActionMocks.setToolbarColor,
-  toggleToolbarStyle: () => false,
+  toggleToolbarStyle: toolbarActionMocks.toggleToolbarStyle,
 }))
 
 describe('Toolbar component', () => {
@@ -162,6 +164,53 @@ describe('Toolbar component', () => {
 
     expect(toolbarActionMocks.setToolbarColor).toHaveBeenCalledWith(expect.objectContaining({ target: 'bg', color: '#ff0000' }))
     expect(toolbarActionMocks.setToolbarColor).toHaveBeenCalledWith(expect.objectContaining({ target: 'fg', color: '#00ff00' }))
+  })
+
+  it('keeps toolbar formatting button activation keys inside the toolbar controls', async () => {
+    const parentKeys: string[] = []
+    const ask = vi.fn(() => Promise.resolve('>5 #ff0000'))
+    toolbarActionMocks.applyToolbarFormat.mockClear()
+    toolbarActionMocks.toggleToolbarStyle.mockClear()
+
+    const props = renderToolbar({
+      ask,
+      formatOf: () => 'percent',
+      styleOf: () => ({ b: true }),
+    }, { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')
+    const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율"]')
+    const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
+    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
+
+    expect(bold?.disabled).toBe(false)
+    expect(bold?.getAttribute('aria-pressed')).toBe('true')
+    expect(bold?.getAttribute('aria-keyshortcuts')).toBe('Control+B Meta+B')
+    expect(percent?.disabled).toBe(false)
+    expect(percent?.getAttribute('aria-pressed')).toBe('true')
+    expect(percent?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+5 Meta+Shift+5')
+    expect(addCondFormat?.disabled).toBe(false)
+    expect(clearCondFormat?.disabled).toBe(false)
+
+    act(() => keyDown(bold!, 'Enter'))
+    act(() => keyDown(percent!, ' '))
+    act(() => keyDown(addCondFormat!, 'Enter'))
+    act(() => keyDown(clearCondFormat!, ' '))
+
+    expect(parentKeys).toEqual([])
+
+    act(() => bold!.click())
+    act(() => percent!.click())
+    await act(async () => {
+      addCondFormat!.click()
+      await Promise.resolve()
+    })
+    act(() => clearCondFormat!.click())
+
+    expect(toolbarActionMocks.toggleToolbarStyle).toHaveBeenCalledWith(expect.objectContaining({ flag: 'b' }))
+    expect(toolbarActionMocks.applyToolbarFormat).toHaveBeenCalledWith(expect.objectContaining({ format: 'percent' }))
+    expect(props.addCondRule).toHaveBeenCalledWith({ col: 'B', op: '>', value: '5', color: '#ff0000' })
+    expect(props.clearCondRules).toHaveBeenCalledTimes(1)
   })
 
   it('disables toolbar merge for a single unmerged focused cell', () => {
