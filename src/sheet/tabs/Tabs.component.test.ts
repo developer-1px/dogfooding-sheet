@@ -56,7 +56,7 @@ describe('Tabs component', () => {
 
     const tabs = [...document.querySelectorAll<HTMLElement>('.tab')]
 
-    expect(tabs.map((tab) => tab.getAttribute('aria-label'))).toEqual(['Budget', 'Forecast'])
+    expect(tabs.map((tab) => tab.getAttribute('aria-label'))).toEqual(['Budget 시트 탭, 현재 선택됨', 'Forecast 시트 탭'])
     expect(tabs.map((tab) => tab.getAttribute('title'))).toEqual([
       'Budget 시트 탭 (현재 선택됨) - 더블클릭=이름 변경 / 드래그=순서 변경',
       'Forecast 시트 탭 - 더블클릭=이름 변경 / 드래그=순서 변경',

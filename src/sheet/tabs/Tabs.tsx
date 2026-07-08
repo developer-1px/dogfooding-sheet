@@ -61,6 +61,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
         const colorPickerLabel = state.colors[name]
           ? `${name} 탭 색상 변경 (현재 색상 ${tabColor})`
           : `${name} 탭 색상 변경 (현재 기본 색상)`
+        const tabLabel = `${name} 시트 탭${isActive ? ', 현재 선택됨' : ''}`
         const tabTitle = `${name} 시트 탭${isActive ? ' (현재 선택됨)' : ''} - 더블클릭=이름 변경 / 드래그=순서 변경`
         return (
           <span
@@ -68,7 +69,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
             {...tabProps(name)}
             {...reorder.getItemHandlers(name)}
             className={`tab${isActive ? ' active' : ''}${reorder.overId === name ? ` reorder-over-${reorder.overPosition}` : ''}`}
-            aria-label={name}
+            aria-label={tabLabel}
             onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
             style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
             title={tabTitle}
