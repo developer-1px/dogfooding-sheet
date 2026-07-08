@@ -749,7 +749,8 @@ describe('Toolbar component', () => {
   it('keeps the toolbar formula input contained on narrow rows', () => {
     const css = appCss()
 
-    expect(css).toContain('flex: 1 1 200px; min-width: 0; max-width: 100%;')
+    expect(css).toContain('--sheet-size-toolbar-formula-basis: 200px;')
+    expect(css).toContain('flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px); min-width: 0; max-width: 100%;')
   })
 
   it('keeps visible toolbar button labels contained without shrinking menu items', () => {

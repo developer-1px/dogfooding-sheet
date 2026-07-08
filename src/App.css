@@ -79,6 +79,8 @@
   --sheet-size-control-md: 18px;
   --sheet-size-cell-min-height: 28px;
   --sheet-size-toolbar-button-max: 96px;
+  --sheet-size-toolbar-address-min-width: 56px;
+  --sheet-size-toolbar-formula-basis: 200px;
   --sheet-size-context-menu-width: 180px;
   --sheet-size-overflow-menu-width: 160px;
   --sheet-size-find-input-width: 200px;
@@ -134,12 +136,12 @@ body, html, #root {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .sheet-toolbar .addr {
-  flex: 0 0 auto; min-width: 56px; padding: var(--sheet-space-1) var(--sheet-space-3); text-align: center;
+  flex: 0 0 auto; min-width: var(--sheet-size-toolbar-address-min-width, 56px); padding: var(--sheet-space-1) var(--sheet-space-3); text-align: center;
   border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); background: var(--sheet-color-surface-muted);
   font: var(--sheet-font-size-ui) var(--sheet-font-mono);
 }
 .sheet-toolbar .formula {
-  flex: 1 1 200px; min-width: 0; max-width: 100%; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
+  flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px); min-width: 0; max-width: 100%; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
   border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); outline: none;
 }
 .sheet-toolbar .formula:focus { border-color: var(--sheet-color-accent); }
