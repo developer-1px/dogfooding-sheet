@@ -5,6 +5,10 @@ import { ContextMenu } from './ContextMenu'
 import { keyDown, setupReactDOM } from './test-utils'
 
 const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
+const contextMenuViewportWidth = 'max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-1, 4px) - var(--sheet-space-8, 24px)))'
+const contextMenuWidth = `min(180px, ${contextMenuViewportWidth})`
+const expectedContextMenuLeft = (left: number) => `max(var(--sheet-space-1, 4px), min(${left}px, calc(100vw - ${contextMenuWidth} - var(--sheet-space-8, 24px))))`
+const expectedContextMenuMaxWidth = (left: number) => `min(max(180px, calc(100vw - ${left}px - var(--sheet-space-8, 24px))), ${contextMenuViewportWidth})`
 
 describe('ContextMenu component', () => {
   const dom = setupReactDOM()
@@ -37,9 +41,9 @@ describe('ContextMenu component', () => {
 
     expect(menu?.getAttribute('role')).toBe('menu')
     expect(menu?.getAttribute('aria-label')).toBe('셀 메뉴')
-    expect(menu?.style.left).toBe('max(var(--sheet-space-1, 4px), min(12px, calc(100vw - 180px - var(--sheet-space-8, 24px))))')
+    expect(menu?.style.left).toBe(expectedContextMenuLeft(12))
     expect(menu?.style.top).toBe('max(var(--sheet-space-1, 4px), min(34px, calc(100vh - var(--sheet-space-8, 24px))))')
-    expect(menu?.style.maxWidth).toBe('max(180px, calc(100vw - 12px - var(--sheet-space-8, 24px)))')
+    expect(menu?.style.maxWidth).toBe(expectedContextMenuMaxWidth(12))
     expect(menu?.style.maxHeight).toBe('max(var(--sheet-space-8, 24px), calc(100vh - 34px - var(--sheet-space-8, 24px)))')
     expect(separator?.getAttribute('role')).toBe('separator')
     expect(separator?.textContent).toBe('')
@@ -86,9 +90,9 @@ describe('ContextMenu component', () => {
 
     const menu = document.querySelector<HTMLElement>('.ctx-menu')
 
-    expect(menu?.style.left).toBe('max(var(--sheet-space-1, 4px), min(0px, calc(100vw - 180px - var(--sheet-space-8, 24px))))')
+    expect(menu?.style.left).toBe(expectedContextMenuLeft(0))
     expect(menu?.style.top).toBe('max(var(--sheet-space-1, 4px), min(0px, calc(100vh - var(--sheet-space-8, 24px))))')
-    expect(menu?.style.maxWidth).toBe('max(180px, calc(100vw - 0px - var(--sheet-space-8, 24px)))')
+    expect(menu?.style.maxWidth).toBe(expectedContextMenuMaxWidth(0))
     expect(menu?.style.maxHeight).toBe('max(var(--sheet-space-8, 24px), calc(100vh - 0px - var(--sheet-space-8, 24px)))')
   })
 
@@ -139,6 +143,7 @@ describe('ContextMenu component', () => {
     const css = overlaysCss()
     const menuRule = css.match(/\.ctx-menu\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(menuRule).toContain(`min-width: ${contextMenuWidth};`)
     expect(menuRule).toContain('overflow-x: hidden;')
     expect(menuRule).toContain('overflow-y: auto;')
   })
