@@ -86,6 +86,8 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
             const isEditing = sameAddress(controller.editing ?? undefined, address)
             const fieldType = fieldTypeOf(column)
             const readonlyCell = isReadonlyColumn(readonly, column)
+            const columnLabel = column.label ?? column.id
+            const checkboxLabel = `${columnLabel} row ${rowIndex + 1}`
             const onEditorKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
               event.stopPropagation()
               if (event.key === 'Enter') {
@@ -115,7 +117,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 {isEditing ? (
                   fieldType === 'select' ? (
                     <EditableGridSelect
-                      aria-label={`${column.label ?? column.id} 편집`}
+                      aria-label={`${columnLabel} 편집`}
                       value={controller.draft}
                       ref={controller.domFocus.editorRef}
                       onChange={(event) => controller.setDraft(event.currentTarget.value)}
@@ -129,7 +131,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                     </EditableGridSelect>
                   ) : (
                     <EditableGridInput
-                      aria-label={`${column.label ?? column.id} 편집`}
+                      aria-label={`${columnLabel} 편집`}
                       type={fieldType === 'number' ? 'number' : fieldType === 'date' ? 'date' : 'text'}
                       value={controller.draft}
                       ref={controller.domFocus.editorRef}
@@ -141,10 +143,13 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 ) : fieldType === 'checkbox' ? (
                   <input
                     type="checkbox"
-                    aria-label={column.label ?? column.id}
+                    aria-label={checkboxLabel}
                     checked={checkedValue(cellValue)}
                     disabled={readonlyCell}
-                    onChange={() => controller.commitDirectValue(address, cellValue, column, !checkedValue(cellValue))}
+                    onChange={() => {
+                      if (readonlyCell) return
+                      controller.commitDirectValue(address, cellValue, column, !checkedValue(cellValue))
+                    }}
                     onClick={(event) => event.stopPropagation()}
                     onKeyDown={(event) => event.stopPropagation()}
                   />
