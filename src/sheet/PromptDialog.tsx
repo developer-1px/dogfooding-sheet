@@ -33,7 +33,7 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
   const submit = () => onSubmit(value)
   return (
     <>
-      <div className="dialog-backdrop" onClick={onCancel} />
+      <div className="dialog-backdrop" aria-hidden="true" onClick={onCancel} />
       <div {...rootProps} className="prompt-dialog">
         <label htmlFor={inputId}>{label}</label>
         <input
