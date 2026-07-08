@@ -21,7 +21,10 @@ const persistencePresentation = (state?: SheetPersistenceState): PersistencePres
   }
   if (state.status === 'saving') return { text: '저장 중' }
   if (state.status === 'pending' || state.dirty) return { text: '저장 대기' }
-  return { text: '저장됨' }
+  return {
+    text: '저장됨',
+    detail: state.savedAt ? `마지막 저장: ${state.savedAt}` : undefined,
+  }
 }
 const statusRegionProps = {
   role: 'status',

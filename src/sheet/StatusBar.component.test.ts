@@ -21,7 +21,7 @@ describe('StatusBar component', () => {
       colCount: 10,
       display: () => '123',
       parseId: parseCellId,
-      persistence: { status: 'saved', dirty: false },
+      persistence: { status: 'saved', dirty: false, savedAt: '2026-07-08T06:30:00.000Z', error: null },
     })))
 
     expect(footer().getAttribute('role')).toBe('status')
@@ -30,6 +30,10 @@ describe('StatusBar component', () => {
     expect(footer().getAttribute('aria-atomic')).toBe('true')
     expect(footer().textContent).toContain('1 셀')
     expect(footer().textContent).toContain('저장됨')
+    const saveStatus = document.querySelector<HTMLElement>('.persistence-status')
+    expect(saveStatus?.textContent).toBe('저장됨')
+    expect(saveStatus?.getAttribute('title')).toBe('마지막 저장: 2026-07-08T06:30:00.000Z')
+    expect(saveStatus?.getAttribute('aria-label')).toBe('마지막 저장: 2026-07-08T06:30:00.000Z')
   })
 
   it('marks detailed aggregate updates as atomic live-region updates', () => {
