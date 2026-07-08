@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { keyDown, setupReactDOM } from './test-utils'
 import { HelpDialog } from './HelpDialog'
 
+const appCss = () => readFileSync('src/App.css', 'utf8')
 const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('HelpDialog', () => {
@@ -69,10 +70,12 @@ describe('HelpDialog', () => {
   })
 
   it('keeps the shortcut dialog constrained to the viewport', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const helpDialogRule = css.match(/\.help-dialog\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(helpDialogRule).toContain('min-width: min(360px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))))')
+    expect(rootCss).toContain('--sheet-size-shortcut-dialog-width: 360px;')
+    expect(helpDialogRule).toContain('min-width: min(var(--sheet-size-shortcut-dialog-width, 360px), max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))))')
     expect(helpDialogRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(helpDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
     expect(helpDialogRule).toContain('overflow: auto')
