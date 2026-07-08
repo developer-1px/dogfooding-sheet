@@ -139,7 +139,8 @@ describe('Toolbar component', () => {
     expect(clearFormatButton?.disabled).toBe(false)
     expect(clearFormatButton?.getAttribute('title')).toBe('서식 모두 해제')
     expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.getAttribute('title')).toBe('굵게 꺼짐 (Ctrl/⌘+B)')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
     const defaultBgColor = document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')
     const defaultFgColor = document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')
@@ -223,13 +224,14 @@ describe('Toolbar component', () => {
       styleOf: () => ({ b: true }),
     }, { onKeyDown: (event) => parentKeys.push(event.key) })
 
-    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')
+    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게 켜짐"]')
     const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율"]')
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
 
     expect(bold?.disabled).toBe(false)
     expect(bold?.getAttribute('aria-pressed')).toBe('true')
+    expect(bold?.getAttribute('title')).toBe('굵게 켜짐 (Ctrl/⌘+B)')
     expect(bold?.getAttribute('aria-keyshortcuts')).toBe('Control+B Meta+B')
     expect(percent?.disabled).toBe(false)
     expect(percent?.getAttribute('aria-pressed')).toBe('true')
@@ -633,7 +635,7 @@ describe('Toolbar component', () => {
   it('keeps formatting controls enabled for selected cells without focus', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)

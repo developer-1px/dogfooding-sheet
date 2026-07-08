@@ -31,9 +31,10 @@ export function StyleToggleButtons({ toggle, styleOf, focusKey, disabled = false
   return (
     <>
       {TOGGLES.map(([k, , title, node, keyShortcuts, shortcutLabel]) => {
-        const label = disabled ? DISABLED_TOGGLE_LABELS[title] : title
+        const pressed = !!(focusKey && styleOf(focusKey)?.[k])
+        const label = disabled ? DISABLED_TOGGLE_LABELS[title] : `${title} ${pressed ? '켜짐' : '꺼짐'}`
         return (
-          <button type="button" key={k} onKeyDown={stopToolbarActivationKeyDown} onClick={() => toggle(k)} disabled={disabled} aria-pressed={!!(focusKey && styleOf(focusKey)?.[k])} title={shortcutLabel ? `${label} (${shortcutLabel})` : label} aria-label={label} aria-keyshortcuts={keyShortcuts}>{node}</button>
+          <button type="button" key={k} onKeyDown={stopToolbarActivationKeyDown} onClick={() => toggle(k)} disabled={disabled} aria-pressed={pressed} title={shortcutLabel ? `${label} (${shortcutLabel})` : label} aria-label={label} aria-keyshortcuts={keyShortcuts}>{node}</button>
         )
       })}
     </>
