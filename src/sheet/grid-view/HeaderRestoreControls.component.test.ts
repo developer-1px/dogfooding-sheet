@@ -162,7 +162,9 @@ describe('header restore controls', () => {
     const filterMark = filtered?.querySelector<HTMLElement>('.filter-mark')
 
     expect(unfiltered?.getAttribute('aria-label')).toBe('A열')
+    expect(unfiltered?.getAttribute('title')).toBe('A열 - 클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
     expect(filtered?.getAttribute('aria-label')).toBe('B열, 필터 적용, 선택됨, 현재 위치')
+    expect(filtered?.getAttribute('title')).toBe('B열, 필터 적용, 선택됨, 현재 위치 - 클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
     expect(filtered?.getAttribute('aria-selected')).toBe('true')
     expect(filtered?.getAttribute('aria-current')).toBe('true')
     expect(filterMark?.textContent).toBe('▾')
@@ -208,7 +210,7 @@ describe('header restore controls', () => {
 
     expect(header?.getAttribute('role')).toBe('columnheader')
     expect(header?.tabIndex).toBe(0)
-    expect(header?.getAttribute('title')).toBe('클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
+    expect(header?.getAttribute('title')).toBe('B열 - 클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정')
     expect(resizer?.getAttribute('aria-label')).toBe('B열 너비 조정, 현재 80px')
     expect(resizer?.getAttribute('title')).toBe('B열 너비 조정, 현재 80px / 드래그로 너비 조정 / ← → 키로 10px 조정 / Shift+← → 키로 50px 조정 / 더블클릭 자동 맞춤')
     expect(resizer?.getAttribute('aria-keyshortcuts')).toBe('ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight')

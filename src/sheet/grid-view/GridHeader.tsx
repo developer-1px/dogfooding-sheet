@@ -113,6 +113,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         const isFiltered = c === filterCol
         const isSelected = selectedCols.has(c)
         const isCurrent = c === focusCol
+        const headerLabel = columnHeaderLabel(c, { filtered: isFiltered, selected: isSelected, current: isCurrent })
         const selectColumn = (extend: boolean) => {
           const selection = selectColumnHeader(c, extend ? focusCol : null, rowCount, colLetters)
           setSelectedIds(selection.selectedIds)
@@ -137,7 +138,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
             key={c}
             {...headerProps}
             className={`header-cell${isCurrent ? ' active' : ''}${isSelected ? ' selected-header' : ''}${isFiltered ? ' filtered' : ''}`}
-            aria-label={columnHeaderLabel(c, { filtered: isFiltered, selected: isSelected, current: isCurrent })}
+            aria-label={headerLabel}
             aria-current={isCurrent ? 'true' : undefined}
             aria-selected={isSelected}
             onClick={(e) => selectColumn(e.shiftKey)}
@@ -152,7 +153,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
               headerProps.onKeyDown?.(e)
             }}
             onContextMenu={(e) => onHeaderContextMenu(e, c)}
-            title="클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정"
+            title={`${headerLabel} - 클릭=열 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 오른쪽 가장자리 드래그=너비 조정`}
           >
             {leftRestore && restoreButton(leftRestore)}
             {c}
