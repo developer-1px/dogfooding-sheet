@@ -1,18 +1,18 @@
 .rec-devtools {
   position: fixed;
-  top: 8px;
-  right: 8px;
+  top: var(--sheet-space-3, 8px);
+  right: var(--sheet-space-3, 8px);
   z-index: 99999;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 28px;
-  padding: 4px 10px;
+  gap: var(--sheet-space-2, 6px);
+  min-height: var(--sheet-size-cell-min-height, 28px);
+  padding: var(--sheet-space-1, 4px) var(--sheet-space-4, 10px);
   border: 1px solid var(--sheet-color-border, #dadce0);
-  border-radius: 6px;
+  border-radius: var(--sheet-radius-tab, 6px);
   background: var(--sheet-color-surface, #fff);
   color: var(--sheet-color-text, #202124);
-  font: 700 11px/1 system-ui, sans-serif;
+  font: 700 var(--sheet-font-size-control-xs, 11px)/1 var(--sheet-font-ui, system-ui, sans-serif);
   cursor: pointer;
   box-shadow: var(--sheet-shadow-menu, 0 2px 8px rgba(0, 0, 0, .1));
 }
@@ -26,7 +26,7 @@
 .rec-dot {
   width: 7px;
   height: 7px;
-  border-radius: 999px;
+  border-radius: var(--sheet-radius-round, 999px);
   background: var(--sheet-color-danger, #d93025);
 }
 
