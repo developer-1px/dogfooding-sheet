@@ -77,6 +77,8 @@ const columnHeaderLabel = (col: string, { filtered, selected, current }: { filte
   return states.length ? `${col}열, ${states.join(', ')}` : `${col}열`
 }
 
+const selectAllHeaderLabel = (selected: boolean) => selected ? '전체 시트 선택, 선택됨' : '전체 시트 선택'
+
 export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, setSelectAnchor, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
   const selectAll = () => {
     const selection = selectAllHeaders(rowCount, colLetters)
@@ -91,7 +93,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         className={`corner-cell${allSelected ? ' selected-header' : ''}`}
         role="columnheader"
         tabIndex={0}
-        aria-label="전체 시트 선택"
+        aria-label={selectAllHeaderLabel(allSelected)}
         aria-selected={allSelected}
         title="전체 시트 선택"
         onClick={selectAll}
