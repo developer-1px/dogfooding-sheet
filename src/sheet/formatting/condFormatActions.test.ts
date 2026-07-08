@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { parseCondFormatSpec, promptCondFormatRule } from './condFormatActions'
+import {
+  COND_FORMAT_CONTAINS_EXAMPLE_COLOR,
+  COND_FORMAT_GREATER_THAN_EXAMPLE_COLOR,
+  DEFAULT_COND_FORMAT_COLOR,
+  parseCondFormatSpec,
+  promptCondFormatRule,
+} from './condFormatActions'
 import type { CondRule } from './useCondFormat'
 import type { Ask, PromptOptions } from '../usePrompt'
 import { MAX_CELL_TEXT_LENGTH } from '../cellValue'
@@ -15,17 +21,17 @@ const rejectingAsk = (): Ask => () => Promise.reject(new Error('closed'))
 
 describe('condFormatActions', () => {
   it('parses comparison and contains specs', () => {
-    expect(parseCondFormatSpec('B', '>100 #ffeb3b')).toEqual({
+    expect(parseCondFormatSpec('B', `>100 ${COND_FORMAT_GREATER_THAN_EXAMPLE_COLOR}`)).toEqual({
       col: 'B',
       op: '>',
       value: '100',
-      color: '#ffeb3b',
+      color: COND_FORMAT_GREATER_THAN_EXAMPLE_COLOR,
     })
-    expect(parseCondFormatSpec('C', ' contains late #c8e6c9 ')).toEqual({
+    expect(parseCondFormatSpec('C', ` contains late ${COND_FORMAT_CONTAINS_EXAMPLE_COLOR} `)).toEqual({
       col: 'C',
       op: 'contains',
       value: 'late',
-      color: '#c8e6c9',
+      color: COND_FORMAT_CONTAINS_EXAMPLE_COLOR,
     })
   })
 
@@ -49,8 +55,8 @@ describe('condFormatActions', () => {
     })).resolves.toBe('applied')
 
     expect(prompts[0]).toMatchObject({
-      label: 'D열 조건부 서식 (예: >100 #ffeb3b 또는 contains foo #c8e6c9)',
-      initial: '>0 #fff59d',
+      label: `D열 조건부 서식 (예: >100 ${COND_FORMAT_GREATER_THAN_EXAMPLE_COLOR} 또는 contains foo ${COND_FORMAT_CONTAINS_EXAMPLE_COLOR})`,
+      initial: `>0 ${DEFAULT_COND_FORMAT_COLOR}`,
       submitLabel: '추가',
     })
     expect(rules).toEqual([{ col: 'D', op: '!=', value: 'done', color: '#abcdef' }])
