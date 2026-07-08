@@ -84,4 +84,13 @@ describe('HelpDialog', () => {
     expect(css).toContain('.help-dialog th, .help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); text-align: left; overflow-wrap: anywhere; }')
     expect(css).toContain('font-size: var(--sheet-font-size-sm, 12px); white-space: normal;')
   })
+
+  it('keeps the close action contained inside the help dialog', () => {
+    const css = overlaysCss()
+    const closeButtonRule = css.match(/\.help-dialog button\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(closeButtonRule).toContain('margin-top: var(--sheet-space-5, 12px);')
+    expect(closeButtonRule).toContain('max-width: 100%;')
+    expect(closeButtonRule).toContain('overflow-wrap: anywhere;')
+  })
 })
