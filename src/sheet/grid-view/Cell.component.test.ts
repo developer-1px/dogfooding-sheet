@@ -174,6 +174,18 @@ describe('Cell component', () => {
     expect(cell?.getAttribute('title')).toBe('=SUM(A1:A3)')
   })
 
+  it('exposes formula reference highlights through the gridcell label', () => {
+    renderCell({
+      label: '42',
+      highlighted: true,
+    })
+
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"]')
+
+    expect(cell?.getAttribute('aria-label')).toBe('A1 42 수식 참조 강조됨')
+    expect(cell?.className).toContain('ref-hi')
+  })
+
   it('keeps validation select keyboard events inside the select control', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()
