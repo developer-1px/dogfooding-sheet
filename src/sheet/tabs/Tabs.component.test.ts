@@ -9,6 +9,7 @@ import type { Confirm } from '../useConfirm'
 import type { TabsState } from './useTabs'
 
 const flush = () => Promise.resolve()
+const appCss = () => readFileSync('src/App.css', 'utf8')
 const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 type RenderTabsOptions = { onKeyDown?: KeyboardEventHandler<HTMLDivElement> }
 
@@ -237,9 +238,11 @@ describe('Tabs component', () => {
   })
 
   it('keeps long sheet tab labels truncated inside a stable tab width', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
 
-    expect(css).toContain('max-width: 220px;')
+    expect(rootCss).toContain('--sheet-size-tab-max: 220px;')
+    expect(css).toContain('max-width: var(--sheet-size-tab-max, 220px);')
     expect(css).toContain('.tab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }')
   })
 

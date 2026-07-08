@@ -79,6 +79,7 @@
   --sheet-size-control-md: 18px;
   --sheet-size-cell-min-height: 28px;
   --sheet-size-toolbar-button-max: 96px;
+  --sheet-size-tab-max: 220px;
 }
 
 * { box-sizing: border-box; }
