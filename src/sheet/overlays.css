@@ -48,11 +48,13 @@
 }
 .tab {
   display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--sheet-space-2, 6px); padding: var(--sheet-space-2, 6px) var(--sheet-space-5, 12px);
+  max-width: 220px;
   border: 1px solid var(--sheet-color-border, #dadce0); border-bottom: none; border-radius: var(--sheet-radius-tab, 6px) var(--sheet-radius-tab, 6px) 0 0;
   background: var(--sheet-color-hover, #f1f3f4); color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-ui, 13px); cursor: pointer;
   user-select: none;
 }
 .tab.active { background: var(--sheet-color-surface, #fff); color: var(--sheet-color-accent, #1a73e8); font-weight: var(--sheet-font-weight-medium, 500); }
+.tab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tab:focus-visible {
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: var(--sheet-focus-offset, 2px);
