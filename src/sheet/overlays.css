@@ -159,7 +159,7 @@
 .overflow-list {
   position: absolute; top: 100%; right: 0;
   background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px);
-  box-shadow: var(--sheet-shadow-menu, 0 2px 8px rgba(0, 0, 0, .1)); z-index: 50; min-width: min(160px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))));
+  box-shadow: var(--sheet-shadow-menu, 0 2px 8px rgba(0, 0, 0, .1)); z-index: 50; min-width: min(var(--sheet-size-overflow-menu-width, 160px), max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))));
   max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
   max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))); overflow-x: hidden; overflow-y: auto;
   display: flex; flex-direction: column; padding: var(--sheet-space-1, 4px) 0;
