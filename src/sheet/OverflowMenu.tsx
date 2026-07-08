@@ -115,6 +115,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
                 : it.label
             const ariaLabel = it.disabled || it.kind === 'menuitemcheckbox' ? itemLabel : undefined
             const keyShortcuts = it.disabled ? undefined : it.keyShortcuts
+            const visibleText = it.disabled && it.keyShortcuts ? it.label.replace(/\s+\([^)]*\)$/, '') : it.label
             return (
               <button
                 key={it.id}
@@ -125,7 +126,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
                 title={itemLabel}
                 aria-label={ariaLabel}
                 aria-keyshortcuts={keyShortcuts}
-              >{it.label}</button>
+              >{visibleText}</button>
             )
           })}
         </div>
