@@ -83,7 +83,7 @@
 .status-bar {
   display: flex; flex-wrap: wrap; gap: var(--sheet-space-1, 4px) var(--sheet-space-6, 16px); align-items: center;
   padding: var(--sheet-space-2, 6px) var(--sheet-space-6, 16px); background: var(--sheet-color-surface-muted, #f8f9fa); color: var(--sheet-color-muted, #5f6368);
-  border-top: 1px solid var(--sheet-color-border-subtle, #e0e0e0); font-size: var(--sheet-font-size-sm, 12px);
+  border-top: var(--sheet-size-status-bar-border, 1px) solid var(--sheet-color-border-subtle, #e0e0e0); font-size: var(--sheet-font-size-sm, 12px);
 }
 .status-bar > span {
   min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;

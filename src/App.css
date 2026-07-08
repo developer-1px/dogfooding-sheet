@@ -115,6 +115,7 @@
   --sheet-size-tab-max: 220px;
   --sheet-size-tab-rename-width: 90px;
   --sheet-size-tab-color-swatch: 14px;
+  --sheet-size-status-bar-border: 1px;
 }
 
 * { box-sizing: border-box; }
