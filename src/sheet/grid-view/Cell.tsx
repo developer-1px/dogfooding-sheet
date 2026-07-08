@@ -122,6 +122,7 @@ export function Cell(p: Props) {
           type="checkbox"
           className="cell-checkbox"
           aria-label={display.ariaLabel}
+          title={display.ariaLabel}
           checked={p.label === 'TRUE'}
           onChange={p.onCheckboxToggle}
           onClick={(e) => e.stopPropagation()}
