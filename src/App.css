@@ -79,6 +79,7 @@
   --sheet-size-control-md: 18px;
   --sheet-size-cell-min-height: 28px;
   --sheet-size-cell-state-outline: 2px;
+  --sheet-size-freeze-divider: 2px;
   --sheet-size-grid-resizer-hit-area: 6px;
   --sheet-size-grid-resizer-offset: 3px;
   --sheet-size-fill-handle: 7px;
