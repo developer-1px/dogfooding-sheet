@@ -75,6 +75,8 @@ describe('Find component', () => {
     expect(document.querySelector('.count')?.getAttribute('role')).toBe('status')
     expect(document.querySelector('.count')?.getAttribute('aria-live')).toBe('polite')
     expect(document.querySelector('.count')?.getAttribute('aria-atomic')).toBe('true')
+    expect(document.querySelector('.count')?.getAttribute('title')).toBe('찾기 대기 중')
+    expect(document.querySelector('.count')?.getAttribute('aria-label')).toBe('찾기 대기 중')
     const close = document.querySelector<HTMLButtonElement>('button[aria-label="찾기 닫기"]')
     expect(close?.textContent).toBe('✕')
     expect(close?.type).toBe('button')
