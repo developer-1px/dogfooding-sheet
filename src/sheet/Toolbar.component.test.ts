@@ -1,8 +1,11 @@
 import { act, createElement, type ComponentProps, type KeyboardEventHandler } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { keyDown, setInputValue, setupReactDOM } from './test-utils'
 import { DEFAULT_CELL_BACKGROUND_COLOR, DEFAULT_CELL_TEXT_COLOR, Toolbar } from './Toolbar'
 import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from './schema'
+
+const appCss = () => readFileSync('src/App.css', 'utf8')
 
 const toolbarActionMocks = vi.hoisted(() => ({
   applyCheckboxValidation: vi.fn(() => false),
@@ -534,7 +537,7 @@ describe('Toolbar component', () => {
     act(() => trigger!.click())
 
     const link = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
-      .find((item) => item.textContent === '하이퍼링크 삽입 (Ctrl/⌘+K)')
+      .find((item) => item.textContent === '하이퍼링크 삽입')
 
     expect(link?.disabled).toBe(true)
     expect(link?.hasAttribute('aria-keyshortcuts')).toBe(false)
@@ -641,6 +644,8 @@ describe('Toolbar component', () => {
     const rightAlign = document.querySelector<HTMLButtonElement>('button[aria-label="오른쪽 정렬할 셀 없음"]')
     const bgColor = document.querySelector<HTMLInputElement>('input[aria-label="배경색을 적용할 셀 없음"]')
     const fgColor = document.querySelector<HTMLInputElement>('input[aria-label="글자색을 적용할 셀 없음"]')
+    const bgColorWrapper = bgColor?.closest('label')
+    const fgColorWrapper = fgColor?.closest('label')
     const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="서식을 해제할 셀 없음"]')
     const plainFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 적용할 셀 없음"]')
     const percentFormat = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율 적용할 셀 없음"]')
@@ -690,8 +695,12 @@ describe('Toolbar component', () => {
     expect(rightAlign?.hasAttribute('aria-pressed')).toBe(false)
     expect(bgColor?.disabled).toBe(true)
     expect(bgColor?.getAttribute('title')).toBe('배경색을 적용할 셀 없음')
+    expect(bgColorWrapper?.className).toBe('color-pick')
+    expect(bgColorWrapper?.getAttribute('aria-disabled')).toBe('true')
     expect(fgColor?.disabled).toBe(true)
     expect(fgColor?.getAttribute('title')).toBe('글자색을 적용할 셀 없음')
+    expect(fgColorWrapper?.className).toBe('color-pick')
+    expect(fgColorWrapper?.getAttribute('aria-disabled')).toBe('true')
     expect(clearFormat?.textContent).toBe('✕서식')
     expect(clearFormat?.disabled).toBe(true)
     expect(clearFormat?.getAttribute('title')).toBe('서식을 해제할 셀 없음')
@@ -713,6 +722,13 @@ describe('Toolbar component', () => {
     expect(eurFormat?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 
+  it('keeps disabled color pickers from showing enabled pointer affordances', () => {
+    const css = appCss()
+
+    expect(css).toContain('.color-pick[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }')
+    expect(css).toContain('.color-pick[aria-disabled="true"] input[type="color"] { cursor: not-allowed; }')
+  })
+
   it('keeps formatting controls enabled for selected cells without focus', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
@@ -724,8 +740,10 @@ describe('Toolbar component', () => {
     const fgColor = document.querySelector<HTMLInputElement>(`input[aria-label="B2 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})"]`)
     expect(bgColor?.disabled).toBe(false)
     expect(bgColor?.getAttribute('title')).toBe(`B2 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})`)
+    expect(bgColor?.closest('label')?.hasAttribute('aria-disabled')).toBe(false)
     expect(fgColor?.disabled).toBe(false)
     expect(fgColor?.getAttribute('title')).toBe(`B2 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})`)
+    expect(fgColor?.closest('label')?.hasAttribute('aria-disabled')).toBe(false)
     const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B2 서식 모두 해제"]')
     expect(clearFormat?.disabled).toBe(false)
     expect(clearFormat?.getAttribute('title')).toBe('B2 서식 모두 해제')
