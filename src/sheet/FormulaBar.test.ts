@@ -163,6 +163,33 @@ describe('FormulaBar', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
+  it('skips formula input commits when the draft is unchanged', () => {
+    const onCommit = vi.fn()
+
+    act(() => dom.root.render(createElement(FormulaBar, {
+      addr: 'A1',
+      value: 'same',
+      onCommit,
+      onUndo: vi.fn(),
+      onRedo: vi.fn(),
+      canUndo: false,
+      canRedo: false,
+    })))
+
+    const formula = document.querySelector<HTMLInputElement>('input.formula')!
+
+    act(() => {
+      formula.focus()
+      formula.blur()
+    })
+    expect(onCommit).not.toHaveBeenCalled()
+
+    act(() => formula.focus())
+    act(() => keyDown(formula, 'Enter'))
+
+    expect(onCommit).not.toHaveBeenCalled()
+  })
+
   it('keeps formula input Enter local while committing the draft', () => {
     const parentKeys: string[] = []
     const onCommit = vi.fn()
