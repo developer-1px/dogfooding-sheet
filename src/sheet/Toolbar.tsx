@@ -43,7 +43,7 @@ const colorInputValue = (color: string | undefined, fallback: string): string =>
   return fallback
 }
 
-const mergeTargetLabel = (selectedIds: string[], focusKey: string | null): string => {
+const cellTargetLabel = (selectedIds: string[], focusKey: string | null): string => {
   if (selectedIds.length > 1) return `선택 셀 ${selectedIds.length}개`
   if (focusKey) return focusKey
   return selectedIds[0] ? cellIdToKey(selectedIds[0]) : '선택 셀'
@@ -113,11 +113,12 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const bgColorValue = colorInputValue(focusedStyle?.bg, DEFAULT_CELL_BACKGROUND_COLOR)
   const fgColorValue = colorInputValue(focusedStyle?.fg, DEFAULT_CELL_TEXT_COLOR)
   const hasCellTarget = selectedIds.length > 0 || !!focusKey
+  const cellTarget = cellTargetLabel(selectedIds, focusKey)
   const bgColorLabel = hasCellTarget ? `배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})` : '배경색을 적용할 셀 없음'
   const fgColorLabel = hasCellTarget ? `글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})` : '글자색을 적용할 셀 없음'
-  const listValidationLabel = hasCellTarget ? '드롭다운 목록 유효성 검사 설정' : '드롭다운 목록을 설정할 셀 없음'
-  const listValidationTitle = hasCellTarget ? '유효성 검사 (드롭다운 목록)' : listValidationLabel
-  const checkboxLabel = hasCellTarget ? '체크박스로 변환' : '체크박스로 변환할 셀 없음'
+  const listValidationLabel = hasCellTarget ? `${cellTarget} 드롭다운 목록 유효성 검사 설정` : '드롭다운 목록을 설정할 셀 없음'
+  const listValidationTitle = listValidationLabel
+  const checkboxLabel = hasCellTarget ? `${cellTarget} 체크박스로 변환` : '체크박스로 변환할 셀 없음'
   const leftAlignPressed = focusedStyle?.a === 'left'
   const centerAlignPressed = focusedStyle?.a === 'center'
   const rightAlignPressed = focusedStyle?.a === 'right'
@@ -141,7 +142,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       : filterActionLabel
   const filterLabel = canOpenFilterPrompt ? filterActionLabel : disabledFilterLabel
   const canMerge = canMergeSelection(selectedIds, focus ? cellId(focus.col, focus.row) : null, sheet.merges)
-  const mergeTarget = mergeTargetLabel(selectedIds, focusKey)
+  const mergeTarget = cellTarget
   const mergeLabel = canMerge
     ? selectedIds.length > 1
       ? `${mergeTarget} 병합 또는 병합 해제`
