@@ -165,6 +165,7 @@ function insertRowBelowItem(a: CellMenuActions, row: number): MenuItem {
     label: '아래 행 삽입',
     onClick: () => a.insertRow(row + 1),
     disabled: row + 1 >= a.rowCount,
+    disabledLabel: '아래에 삽입할 행 위치 없음',
   }
 }
 
@@ -182,6 +183,7 @@ function hideRowItem(a: CellMenuActions, row: number): MenuItem {
     onClick: () => a.hideRow(row),
     keyShortcuts: 'Control+Alt+9 Meta+Alt+9',
     disabled: a.rowCount <= 1,
+    disabledLabel: '숨기려면 하나 이상의 행이 더 필요함',
   }
 }
 
@@ -207,6 +209,7 @@ function hideColItem(a: CellMenuActions, col: string): MenuItem {
     onClick: () => a.hideCol(col),
     keyShortcuts: 'Control+Alt+0 Meta+Alt+0',
     disabled: a.colLetters.length <= 1,
+    disabledLabel: '숨기려면 하나 이상의 열이 더 필요함',
   }
 }
 
@@ -217,6 +220,7 @@ function rowFreezeItem(a: CellMenuActions, row: number): MenuItem {
     label: isFrozen ? '행 고정 해제' : `${freezeRows}행까지 고정`,
     onClick: () => a.setFreezeRows(isFrozen ? 0 : freezeRows),
     disabled: !isFrozen && a.rowCount <= 1,
+    disabledLabel: `${freezeRows}행까지 고정할 추가 행 없음`,
   }
 }
 
@@ -227,5 +231,6 @@ function colFreezeItem(a: CellMenuActions, col: string): MenuItem {
     label: isFrozen ? '열 고정 해제' : `${col}열까지 고정`,
     onClick: () => a.setFreezeCols(isFrozen ? 0 : colPosition),
     disabled: !isFrozen && a.colLetters.length <= 1,
+    disabledLabel: `${col}열까지 고정할 추가 열 없음`,
   }
 }
