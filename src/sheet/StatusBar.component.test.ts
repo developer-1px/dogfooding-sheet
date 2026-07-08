@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { act, createElement } from 'react'
 import { describe, expect, it } from 'vitest'
 import { cellId, parseCellId } from './schema'
@@ -6,6 +7,7 @@ import { setupReactDOM } from './test-utils'
 
 describe('StatusBar component', () => {
   const dom = setupReactDOM()
+  const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
   const footer = (): HTMLElement => {
     const el = document.querySelector<HTMLElement>('.status-bar')
@@ -79,6 +81,12 @@ describe('StatusBar component', () => {
     expect(metric('COUNT:')?.getAttribute('aria-label')).toBe('선택 영역 숫자 값 개수: 2')
     expect(metric('MEDIAN:')?.getAttribute('title')).toBe('선택 영역 숫자 값 중앙값')
     expect(metric('MEDIAN:')?.getAttribute('aria-label')).toBe('선택 영역 숫자 값 중앙값: 15')
+  })
+
+  it('keeps detailed metrics wrapping within the status bar', () => {
+    expect(overlaysCss()).toMatch(
+      /\.status-bar\s*\{\s*display: flex; flex-wrap: wrap; gap: var\(--sheet-space-1, 4px\) var\(--sheet-space-6, 16px\); align-items: center;/,
+    )
   })
 
   it('distinguishes pending autosave from active saving', () => {
