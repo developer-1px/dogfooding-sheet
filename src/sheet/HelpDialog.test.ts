@@ -76,4 +76,12 @@ describe('HelpDialog', () => {
     expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
     expect(css).toContain('overflow: auto')
   })
+
+  it('keeps the shortcut table contained on narrow viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('.help-dialog table { border-collapse: collapse; width: 100%; table-layout: fixed; }')
+    expect(css).toContain('.help-dialog th, .help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); text-align: left; overflow-wrap: anywhere; }')
+    expect(css).toContain('font-size: var(--sheet-font-size-sm, 12px); white-space: normal;')
+  })
 })
