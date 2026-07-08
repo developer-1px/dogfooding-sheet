@@ -39,6 +39,10 @@ describe('AppErrorBoundary', () => {
     fail = false
     const retry = document.querySelector<HTMLButtonElement>('.app-error button')
     expect(retry).not.toBeNull()
+    expect(retry?.type).toBe('button')
+    expect(retry?.textContent).toBe('다시 시도')
+    expect(retry?.getAttribute('title')).toBe('화면 다시 표시 시도')
+    expect(retry?.getAttribute('aria-label')).toBe('화면 다시 표시 시도')
     act(() => retry!.click())
 
     expect(document.querySelector('[role="alert"]')).toBeNull()

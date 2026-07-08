@@ -24,7 +24,7 @@ export class AppErrorBoundary extends Component<Props, State> {
       return (
         <div className="app-error" role="alert">
           <strong>화면을 표시하지 못했습니다.</strong>
-          <button type="button" onClick={this.retry}>다시 시도</button>
+          <button type="button" onClick={this.retry} title="화면 다시 표시 시도" aria-label="화면 다시 표시 시도">다시 시도</button>
         </div>
       )
     }
