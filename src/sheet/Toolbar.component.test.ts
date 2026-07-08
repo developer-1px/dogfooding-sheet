@@ -5,19 +5,24 @@ import { Toolbar } from './Toolbar'
 import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from './schema'
 
 const toolbarActionMocks = vi.hoisted(() => ({
+  applyCheckboxValidation: vi.fn(() => false),
   applyToolbarFormat: vi.fn(() => false),
+  clearToolbarStyle: vi.fn(() => false),
+  promptListValidation: vi.fn(() => Promise.resolve('cancelled')),
+  promptToolbarFilter: vi.fn(() => Promise.resolve('cancelled')),
+  setToolbarAlignment: vi.fn(() => false),
   setToolbarColor: vi.fn(() => false),
   toggleToolbarStyle: vi.fn(() => false),
 }))
 
 vi.mock('./toolbarActions', () => ({
-  applyCheckboxValidation: () => false,
+  applyCheckboxValidation: toolbarActionMocks.applyCheckboxValidation,
   applyToolbarAutoSum: () => false,
   applyToolbarFormat: toolbarActionMocks.applyToolbarFormat,
-  clearToolbarStyle: () => false,
-  promptListValidation: () => Promise.resolve('cancelled'),
-  promptToolbarFilter: () => Promise.resolve('cancelled'),
-  setToolbarAlignment: () => false,
+  clearToolbarStyle: toolbarActionMocks.clearToolbarStyle,
+  promptListValidation: toolbarActionMocks.promptListValidation,
+  promptToolbarFilter: toolbarActionMocks.promptToolbarFilter,
+  setToolbarAlignment: toolbarActionMocks.setToolbarAlignment,
   setToolbarColor: toolbarActionMocks.setToolbarColor,
   toggleToolbarStyle: toolbarActionMocks.toggleToolbarStyle,
 }))
@@ -211,6 +216,75 @@ describe('Toolbar component', () => {
     expect(toolbarActionMocks.applyToolbarFormat).toHaveBeenCalledWith(expect.objectContaining({ format: 'percent' }))
     expect(props.addCondRule).toHaveBeenCalledWith({ col: 'B', op: '>', value: '5', color: '#ff0000' })
     expect(props.clearCondRules).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps direct toolbar command activation keys inside the toolbar controls', async () => {
+    const parentKeys: string[] = []
+    toolbarActionMocks.applyCheckboxValidation.mockClear()
+    toolbarActionMocks.clearToolbarStyle.mockClear()
+    toolbarActionMocks.promptListValidation.mockClear()
+    toolbarActionMocks.promptToolbarFilter.mockClear()
+    toolbarActionMocks.setToolbarAlignment.mockClear()
+
+    const props = renderToolbar({
+      selectedIds: ['r1-B', 'r1-C'],
+      sheet: { ...initialSheet, merges: [] },
+      freeze: { rows: 1, cols: 0 },
+    }, { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const directButtons = [
+      document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="2행 위에 행 삽입"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="첫 행 고정 토글 (현재 1행 고정)"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="필터 해제"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]'),
+    ]
+
+    for (const [index, button] of directButtons.entries()) {
+      expect(button?.disabled).toBe(false)
+      act(() => keyDown(button!, index % 2 === 0 ? 'Enter' : ' '))
+    }
+
+    expect(parentKeys).toEqual([])
+
+    act(() => directButtons[0]!.click())
+    act(() => directButtons[1]!.click())
+    act(() => directButtons[2]!.click())
+    act(() => directButtons[3]!.click())
+    act(() => directButtons[4]!.click())
+    act(() => directButtons[5]!.click())
+    act(() => directButtons[6]!.click())
+    await act(async () => {
+      directButtons[7]!.click()
+      await Promise.resolve()
+    })
+    act(() => directButtons[8]!.click())
+    act(() => directButtons[9]!.click())
+    await act(async () => {
+      directButtons[10]!.click()
+      await Promise.resolve()
+    })
+    act(() => directButtons[11]!.click())
+
+    expect(props.undo).toHaveBeenCalledTimes(1)
+    expect(props.insertRow).toHaveBeenCalledWith(1)
+    expect(props.sortByCol).toHaveBeenCalledWith('B', 'asc')
+    expect(toolbarActionMocks.setToolbarAlignment).toHaveBeenCalledWith(expect.objectContaining({ alignment: 'left' }))
+    expect(toolbarActionMocks.clearToolbarStyle).toHaveBeenCalledTimes(1)
+    expect(props.mergeSelection).toHaveBeenCalledTimes(1)
+    expect(props.toggleFreezeRows).toHaveBeenCalledTimes(1)
+    expect(toolbarActionMocks.promptToolbarFilter).toHaveBeenCalledTimes(1)
+    expect(props.clearFilter).toHaveBeenCalledTimes(1)
+    expect(props.showAll).toHaveBeenCalledTimes(1)
+    expect(toolbarActionMocks.promptListValidation).toHaveBeenCalledTimes(1)
+    expect(toolbarActionMocks.applyCheckboxValidation).toHaveBeenCalledTimes(1)
   })
 
   it('disables toolbar merge for a single unmerged focused cell', () => {
