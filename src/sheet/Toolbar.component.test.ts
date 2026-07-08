@@ -69,7 +69,7 @@ describe('Toolbar component', () => {
       insertLink: vi.fn(),
       addCondRule: vi.fn(),
       clearCondRules: vi.fn(),
-      hasCondRules: true,
+      condRuleCount: 1,
       sheet: initialSheet,
       previewSheetReplacement: () => null,
       applySheetReplacement: vi.fn(() => false),
@@ -181,7 +181,7 @@ describe('Toolbar component', () => {
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     expect(addCondFormat?.disabled).toBe(false)
     expect(addCondFormat?.getAttribute('title')).toBe('B열 조건부 서식 추가')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 1개 모두 해제"]')?.disabled).toBe(false)
   })
 
   it('clarifies disabled toolbar undo and redo labels', () => {
@@ -263,7 +263,7 @@ describe('Toolbar component', () => {
     const bold = document.querySelector<HTMLButtonElement>('button[aria-label="B2 굵게 켜짐"]')
     const percent = document.querySelector<HTMLButtonElement>('button[aria-label="B2 숫자 형식: 백분율 켜짐"]')
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
-    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
+    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 1개 모두 해제"]')
 
     expect(bold?.disabled).toBe(false)
     expect(bold?.getAttribute('aria-pressed')).toBe('true')
@@ -725,18 +725,28 @@ describe('Toolbar component', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식을 추가할 열 없음"]')
-    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
+    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 1개 모두 해제"]')
 
     expect(addCondFormat?.textContent).toBe('🎨조건')
     expect(addCondFormat?.disabled).toBe(true)
     expect(addCondFormat?.getAttribute('title')).toBe('조건부 서식을 추가할 열 없음')
     expect(clearCondFormat?.textContent).toBe('✕조건')
     expect(clearCondFormat?.disabled).toBe(false)
-    expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 모두 해제')
+    expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 1개 모두 해제')
+  })
+
+  it('labels conditional format clear with the current rule count', () => {
+    renderToolbar({ condRuleCount: 3 })
+
+    const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 3개 모두 해제"]')
+
+    expect(clearCondFormat?.textContent).toBe('✕조건')
+    expect(clearCondFormat?.disabled).toBe(false)
+    expect(clearCondFormat?.getAttribute('title')).toBe('조건부 서식 3개 모두 해제')
   })
 
   it('disables conditional format clear when no rules exist', () => {
-    renderToolbar({ hasCondRules: false })
+    renderToolbar({ condRuleCount: 0 })
 
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="해제할 조건부 서식 없음"]')
