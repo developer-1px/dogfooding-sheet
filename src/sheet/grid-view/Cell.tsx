@@ -113,6 +113,7 @@ export function Cell(p: Props) {
       aria-colspan={p.mergeCols && p.mergeCols > 1 ? p.mergeCols : undefined}
       aria-rowspan={p.mergeRows && p.mergeRows > 1 ? p.mergeRows : undefined}
       aria-keyshortcuts={p.editing ? undefined : 'Enter'}
+      aria-haspopup={p.validationOptions && !p.editing ? 'listbox' : undefined}
       className={className}
       style={p.styleInline}
       data-formula-ref-index={p.formulaReference?.index}
