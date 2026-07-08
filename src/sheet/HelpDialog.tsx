@@ -68,7 +68,7 @@ export function HelpDialog({ open, onClose }: Props) {
   return (
     <>
       <div {...backdropProps} aria-hidden="true" className="dialog-backdrop" onClick={onClose} />
-      <div {...rootProps} className="help-dialog">
+      <div {...rootProps} className="help-dialog" aria-labelledby="help-title">
         <h2 id="help-title">키보드 단축키</h2>
         <table>
           <caption>키보드 단축키 목록</caption>
