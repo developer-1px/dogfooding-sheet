@@ -80,11 +80,14 @@ describe('Cell component', () => {
     const fillHandle = document.querySelector<HTMLElement>('.fill-handle')
     const noteMark = document.querySelector<HTMLElement>('.note-mark')
     const dropdownMark = document.querySelector<HTMLElement>('.dropdown-mark')
+    const gridCell = document.querySelector<HTMLElement>('[role="gridcell"]')
 
     expect(fillHandle).not.toBeNull()
     expect(fillHandle?.getAttribute('aria-hidden')).toBe('true')
     expect(noteMark?.getAttribute('aria-hidden')).toBe('true')
     expect(dropdownMark?.getAttribute('aria-hidden')).toBe('true')
+    expect(gridCell?.getAttribute('aria-label')).toBe('A1 TRUE 메모 있음 드롭다운 목록 있음')
+    expect(gridCell?.getAttribute('title')).toBe('Needs review')
 
     act(() => fillHandle!.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })))
 

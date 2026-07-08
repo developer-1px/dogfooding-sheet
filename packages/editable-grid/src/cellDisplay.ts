@@ -23,6 +23,7 @@ interface CellDisplayArgs {
   styleClass: string
   note?: string
   tooltip?: string
+  validationList?: boolean
 }
 
 export interface CellDisplayModel {
@@ -74,6 +75,7 @@ export function createCellDisplayModel(args: CellDisplayArgs): CellDisplayModel 
     error ? '오류' : '',
     args.mergeRange ? `병합 셀 ${args.mergeRange}` : '',
     args.note ? '메모 있음' : '',
+    args.validationList ? '드롭다운 목록 있음' : '',
     args.selected ? '선택됨' : '',
     args.focused ? '현재 셀' : '',
     args.editing ? '편집 중' : '',
