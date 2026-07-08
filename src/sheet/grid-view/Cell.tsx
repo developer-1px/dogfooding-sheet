@@ -47,7 +47,7 @@ interface Props {
 
 function CellContentView({ address, content }: { address: string; content: CellContent }) {
   if (content.kind === 'image') {
-    return <img className="cell-img" src={content.src} alt="" title={content.src} onClick={(e) => e.stopPropagation()} />
+    return <img className="cell-img" src={content.src} alt={`${address} 이미지: ${content.src}`} title={content.src} onClick={(e) => e.stopPropagation()} />
   }
   if (content.kind === 'link') {
     return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" title={content.label} aria-label={`${address} 링크 열기: ${content.label}`} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
