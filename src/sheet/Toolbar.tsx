@@ -98,6 +98,9 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const bgColorLabel = `배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})`
   const fgColorLabel = `글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})`
   const hasCellTarget = selectedIds.length > 0 || !!focusKey
+  const listValidationLabel = hasCellTarget ? '드롭다운 목록 유효성 검사 설정' : '드롭다운 목록을 설정할 셀 없음'
+  const listValidationTitle = hasCellTarget ? '유효성 검사 (드롭다운 목록)' : listValidationLabel
+  const checkboxLabel = hasCellTarget ? '체크박스로 변환' : '체크박스로 변환할 셀 없음'
   const canSort = !!focus && rowCount > 1
   const canToggleFreezeRows = rowCount > 1 || freeze.rows > 0
   const canToggleFreezeCols = colCount > 1 || freeze.cols > 0
@@ -136,8 +139,8 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={openFilterPrompt} disabled={!canOpenFilterPrompt} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button {...toolbarCommandButtonProps} onClick={clearFilter} title={clearFilterLabel} aria-label={clearFilterLabel}>✕</button>}
       {hasHidden && <button {...toolbarCommandButtonProps} onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
-      <button {...toolbarCommandButtonProps} onClick={openListValidationPrompt} disabled={!hasCellTarget} title="유효성 검사 (드롭다운 목록)" aria-label="드롭다운 목록 유효성 검사 설정">▾목록</button>
-      <button {...toolbarCommandButtonProps} onClick={convertToCheckbox} disabled={!hasCellTarget} title="체크박스로 변환" aria-label="체크박스로 변환">☑체크</button>
+      <button {...toolbarCommandButtonProps} onClick={openListValidationPrompt} disabled={!hasCellTarget} title={listValidationTitle} aria-label={listValidationLabel}>▾목록</button>
+      <button {...toolbarCommandButtonProps} onClick={convertToCheckbox} disabled={!hasCellTarget} title={checkboxLabel} aria-label={checkboxLabel}>☑체크</button>
       <CondFmtButtons col={focus?.col ?? null} hasRules={hasCondRules} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
       <FormatButtons apply={applyF} current={focusKey ? formatOf(focusKey) : 'plain'} disabled={!hasCellTarget} />
       <OverflowMenu display={display} writeCell={writeCell} writeCells={writeCells} writeCellRange={writeCellRange} openHelp={openHelp} insertLink={insertLink} canInsertLink={!!focusKey} sheet={sheet} previewSheetReplacement={previewSheetReplacement} applySheetReplacement={applySheetReplacement} clearCellValues={clearCellValues} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} showGridlines={showGridlines} toggleShowGridlines={toggleShowGridlines} clearAllFormats={clearAllFormats} />
