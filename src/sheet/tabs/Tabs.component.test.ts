@@ -3,7 +3,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { blankBundle } from '../schema'
 import { keyDown, setInputValue } from '../test-utils'
-import { Tabs } from './Tabs'
+import { DEFAULT_TAB_COLOR, Tabs } from './Tabs'
 import type { Confirm } from '../useConfirm'
 import type { TabsState } from './useTabs'
 
@@ -65,7 +65,7 @@ describe('Tabs component', () => {
     expect(colorPickers[0]?.value).toBe('#ff0000')
     expect(colorPickers[0]?.getAttribute('aria-label')).toBe('Budget 탭 색상 변경 (현재 색상 #ff0000)')
     expect(colorPickers[0]?.getAttribute('title')).toBe('Budget 탭 색상 변경 (현재 색상 #ff0000)')
-    expect(colorPickers[1]?.value).toBe('#cccccc')
+    expect(colorPickers[1]?.value).toBe(DEFAULT_TAB_COLOR)
     expect(colorPickers[1]?.getAttribute('aria-label')).toBe('Forecast 탭 색상 변경 (현재 기본 색상)')
     expect(colorPickers[1]?.getAttribute('title')).toBe('Forecast 탭 색상 변경 (현재 기본 색상)')
     expect(document.querySelector<HTMLButtonElement>('.tab-dup')?.getAttribute('aria-label')).toBe('Budget 시트 복제')

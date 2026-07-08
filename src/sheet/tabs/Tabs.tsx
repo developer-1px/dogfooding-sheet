@@ -6,6 +6,8 @@ import type { KeyboardEventHandler } from 'react'
 import type { Confirm } from '../useConfirm'
 import type { TabsState } from './useTabs'
 
+export const DEFAULT_TAB_COLOR = '#cccccc'
+
 interface Props {
   state: TabsState
   switchTab: (name: string) => void
@@ -57,7 +59,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
     <div {...rootProps} className="tabs-bar">
       {state.order.map((name) => {
         const isActive = name === state.active
-        const tabColor = state.colors[name] ?? '#cccccc'
+        const tabColor = state.colors[name] ?? DEFAULT_TAB_COLOR
         const colorPickerLabel = state.colors[name]
           ? `${name} 탭 색상 변경 (현재 색상 ${tabColor})`
           : `${name} 탭 색상 변경 (현재 기본 색상)`
