@@ -129,6 +129,7 @@ export function Cell(p: Props) {
           type="checkbox"
           className="cell-checkbox"
           aria-label={display.ariaLabel}
+          aria-keyshortcuts="Space"
           title={display.ariaLabel}
           checked={p.label === 'TRUE'}
           onChange={p.onCheckboxToggle}
