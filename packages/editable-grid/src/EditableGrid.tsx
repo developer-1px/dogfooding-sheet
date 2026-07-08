@@ -87,6 +87,9 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
             const fieldType = fieldTypeOf(column)
             const readonlyCell = isReadonlyColumn(readonly, column)
             const columnLabel = column.label ?? column.id
+            const editorLabel = `${columnLabel} row ${rowIndex + 1} 편집`
+            const editorTitle = `${editorLabel} (Enter=저장 / Esc=취소)`
+            const editorKeyShortcuts = 'Enter Escape'
             const checkboxLabel = `${columnLabel} row ${rowIndex + 1}`
             const onEditorKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
               event.stopPropagation()
@@ -117,7 +120,9 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 {isEditing ? (
                   fieldType === 'select' ? (
                     <EditableGridSelect
-                      aria-label={`${columnLabel} 편집`}
+                      aria-label={editorLabel}
+                      aria-keyshortcuts={editorKeyShortcuts}
+                      title={editorTitle}
                       value={controller.draft}
                       ref={controller.domFocus.editorRef}
                       onChange={(event) => controller.setDraft(event.currentTarget.value)}
@@ -131,7 +136,9 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                     </EditableGridSelect>
                   ) : (
                     <EditableGridInput
-                      aria-label={`${columnLabel} 편집`}
+                      aria-label={editorLabel}
+                      aria-keyshortcuts={editorKeyShortcuts}
+                      title={editorTitle}
                       type={fieldType === 'number' ? 'number' : fieldType === 'date' ? 'date' : 'text'}
                       value={controller.draft}
                       ref={controller.domFocus.editorRef}
