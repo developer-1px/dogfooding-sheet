@@ -1,5 +1,5 @@
 import { statusBarViewModel, type StatusBarModelProps } from './statusBarModel'
-import type { SheetPersistenceState } from './useSheetDocument'
+import type { SheetPersistenceState } from './sheetPersistence'
 
 type Props = StatusBarModelProps & {
   persistence?: SheetPersistenceState
@@ -9,7 +9,8 @@ const fmt = (n: number) => Math.round(n * 1e6) / 1e6
 const persistenceText = (state?: SheetPersistenceState): string | null => {
   if (!state) return null
   if (state.status === 'error') return '저장 실패'
-  if (state.status === 'saving' || state.dirty) return '저장 중'
+  if (state.status === 'saving') return '저장 중'
+  if (state.status === 'pending' || state.dirty) return '저장 대기'
   return '저장됨'
 }
 const statusRegionProps = {
