@@ -30,6 +30,12 @@
   --sheet-color-print-border: #999;
   --sheet-color-border: #dadce0;
   --sheet-color-border-subtle: #e0e0e0;
+  --sheet-color-formula-ref-0: var(--sheet-color-accent);
+  --sheet-color-formula-ref-1: var(--sheet-color-danger);
+  --sheet-color-formula-ref-2: var(--sheet-color-success);
+  --sheet-color-formula-ref-3: #a142f4;
+  --sheet-color-formula-ref-4: #f29900;
+  --sheet-color-formula-ref-5: #00897b;
 
   --sheet-state-accent-hover: rgba(26, 115, 232, .3);
   --sheet-state-accent-selected: rgba(26, 115, 232, .1);
@@ -38,6 +44,12 @@
   --sheet-state-success-bg: rgba(24, 128, 56, .08);
   --sheet-state-control-hover: rgba(0, 0, 0, .1);
   --sheet-state-scrim: rgba(0, 0, 0, .3);
+  --sheet-state-formula-ref-0-bg: rgba(26, 115, 232, .12);
+  --sheet-state-formula-ref-1-bg: rgba(217, 48, 37, .10);
+  --sheet-state-formula-ref-2-bg: rgba(24, 128, 56, .11);
+  --sheet-state-formula-ref-3-bg: rgba(161, 66, 244, .10);
+  --sheet-state-formula-ref-4-bg: rgba(242, 153, 0, .13);
+  --sheet-state-formula-ref-5-bg: rgba(0, 137, 123, .11);
   --sheet-focus-ring: 2px solid var(--sheet-color-accent);
   --sheet-focus-offset: 2px;
 

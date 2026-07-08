@@ -69,12 +69,12 @@
   outline-color: var(--formula-ref-color);
   background: var(--formula-ref-bg);
 }
-.formula-ref-0 { --formula-ref-color: var(--sheet-color-accent, #1a73e8); --formula-ref-bg: rgba(26, 115, 232, .12); }
-.formula-ref-1 { --formula-ref-color: var(--sheet-color-danger, #d93025); --formula-ref-bg: rgba(217, 48, 37, .10); }
-.formula-ref-2 { --formula-ref-color: var(--sheet-color-success, #188038); --formula-ref-bg: rgba(24, 128, 56, .11); }
-.formula-ref-3 { --formula-ref-color: #a142f4; --formula-ref-bg: rgba(161, 66, 244, .10); }
-.formula-ref-4 { --formula-ref-color: #f29900; --formula-ref-bg: rgba(242, 153, 0, .13); }
-.formula-ref-5 { --formula-ref-color: #00897b; --formula-ref-bg: rgba(0, 137, 123, .11); }
+.formula-ref-0 { --formula-ref-color: var(--sheet-color-formula-ref-0); --formula-ref-bg: var(--sheet-state-formula-ref-0-bg); }
+.formula-ref-1 { --formula-ref-color: var(--sheet-color-formula-ref-1); --formula-ref-bg: var(--sheet-state-formula-ref-1-bg); }
+.formula-ref-2 { --formula-ref-color: var(--sheet-color-formula-ref-2); --formula-ref-bg: var(--sheet-state-formula-ref-2-bg); }
+.formula-ref-3 { --formula-ref-color: var(--sheet-color-formula-ref-3); --formula-ref-bg: var(--sheet-state-formula-ref-3-bg); }
+.formula-ref-4 { --formula-ref-color: var(--sheet-color-formula-ref-4); --formula-ref-bg: var(--sheet-state-formula-ref-4-bg); }
+.formula-ref-5 { --formula-ref-color: var(--sheet-color-formula-ref-5); --formula-ref-bg: var(--sheet-state-formula-ref-5-bg); }
 .grid.formula-pick-active .cell.selected.formula-ref {
   box-shadow: inset 0 0 0 1px var(--formula-ref-color);
 }
