@@ -70,9 +70,11 @@ export function classifyCellContent(label: string): CellContent {
 
 export function createCellDisplayModel(args: CellDisplayArgs): CellDisplayModel {
   const error = isErrorLabel(args.label)
+  const content = classifyCellContent(args.label)
   const ariaLabel = [
     args.address,
     args.label === '' ? '빈 셀' : args.label,
+    content.kind === 'image' ? '이미지' : '',
     error ? '오류' : '',
     args.mergeRange ? `병합 셀 ${args.mergeRange}` : '',
     args.note ? '메모 있음' : '',
@@ -101,6 +103,6 @@ export function createCellDisplayModel(args: CellDisplayArgs): CellDisplayModel 
     editLabel: `${args.address} 편집`,
     className: classes,
     title: args.note ?? args.tooltip ?? (args.label.length > 20 ? args.label : undefined),
-    content: classifyCellContent(args.label),
+    content,
   }
 }
