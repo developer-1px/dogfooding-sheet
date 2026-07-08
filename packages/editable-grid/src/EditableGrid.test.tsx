@@ -254,6 +254,30 @@ describe('EditableGrid', () => {
     }
   })
 
+  it('restores DOM focus when pointer reselects the active cell', () => {
+    const { host, root, onSelectionChange } = setup()
+    const outsideButton = document.createElement('button')
+    document.body.append(outsideButton)
+    try {
+      const cells = gridCells()
+      const qtyCell = cells[1]
+      act(() => qtyCell.dispatchEvent(new MouseEvent('click', { bubbles: true })))
+      expectFocusedGridCell(cells, qtyCell)
+
+      act(() => outsideButton.focus())
+      expect(document.activeElement).not.toBe(qtyCell)
+      onSelectionChange.mockClear()
+
+      act(() => qtyCell.dispatchEvent(new MouseEvent('click', { bubbles: true })))
+
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expectFocusedGridCell(cells, qtyCell)
+    } finally {
+      outsideButton.remove()
+      cleanup(root, host)
+    }
+  })
+
   it('emits grouped JSON Pointer patches when a cell edit commits', () => {
     const { host, root, onChange } = setup()
     try {
