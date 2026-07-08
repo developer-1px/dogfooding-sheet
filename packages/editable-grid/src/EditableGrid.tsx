@@ -69,6 +69,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
       colCount={surface.columns.length}
       className={className}
       aria-label={ariaLabel}
+      aria-readonly={readonly || undefined}
     >
       <EditableGridRow header rowIndex={1}>
         {surface.columns.map((column, columnIndex) => {
