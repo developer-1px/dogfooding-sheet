@@ -92,8 +92,10 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
     : rowCount <= 1
       ? `${focus.col}열 내림차순 정렬할 데이터 행 없음`
       : `${focus.col}열 내림차순 정렬`
-  const freezeRowsLabel = `첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`
-  const freezeColsLabel = `첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`
+  const freezeRowsPressed = freeze.rows > 0
+  const freezeColsPressed = freeze.cols > 0
+  const freezeRowsLabel = `첫 행 고정 토글 ${freezeRowsPressed ? '켜짐' : '꺼짐'} (현재 ${freeze.rows}행 고정)`
+  const freezeColsLabel = `첫 열 고정 토글 ${freezeColsPressed ? '켜짐' : '꺼짐'} (현재 ${freeze.cols}열 고정)`
   const filterCriteriaLabel = filter ? `${filter.col}열 필터: ${filter.text}` : null
   const filterActionLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 수정` : '현재 열로 행 필터'
   const clearFilterLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 해제` : '필터 해제'
@@ -163,7 +165,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <label className="color-pick" title={bgColorLabel}>🎨<input type="color" value={bgColorValue} title={bgColorLabel} aria-label={bgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setBg(e.target.value)} /></label>
       <label className="color-pick" title={fgColorLabel}>A<input type="color" value={fgColorValue} title={fgColorLabel} aria-label={fgColorLabel} disabled={!hasCellTarget} onKeyDown={stopToolbarActivationKeyDown} onChange={(e) => setFg(e.target.value)} /></label>
       <button {...toolbarCommandButtonProps} onClick={clearStyle} disabled={!hasCellTarget} title={clearFormatLabel} aria-label={clearFormatLabel} aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button {...toolbarCommandButtonProps} onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title={mergeTitle} aria-label={mergeLabel} aria-keyshortcuts="Alt+Shift+M">⊞병합</button>
-      <button {...toolbarCommandButtonProps} onClick={toggleFreezeRows} disabled={!canToggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button {...toolbarCommandButtonProps} onClick={toggleFreezeCols} disabled={!canToggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
+      <button {...toolbarCommandButtonProps} onClick={toggleFreezeRows} disabled={!canToggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freezeRowsPressed} style={freezeRowsPressed ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button {...toolbarCommandButtonProps} onClick={toggleFreezeCols} disabled={!canToggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freezeColsPressed} style={freezeColsPressed ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button {...toolbarCommandButtonProps} onClick={openFilterPrompt} disabled={!canOpenFilterPrompt} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button {...toolbarCommandButtonProps} onClick={clearFilter} title={clearFilterLabel} aria-label={clearFilterLabel}>✕</button>}
       {hasHidden && <button {...toolbarCommandButtonProps} onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
