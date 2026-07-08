@@ -1,7 +1,10 @@
 import { act, createElement, type KeyboardEvent } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { keyDown, setupReactDOM } from './test-utils'
 import { HelpDialog } from './HelpDialog'
+
+const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('HelpDialog', () => {
   const dom = setupReactDOM()
@@ -63,5 +66,14 @@ describe('HelpDialog', () => {
 
     act(() => backdrop!.click())
     expect(onClose).toHaveBeenCalledTimes(3)
+  })
+
+  it('keeps the shortcut dialog constrained to the viewport', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('min-width: min(360px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(css).toContain('overflow: auto')
   })
 })
