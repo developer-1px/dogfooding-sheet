@@ -196,6 +196,26 @@ describe('EditableGrid', () => {
     }
   })
 
+  it('moves serializable selection and DOM focus with pointer selection', () => {
+    const { host, root, onSelectionChange } = setup()
+    try {
+      const cells = gridCells()
+      const qtyCell = cells[1]
+      act(() => qtyCell.dispatchEvent(new MouseEvent('click', { bubbles: true })))
+
+      expect(onSelectionChange).toHaveBeenLastCalledWith({
+        focus: { rowIndex: 0, columnId: 'qty' },
+        ranges: [{
+          anchor: { rowIndex: 0, columnId: 'qty' },
+          focus: { rowIndex: 0, columnId: 'qty' },
+        }],
+      })
+      expectFocusedGridCell(cells, qtyCell)
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
   it('emits grouped JSON Pointer patches when a cell edit commits', () => {
     const { host, root, onChange } = setup()
     try {
