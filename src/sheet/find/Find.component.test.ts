@@ -142,6 +142,45 @@ describe('Find component', () => {
     expect(parentKeys).toEqual([])
   })
 
+  it('keeps find and replace text field keys from reaching parent shortcuts', () => {
+    const jumps: string[] = []
+    const parentKeys: string[] = []
+    renderFind('replace', { A1: 'Alpha', B1: 'Alpha' }, {
+      onJump: (cellId) => jumps.push(cellId),
+      onKeyDown: (event) => parentKeys.push(event.key),
+    })
+
+    const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')!
+    const replacement = document.querySelector<HTMLInputElement>('input[aria-label="바꿀 내용"]')!
+
+    act(() => setInputValue(query, 'Alpha'))
+    expect(query.value).toBe('Alpha')
+    expect(jumps).toEqual(['r0-A'])
+
+    parentKeys.length = 0
+    jumps.length = 0
+    act(() => keyDown(query, 'ArrowLeft'))
+    expect(parentKeys).toEqual([])
+    expect(jumps).toEqual([])
+
+    act(() => keyDown(query, 'Enter'))
+    expect(parentKeys).toEqual([])
+    expect(jumps).toEqual(['r0-B'])
+
+    act(() => setInputValue(replacement, 'Omega'))
+    expect(replacement.value).toBe('Omega')
+
+    parentKeys.length = 0
+    jumps.length = 0
+    act(() => keyDown(replacement, 'ArrowLeft'))
+    expect(parentKeys).toEqual([])
+    expect(jumps).toEqual([])
+
+    act(() => keyDown(replacement, 'Enter', { shiftKey: true }))
+    expect(parentKeys).toEqual([])
+    expect(jumps).toEqual(['r0-A'])
+  })
+
   it('keeps Escape close handling available from find bar buttons', () => {
     const closes: string[] = []
     renderFind('find', {}, { onClose: () => closes.push('close') })
