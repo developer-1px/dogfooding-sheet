@@ -170,6 +170,8 @@ describe('Cell component', () => {
     expect(image?.getAttribute('src')).toBe('https://example.com/chart.png')
     expect(image?.getAttribute('title')).toBe('https://example.com/chart.png')
     expect(image?.getAttribute('alt')).toBe('A1 이미지: https://example.com/chart.png')
+    expect(image?.getAttribute('loading')).toBe('lazy')
+    expect(image?.getAttribute('decoding')).toBe('async')
   })
 
   it('exposes formula-backed cells through the gridcell label', () => {
