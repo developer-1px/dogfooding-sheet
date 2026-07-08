@@ -219,6 +219,12 @@ describe('OverflowMenu component', () => {
     expect(css).toContain('.overflow-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }')
   })
 
+  it('keeps long overflow menus scrollable on short viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)); overflow-y: auto;')
+  })
+
   it('enables destructive clear items when matching sheet data exists', () => {
     renderOverflowMenu({
       ...emptySheet,
