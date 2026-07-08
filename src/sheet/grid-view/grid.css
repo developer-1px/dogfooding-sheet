@@ -127,6 +127,12 @@
   white-space: inherit; vertical-align: bottom;
 }
 
+.cell-checkbox {
+  width: var(--sheet-size-control-md, 18px); height: var(--sheet-size-control-md, 18px);
+  margin: 0; vertical-align: middle; accent-color: var(--sheet-color-accent, #1a73e8);
+  cursor: pointer;
+}
+
 .cell.wrap { white-space: pre-wrap; word-break: break-word; }
 
 @media print {
