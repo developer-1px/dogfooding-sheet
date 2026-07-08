@@ -139,11 +139,12 @@
   background: transparent; border: none; padding: var(--sheet-space-2, 6px) var(--sheet-space-5, 12px); text-align: left;
   cursor: pointer; font-size: var(--sheet-font-size-ui, 13px);
 }
-.overflow-item:hover, .overflow-item:focus { background: var(--sheet-color-hover, #f1f3f4); outline: none; }
+.overflow-item:hover:not(:disabled), .overflow-item:focus:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); outline: none; }
 .overflow-item:focus-visible {
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));
 }
+.overflow-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }
 
 .tab-rename {
   background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-accent, #1a73e8); border-radius: var(--sheet-radius-tight, 2px);

@@ -1,10 +1,13 @@
 import { act, createElement, type KeyboardEventHandler } from 'react'
+import { readFileSync } from 'node:fs'
 import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { OverflowMenu } from './OverflowMenu'
 import type { Confirm } from './useConfirm'
 import { initialSheet, type Sheet } from './schema'
 import { keyDown } from './test-utils'
+
+const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('OverflowMenu component', () => {
   let host: HTMLDivElement
@@ -207,6 +210,13 @@ describe('OverflowMenu component', () => {
     expect(clearFormats?.getAttribute('aria-disabled')).toBe('true')
     expect(clearFormats?.getAttribute('title')).toBe('지울 서식 없음')
     expect(clearFormats?.getAttribute('aria-label')).toBe('지울 서식 없음')
+  })
+
+  it('keeps disabled overflow items from showing enabled hover affordances', () => {
+    const css = overlaysCss()
+
+    expect(css).toContain('.overflow-item:hover:not(:disabled), .overflow-item:focus:not(:disabled)')
+    expect(css).toContain('.overflow-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }')
   })
 
   it('enables destructive clear items when matching sheet data exists', () => {
