@@ -56,6 +56,30 @@ describe('grid styles', () => {
     expect(noteRule).toContain('pointer-events: none;')
   })
 
+  it('keeps cell state outlines token-sized inside the cell', () => {
+    const root = appCss()
+    const source = gridCss()
+    const focusedRule = source.match(/\.cell\.focused\s*\{[^}]+\}/)?.[0] ?? ''
+    const refRule = source.match(/\.cell\.ref-hi\s*\{[^}]+\}/)?.[0] ?? ''
+    const previewRule = source.match(/\.cell\.preview\s*\{[^}]+\}/)?.[0] ?? ''
+    const inputRule = source.match(/\.cell-input\s*\{[^}]+\}/)?.[0] ?? ''
+    const outline = 'var(--sheet-size-cell-state-outline, 2px)'
+    const insideOffset = `calc(-1 * ${outline})`
+
+    expect(root).toContain('--sheet-size-cell-state-outline: 2px;')
+    expect(focusedRule).toContain(`outline: ${outline} solid var(--sheet-color-accent, #1a73e8);`)
+    expect(focusedRule).toContain(`outline-offset: ${insideOffset};`)
+    expect(focusedRule).toContain('z-index: 1;')
+    expect(refRule).toContain(`outline: ${outline} solid var(--sheet-color-success, #188038);`)
+    expect(refRule).toContain(`outline-offset: ${insideOffset};`)
+    expect(refRule).toContain('background: var(--sheet-state-success-bg, rgba(24, 128, 56, .08));')
+    expect(previewRule).toContain(`outline: ${outline} dashed var(--sheet-color-accent, #1a73e8);`)
+    expect(previewRule).toContain(`outline-offset: ${insideOffset};`)
+    expect(previewRule).toContain('background: var(--sheet-state-accent-preview, rgba(26, 115, 232, .15));')
+    expect(inputRule).toContain(`border: ${outline} solid var(--sheet-color-accent, #1a73e8);`)
+    expect(inputRule).toContain('box-sizing: border-box;')
+  })
+
   it('keeps cell links constrained to the cell inline size', () => {
     const source = gridCss()
     const linkRule = source.match(/\.cell-link\s*\{[^}]+\}/)?.[0] ?? ''
