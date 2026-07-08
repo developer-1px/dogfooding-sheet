@@ -27,6 +27,25 @@ const selectionForAddress = (address: EditableGridAddress): EditableGridSelectio
   ranges: [{ anchor: address, focus: address }],
 })
 
+const sameOptionalAddress = (
+  left: EditableGridAddress | undefined,
+  right: EditableGridAddress | undefined,
+): boolean =>
+  left === undefined && right === undefined
+    ? true
+    : !!left && !!right && sameAddress(left, right)
+
+const sameSelection = (left: EditableGridSelection, right: EditableGridSelection): boolean => {
+  if (!sameOptionalAddress(left.focus, right.focus)) return false
+  const leftRanges = left.ranges ?? []
+  const rightRanges = right.ranges ?? []
+  return leftRanges.length === rightRanges.length
+    && leftRanges.every((range, index) => {
+      const other = rightRanges[index]
+      return !!other && sameAddress(range.anchor, other.anchor) && sameAddress(range.focus, other.focus)
+    })
+}
+
 export function useEditableGridController<TValue = unknown, TMeta = unknown>({
   surface,
   value,
@@ -48,12 +67,12 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
   })
 
   const setSelection = (next: EditableGridSelection) => {
+    if (sameSelection(activeSelection, next)) return
     if (!selection) setLocalSelection(next)
     onSelectionChange?.(next)
   }
 
   const focusCell = (address: EditableGridAddress) => {
-    if (sameAddress(activeSelection.focus, address)) return
     setSelection(selectionForAddress(address))
   }
 
