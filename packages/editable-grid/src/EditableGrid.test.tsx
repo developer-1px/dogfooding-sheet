@@ -506,6 +506,51 @@ describe('EditableGrid', () => {
     }
   })
 
+  it('toggles checkbox cells from gridcell keyboard activation', () => {
+    const onSelectionChange = vi.fn()
+    const { host, root, onChange } = setupDatabase(vi.fn(), undefined, onSelectionChange)
+    try {
+      const cells = gridCells()
+      const doneCell = cells[2]
+      act(() => doneCell.focus())
+      onSelectionChange.mockClear()
+
+      act(() => keyDown(doneCell, ' '))
+
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expectFocusedGridCell(cells, doneCell)
+      expect(onChange).toHaveBeenLastCalledWith({
+        patches: [{ op: 'replace', path: '/records/0/done', value: true }],
+        source: 'cell-edit',
+        selection: {
+          focus: { rowIndex: 0, columnId: 'done' },
+          ranges: [{
+            anchor: { rowIndex: 0, columnId: 'done' },
+            focus: { rowIndex: 0, columnId: 'done' },
+          }],
+        },
+      })
+
+      act(() => keyDown(doneCell, 'Enter'))
+
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expectFocusedGridCell(cells, doneCell)
+      expect(onChange).toHaveBeenLastCalledWith({
+        patches: [{ op: 'replace', path: '/records/0/done', value: true }],
+        source: 'cell-edit',
+        selection: {
+          focus: { rowIndex: 0, columnId: 'done' },
+          ranges: [{
+            anchor: { rowIndex: 0, columnId: 'done' },
+            focus: { rowIndex: 0, columnId: 'done' },
+          }],
+        },
+      })
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
   it('keeps checkbox cell keys inside the checkbox control', () => {
     const parentKeys: string[] = []
     const onSelectionChange = vi.fn()

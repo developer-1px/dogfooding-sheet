@@ -11,6 +11,7 @@ import {
 import { useEditableGridDomFocus, type EditableGridCaretMode } from './primitives'
 import {
   addressDomId,
+  checkedValue,
   commitValueForField,
   fieldTypeOf,
   formatCellValue,
@@ -162,6 +163,13 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     cellValue: unknown,
     column: EditableGridColumn,
   ) => {
+    if (fieldTypeOf(column) === 'checkbox' && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault()
+      if (!isReadonlyColumn(readonly, column)) {
+        commitDirectValue(address, cellValue, column, !checkedValue(cellValue))
+      }
+      return
+    }
     if (event.key === 'Enter') {
       event.preventDefault()
       startEdit(address, cellValue, column, { caret: 'end' })
