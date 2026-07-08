@@ -40,4 +40,15 @@ describe('grid styles', () => {
 
     expect(source).toContain('.cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }')
   })
+
+  it('keeps cell links constrained to the cell inline size', () => {
+    const source = gridCss()
+    const linkRule = source.match(/\.cell-link\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(linkRule).toContain('display: inline-block;')
+    expect(linkRule).toContain('max-width: 100%;')
+    expect(linkRule).toContain('overflow: hidden;')
+    expect(linkRule).toContain('text-overflow: ellipsis;')
+    expect(linkRule).toContain('white-space: inherit;')
+  })
 })
