@@ -1,8 +1,12 @@
-import { act, createElement, type ComponentProps } from 'react'
+import { act, createElement, type ComponentProps, type KeyboardEventHandler } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { setupReactDOM } from './test-utils'
+import { keyDown, setInputValue, setupReactDOM } from './test-utils'
 import { Toolbar } from './Toolbar'
 import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from './schema'
+
+const toolbarActionMocks = vi.hoisted(() => ({
+  setToolbarColor: vi.fn(() => false),
+}))
 
 vi.mock('./toolbarActions', () => ({
   applyCheckboxValidation: () => false,
@@ -12,14 +16,17 @@ vi.mock('./toolbarActions', () => ({
   promptListValidation: () => Promise.resolve('cancelled'),
   promptToolbarFilter: () => Promise.resolve('cancelled'),
   setToolbarAlignment: () => false,
-  setToolbarColor: () => false,
+  setToolbarColor: toolbarActionMocks.setToolbarColor,
   toggleToolbarStyle: () => false,
 }))
 
 describe('Toolbar component', () => {
   const dom = setupReactDOM()
 
-  const renderToolbar = (overrides: Partial<ComponentProps<typeof Toolbar>> = {}) => {
+  const renderToolbar = (
+    overrides: Partial<ComponentProps<typeof Toolbar>> = {},
+    options: { onKeyDown?: KeyboardEventHandler<HTMLFormElement> } = {},
+  ) => {
     const props: ComponentProps<typeof Toolbar> = {
       display: () => '1',
       writeCell: vi.fn(),
@@ -77,7 +84,7 @@ describe('Toolbar component', () => {
       ...overrides,
     }
 
-    act(() => dom.root.render(createElement('form', null, createElement(Toolbar, props))))
+    act(() => dom.root.render(createElement('form', { onKeyDown: options.onKeyDown }, createElement(Toolbar, props))))
     return props
   }
 
@@ -131,6 +138,30 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 추가"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')?.disabled).toBe(false)
+  })
+
+  it('keeps toolbar color picker activation keys inside the color controls', () => {
+    const parentKeys: string[] = []
+    toolbarActionMocks.setToolbarColor.mockClear()
+
+    renderToolbar({}, { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const bgColor = document.querySelector<HTMLInputElement>('input[aria-label="배경색 선택"]')
+    const fgColor = document.querySelector<HTMLInputElement>('input[aria-label="글자색 선택"]')
+
+    expect(bgColor?.disabled).toBe(false)
+    expect(fgColor?.disabled).toBe(false)
+
+    act(() => keyDown(bgColor!, 'Enter'))
+    act(() => keyDown(fgColor!, ' '))
+
+    expect(parentKeys).toEqual([])
+
+    act(() => setInputValue(bgColor!, '#ff0000'))
+    act(() => setInputValue(fgColor!, '#00ff00'))
+
+    expect(toolbarActionMocks.setToolbarColor).toHaveBeenCalledWith(expect.objectContaining({ target: 'bg', color: '#ff0000' }))
+    expect(toolbarActionMocks.setToolbarColor).toHaveBeenCalledWith(expect.objectContaining({ target: 'fg', color: '#00ff00' }))
   })
 
   it('disables toolbar merge for a single unmerged focused cell', () => {
