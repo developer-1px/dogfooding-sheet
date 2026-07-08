@@ -31,6 +31,8 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
   })
   if (!open) return null
   const submit = () => onSubmit(value)
+  const cancelActionLabel = `${label} 취소`
+  const submitActionLabel = `${label} ${submitLabel}`
   return (
     <>
       <div className="dialog-backdrop" aria-hidden="true" onClick={onCancel} />
@@ -60,8 +62,8 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
           aria-keyshortcuts={inputKeyShortcuts}
         />
         <div className="confirm-actions">
-          <button type="button" onClick={onCancel} onKeyDown={stopButtonActivationKeyDown} title="취소 (Esc)" aria-label="취소" aria-keyshortcuts="Escape">취소</button>
-          <button type="button" className="primary" onClick={submit} onKeyDown={stopButtonActivationKeyDown} title={`${submitLabel} (Enter)`} aria-label={submitLabel} aria-keyshortcuts="Enter">{submitLabel}</button>
+          <button type="button" onClick={onCancel} onKeyDown={stopButtonActivationKeyDown} title={`${cancelActionLabel} (Esc)`} aria-label={cancelActionLabel} aria-keyshortcuts="Escape">취소</button>
+          <button type="button" className="primary" onClick={submit} onKeyDown={stopButtonActivationKeyDown} title={`${submitActionLabel} (Enter)`} aria-label={submitActionLabel} aria-keyshortcuts="Enter">{submitLabel}</button>
         </div>
       </div>
     </>
