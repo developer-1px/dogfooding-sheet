@@ -56,16 +56,16 @@ describe('Find component', () => {
     expect(document.querySelector<HTMLInputElement>('input[aria-label="대소문자 구분"]')?.type).toBe('checkbox')
     expect(document.querySelector<HTMLInputElement>('input[aria-label="정규식 사용"]')?.type).toBe('checkbox')
 
-    const previous = document.querySelector<HTMLButtonElement>('button[aria-label="이전 찾기 결과"]')
-    const next = document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과"]')
+    const previous = document.querySelector<HTMLButtonElement>('button[aria-label="이동할 이전 찾기 결과 없음"]')
+    const next = document.querySelector<HTMLButtonElement>('button[aria-label="이동할 다음 찾기 결과 없음"]')
 
     expect(previous?.textContent).toBe('↑')
     expect(previous?.disabled).toBe(true)
-    expect(previous?.getAttribute('title')).toBe('이전 찾기 결과 (Shift+Enter)')
+    expect(previous?.getAttribute('title')).toBe('이동할 이전 찾기 결과 없음 (Shift+Enter)')
     expect(previous?.getAttribute('aria-keyshortcuts')).toBe('Shift+Enter')
     expect(next?.textContent).toBe('↓')
     expect(next?.disabled).toBe(true)
-    expect(next?.getAttribute('title')).toBe('다음 찾기 결과 (Enter)')
+    expect(next?.getAttribute('title')).toBe('이동할 다음 찾기 결과 없음 (Enter)')
     expect(next?.getAttribute('aria-keyshortcuts')).toBe('Enter')
     expect(document.querySelector('.count')?.textContent).toBe('')
     expect(document.querySelector('.count')?.getAttribute('role')).toBe('status')
@@ -83,7 +83,6 @@ describe('Find component', () => {
 
     const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')
     const status = document.querySelector<HTMLElement>('.count[role="status"]')
-    const next = document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과"]')
 
     expect(query).not.toBeNull()
     expect(status?.textContent).toBe('')
@@ -92,13 +91,13 @@ describe('Find component', () => {
     expect(status?.textContent).toBe('0개')
     expect(status?.getAttribute('title')).toBe('찾기 결과 없음')
     expect(status?.getAttribute('aria-label')).toBe('찾기 결과 없음')
-    expect(next?.disabled).toBe(true)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="이동할 다음 찾기 결과 없음"]')?.disabled).toBe(true)
 
     act(() => setInputValue(query!, 'Alpha'))
     expect(status?.textContent).toBe('1/1')
     expect(status?.getAttribute('title')).toBe('찾기 결과 1/1, 현재 셀 A1')
     expect(status?.getAttribute('aria-label')).toBe('찾기 결과 1/1, 현재 셀 A1')
-    expect(next?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과, 이동 셀 A1"]')?.disabled).toBe(false)
   })
 
   it('keeps button activation keys from directly triggering find bar Enter shortcuts', () => {
@@ -106,10 +105,10 @@ describe('Find component', () => {
     renderFind('find', { A1: 'Alpha', B1: 'Alpha' }, { onJump: (cellId) => jumps.push(cellId) })
 
     const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')!
-    const previous = document.querySelector<HTMLButtonElement>('button[aria-label="이전 찾기 결과"]')!
-    const next = document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과"]')!
 
     act(() => setInputValue(query, 'Alpha'))
+    const previous = document.querySelector<HTMLButtonElement>('button[aria-label="이전 찾기 결과, 이동 셀 B1"]')!
+    const next = document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과, 이동 셀 B1"]')!
     expect(previous.textContent).toBe('↑')
     expect(previous.getAttribute('title')).toBe('이전 찾기 결과, 이동 셀 B1 (Shift+Enter)')
     expect(previous.getAttribute('aria-label')).toBe('이전 찾기 결과, 이동 셀 B1')
@@ -218,17 +217,17 @@ describe('Find component', () => {
     expect(replacement?.getAttribute('title')).toBe('바꿀 내용 (Enter=다음 결과 / Shift+Enter=이전 결과 / Esc=닫기)')
     expect(replacement?.getAttribute('aria-keyshortcuts')).toBe('Enter Shift+Enter Escape')
 
-    const replaceOne = document.querySelector<HTMLButtonElement>('button[aria-label="현재 찾기 결과 바꾸기"]')
-    const replaceAll = document.querySelector<HTMLButtonElement>('button[aria-label="모든 찾기 결과 바꾸기"]')
+    const replaceOne = document.querySelector<HTMLButtonElement>('button[aria-label="바꿀 현재 찾기 결과 없음"]')
+    const replaceAll = document.querySelector<HTMLButtonElement>('button[aria-label="바꿀 찾기 결과 없음"]')
 
     expect(replaceOne?.textContent).toBe('바꾸기')
     expect(replaceOne?.disabled).toBe(true)
-    expect(replaceOne?.getAttribute('title')).toBe('현재 찾기 결과 바꾸기')
-    expect(replaceOne?.getAttribute('aria-label')).toBe('현재 찾기 결과 바꾸기')
+    expect(replaceOne?.getAttribute('title')).toBe('바꿀 현재 찾기 결과 없음')
+    expect(replaceOne?.getAttribute('aria-label')).toBe('바꿀 현재 찾기 결과 없음')
     expect(replaceAll?.textContent).toBe('전체')
     expect(replaceAll?.disabled).toBe(true)
-    expect(replaceAll?.getAttribute('title')).toBe('모든 찾기 결과 바꾸기')
-    expect(replaceAll?.getAttribute('aria-label')).toBe('모든 찾기 결과 바꾸기')
+    expect(replaceAll?.getAttribute('title')).toBe('바꿀 찾기 결과 없음')
+    expect(replaceAll?.getAttribute('aria-label')).toBe('바꿀 찾기 결과 없음')
 
     act(() => setInputValue(query!, 'Alpha'))
     expect(replaceOne?.textContent).toBe('바꾸기')
