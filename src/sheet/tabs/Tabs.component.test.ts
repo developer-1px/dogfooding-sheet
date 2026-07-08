@@ -61,9 +61,13 @@ describe('Tabs component', () => {
       'Budget 시트 탭 (현재 선택됨) - 더블클릭=이름 변경 / 드래그=순서 변경',
       'Forecast 시트 탭 - 더블클릭=이름 변경 / 드래그=순서 변경',
     ])
-    expect(document.querySelector<HTMLInputElement>('.tab-color')?.value).toBe('#ff0000')
-    expect(document.querySelector<HTMLInputElement>('.tab-color')?.getAttribute('aria-label')).toBe('Budget 탭 색상 변경 (현재 색상 #ff0000)')
-    expect(document.querySelector<HTMLInputElement>('.tab-color')?.getAttribute('title')).toBe('Budget 탭 색상 변경 (현재 색상 #ff0000)')
+    const colorPickers = [...document.querySelectorAll<HTMLInputElement>('.tab-color')]
+    expect(colorPickers[0]?.value).toBe('#ff0000')
+    expect(colorPickers[0]?.getAttribute('aria-label')).toBe('Budget 탭 색상 변경 (현재 색상 #ff0000)')
+    expect(colorPickers[0]?.getAttribute('title')).toBe('Budget 탭 색상 변경 (현재 색상 #ff0000)')
+    expect(colorPickers[1]?.value).toBe('#cccccc')
+    expect(colorPickers[1]?.getAttribute('aria-label')).toBe('Forecast 탭 색상 변경 (현재 기본 색상)')
+    expect(colorPickers[1]?.getAttribute('title')).toBe('Forecast 탭 색상 변경 (현재 기본 색상)')
     expect(document.querySelector<HTMLButtonElement>('.tab-dup')?.getAttribute('aria-label')).toBe('Budget 시트 복제')
     expect(document.querySelector<HTMLButtonElement>('.tab-close')?.getAttribute('aria-label')).toBe('Budget 시트 삭제')
     expect(document.querySelector<HTMLButtonElement>('.tab-add')?.getAttribute('aria-label')).toBe('시트 추가')
