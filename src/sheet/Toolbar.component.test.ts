@@ -729,6 +729,12 @@ describe('Toolbar component', () => {
     expect(css).toContain('.color-pick[aria-disabled="true"] input[type="color"] { cursor: not-allowed; }')
   })
 
+  it('keeps the toolbar formula input contained on narrow rows', () => {
+    const css = appCss()
+
+    expect(css).toContain('flex: 1 1 200px; min-width: 0; max-width: 100%;')
+  })
+
   it('keeps formatting controls enabled for selected cells without focus', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
