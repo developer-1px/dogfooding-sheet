@@ -172,8 +172,12 @@ describe('Toolbar component', () => {
     expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
     expect(mergeButton?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
 
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')?.disabled).toBe(false)
+    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="B2 드롭다운 목록 유효성 검사 설정"]')
+    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="B2 체크박스로 변환"]')
+    expect(listValidation?.disabled).toBe(false)
+    expect(listValidation?.getAttribute('title')).toBe('B2 드롭다운 목록 유효성 검사 설정')
+    expect(checkbox?.disabled).toBe(false)
+    expect(checkbox?.getAttribute('title')).toBe('B2 체크박스로 변환')
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     expect(addCondFormat?.disabled).toBe(false)
     expect(addCondFormat?.getAttribute('title')).toBe('B열 조건부 서식 추가')
@@ -319,8 +323,8 @@ describe('Toolbar component', () => {
       document.querySelector<HTMLButtonElement>('button[aria-label="필터 켜짐, B열 필터: needle 수정"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 드롭다운 목록 유효성 검사 설정"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 체크박스로 변환"]'),
     ]
 
     for (const [index, button] of directButtons.entries()) {
@@ -599,11 +603,13 @@ describe('Toolbar component', () => {
   it('keeps validation commands enabled for selected cells without focus', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
-    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]')
-    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]')
+    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="B2 드롭다운 목록 유효성 검사 설정"]')
+    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="B2 체크박스로 변환"]')
 
     expect(listValidation?.disabled).toBe(false)
+    expect(listValidation?.getAttribute('title')).toBe('B2 드롭다운 목록 유효성 검사 설정')
     expect(checkbox?.disabled).toBe(false)
+    expect(checkbox?.getAttribute('title')).toBe('B2 체크박스로 변환')
   })
 
   it('disables formatting controls without target cells', () => {
