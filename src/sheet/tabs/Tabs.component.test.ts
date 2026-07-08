@@ -234,11 +234,14 @@ describe('Tabs component', () => {
     const rootCss = appCss()
     const css = overlaysCss()
     const closeAndAddRule = css.match(/\.tab-close,\s*\.tab-add\s*\{[^}]+\}/)?.[0] ?? ''
+    const addRule = css.match(/^\.tab-add\s*\{[^}]+\}/m)?.[0] ?? ''
     const duplicateRule = css.match(/\.tab-dup\s*\{[^}]+\}/)?.[0] ?? ''
     const colorRule = css.match(/\.tab-color\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-tab-add-border: 1px;')
     expect(rootCss).toContain('--sheet-size-tab-color-swatch: 14px;')
     expect(closeAndAddRule).toContain('flex: 0 0 auto;')
+    expect(addRule).toContain('border: var(--sheet-size-tab-add-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(duplicateRule).toContain('flex: 0 0 auto;')
     expect(colorRule).toContain('flex: 0 0 auto;')
     expect(colorRule).toContain('width: var(--sheet-size-tab-color-swatch, 14px);')
