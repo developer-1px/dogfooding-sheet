@@ -20,9 +20,9 @@ describe('ContextMenu component', () => {
         y: 34,
         label: '셀 메뉴',
         items: [
-          { label: '열기', onClick: onOpen, keyShortcuts: 'Alt+Shift+M' },
+          { label: '열기 (Alt+Shift+M)', onClick: onOpen, keyShortcuts: 'Alt+Shift+M' },
           'separator',
-          { label: '삭제', onClick: onDisabled, disabled: true, disabledLabel: '삭제할 항목 없음', keyShortcuts: 'Delete' },
+          { label: '삭제 (Delete)', onClick: onDisabled, disabled: true, disabledLabel: '삭제할 항목 없음', keyShortcuts: 'Delete' },
         ],
         onClose,
       }),
@@ -36,10 +36,10 @@ describe('ContextMenu component', () => {
     expect(menu?.getAttribute('aria-label')).toBe('셀 메뉴')
     expect(separator?.getAttribute('role')).toBe('separator')
     expect(separator?.textContent).toBe('')
-    expect(items.map((item) => item.textContent)).toEqual(['열기', '삭제'])
+    expect(items.map((item) => item.textContent)).toEqual(['열기 (Alt+Shift+M)', '삭제'])
     expect(items.every((item) => item.type === 'button')).toBe(true)
-    expect(items[0]?.getAttribute('title')).toBe('열기')
-    expect(items[0]?.getAttribute('aria-label')).toBe('열기')
+    expect(items[0]?.getAttribute('title')).toBe('열기 (Alt+Shift+M)')
+    expect(items[0]?.getAttribute('aria-label')).toBe('열기 (Alt+Shift+M)')
     expect(items[0]?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
     expect(items[1]?.getAttribute('title')).toBe('삭제할 항목 없음')
     expect(items[1]?.getAttribute('aria-label')).toBe('삭제할 항목 없음')

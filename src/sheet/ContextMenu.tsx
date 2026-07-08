@@ -70,6 +70,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
         }
         const itemLabel = it.disabled ? it.disabledLabel ?? `${it.label} 사용할 수 없음` : it.label
         const keyShortcuts = it.disabled ? undefined : it.keyShortcuts
+        const visibleLabel = it.disabled && it.keyShortcuts ? it.label.replace(/\s+\([^)]*\)$/, '') : it.label
         return (
           <button
             key={`m${i}`}
@@ -82,7 +83,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
             aria-keyshortcuts={keyShortcuts}
             onClick={onClick}
           >
-            {it.label}
+            {visibleLabel}
           </button>
         )
       })}
