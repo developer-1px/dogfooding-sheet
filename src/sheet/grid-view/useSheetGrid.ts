@@ -56,10 +56,27 @@ const toSheetCell = (cell: { key: Key; value: string; state: { selected: boolean
 const sheetColumnHeaderDomId = (gridId: string, headerId: string): string =>
   `${gridId}-${headerId}`
 
+const sheetRowHeaderDomId = (gridId: string, rowId: string): string =>
+  `${gridId}-${rowId}-header`
+
 const sheetColumnHeaderIdForCell = (gridId: string, cellId: string): string | undefined => {
   const separator = cellId.indexOf('-')
   if (separator < 0) return undefined
   return sheetColumnHeaderDomId(gridId, `h-${cellId.slice(separator + 1)}`)
+}
+
+const sheetRowHeaderIdForCell = (gridId: string, cellId: string): string | undefined => {
+  const separator = cellId.indexOf('-')
+  if (separator < 0) return undefined
+  return sheetRowHeaderDomId(gridId, cellId.slice(0, separator))
+}
+
+const sheetCellDescribedBy = (gridId: string, cellId: string): string | undefined => {
+  const ids = [
+    sheetColumnHeaderIdForCell(gridId, cellId),
+    sheetRowHeaderIdForCell(gridId, cellId),
+  ].filter(Boolean)
+  return ids.length ? ids.join(' ') : undefined
 }
 
 export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelectedIds, setSelectAnchor, startEdit, isEditing }: Args) {
@@ -201,8 +218,9 @@ export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelected
       ...(cellPropsById.get(id) ?? { role: 'columnheader', 'data-id': id }),
       id: sheetColumnHeaderDomId(gridId, id),
     }),
+    rowHeaderId: (id: string) => sheetRowHeaderDomId(gridId, id),
     cellProps: (id: string) => {
-      const describedBy = sheetColumnHeaderIdForCell(gridId, id)
+      const describedBy = sheetCellDescribedBy(gridId, id)
       return {
         ...(cellPropsById.get(id) ?? { role: 'gridcell', tabIndex: -1, 'data-id': id }),
         ...(describedBy ? { 'aria-describedby': describedBy } : {}),

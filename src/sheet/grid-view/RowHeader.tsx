@@ -4,6 +4,7 @@ import { rowRestoreControls } from './hiddenRestoreControls'
 import { ROW_HEIGHT_BOUNDS, resizeValueForKey } from '@spredsheet/editable-grid/resize-rules'
 
 interface Props {
+  id?: string
   rIdx: number
   focusId: string | null
   setFocusId: (id: string) => void
@@ -69,7 +70,7 @@ const rowHeaderLabel = (rowNumber: number, { selected, current }: { selected: bo
 
 const rowHeaderSelectionKeyShortcuts = 'Enter Space'
 
-export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected, active }: Props) {
+export function RowHeader({ id, rIdx, focusId, setFocusId, setSelectAnchor, setSelectedIds, heightOf, onResize, onResizeEnd, resetRowHeight, onContextMenu, colLetters, hiddenRows, showRow, selected, active }: Props) {
   const restoreControls = rowRestoreControls(rIdx, hiddenRows)
   const topRestore = restoreControls.find((control) => control.className === 'unhide-row top')
   const bottomRestore = restoreControls.find((control) => control.className === 'unhide-row bottom')
@@ -96,6 +97,7 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
 
   return (
     <span
+      id={id}
       className={`row-header${selected ? ' selected-header' : ''}`}
       role="rowheader"
       tabIndex={0}

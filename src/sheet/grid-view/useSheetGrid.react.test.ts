@@ -34,12 +34,14 @@ describe('useSheetGrid', () => {
     expect(grid?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown ArrowLeft ArrowRight Shift+ArrowUp Shift+ArrowDown Shift+ArrowLeft Shift+ArrowRight Enter')
     expect(document.querySelector<HTMLElement>('[role="row"][data-row-id="r0"]')?.getAttribute('aria-rowindex')).toBe('2')
     const columnHeader = document.querySelector<HTMLElement>('[role="columnheader"][data-id="h-A"]')
+    const rowHeader = document.querySelector<HTMLElement>('[role="rowheader"]')
     const cell = document.querySelector<HTMLElement>('[role="gridcell"][data-id="r0-A"]')
 
     expect(columnHeader?.id).toBeTruthy()
+    expect(rowHeader?.id).toBeTruthy()
     expect(columnHeader?.getAttribute('aria-colindex')).toBe('2')
     expect(cell?.getAttribute('aria-colindex')).toBe('2')
-    expect(cell?.getAttribute('aria-describedby')).toBe(columnHeader?.id)
+    expect(cell?.getAttribute('aria-describedby')).toBe(`${columnHeader?.id} ${rowHeader?.id}`)
   })
 
   it('keeps unmodified arrow keys routed through the grid pattern', () => {
@@ -69,7 +71,7 @@ function GridRootProbe({
   colCount: number
   setFocusId?: (id: string) => void
 }) {
-  const { rootProps, rowProps, columnHeaderProps, cellProps } = useSheetGrid({
+  const { rootProps, rowProps, columnHeaderProps, rowHeaderId, cellProps } = useSheetGrid({
     data,
     rowCount,
     colCount,
@@ -80,6 +82,7 @@ function GridRootProbe({
   return createElement('div', rootProps,
     createElement('span', columnHeaderProps('h-A'), 'A'),
     createElement('div', rowProps('r0'),
+      createElement('span', { id: rowHeaderId('r0'), role: 'rowheader' }, '1'),
       createElement('span', cellProps('r0-A'), 'A1'),
     ),
   )
