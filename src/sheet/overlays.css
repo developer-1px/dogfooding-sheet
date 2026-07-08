@@ -80,7 +80,10 @@
 .help-dialog {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   background: var(--sheet-color-surface, #fff); padding: var(--sheet-space-7, 20px) var(--sheet-space-8, 24px); border-radius: var(--sheet-radius-panel, 8px);
-  box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: 360px;
+  box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: min(360px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
+  max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  overflow: auto;
 }
 .prompt-dialog {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
