@@ -92,6 +92,7 @@ describe('Cell component', () => {
     expect(dropdownMark?.getAttribute('aria-hidden')).toBe('true')
     expect(gridCell?.getAttribute('aria-label')).toBe('A1 TRUE 메모 있음 드롭다운 목록 있음')
     expect(gridCell?.getAttribute('aria-haspopup')).toBe('listbox')
+    expect(gridCell?.getAttribute('aria-expanded')).toBe('false')
     expect(gridCell?.getAttribute('title')).toBe('Needs review')
 
     act(() => fillHandle!.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })))
@@ -233,6 +234,7 @@ describe('Cell component', () => {
     expect(select?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
     expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-keyshortcuts')).toBeNull()
     expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-haspopup')).toBeNull()
+    expect(document.querySelector<HTMLElement>('[role="gridcell"]')?.getAttribute('aria-expanded')).toBeNull()
     expect([...select!.querySelectorAll('option')].map((option) => option.value)).toEqual(['', 'Open', 'Closed'])
 
     act(() => select!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))
