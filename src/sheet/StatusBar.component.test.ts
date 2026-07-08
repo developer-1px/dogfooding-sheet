@@ -53,6 +53,10 @@ describe('StatusBar component', () => {
     expect(footer().getAttribute('aria-atomic')).toBe('true')
     expect(footer().textContent).toContain('2 셀 (2행 × 1열)')
     expect(footer().textContent).toContain('저장 중')
+    const saveStatus = document.querySelector<HTMLElement>('.persistence-status')
+    expect(saveStatus?.textContent).toBe('저장 중')
+    expect(saveStatus?.getAttribute('title')).toBe('변경 사항 저장 중')
+    expect(saveStatus?.getAttribute('aria-label')).toBe('변경 사항 저장 중')
     expect(footer().textContent).toContain('SUM: 30')
   })
 
@@ -72,6 +76,10 @@ describe('StatusBar component', () => {
     expect(footer().getAttribute('aria-atomic')).toBe('true')
     expect(footer().textContent).toContain('저장 대기')
     expect(footer().textContent).not.toContain('저장 중')
+    const saveStatus = document.querySelector<HTMLElement>('.persistence-status')
+    expect(saveStatus?.textContent).toBe('저장 대기')
+    expect(saveStatus?.getAttribute('title')).toBe('자동 저장 대기 중')
+    expect(saveStatus?.getAttribute('aria-label')).toBe('자동 저장 대기 중')
   })
 
   it('keeps save failure text terse while exposing the failure reason', () => {
