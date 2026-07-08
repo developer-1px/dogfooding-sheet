@@ -24,15 +24,16 @@ interface Props {
   toggle: (k: Flag) => void
   styleOf: StyleLookup
   focusKey: string | null
+  targetLabel: string
   disabled?: boolean
 }
 
-export function StyleToggleButtons({ toggle, styleOf, focusKey, disabled = false }: Props) {
+export function StyleToggleButtons({ toggle, styleOf, focusKey, targetLabel, disabled = false }: Props) {
   return (
     <>
       {TOGGLES.map(([k, , title, node, keyShortcuts, shortcutLabel]) => {
         const pressed = !!(focusKey && styleOf(focusKey)?.[k])
-        const label = disabled ? DISABLED_TOGGLE_LABELS[title] : `${title} ${pressed ? '켜짐' : '꺼짐'}`
+        const label = disabled ? DISABLED_TOGGLE_LABELS[title] : `${targetLabel} ${title} ${pressed ? '켜짐' : '꺼짐'}`
         return (
           <button type="button" key={k} onKeyDown={stopToolbarActivationKeyDown} onClick={() => toggle(k)} disabled={disabled} aria-pressed={pressed} title={shortcutLabel ? `${label} (${shortcutLabel})` : label} aria-label={label} aria-keyshortcuts={keyShortcuts}>{node}</button>
         )

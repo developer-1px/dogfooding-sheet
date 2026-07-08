@@ -139,8 +139,8 @@ describe('Toolbar component', () => {
     expect(clearFormatButton?.disabled).toBe(false)
     expect(clearFormatButton?.getAttribute('title')).toBe('B2 서식 모두 해제')
     expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.getAttribute('title')).toBe('굵게 꺼짐 (Ctrl/⌘+B)')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="B2 굵게 꺼짐"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="B2 굵게 꺼짐"]')?.getAttribute('title')).toBe('B2 굵게 꺼짐 (Ctrl/⌘+B)')
     const leftAlign = document.querySelector<HTMLButtonElement>('button[aria-label="B2 왼쪽 정렬 꺼짐"]')
     const centerAlign = document.querySelector<HTMLButtonElement>('button[aria-label="B2 가운데 정렬 꺼짐"]')
     const rightAlign = document.querySelector<HTMLButtonElement>('button[aria-label="B2 오른쪽 정렬 꺼짐"]')
@@ -260,14 +260,14 @@ describe('Toolbar component', () => {
       styleOf: () => ({ b: true }),
     }, { onKeyDown: (event) => parentKeys.push(event.key) })
 
-    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="굵게 켜짐"]')
+    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="B2 굵게 켜짐"]')
     const percent = document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 백분율 켜짐"]')
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     const clearCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 모두 해제"]')
 
     expect(bold?.disabled).toBe(false)
     expect(bold?.getAttribute('aria-pressed')).toBe('true')
-    expect(bold?.getAttribute('title')).toBe('굵게 켜짐 (Ctrl/⌘+B)')
+    expect(bold?.getAttribute('title')).toBe('B2 굵게 켜짐 (Ctrl/⌘+B)')
     expect(bold?.getAttribute('aria-keyshortcuts')).toBe('Control+B Meta+B')
     expect(percent?.disabled).toBe(false)
     expect(percent?.getAttribute('aria-pressed')).toBe('true')
@@ -311,6 +311,10 @@ describe('Toolbar component', () => {
       sheet: { ...initialSheet, merges: [] },
       freeze: { rows: 1, cols: 0 },
     }, { onKeyDown: (event) => parentKeys.push(event.key) })
+
+    const bold = document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 굵게 꺼짐"]')
+    expect(bold?.disabled).toBe(false)
+    expect(bold?.getAttribute('title')).toBe('선택 셀 2개 굵게 꺼짐 (Ctrl/⌘+B)')
 
     const bgColor = document.querySelector<HTMLInputElement>(`input[aria-label="선택 셀 2개 배경색 선택 (현재 색상 ${DEFAULT_CELL_BACKGROUND_COLOR})"]`)
     const fgColor = document.querySelector<HTMLInputElement>(`input[aria-label="선택 셀 2개 글자색 선택 (현재 색상 ${DEFAULT_CELL_TEXT_COLOR})"]`)
@@ -696,7 +700,7 @@ describe('Toolbar component', () => {
   it('keeps formatting controls enabled for selected cells without focus', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.disabled).toBe(false)
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="B2 굵게 꺼짐"]')?.disabled).toBe(false)
     const leftAlign = document.querySelector<HTMLButtonElement>('button[aria-label="B2 왼쪽 정렬 꺼짐"]')
     expect(leftAlign?.disabled).toBe(false)
     expect(leftAlign?.getAttribute('title')).toBe('B2 왼쪽 정렬 꺼짐')

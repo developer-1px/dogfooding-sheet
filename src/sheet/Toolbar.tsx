@@ -171,7 +171,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={() => appendRows(20)} disabled={!canAppendRows} title={appendRowsLabel} aria-label={appendRowsLabel}>+20행</button><button {...toolbarCommandButtonProps} onClick={() => appendCols(1)} disabled={!canAppendCols} title={appendColsLabel} aria-label={appendColsLabel}>+끝열</button>
       <button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'asc')} disabled={!canSort} title={sortAscLabel} aria-label={sortAscLabel}>↑정렬</button><button {...toolbarCommandButtonProps} onClick={() => canSort && sortByCol(focus.col, 'desc')} disabled={!canSort} title={sortDescLabel} aria-label={sortDescLabel}>↓정렬</button>
       <button {...toolbarCommandButtonProps} onClick={runAutoSum} disabled={!canAutoSum} title={autoSumTitle} aria-label={autoSumLabel}>Σ</button>
-      <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} disabled={!hasCellTarget} />
+      <StyleToggleButtons toggle={toggle} styleOf={styleOf} focusKey={focusKey} targetLabel={cellTarget} disabled={!hasCellTarget} />
       <button {...toolbarCommandButtonProps} onClick={() => setAlign('left')} disabled={!hasCellTarget} aria-pressed={leftAlignPressed} title={leftAlignLabel} aria-label={leftAlignLabel}>⇤</button>
       <button {...toolbarCommandButtonProps} onClick={() => setAlign('center')} disabled={!hasCellTarget} aria-pressed={centerAlignPressed} title={centerAlignLabel} aria-label={centerAlignLabel}>⇔</button>
       <button {...toolbarCommandButtonProps} onClick={() => setAlign('right')} disabled={!hasCellTarget} aria-pressed={rightAlignPressed} title={rightAlignLabel} aria-label={rightAlignLabel}>⇥</button>
