@@ -14,7 +14,7 @@ describe('FormulaBar', () => {
       onUndo: vi.fn(),
       onRedo: vi.fn(),
       canUndo: true,
-      canRedo: false,
+      canRedo: true,
       onAddrClick: vi.fn(),
     })))
 
@@ -30,10 +30,10 @@ describe('FormulaBar', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
     expect(document.querySelector('button[aria-label="실행 취소"]')?.getAttribute('title')).toBe('실행 취소 (Ctrl/⌘+Z)')
     expect(document.querySelector('button[aria-label="실행 취소"]')?.getAttribute('aria-keyshortcuts')).toBe('Control+Z Meta+Z')
-    expect(document.querySelector('button[aria-label="다시 실행할 작업 없음"]')?.textContent).toBe('다시 실행')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.type).toBe('button')
-    expect(document.querySelector('button[aria-label="다시 실행할 작업 없음"]')?.getAttribute('title')).toBe('다시 실행할 작업 없음 (Ctrl/⌘+Shift+Z)')
-    expect(document.querySelector('button[aria-label="다시 실행할 작업 없음"]')?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
+    expect(document.querySelector('button[aria-label="다시 실행"]')?.textContent).toBe('다시 실행')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')?.type).toBe('button')
+    expect(document.querySelector('button[aria-label="다시 실행"]')?.getAttribute('title')).toBe('다시 실행 (Ctrl/⌘+Shift+Z)')
+    expect(document.querySelector('button[aria-label="다시 실행"]')?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
   })
 
   it('keeps the address control disabled when no jump action is available', () => {
@@ -60,10 +60,12 @@ describe('FormulaBar', () => {
     expect(formula?.getAttribute('title')).toBe('수식 입력줄, 선택된 셀 없음')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.type).toBe('button')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.getAttribute('title')).toBe('실행 취소할 작업 없음 (Ctrl/⌘+Z)')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.getAttribute('title')).toBe('실행 취소할 작업 없음')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.type).toBe('button')
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.getAttribute('title')).toBe('다시 실행할 작업 없음 (Ctrl/⌘+Shift+Z)')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.getAttribute('title')).toBe('다시 실행할 작업 없음')
+    expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 
   it('clarifies the address control when Go To is available without a selected address', () => {
