@@ -14,7 +14,15 @@
 .header-cell { position: relative; cursor: pointer; }
 .header-cell:hover { background: var(--sheet-color-accent-muted, #e8f0fe); }
 .header-cell.filtered { color: var(--sheet-color-accent, #1a73e8); background: var(--sheet-color-accent-muted, #e8f0fe); font-weight: var(--sheet-font-weight-strong, 600); }
-.filter-mark { margin-left: var(--sheet-space-1, 4px); font-size: var(--sheet-font-size-xs, 10px); color: var(--sheet-color-accent, #1a73e8); }
+.header-cell-label {
+  display: inline-flex; align-items: center; min-width: 0; max-width: 100%;
+  overflow: hidden; white-space: nowrap; vertical-align: bottom;
+}
+.header-cell-text, .row-header-label {
+  min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.row-header-label { display: inline-block; vertical-align: bottom; }
+.filter-mark { flex: 0 0 auto; margin-left: var(--sheet-space-1, 4px); font-size: var(--sheet-font-size-xs, 10px); color: var(--sheet-color-accent, #1a73e8); }
 .unhide-col, .unhide-row {
   position: absolute; border: 1px solid var(--sheet-color-border, #dadce0); background: var(--sheet-color-surface, #fff); color: var(--sheet-color-accent, #1a73e8);
   width: var(--sheet-size-control-sm, 16px); height: var(--sheet-size-control-sm, 16px); padding: 0; border-radius: var(--sheet-radius-panel, 8px); font-size: var(--sheet-font-size-control-xs, 11px); line-height: 14px;
