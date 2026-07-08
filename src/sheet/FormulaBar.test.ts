@@ -92,6 +92,48 @@ describe('FormulaBar', () => {
     expect(onRedo).toHaveBeenCalledTimes(1)
   })
 
+  it('keeps formula input editing keys inside the formula input', () => {
+    const parentKeys: string[] = []
+    const onCommit = vi.fn()
+
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(FormulaBar, {
+        addr: 'A1',
+        value: '=B1',
+        onCommit,
+        onUndo: vi.fn(),
+        onRedo: vi.fn(),
+        canUndo: false,
+        canRedo: false,
+      }),
+    )))
+
+    const formula = document.querySelector<HTMLInputElement>('input.formula')!
+
+    expect(formula.getAttribute('aria-label')).toBe('수식 입력줄')
+    expect(formula.getAttribute('aria-keyshortcuts')).toBe('Enter Escape F4')
+    expect(formula.getAttribute('title')).toBe('수식 입력줄 (Enter=적용 / Esc=취소 / F4=참조 형식 순환)')
+
+    act(() => formula.focus())
+    act(() => keyDown(formula, 'ArrowLeft'))
+    act(() => keyDown(formula, 'x'))
+
+    const f4 = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'F4' })
+    act(() => formula.dispatchEvent(f4))
+
+    expect(f4.defaultPrevented).toBe(true)
+    expect(formula.value).toBe('=$B$1')
+
+    act(() => setInputValue(formula, '=C1'))
+    act(() => keyDown(formula, 'Escape'))
+
+    expect(formula.value).toBe('=B1')
+    expect(onCommit).not.toHaveBeenCalled()
+    expect(parentKeys).toEqual([])
+  })
+
   it('prevents Enter from submitting an enclosing form while committing the draft', () => {
     const onSubmit = vi.fn((e: SubmitEvent) => e.preventDefault())
     const onCommit = vi.fn()
@@ -119,5 +161,35 @@ describe('FormulaBar', () => {
     expect(enter.defaultPrevented).toBe(true)
     expect(onCommit).toHaveBeenCalledWith('next')
     expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('keeps formula input Enter local while committing the draft', () => {
+    const parentKeys: string[] = []
+    const onCommit = vi.fn()
+
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(FormulaBar, {
+        addr: 'A1',
+        value: 'old',
+        onCommit,
+        onUndo: vi.fn(),
+        onRedo: vi.fn(),
+        canUndo: false,
+        canRedo: false,
+      }),
+    )))
+
+    const formula = document.querySelector<HTMLInputElement>('input.formula')!
+
+    act(() => {
+      formula.focus()
+      setInputValue(formula, 'next')
+    })
+    act(() => keyDown(formula, 'Enter'))
+
+    expect(onCommit).toHaveBeenCalledWith('next')
+    expect(parentKeys).toEqual([])
   })
 })
