@@ -103,7 +103,7 @@ export function OverflowMenu({ display, writeCell, writeCells, writeCellRange, o
               : itemProps(it.id)
             const visibleLabel = it.label.replace(/^✓\s*/, '')
             const itemLabel = it.disabled
-              ? `${it.label} 사용할 수 없음`
+              ? it.disabledLabel ?? `${it.label} 사용할 수 없음`
               : it.kind === 'menuitemcheckbox'
                 ? `${visibleLabel} ${it.checked ? '켜짐' : '꺼짐'}`
                 : it.label

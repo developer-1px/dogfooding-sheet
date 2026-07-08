@@ -26,6 +26,7 @@ export interface OverflowMenuItem {
   label: string
   keyShortcuts?: string
   disabled?: boolean
+  disabledLabel?: string
   kind?: 'menuitemcheckbox'
   checked?: boolean
 }
@@ -46,14 +47,14 @@ export const overflowMenuItems = (state: OverflowMenuState): OverflowMenuItem[] 
   { id: 'help', label: '도움말 (F1)', keyShortcuts: 'F1' },
   { id: 'show-formulas', label: `${state.showFormulas ? '✓ ' : ''}수식 표시 (Ctrl/⌘+\`)`, keyShortcuts: 'Control+` Meta+`', kind: 'menuitemcheckbox', checked: state.showFormulas },
   { id: 'show-gridlines', label: `${state.showGridlines ? '✓ ' : ''}격자선 표시`, kind: 'menuitemcheckbox', checked: state.showGridlines },
-  { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', keyShortcuts: 'Control+K Meta+K', disabled: state.canInsertLink === false },
+  { id: 'link', label: '하이퍼링크 삽입 (Ctrl/⌘+K)', keyShortcuts: 'Control+K Meta+K', disabled: state.canInsertLink === false, disabledLabel: '하이퍼링크를 삽입할 셀 없음' },
   { id: 'print', label: '인쇄 (Ctrl/⌘+P)', keyShortcuts: 'Control+P Meta+P' },
   { id: 'csv-export', label: 'CSV 내보내기 (Ctrl/⌘+S)', keyShortcuts: 'Control+S Meta+S' },
   { id: 'csv-import', label: 'CSV 가져오기' },
   { id: 'json-export', label: 'JSON 내보내기' },
   { id: 'json-import', label: 'JSON 가져오기' },
-  { id: 'clear-values', label: '전체 값 지우기', disabled: state.canClearValues === false },
-  { id: 'clear-formats', label: '전체 서식 지우기', disabled: state.canClearFormats === false },
+  { id: 'clear-values', label: '전체 값 지우기', disabled: state.canClearValues === false, disabledLabel: '지울 셀 값 없음' },
+  { id: 'clear-formats', label: '전체 서식 지우기', disabled: state.canClearFormats === false, disabledLabel: '지울 서식 없음' },
 ]
 
 export const overflowMenuItemId = (id: string): OverflowMenuItemId | null =>
