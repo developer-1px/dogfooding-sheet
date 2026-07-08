@@ -105,7 +105,7 @@ describe('header restore controls', () => {
     expect(setSelectedIds).not.toHaveBeenCalled()
   })
 
-  it('exposes filtered column state on the column header label', () => {
+  it('exposes filtered, selected, and current column state on the column header label', () => {
     act(() => dom.root.render(createElement(GridHeader, {
       gridTemplate: '40px 80px 80px',
       columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0 }),
@@ -119,8 +119,8 @@ describe('header restore controls', () => {
       hiddenCols: new Set(),
       showCol: vi.fn(),
       filterCol: 'B',
-      focusCol: null,
-      selectedCols: new Set(),
+      focusCol: 'B',
+      selectedCols: new Set(['B']),
       allSelected: false,
       onHeaderContextMenu: vi.fn(),
       rowCount: 2,
@@ -132,7 +132,9 @@ describe('header restore controls', () => {
     const filterMark = filtered?.querySelector<HTMLElement>('.filter-mark')
 
     expect(unfiltered?.getAttribute('aria-label')).toBe('A열')
-    expect(filtered?.getAttribute('aria-label')).toBe('B열 필터 적용')
+    expect(filtered?.getAttribute('aria-label')).toBe('B열, 필터 적용, 선택됨, 현재 위치')
+    expect(filtered?.getAttribute('aria-selected')).toBe('true')
+    expect(filtered?.getAttribute('aria-current')).toBe('true')
     expect(filterMark?.textContent).toBe('▾')
     expect(filterMark?.getAttribute('aria-hidden')).toBe('true')
   })
@@ -257,6 +259,32 @@ describe('header restore controls', () => {
     expect(showRow).toHaveBeenNthCalledWith(1, 1)
     expect(showRow).toHaveBeenNthCalledWith(2, 3)
     expect(setSelectedIds).not.toHaveBeenCalled()
+  })
+
+  it('exposes selected and current row state on the row header label', () => {
+    act(() => dom.root.render(createElement(RowHeader, {
+      rIdx: 2,
+      focusId: null,
+      setFocusId: vi.fn(),
+      setSelectAnchor: vi.fn(),
+      setSelectedIds: vi.fn(),
+      heightOf: () => 24,
+      onResize: vi.fn(),
+      onResizeEnd: vi.fn(),
+      resetRowHeight: vi.fn(),
+      onContextMenu: vi.fn(),
+      colLetters: ['A', 'B'],
+      hiddenRows: new Set(),
+      showRow: vi.fn(),
+      selected: true,
+      active: true,
+    })))
+
+    const header = document.querySelector<HTMLElement>('.row-header')
+
+    expect(header?.getAttribute('aria-label')).toBe('3행, 선택됨, 현재 위치')
+    expect(header?.getAttribute('aria-selected')).toBe('true')
+    expect(header?.getAttribute('aria-current')).toBe('true')
   })
 
   it('makes row headers keyboard-operable without stealing nested control keys', () => {

@@ -68,6 +68,15 @@ function ColResizer({ col, widthOf, onResize, onResizeEnd, autoFitCol }: {
   )
 }
 
+const columnHeaderLabel = (col: string, { filtered, selected, current }: { filtered: boolean, selected: boolean, current: boolean }) => {
+  const states = [
+    filtered ? '필터 적용' : null,
+    selected ? '선택됨' : null,
+    current ? '현재 위치' : null,
+  ].filter(Boolean)
+  return states.length ? `${col}열, ${states.join(', ')}` : `${col}열`
+}
+
 export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize, onResizeEnd, autoFitCol, setSelectedIds, setFocusId, setSelectAnchor, hiddenCols, showCol, filterCol, focusCol, selectedCols, allSelected, onHeaderContextMenu, rowCount, colLetters }: Props) {
   const selectAll = () => {
     const selection = selectAllHeaders(rowCount, colLetters)
@@ -100,6 +109,8 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         const leftRestore = restoreControls.find((control) => control.className === 'unhide-col left')
         const rightRestore = restoreControls.find((control) => control.className === 'unhide-col right')
         const isFiltered = c === filterCol
+        const isSelected = selectedCols.has(c)
+        const isCurrent = c === focusCol
         const selectColumn = (extend: boolean) => {
           const selection = selectColumnHeader(c, extend ? focusCol : null, rowCount, colLetters)
           setSelectedIds(selection.selectedIds)
@@ -123,10 +134,10 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
           <span
             key={c}
             {...headerProps}
-            className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${isFiltered ? ' filtered' : ''}`}
-            aria-label={isFiltered ? `${c}열 필터 적용` : `${c}열`}
-            aria-current={c === focusCol ? 'true' : undefined}
-            aria-selected={selectedCols.has(c)}
+            className={`header-cell${isCurrent ? ' active' : ''}${isSelected ? ' selected-header' : ''}${isFiltered ? ' filtered' : ''}`}
+            aria-label={columnHeaderLabel(c, { filtered: isFiltered, selected: isSelected, current: isCurrent })}
+            aria-current={isCurrent ? 'true' : undefined}
+            aria-selected={isSelected}
             onClick={(e) => selectColumn(e.shiftKey)}
             onKeyDown={(e) => {
               if (e.currentTarget !== e.target) return
