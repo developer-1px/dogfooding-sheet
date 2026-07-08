@@ -309,6 +309,49 @@ describe('EditableGrid', () => {
     }
   })
 
+  it('skips change patches for unchanged text edits while closing the editor', () => {
+    const { host, root, onChange, onSelectionChange } = setup()
+    try {
+      const cells = gridCells()
+      const [first] = cells
+      act(() => first.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+      const input = document.querySelector<HTMLInputElement>('.editable-grid-input')
+      expect(input?.value).toBe('Apple')
+      onSelectionChange.mockClear()
+
+      act(() => keyDown(input!, 'Enter'))
+
+      expect(onChange).not.toHaveBeenCalled()
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expect(document.querySelector<HTMLInputElement>('.editable-grid-input')).toBeNull()
+      expectFocusedGridCell(cells, first)
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('skips change patches for unchanged number edits while closing the editor', () => {
+    const { host, root, onChange, onSelectionChange } = setupDatabase()
+    try {
+      const cells = gridCells()
+      const scoreCell = cells[3]
+      act(() => scoreCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+      const input = document.querySelector<HTMLInputElement>('input.editable-grid-input')
+      expect(input?.type).toBe('number')
+      expect(input?.value).toBe('3')
+      onSelectionChange.mockClear()
+
+      act(() => keyDown(input!, 'Enter'))
+
+      expect(onChange).not.toHaveBeenCalled()
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expect(document.querySelector<HTMLInputElement>('input.editable-grid-input')).toBeNull()
+      expectFocusedGridCell(cells, scoreCell)
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
   it('does not start edits for readonly columns', () => {
     const { host, root, onChange } = setup()
     try {
