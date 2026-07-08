@@ -70,8 +70,10 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const deleteRowTitle = `${focusRowLabel} 삭제 (Ctrl/⌘+Alt+-)`
   const insertColTitle = `${focusColLabel} 왼쪽에 열 삽입 (Ctrl/⌘+Alt+Shift+=)`
   const deleteColTitle = `${focusColLabel} 삭제 (Ctrl/⌘+Alt+Shift+-)`
-  const appendRowsLabel = `아래에 행 20개 추가 (현재 ${rowCount}행)`
-  const appendColsLabel = `오른쪽에 열 1개 추가 (현재 ${colCount}열)`
+  const canAppendRows = rowCount < MAX_ROW_COUNT
+  const canAppendCols = colCount < MAX_COL_COUNT
+  const appendRowsLabel = canAppendRows ? `아래에 행 20개 추가 (현재 ${rowCount}행)` : `행 최대 개수 도달 (현재 ${rowCount}행)`
+  const appendColsLabel = canAppendCols ? `오른쪽에 열 1개 추가 (현재 ${colCount}열)` : `열 최대 개수 도달 (현재 ${colCount}열)`
   const sortAscLabel = !focus
     ? '오름차순 정렬할 열 없음'
     : rowCount <= 1
@@ -96,8 +98,6 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const bgColorLabel = `배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})`
   const fgColorLabel = `글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})`
   const hasCellTarget = selectedIds.length > 0 || !!focusKey
-  const canAppendRows = rowCount < MAX_ROW_COUNT
-  const canAppendCols = colCount < MAX_COL_COUNT
   const canSort = !!focus && rowCount > 1
   const canToggleFreezeRows = rowCount > 1 || freeze.rows > 0
   const canToggleFreezeCols = colCount > 1 || freeze.cols > 0
