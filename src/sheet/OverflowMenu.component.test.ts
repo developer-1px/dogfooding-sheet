@@ -8,6 +8,7 @@ import { initialSheet, type Sheet } from './schema'
 import { keyDown } from './test-utils'
 
 const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
+const appCss = () => readFileSync('src/App.css', 'utf8')
 
 describe('OverflowMenu component', () => {
   let host: HTMLDivElement
@@ -238,10 +239,12 @@ describe('OverflowMenu component', () => {
   })
 
   it('keeps long overflow menu labels contained on narrow viewports', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const listRule = css.match(/\.overflow-list\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(listRule).toContain('min-width: min(160px, max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))));')
+    expect(rootCss).toContain('--sheet-size-overflow-menu-width: 160px;')
+    expect(listRule).toContain('min-width: min(var(--sheet-size-overflow-menu-width, 160px), max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))));')
     expect(listRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));')
     expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
   })
