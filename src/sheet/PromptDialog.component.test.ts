@@ -101,7 +101,7 @@ describe('PromptDialog component', () => {
 
     expect(input.placeholder).toBe('https://...')
     expect(input.value).toBe('https://example.com')
-    expect(input.getAttribute('title')).toBe('하이퍼링크 URL (Enter=적용 / Esc=취소)')
+    expect(input.getAttribute('title')).toBe('하이퍼링크 URL (Enter=삽입 / Esc=취소)')
     expect(input.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
 
     act(() => keyDown(input, 'ArrowLeft'))
