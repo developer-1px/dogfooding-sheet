@@ -97,6 +97,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
         const restoreControls = columnRestoreControls(c, colLetters, hiddenCols)
         const leftRestore = restoreControls.find((control) => control.className === 'unhide-col left')
         const rightRestore = restoreControls.find((control) => control.className === 'unhide-col right')
+        const isFiltered = c === filterCol
         const selectColumn = (extend: boolean) => {
           const selection = selectColumnHeader(c, extend ? focusCol : null, rowCount, colLetters)
           setSelectedIds(selection.selectedIds)
@@ -120,8 +121,8 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
           <span
             key={c}
             {...headerProps}
-            className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${c === filterCol ? ' filtered' : ''}`}
-            aria-label={`${c}열`}
+            className={`header-cell${c === focusCol ? ' active' : ''}${selectedCols.has(c) ? ' selected-header' : ''}${isFiltered ? ' filtered' : ''}`}
+            aria-label={isFiltered ? `${c}열 필터 적용` : `${c}열`}
             aria-current={c === focusCol ? 'true' : undefined}
             aria-selected={selectedCols.has(c)}
             onClick={(e) => selectColumn(e.shiftKey)}
@@ -140,7 +141,7 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
           >
             {leftRestore && restoreButton(leftRestore)}
             {c}
-            {c === filterCol && <span className="filter-mark" aria-label={`${c}열 필터 적용`}>▾</span>}
+            {isFiltered && <span className="filter-mark" aria-hidden>▾</span>}
             {rightRestore && restoreButton(rightRestore)}
             <ColResizer col={c} widthOf={widthOf} onResize={onResize} onResizeEnd={onResizeEnd} autoFitCol={autoFitCol} />
           </span>

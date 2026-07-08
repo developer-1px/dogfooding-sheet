@@ -105,6 +105,38 @@ describe('header restore controls', () => {
     expect(setSelectedIds).not.toHaveBeenCalled()
   })
 
+  it('exposes filtered column state on the column header label', () => {
+    act(() => dom.root.render(createElement(GridHeader, {
+      gridTemplate: '40px 80px 80px',
+      columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0 }),
+      widthOf: () => 80,
+      onResize: vi.fn(),
+      onResizeEnd: vi.fn(),
+      autoFitCol: vi.fn(),
+      setSelectedIds: vi.fn(),
+      setFocusId: vi.fn(),
+      setSelectAnchor: vi.fn(),
+      hiddenCols: new Set(),
+      showCol: vi.fn(),
+      filterCol: 'B',
+      focusCol: null,
+      selectedCols: new Set(),
+      allSelected: false,
+      onHeaderContextMenu: vi.fn(),
+      rowCount: 2,
+      colLetters: ['A', 'B'],
+    })))
+
+    const unfiltered = document.querySelector<HTMLElement>('.header-cell[aria-label="A열"]')
+    const filtered = document.querySelector<HTMLElement>('.header-cell.filtered')
+    const filterMark = filtered?.querySelector<HTMLElement>('.filter-mark')
+
+    expect(unfiltered?.getAttribute('aria-label')).toBe('A열')
+    expect(filtered?.getAttribute('aria-label')).toBe('B열 필터 적용')
+    expect(filterMark?.textContent).toBe('▾')
+    expect(filterMark?.getAttribute('aria-hidden')).toBe('true')
+  })
+
   it('makes column headers keyboard-operable without stealing nested control keys', () => {
     const setSelectedIds = vi.fn()
     const setFocusId = vi.fn()
