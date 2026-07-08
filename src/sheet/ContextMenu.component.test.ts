@@ -1,7 +1,7 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEvent } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { ContextMenu } from './ContextMenu'
-import { setupReactDOM } from './test-utils'
+import { keyDown, setupReactDOM } from './test-utils'
 
 describe('ContextMenu component', () => {
   const dom = setupReactDOM()
@@ -84,5 +84,30 @@ describe('ContextMenu component', () => {
     expect(disabled?.disabled).toBe(true)
     expect(disabled?.getAttribute('title')).toBe('삭제 사용할 수 없음')
     expect(disabled?.getAttribute('aria-label')).toBe('삭제 사용할 수 없음')
+  })
+
+  it('keeps menu item activation keys inside the context menu controls', () => {
+    const parentKeys: string[] = []
+
+    act(() => dom.root.render(createElement(
+      'div',
+      { onKeyDown: (event: KeyboardEvent) => parentKeys.push(event.key) },
+      createElement(ContextMenu, {
+        x: 12,
+        y: 34,
+        label: '셀 메뉴',
+        items: [{ label: '열기', onClick: vi.fn() }],
+        onClose: vi.fn(),
+      }),
+    )))
+
+    const item = document.querySelector<HTMLButtonElement>('.ctx-item')
+
+    expect(item?.textContent).toBe('열기')
+
+    act(() => keyDown(item!, 'Enter'))
+    act(() => keyDown(item!, ' '))
+
+    expect(parentKeys).toEqual([])
   })
 })

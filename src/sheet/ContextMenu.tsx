@@ -1,5 +1,6 @@
 import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuPattern } from '@interactive-os/aria-kernel/patterns'
+import type { KeyboardEvent } from 'react'
 import { runMenuItemAction, type MenuAction } from './contextMenuActions'
 
 export interface MenuItem {
@@ -17,6 +18,16 @@ interface Props {
   items: Array<MenuItem | 'separator'>
   onClose: () => void
 }
+
+const isActivationKey = (key: string): boolean => key === 'Enter' || key === ' '
+
+const keepActivationKeysLocal = <T extends { onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void }>(props: T) => ({
+  ...props,
+  onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+    props.onKeyDown?.(event)
+    if (isActivationKey(event.key)) event.stopPropagation()
+  },
+})
 
 export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, onClose }: Props) {
   const itemList = items.flatMap((it, i) =>
@@ -61,7 +72,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
         return (
           <button
             key={`m${i}`}
-            {...patternProps}
+            {...keepActivationKeysLocal(patternProps)}
             type="button"
             className="ctx-item"
             disabled={it.disabled}
