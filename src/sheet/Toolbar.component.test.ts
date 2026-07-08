@@ -686,7 +686,7 @@ describe('Toolbar component', () => {
     expect(clearFormat?.textContent).toBe('✕서식')
     expect(clearFormat?.disabled).toBe(true)
     expect(clearFormat?.getAttribute('title')).toBe('서식을 해제할 셀 없음')
-    expect(clearFormat?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
+    expect(clearFormat?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(plainFormat?.textContent).toBe('123')
     expect(plainFormat?.disabled).toBe(true)
     expect(plainFormat?.getAttribute('title')).toBe('일반 적용할 셀 없음 (Ctrl/⌘+Shift+1)')
