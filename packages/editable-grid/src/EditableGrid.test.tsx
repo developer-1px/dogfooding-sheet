@@ -1,4 +1,4 @@
-import { act, createElement } from 'react'
+import { act, createElement, type KeyboardEventHandler } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
@@ -72,24 +72,26 @@ const databaseValue = {
   ],
 }
 
-function setup(onChange = vi.fn(), onSelectionChange = vi.fn()) {
+function setup(onChange = vi.fn(), onSelectionChange = vi.fn(), onKeyDown?: KeyboardEventHandler<HTMLDivElement>) {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const host = document.createElement('div')
   document.body.append(host)
   const root = createRoot(host)
   act(() => {
-    root.render(createElement(EditableGrid, { surface, value, onChange, onSelectionChange }))
+    const grid = createElement(EditableGrid, { surface, value, onChange, onSelectionChange })
+    root.render(onKeyDown ? createElement('div', { onKeyDown }, grid) : grid)
   })
   return { host, root, onChange, onSelectionChange }
 }
 
-function setupDatabase(onChange = vi.fn()) {
+function setupDatabase(onChange = vi.fn(), onKeyDown?: KeyboardEventHandler<HTMLDivElement>) {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true
   const host = document.createElement('div')
   document.body.append(host)
   const root = createRoot(host)
   act(() => {
-    root.render(createElement(EditableGrid, { surface: databaseSurface, value: databaseValue, onChange }))
+    const grid = createElement(EditableGrid, { surface: databaseSurface, value: databaseValue, onChange })
+    root.render(onKeyDown ? createElement('div', { onKeyDown }, grid) : grid)
   })
   return { host, root, onChange }
 }
@@ -214,6 +216,71 @@ describe('EditableGrid', () => {
           }],
         },
       })
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('keeps text editor keys inside the inline editor while preserving Enter commit', () => {
+    const parentKeys: string[] = []
+    const { host, root, onChange } = setupDatabase(vi.fn(), (event) => parentKeys.push(event.key))
+    try {
+      const titleCell = gridCells()[0]
+      act(() => titleCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+
+      const input = document.querySelector<HTMLInputElement>('input.editable-grid-input')
+      expect(input?.getAttribute('aria-label')).toBe('Title 편집')
+      expect(input?.value).toBe('Spec')
+
+      act(() => keyDown(input!, 'ArrowLeft'))
+      act(() => keyDown(input!, 'S'))
+
+      expect(parentKeys).toEqual([])
+      expect(onChange).not.toHaveBeenCalled()
+
+      act(() => setInputValue(input!, 'Spec v2'))
+      act(() => keyDown(input!, 'Enter'))
+
+      expect(parentKeys).toEqual([])
+      expect(onChange).toHaveBeenCalledWith({
+        patches: [{ op: 'replace', path: '/records/0/title', value: 'Spec v2' }],
+        source: 'cell-edit',
+        selection: {
+          focus: { rowIndex: 0, columnId: 'title' },
+          ranges: [{
+            anchor: { rowIndex: 0, columnId: 'title' },
+            focus: { rowIndex: 0, columnId: 'title' },
+          }],
+        },
+      })
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('keeps select editor keys inside the inline editor while preserving Escape cancel', () => {
+    const parentKeys: string[] = []
+    const { host, root, onChange } = setupDatabase(vi.fn(), (event) => parentKeys.push(event.key))
+    try {
+      const statusCell = gridCells()[1]
+      act(() => statusCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+
+      const select = document.querySelector<HTMLSelectElement>('select.editable-grid-input')
+      expect(select?.getAttribute('aria-label')).toBe('Status 편집')
+      expect(select?.value).toBe('todo')
+
+      act(() => keyDown(select!, 'ArrowDown'))
+      act(() => keyDown(select!, 'd'))
+
+      expect(parentKeys).toEqual([])
+      expect(onChange).not.toHaveBeenCalled()
+
+      act(() => setSelectValue(select!, 'done'))
+      act(() => keyDown(select!, 'Escape'))
+
+      expect(parentKeys).toEqual([])
+      expect(onChange).not.toHaveBeenCalled()
+      expect(document.querySelector<HTMLSelectElement>('select.editable-grid-input')).toBeNull()
     } finally {
       cleanup(root, host)
     }

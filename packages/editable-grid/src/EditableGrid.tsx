@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import type { ReactNode } from 'react'
+import type { KeyboardEvent, ReactNode } from 'react'
 import {
   editableGridProfileOf,
   readJsonPointer,
@@ -82,6 +82,18 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
             const selected = sameAddress(controller.activeSelection.focus, address)
             const isEditing = sameAddress(controller.editing ?? undefined, address)
             const fieldType = fieldTypeOf(column)
+            const onEditorKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
+              event.stopPropagation()
+              if (event.key === 'Enter') {
+                event.preventDefault()
+                controller.commitEdit(address, cellValue, column, { restoreFocus: true })
+                return
+              }
+              if (event.key === 'Escape') {
+                event.preventDefault()
+                controller.cancelEdit(address, { restoreFocus: true })
+              }
+            }
             return (
               <EditableGridCell
                 key={column.id}
@@ -103,10 +115,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                       ref={controller.domFocus.editorRef}
                       onChange={(event) => controller.setDraft(event.currentTarget.value)}
                       onBlur={() => controller.commitEdit(address, cellValue, column)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') { event.preventDefault(); controller.commitEdit(address, cellValue, column, { restoreFocus: true }) }
-                        else if (event.key === 'Escape') { event.preventDefault(); controller.cancelEdit(address, { restoreFocus: true }) }
-                      }}
+                      onKeyDown={onEditorKeyDown}
                     >
                       <option value="">-</option>
                       {column.field?.options?.map((option) => (
@@ -121,10 +130,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                       ref={controller.domFocus.editorRef}
                       onChange={(event) => controller.setDraft(event.currentTarget.value)}
                       onBlur={() => controller.commitEdit(address, cellValue, column)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') { event.preventDefault(); controller.commitEdit(address, cellValue, column, { restoreFocus: true }) }
-                        else if (event.key === 'Escape') { event.preventDefault(); controller.cancelEdit(address, { restoreFocus: true }) }
-                      }}
+                      onKeyDown={onEditorKeyDown}
                     />
                   )
                 ) : fieldType === 'checkbox' ? (
