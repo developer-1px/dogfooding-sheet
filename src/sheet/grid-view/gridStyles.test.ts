@@ -41,6 +41,20 @@ describe('grid styles', () => {
     expect(source).toContain('.cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }')
   })
 
+  it('keeps base gridlines token-sized with the subtle border color', () => {
+    const root = appCss()
+    const source = gridCss()
+    const rowRule = source.match(/\.grid-row\s*\{[^}]+\}/)?.[0] ?? ''
+    const headerRule = source.match(/\.corner-cell,\s*\.row-header,\s*\.header-cell\s*\{[^}]+\}/)?.[0] ?? ''
+    const cellRule = source.match(/(?:^|\n)\.cell\s*\{[^}]+\}/)?.[0] ?? ''
+    const gridline = 'var(--sheet-size-gridline, 1px)'
+
+    expect(root).toContain('--sheet-size-gridline: 1px;')
+    expect(rowRule).toContain(`border-bottom: ${gridline} solid var(--sheet-color-border-subtle, #e0e0e0);`)
+    expect(headerRule).toContain(`border-right: ${gridline} solid var(--sheet-color-border-subtle, #e0e0e0);`)
+    expect(cellRule).toContain(`border-right: ${gridline} solid var(--sheet-color-border-subtle, #e0e0e0);`)
+  })
+
   it('keeps note markers token-sized at the cell corner', () => {
     const root = appCss()
     const source = gridCss()
