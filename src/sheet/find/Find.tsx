@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from 'react'
+import { useId, useState, type KeyboardEvent } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 import { cellIdToKey, type WriteCell, type WriteMany, type Display, type Cells, type Writes } from '../schema'
 import { useFind } from './useFind'
@@ -27,6 +27,7 @@ const inputShortcutTitle = 'Enter=다음 결과 / Shift+Enter=이전 결과 / Es
 const inputKeyShortcuts = 'Enter Shift+Enter Escape'
 
 export function Find({ open, mode, onClose, cells, display, onJump, writeCell, writeCells, replaceCellsByQuery, replaceCellText, skipIds, rowCount, colLetters }: Props) {
+  const statusId = useId()
   const [q, setQ] = useState('')
   const [r, setR] = useState('')
   const [caseSensitive, setCS] = useState(false)
@@ -109,6 +110,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
         placeholder="찾기"
         title={`찾을 내용 (${inputShortcutTitle})`}
         aria-label="찾을 내용"
+        aria-describedby={statusId}
         aria-keyshortcuts={inputKeyShortcuts}
       />
       {mode === 'replace' && (
@@ -119,12 +121,13 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
           placeholder="바꾸기"
           title={`바꿀 내용 (${inputShortcutTitle})`}
           aria-label="바꿀 내용"
+          aria-describedby={statusId}
           aria-keyshortcuts={inputKeyShortcuts}
         />
       )}
       <label title={caseSensitiveLabel}><input type="checkbox" checked={caseSensitive} onChange={(e) => { setCS(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label={caseSensitiveLabel} />Aa</label>
       <label title={regexLabel}><input type="checkbox" checked={regex} onChange={(e) => { setRegex(e.target.checked); resetIdx() }} onKeyDown={stopControlActivationKeyDown} aria-label={regexLabel} />.*</label>
-      <span className="count" role="status" aria-live="polite" aria-atomic="true" title={counterLabel} aria-label={counterLabel}>{counter}</span>
+      <span id={statusId} className="count" role="status" aria-live="polite" aria-atomic="true" title={counterLabel} aria-label={counterLabel}>{counter}</span>
       <button type="button" onClick={() => jump(-1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title={`${previousFindLabel} (Shift+Enter)`} aria-label={previousFindLabel} aria-keyshortcuts="Shift+Enter">↑</button>
       <button type="button" onClick={() => jump(1)} onKeyDown={stopControlActivationKeyDown} disabled={matches.length === 0} title={`${nextFindLabel} (Enter)`} aria-label={nextFindLabel} aria-keyshortcuts="Enter">↓</button>
       {mode === 'replace' && (
