@@ -45,6 +45,7 @@ function RowResizer({ rIdx, heightOf, onResize, onResizeEnd, resetRowHeight }: P
       aria-valuemin={ROW_HEIGHT_BOUNDS.min}
       aria-valuemax={ROW_HEIGHT_BOUNDS.max}
       aria-valuenow={roundedHeight}
+      aria-valuetext={`${roundedHeight}px`}
       onKeyDown={(e) => {
         const next = resizeValueForKey(heightOf(rIdx), e.key, e.shiftKey, 'y', ROW_HEIGHT_BOUNDS)
         if (next === null) return
