@@ -134,10 +134,10 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="아래에 행 20개 추가 (현재 10행)"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="오른쪽에 열 1개 추가 (현재 5열)"]')?.disabled).toBe(false)
 
-    const clearFormatButton = document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')
+    const clearFormatButton = document.querySelector<HTMLButtonElement>('button[aria-label="B2 서식 모두 해제"]')
     expect(clearFormatButton?.textContent).toBe('✕서식')
     expect(clearFormatButton?.disabled).toBe(false)
-    expect(clearFormatButton?.getAttribute('title')).toBe('서식 모두 해제')
+    expect(clearFormatButton?.getAttribute('title')).toBe('B2 서식 모두 해제')
     expect(clearFormatButton?.getAttribute('aria-keyshortcuts')).toBe('Control+\\ Meta+\\')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="굵게 꺼짐"]')?.getAttribute('title')).toBe('굵게 꺼짐 (Ctrl/⌘+B)')
@@ -317,7 +317,7 @@ describe('Toolbar component', () => {
       document.querySelector<HTMLButtonElement>('button[aria-label="2행 위에 행 삽입"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬 꺼짐"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 서식 모두 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 병합 또는 병합 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="첫 행 고정 토글 켜짐 (현재 1행 고정)"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="필터 켜짐, B열 필터: needle 수정"]'),
@@ -693,7 +693,9 @@ describe('Toolbar component', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="왼쪽 정렬 꺼짐"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="배경색 선택"]')?.disabled).toBe(false)
     expect(document.querySelector<HTMLInputElement>('input[aria-label^="글자색 선택"]')?.disabled).toBe(false)
-    expect(document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]')?.disabled).toBe(false)
+    const clearFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B2 서식 모두 해제"]')
+    expect(clearFormat?.disabled).toBe(false)
+    expect(clearFormat?.getAttribute('title')).toBe('B2 서식 모두 해제')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="숫자 형식: 일반 켜짐"]')?.disabled).toBe(false)
   })
 
