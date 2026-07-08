@@ -26,6 +26,8 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
     if (draft !== value) onCommit(draft)
   }
   const addressLabel = addr ? `${addr} 셀로 이동` : '셀 주소'
+  const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
+  const redoLabel = canRedo ? '다시 실행' : '다시 실행할 작업 없음'
 
   return (
     <header className="sheet-toolbar">
@@ -68,8 +70,8 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         placeholder="값 또는 =A1+B1"
         disabled={!addr}
       />
-      <button type="button" onClick={onUndo} onKeyDown={stopButtonActivationKeyDown} disabled={!canUndo} title="실행 취소 (Ctrl/⌘+Z)" aria-keyshortcuts="Control+Z Meta+Z" aria-label="실행 취소">실행 취소</button>
-      <button type="button" onClick={onRedo} onKeyDown={stopButtonActivationKeyDown} disabled={!canRedo} title="다시 실행 (Ctrl/⌘+Shift+Z)" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label="다시 실행">다시 실행</button>
+      <button type="button" onClick={onUndo} onKeyDown={stopButtonActivationKeyDown} disabled={!canUndo} title={`${undoLabel} (Ctrl/⌘+Z)`} aria-keyshortcuts="Control+Z Meta+Z" aria-label={undoLabel}>실행 취소</button>
+      <button type="button" onClick={onRedo} onKeyDown={stopButtonActivationKeyDown} disabled={!canRedo} title={`${redoLabel} (Ctrl/⌘+Shift+Z)`} aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label={redoLabel}>다시 실행</button>
       {extra}
     </header>
   )
