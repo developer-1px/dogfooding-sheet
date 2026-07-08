@@ -31,6 +31,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
   const addressKeyShortcuts = canJumpToAddress ? 'Control+G Meta+G' : undefined
   const formulaInputLabel = addr ? `${addr} 셀 수식 입력줄` : '수식 입력줄, 선택된 셀 없음'
   const formulaInputTitle = addr ? `${formulaInputLabel} (Enter=적용 / Esc=취소 / F4=참조 형식 순환)` : formulaInputLabel
+  const formulaInputKeyShortcuts = addr ? 'Enter Escape F4' : undefined
   const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
   const redoLabel = canRedo ? '다시 실행' : '다시 실행할 작업 없음'
   const undoTitle = canUndo ? `${undoLabel} (Ctrl/⌘+Z)` : undoLabel
@@ -54,7 +55,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
       <input
         className="formula"
         aria-label={formulaInputLabel}
-        aria-keyshortcuts="Enter Escape F4"
+        aria-keyshortcuts={formulaInputKeyShortcuts}
         title={formulaInputTitle}
         value={draft}
         onMouseDown={(e) => e.currentTarget.focus()}

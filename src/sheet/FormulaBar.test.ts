@@ -58,6 +58,7 @@ describe('FormulaBar', () => {
     expect(formula?.placeholder).toBe('값 또는 =A1+B1')
     expect(formula?.getAttribute('aria-label')).toBe('수식 입력줄, 선택된 셀 없음')
     expect(formula?.getAttribute('title')).toBe('수식 입력줄, 선택된 셀 없음')
+    expect(formula?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.getAttribute('title')).toBe('실행 취소할 작업 없음')
