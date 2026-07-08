@@ -103,10 +103,10 @@ describe('Toolbar component', () => {
     expect(buttons.length).toBeGreaterThan(20)
     expect(buttons.every((button) => button.type === 'button')).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소"]')?.type).toBe('button')
-    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 수정"]')
     expect(filterButton?.type).toBe('button')
     expect(filterButton?.disabled).toBe(false)
-    expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
+    expect(filterButton?.getAttribute('title')).toBe('B열 필터: needle 수정')
     const sortAsc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 오름차순 정렬"]')
     const sortDesc = document.querySelector<HTMLButtonElement>('button[aria-label="B열 내림차순 정렬"]')
     const autoSum = document.querySelector<HTMLButtonElement>('button[aria-label="자동 합계"]')
@@ -248,8 +248,8 @@ describe('Toolbar component', () => {
       document.querySelector<HTMLButtonElement>('button[aria-label="서식 모두 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 병합 또는 병합 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="첫 행 고정 토글 (현재 1행 고정)"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="필터 해제"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 수정"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록 유효성 검사 설정"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환"]'),
@@ -439,27 +439,29 @@ describe('Toolbar component', () => {
   it('disables toolbar filter setup without a focused column but keeps clearing available', () => {
     renderToolbar({ focusKey: null, selectedIds: [], filter: { col: 'B', text: 'needle' } })
 
-    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
-    const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="필터 해제"]')
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 수정"]')
+    const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]')
 
     expect(filterButton?.textContent).toBe('🔽필터 B')
     expect(filterButton?.disabled).toBe(true)
-    expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
+    expect(filterButton?.getAttribute('title')).toBe('B열 필터: needle 수정')
     expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
     expect(clearFilter?.disabled).toBe(false)
+    expect(clearFilter?.getAttribute('title')).toBe('B열 필터: needle 해제')
   })
 
   it('disables toolbar filter setup on a single-row sheet but keeps clearing available', () => {
     renderToolbar({ rowCount: 1, focusKey: 'B1', selectedIds: ['B1'], filter: { col: 'B', text: 'needle' } })
 
-    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터 수정"]')
-    const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="필터 해제"]')
+    const filterButton = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 수정"]')
+    const clearFilter = document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]')
 
     expect(filterButton?.textContent).toBe('🔽필터 B')
     expect(filterButton?.disabled).toBe(true)
-    expect(filterButton?.getAttribute('title')).toBe('B열 필터 수정')
+    expect(filterButton?.getAttribute('title')).toBe('B열 필터: needle 수정')
     expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
     expect(clearFilter?.disabled).toBe(false)
+    expect(clearFilter?.getAttribute('title')).toBe('B열 필터: needle 해제')
   })
 
   it('disables validation commands without target cells', () => {
