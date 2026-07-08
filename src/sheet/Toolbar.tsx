@@ -96,8 +96,9 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const freezeColsPressed = freeze.cols > 0
   const freezeRowsLabel = `첫 행 고정 토글 ${freezeRowsPressed ? '켜짐' : '꺼짐'} (현재 ${freeze.rows}행 고정)`
   const freezeColsLabel = `첫 열 고정 토글 ${freezeColsPressed ? '켜짐' : '꺼짐'} (현재 ${freeze.cols}열 고정)`
+  const filterStateLabel = filter ? '필터 켜짐' : '필터 꺼짐'
   const filterCriteriaLabel = filter ? `${filter.col}열 필터: ${filter.text}` : null
-  const filterActionLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 수정` : '현재 열로 행 필터'
+  const filterActionLabel = filterCriteriaLabel ? `${filterStateLabel}, ${filterCriteriaLabel} 수정` : `${filterStateLabel}, 현재 열로 행 필터`
   const clearFilterLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 해제` : '필터 해제'
   const showAllTitle = '숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)'
   const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
@@ -125,12 +126,12 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const filterColumnLabel = filter?.col ?? focus?.col ?? '현재'
   const disabledFilterLabel = !focus
     ? filterCriteriaLabel
-      ? '필터를 수정할 열 없음'
-      : '필터를 적용할 열 없음'
+      ? `${filterStateLabel}, ${filterCriteriaLabel}, 수정할 열 없음`
+      : `${filterStateLabel}, 필터를 적용할 열 없음`
     : rowCount <= 1
       ? filterCriteriaLabel
-        ? `${filterColumnLabel}열 필터를 수정할 데이터 행 없음`
-        : `${focus.col}열에 필터할 데이터 행 없음`
+        ? `${filterStateLabel}, ${filterCriteriaLabel}, 수정할 데이터 행 없음`
+        : `${filterStateLabel}, ${filterColumnLabel}열에 필터할 데이터 행 없음`
       : filterActionLabel
   const filterLabel = canOpenFilterPrompt ? filterActionLabel : disabledFilterLabel
   const canMerge = canMergeSelection(selectedIds, focus ? cellId(focus.col, focus.row) : null, sheet.merges)
