@@ -227,14 +227,18 @@ describe('Tabs component', () => {
   })
 
   it('keeps tab utility controls from shrinking inside tabs', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const closeAndAddRule = css.match(/\.tab-close,\s*\.tab-add\s*\{[^}]+\}/)?.[0] ?? ''
     const duplicateRule = css.match(/\.tab-dup\s*\{[^}]+\}/)?.[0] ?? ''
     const colorRule = css.match(/\.tab-color\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-tab-color-swatch: 14px;')
     expect(closeAndAddRule).toContain('flex: 0 0 auto;')
     expect(duplicateRule).toContain('flex: 0 0 auto;')
     expect(colorRule).toContain('flex: 0 0 auto;')
+    expect(colorRule).toContain('width: var(--sheet-size-tab-color-swatch, 14px);')
+    expect(colorRule).toContain('height: var(--sheet-size-tab-color-swatch, 14px);')
   })
 
   it('keeps long sheet tab labels truncated inside a stable tab width', () => {
@@ -247,13 +251,15 @@ describe('Tabs component', () => {
   })
 
   it('keeps the tab rename input contained inside the tab width', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
     const renameRule = css.match(/\.tab-rename\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(renameRule).toContain('width: 90px;')
+    expect(rootCss).toContain('--sheet-size-tab-rename-width: 90px;')
+    expect(renameRule).toContain('width: var(--sheet-size-tab-rename-width, 90px);')
     expect(renameRule).toContain('min-width: 0;')
     expect(renameRule).toContain('max-width: 100%;')
-    expect(renameRule).toContain('flex: 1 1 90px;')
+    expect(renameRule).toContain('flex: 1 1 var(--sheet-size-tab-rename-width, 90px);')
   })
 
   it('keeps add-sheet activation keys inside the tab add control', () => {
