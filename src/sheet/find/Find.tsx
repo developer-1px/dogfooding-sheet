@@ -59,7 +59,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
 
   const currentKey = current ? cellIdToKey(current) : null
   const counterLabel = !q
-    ? undefined
+    ? '찾기 대기 중'
     : matches.length === 0
       ? '찾기 결과 없음'
       : currentKey
