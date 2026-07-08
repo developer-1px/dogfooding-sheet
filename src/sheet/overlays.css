@@ -146,7 +146,7 @@
   outline-offset: var(--sheet-focus-offset, 2px);
 }
 
-.overflow-menu { position: relative; display: inline-block; }
+.overflow-menu { position: relative; display: inline-block; flex: 0 0 auto; }
 .overflow-trigger { background: transparent; border: 1px solid transparent; padding: var(--sheet-space-half, 2px) var(--sheet-space-2, 6px); cursor: pointer; }
 .overflow-trigger:hover { background: var(--sheet-color-hover, #f1f3f4); border-color: var(--sheet-color-border, #dadce0); }
 .overflow-trigger:focus-visible {

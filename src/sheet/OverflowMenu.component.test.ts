@@ -219,6 +219,15 @@ describe('OverflowMenu component', () => {
     expect(css).toContain('.overflow-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }')
   })
 
+  it('keeps the overflow menu wrapper anchored in wrapping toolbars', () => {
+    const css = overlaysCss()
+    const menuRule = css.match(/\.overflow-menu\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(menuRule).toContain('position: relative;')
+    expect(menuRule).toContain('display: inline-block;')
+    expect(menuRule).toContain('flex: 0 0 auto;')
+  })
+
   it('keeps long overflow menus vertically scrollable and horizontally clipped', () => {
     const css = overlaysCss()
     const listRule = css.match(/\.overflow-list\s*\{[^}]+\}/)?.[0] ?? ''
