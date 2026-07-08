@@ -25,7 +25,9 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
   const commitDraft = () => {
     if (draft !== value) onCommit(draft)
   }
-  const addressLabel = addr ? `${addr} 셀로 이동` : '셀 주소'
+  const canJumpToAddress = !!onAddrClick
+  const addressLabel = canJumpToAddress ? (addr ? `${addr} 셀로 이동` : '셀 주소') : addr ? `${addr} 셀 주소` : '선택된 셀 없음'
+  const addressTitle = canJumpToAddress ? '셀로 이동 (Ctrl/⌘+G)' : addressLabel
   const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
   const redoLabel = canRedo ? '다시 실행' : '다시 실행할 작업 없음'
 
@@ -36,10 +38,10 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         type="button"
         className="addr"
         onClick={onAddrClick}
-        title="셀로 이동 (Ctrl/⌘+G)"
+        title={addressTitle}
         aria-label={addressLabel}
         aria-keyshortcuts="Control+G Meta+G"
-        disabled={!onAddrClick}
+        disabled={!canJumpToAddress}
         onKeyDown={stopButtonActivationKeyDown}
       >{addr ?? '—'}</button>
       <input
