@@ -19,6 +19,7 @@ interface PersistencePresentation {
   text: string
   detail?: string
   busy?: boolean
+  alert?: boolean
 }
 
 const persistencePresentation = (state?: SheetPersistenceState): PersistencePresentation | null => {
@@ -27,6 +28,7 @@ const persistencePresentation = (state?: SheetPersistenceState): PersistencePres
     return {
       text: '저장 실패',
       detail: state.error ? `저장 실패: ${state.error}` : '저장 실패',
+      alert: true,
     }
   }
   if (state.status === 'saving') return { text: '저장 중', detail: '변경 사항 저장 중', busy: true }
@@ -51,7 +53,7 @@ export function StatusBar(props: Props) {
   const model = statusBarViewModel(props)
   const saved = persistencePresentation(props.persistence)
   const saveStatus = saved && (
-    <span className="persistence-status" title={saved.detail} aria-label={saved.detail} aria-busy={saved.busy || undefined}>{saved.text}</span>
+    <span className="persistence-status" role={saved.alert ? 'alert' : undefined} title={saved.detail} aria-label={saved.detail} aria-busy={saved.busy || undefined}>{saved.text}</span>
   )
   if (!model.showDetails) {
     return (
