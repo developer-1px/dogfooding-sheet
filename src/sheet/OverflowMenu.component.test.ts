@@ -232,7 +232,7 @@ describe('OverflowMenu component', () => {
     const css = overlaysCss()
     const listRule = css.match(/\.overflow-list\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(listRule).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));')
+    expect(listRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));')
     expect(listRule).toContain('overflow-x: hidden;')
     expect(listRule).toContain('overflow-y: auto;')
   })
