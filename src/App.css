@@ -91,13 +91,17 @@ body, html, #root {
 .app-error {
   min-height: 100vh;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: var(--sheet-space-5);
+  padding: var(--sheet-space-8);
+  text-align: center;
   background: var(--sheet-color-surface-muted);
   color: var(--sheet-color-text);
 }
 .app-error button {
+  flex: 0 0 auto;
   padding: var(--sheet-space-2) var(--sheet-space-5);
   border: 1px solid var(--sheet-color-border);
   border-radius: var(--sheet-radius-control);
