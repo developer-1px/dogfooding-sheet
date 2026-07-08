@@ -77,7 +77,7 @@
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: var(--sheet-focus-offset, 2px);
 }
-.tab-add { flex: 0 0 auto; background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); margin-left: var(--sheet-space-1, 4px); }
+.tab-add { flex: 0 0 auto; background: var(--sheet-color-surface, #fff); border: var(--sheet-size-tab-add-border, 1px) solid var(--sheet-color-border, #dadce0); margin-left: var(--sheet-space-1, 4px); }
 .tab-add:hover:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); }
 
 .status-bar {
