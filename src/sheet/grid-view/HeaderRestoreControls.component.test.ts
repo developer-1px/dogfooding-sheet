@@ -62,6 +62,34 @@ describe('header restore controls', () => {
     expect(setSelectedIds).toHaveBeenCalledTimes(3)
   })
 
+  it('exposes selected state on the select-all corner header label', () => {
+    act(() => dom.root.render(createElement(GridHeader, {
+      gridTemplate: '40px 80px 80px',
+      columnHeaderProps: () => ({ role: 'columnheader', tabIndex: 0 }),
+      widthOf: () => 80,
+      onResize: vi.fn(),
+      onResizeEnd: vi.fn(),
+      autoFitCol: vi.fn(),
+      setSelectedIds: vi.fn(),
+      setFocusId: vi.fn(),
+      setSelectAnchor: vi.fn(),
+      hiddenCols: new Set(),
+      showCol: vi.fn(),
+      filterCol: null,
+      focusCol: null,
+      selectedCols: new Set(),
+      allSelected: true,
+      onHeaderContextMenu: vi.fn(),
+      rowCount: 2,
+      colLetters: ['A', 'B'],
+    })))
+
+    const corner = document.querySelector<HTMLElement>('.corner-cell')
+
+    expect(corner?.getAttribute('aria-label')).toBe('전체 시트 선택, 선택됨')
+    expect(corner?.getAttribute('aria-selected')).toBe('true')
+  })
+
   it('renders column restore controls as non-submit buttons', () => {
     const showCol = vi.fn()
     const setSelectedIds = vi.fn()
