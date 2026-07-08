@@ -165,6 +165,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
   ) => {
     if (fieldTypeOf(column) === 'checkbox' && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault()
+      event.stopPropagation()
       if (!isReadonlyColumn(readonly, column)) {
         commitDirectValue(address, cellValue, column, !checkedValue(cellValue))
       }
