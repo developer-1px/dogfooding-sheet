@@ -139,6 +139,7 @@ body, html, #root {
   padding: var(--sheet-space-1) var(--sheet-space-3); border: 1px solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
   background: var(--sheet-color-surface); font-size: var(--sheet-font-size-ui); cursor: pointer;
 }
+.color-pick[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }
 .color-pick:focus-within {
   outline: var(--sheet-focus-ring);
   outline-offset: var(--sheet-focus-offset);
@@ -146,4 +147,5 @@ body, html, #root {
 .color-pick input[type="color"] {
   width: var(--sheet-size-control-md); height: var(--sheet-size-control-md); padding: 0; border: none; cursor: pointer; background: transparent;
 }
+.color-pick[aria-disabled="true"] input[type="color"] { cursor: not-allowed; }
 .color-pick input[type="color"]:focus { outline: none; }
