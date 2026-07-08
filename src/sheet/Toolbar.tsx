@@ -125,7 +125,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const leftAlignLabel = hasCellTarget ? `왼쪽 정렬 ${leftAlignPressed ? '켜짐' : '꺼짐'}` : '왼쪽 정렬할 셀 없음'
   const centerAlignLabel = hasCellTarget ? `가운데 정렬 ${centerAlignPressed ? '켜짐' : '꺼짐'}` : '가운데 정렬할 셀 없음'
   const rightAlignLabel = hasCellTarget ? `오른쪽 정렬 ${rightAlignPressed ? '켜짐' : '꺼짐'}` : '오른쪽 정렬할 셀 없음'
-  const clearFormatLabel = hasCellTarget ? '서식 모두 해제' : '서식을 해제할 셀 없음'
+  const clearFormatLabel = hasCellTarget ? `${cellTarget} 서식 모두 해제` : '서식을 해제할 셀 없음'
   const canSort = !!focus && rowCount > 1
   const canToggleFreezeRows = rowCount > 1 || freeze.rows > 0
   const canToggleFreezeCols = colCount > 1 || freeze.cols > 0
