@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createReproRecorder } from '@interactive-os/devtools/rec'
 
 const hotkey = 'Ctrl/⌘+Shift+\\'
+const hotkeyShortcuts = ['Control+Shift+\\', 'Meta+Shift+\\'].join(' ')
 
 export function RecDevToolsOverlay() {
   const recorder = useMemo(() => createReproRecorder(), [])
@@ -69,9 +70,10 @@ export function RecDevToolsOverlay() {
       onClick={toggle}
       title={`${hotkey}로 ${recording ? '녹화 중지' : '녹화 시작'}`}
       aria-label={actionLabel}
+      aria-keyshortcuts={hotkeyShortcuts}
       aria-pressed={recording}
     >
-      <span className="rec-dot" />
+      <span className="rec-dot" aria-hidden="true" />
       {recording ? `STOP ${elapsedLabel}` : 'REC'}
     </button>
   )
