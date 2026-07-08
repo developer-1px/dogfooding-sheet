@@ -89,4 +89,25 @@ describe('cell display model', () => {
 
     expect(model.className).toBe('cell numeric negative')
   })
+
+  it('exposes image-rendered cells in the accessible label', () => {
+    const model = createCellDisplayModel({
+      address: 'B2',
+      label: 'https://example.com/chart.png',
+      selected: false,
+      focused: false,
+      editing: false,
+      numeric: false,
+      highlighted: false,
+      previewing: false,
+      styleClass: '',
+    })
+
+    expect(model.content).toEqual({
+      kind: 'image',
+      src: 'https://example.com/chart.png',
+    })
+    expect(model.ariaLabel).toBe('B2 https://example.com/chart.png 이미지')
+    expect(model.title).toBe('https://example.com/chart.png')
+  })
 })

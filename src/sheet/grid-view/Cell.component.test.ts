@@ -144,6 +144,20 @@ describe('Cell component', () => {
     expect(gridKeyDown).not.toHaveBeenCalled()
   })
 
+  it('exposes image-rendered cells through the gridcell label', () => {
+    renderCell({
+      label: 'https://example.com/chart.png',
+    })
+
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"]')
+    const image = document.querySelector<HTMLImageElement>('.cell-img')
+
+    expect(cell?.getAttribute('aria-label')).toBe('A1 https://example.com/chart.png 이미지')
+    expect(cell?.getAttribute('title')).toBe('https://example.com/chart.png')
+    expect(image?.getAttribute('src')).toBe('https://example.com/chart.png')
+    expect(image?.getAttribute('alt')).toBe('')
+  })
+
   it('keeps validation select keyboard events inside the select control', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()
