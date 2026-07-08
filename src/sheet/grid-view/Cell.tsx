@@ -45,15 +45,15 @@ interface Props {
   selectProps: SelectProps
 }
 
-function CellContentView({ content }: { content: CellContent }) {
+function CellContentView({ address, content }: { address: string; content: CellContent }) {
   if (content.kind === 'image') {
     return <img className="cell-img" src={content.src} alt="" title={content.src} onClick={(e) => e.stopPropagation()} />
   }
   if (content.kind === 'link') {
-    return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" title={content.label} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
+    return <a className="cell-link" href={content.href} target="_blank" rel="noreferrer noopener" title={content.label} aria-label={`${address} 링크 열기: ${content.label}`} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
   }
   if (content.kind === 'email') {
-    return <a className="cell-link" href={content.href} title={content.label} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
+    return <a className="cell-link" href={content.href} title={content.label} aria-label={`${address} 이메일 작성: ${content.label}`} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>{content.label}</a>
   }
   return content.text
 }
@@ -159,7 +159,7 @@ export function Cell(p: Props) {
         )
       ) : (
         <>
-          <CellContentView content={display.content} />
+          <CellContentView address={p.address} content={display.content} />
           {p.note && <span className="note-mark" aria-hidden />}
           {p.validationOptions && !p.editing && <span className="dropdown-mark" aria-hidden>▾</span>}
           {p.isFillCorner && !p.editing && (

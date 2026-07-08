@@ -115,6 +115,7 @@ describe('Cell component', () => {
 
     expect(cell?.getAttribute('aria-label')).toBe('A1 https://example.com 링크')
     expect(link?.textContent).toBe('https://example.com')
+    expect(link?.getAttribute('aria-label')).toBe('A1 링크 열기: https://example.com')
     expect(link?.getAttribute('title')).toBe('https://example.com')
     expect(link?.getAttribute('href')).toBe('https://example.com/')
     expect(link?.getAttribute('target')).toBe('_blank')
@@ -141,6 +142,7 @@ describe('Cell component', () => {
 
     expect(cell?.getAttribute('aria-label')).toBe('A1 person@example.com 이메일 링크')
     expect(link?.textContent).toBe('person@example.com')
+    expect(link?.getAttribute('aria-label')).toBe('A1 이메일 작성: person@example.com')
     expect(link?.getAttribute('title')).toBe('person@example.com')
     expect(link?.getAttribute('href')).toBe('mailto:person@example.com')
     expect(link?.hasAttribute('target')).toBe(false)
