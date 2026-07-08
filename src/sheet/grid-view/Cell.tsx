@@ -72,6 +72,7 @@ export function Cell(p: Props) {
     styleClass: p.styleClass,
     note: p.note,
     tooltip: p.tooltip,
+    validationList: !!p.validationOptions,
   })
   const textareaProps = {
     ...p.inputProps,
