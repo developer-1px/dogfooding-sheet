@@ -1,7 +1,10 @@
 import { act, createElement, type KeyboardEvent } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { keyDown, setInputValue, setupReactDOM } from './test-utils'
 import { FormulaBar } from './FormulaBar'
+
+const appCss = () => readFileSync('src/App.css', 'utf8')
 
 describe('FormulaBar', () => {
   const dom = setupReactDOM()
@@ -34,6 +37,18 @@ describe('FormulaBar', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행"]')?.type).toBe('button')
     expect(document.querySelector('button[aria-label="다시 실행"]')?.getAttribute('title')).toBe('다시 실행 (Ctrl/⌘+Shift+Z)')
     expect(document.querySelector('button[aria-label="다시 실행"]')?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
+  })
+
+  it('keeps the address control stable while the formula input flexes', () => {
+    const css = appCss()
+    const addressRule = css.match(/\.sheet-toolbar \.addr\s*\{[^}]+\}/)?.[0] ?? ''
+    const formulaRule = css.match(/\.sheet-toolbar \.formula\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(addressRule).toContain('flex: 0 0 auto;')
+    expect(addressRule).toContain('min-width: 56px;')
+    expect(formulaRule).toContain('flex: 1 1 200px;')
+    expect(formulaRule).toContain('min-width: 0;')
+    expect(formulaRule).toContain('max-width: 100%;')
   })
 
   it('keeps the address control disabled when no jump action is available', () => {
