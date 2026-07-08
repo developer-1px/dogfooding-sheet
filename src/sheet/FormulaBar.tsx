@@ -22,6 +22,9 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
   const skipCommitOnBlur = useRef(false)
   const draft = draftState.addr === addr && draftState.value === value ? draftState.draft : value
   const setDraft = (next: string) => setDraftState({ addr, value, draft: next })
+  const commitDraft = () => {
+    if (draft !== value) onCommit(draft)
+  }
   const addressLabel = addr ? `${addr} 셀로 이동` : '셀 주소'
 
   return (
@@ -50,7 +53,7 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
             skipCommitOnBlur.current = false
             return
           }
-          onCommit(draft)
+          commitDraft()
         }}
         onKeyDown={(e) => {
           e.stopPropagation()
