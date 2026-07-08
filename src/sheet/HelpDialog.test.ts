@@ -32,6 +32,8 @@ describe('HelpDialog', () => {
     expect(document.body.textContent).toContain('마지막 셀 참조의 절대/상대 형식 순환')
     expect(document.body.textContent).toContain('찾기창 Enter / Shift+Enter / Esc')
     expect(document.body.textContent).toContain('다음 결과 / 이전 결과 / 찾기창 닫기')
+    expect(document.body.textContent).toContain('행/열 헤더 드래그 또는 화살표')
+    expect(document.body.textContent).toContain('너비/높이 조정 (Shift+화살표 = 크게 조정, 더블클릭 = 자동 맞춤 / 기본값 복원)')
 
     const close = document.querySelector<HTMLButtonElement>('button[aria-label="키보드 단축키 도움말 닫기"]')
     expect(close?.textContent).toBe('닫기')
