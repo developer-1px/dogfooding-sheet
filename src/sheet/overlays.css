@@ -2,6 +2,7 @@
   position: fixed; z-index: 20; min-width: 180px;
   background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px);
   box-shadow: var(--sheet-shadow-popover, 0 4px 16px rgba(0, 0, 0, .15));
+  overflow-y: auto;
   padding: var(--sheet-space-1, 4px) 0;
 }
 .ctx-item {

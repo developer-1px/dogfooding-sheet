@@ -1,6 +1,6 @@
 import { fromList, type UiEvent } from '@interactive-os/aria-kernel'
 import { useMenuPattern } from '@interactive-os/aria-kernel/patterns'
-import type { KeyboardEvent } from 'react'
+import type { CSSProperties, KeyboardEvent } from 'react'
 import { runMenuItemAction, type MenuAction } from './contextMenuActions'
 
 export interface MenuItem {
@@ -29,6 +29,15 @@ const keepActivationKeysLocal = <T extends { onKeyDown?: (event: KeyboardEvent<H
   },
 })
 
+const contextMenuStyle = (x: number, y: number): CSSProperties => {
+  const top = Math.max(0, y)
+  return {
+    left: x,
+    top: y,
+    maxHeight: `max(var(--sheet-space-8, 24px), calc(100vh - ${top}px - var(--sheet-space-8, 24px)))`,
+  }
+}
+
 export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, onClose }: Props) {
   const itemList = items.flatMap((it, i) =>
     it === 'separator' ? [] : [{ id: `m${i}`, label: it.label, disabled: it.disabled, action: it.onClick }],
@@ -56,7 +65,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
     <div
       {...rootProps}
       className="ctx-menu"
-      style={{ left: x, top: y }}
+      style={contextMenuStyle(x, y)}
     >
       {items.map((it, i) => {
         if (it === 'separator') return <div key={`s${i}`} className="ctx-sep" role="separator" />

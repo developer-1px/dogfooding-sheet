@@ -1,7 +1,10 @@
 import { act, createElement, type KeyboardEvent } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { ContextMenu } from './ContextMenu'
 import { keyDown, setupReactDOM } from './test-utils'
+
+const overlaysCss = () => readFileSync('src/sheet/overlays.css', 'utf8')
 
 describe('ContextMenu component', () => {
   const dom = setupReactDOM()
@@ -34,6 +37,7 @@ describe('ContextMenu component', () => {
 
     expect(menu?.getAttribute('role')).toBe('menu')
     expect(menu?.getAttribute('aria-label')).toBe('셀 메뉴')
+    expect(menu?.style.maxHeight).toBe('max(var(--sheet-space-8, 24px), calc(100vh - 34px - var(--sheet-space-8, 24px)))')
     expect(separator?.getAttribute('role')).toBe('separator')
     expect(separator?.textContent).toBe('')
     expect(items.map((item) => item.textContent)).toEqual(['열기 (Alt+Shift+M)', '삭제'])
@@ -109,5 +113,11 @@ describe('ContextMenu component', () => {
     act(() => keyDown(item!, ' '))
 
     expect(parentKeys).toEqual([])
+  })
+
+  it('keeps long context menus scrollable on short viewports', () => {
+    const css = overlaysCss()
+
+    expect(css).toMatch(/\.ctx-menu\s*\{[^}]*overflow-y:\s*auto;/)
   })
 })
