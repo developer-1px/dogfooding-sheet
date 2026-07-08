@@ -90,6 +90,8 @@ describe('Cell component', () => {
     expect(fillHandle?.getAttribute('aria-hidden')).toBe('true')
     expect(noteMark?.getAttribute('aria-hidden')).toBe('true')
     expect(dropdownMark?.getAttribute('aria-hidden')).toBe('true')
+    expect(gridCell?.className).toContain('has-note-marker')
+    expect(gridCell?.className).toContain('has-dropdown-marker')
     expect(gridCell?.getAttribute('aria-label')).toBe('A1 TRUE 메모 있음 드롭다운 목록 있음')
     expect(gridCell?.getAttribute('aria-haspopup')).toBe('listbox')
     expect(gridCell?.getAttribute('aria-expanded')).toBe('false')
@@ -102,6 +104,22 @@ describe('Cell component', () => {
     renderCell({ isFillCorner: true, editing: true })
 
     expect(document.querySelector('.fill-handle')).toBeNull()
+  })
+
+  it('does not reserve marker space while cell markers are hidden during editing', () => {
+    renderCell({
+      editing: true,
+      note: 'Needs review',
+      validationOptions: ['Open', 'Closed'],
+      selectProps: { value: 'Open', onChange: vi.fn() },
+    })
+
+    const cell = document.querySelector<HTMLElement>('[role="gridcell"]')
+
+    expect(cell?.className).not.toContain('has-note-marker')
+    expect(cell?.className).not.toContain('has-dropdown-marker')
+    expect(document.querySelector('.note-mark')).toBeNull()
+    expect(document.querySelector('.dropdown-mark')).toBeNull()
   })
 
   it('keeps URL link keyboard events inside the link control', () => {

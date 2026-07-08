@@ -45,6 +45,7 @@
   border-right: 1px solid var(--sheet-color-border-subtle, #e0e0e0);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }
 .cell.numeric { text-align: right; font-variant-numeric: tabular-nums; }
 .cell.bold { font-weight: 700; }
 .cell.italic { font-style: italic; }
