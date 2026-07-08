@@ -124,8 +124,11 @@ function colRevealItems(a: CellMenuActions, col: string): CellMenuEntry[] {
 
 function colFilterItems(a: CellMenuActions, col: string): CellMenuEntry[] {
   const disabled = a.rowCount <= 1
+  const disabledLabel = a.filterCol === col
+    ? `${col}열 필터를 수정할 데이터 행 없음`
+    : `${col}열에 필터할 데이터 행 없음`
   return [
-    { label: a.filterCol === col ? '필터 수정…' : '필터 적용…', onClick: () => a.promptFilter(col), disabled },
+    { label: a.filterCol === col ? '필터 수정…' : '필터 적용…', onClick: () => a.promptFilter(col), disabled, disabledLabel },
     ...(a.filterCol === col ? [{ label: '필터 해제', onClick: a.clearFilter }] : []),
   ]
 }
@@ -133,8 +136,8 @@ function colFilterItems(a: CellMenuActions, col: string): CellMenuEntry[] {
 function colSortItems(a: CellMenuActions, col: string): CellMenuEntry[] {
   const disabled = a.rowCount <= 1
   return [
-    { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc'), disabled },
-    { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc'), disabled },
+    { label: `${col} 오름차순 정렬`, onClick: () => a.sortByCol(col, 'asc'), disabled, disabledLabel: `${col}열 오름차순 정렬할 데이터 행 없음` },
+    { label: `${col} 내림차순 정렬`, onClick: () => a.sortByCol(col, 'desc'), disabled, disabledLabel: `${col}열 내림차순 정렬할 데이터 행 없음` },
   ]
 }
 
@@ -144,6 +147,7 @@ function mergeSelectionItem(a: CellMenuActions): MenuItem {
     label: '셀 병합 / 해제 (Alt+Shift+M)',
     onClick: () => { if (canMerge) a.mergeSelection() },
     disabled: !canMerge,
+    disabledLabel: '병합 가능한 셀 범위 없음',
     keyShortcuts: 'Alt+Shift+M',
   }
 }

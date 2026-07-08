@@ -6,6 +6,7 @@ export interface MenuItem {
   label: string
   onClick: MenuAction
   disabled?: boolean
+  disabledLabel?: string
   keyShortcuts?: string
 }
 
@@ -56,7 +57,7 @@ export function ContextMenu({ x, y, label = '셀 컨텍스트 메뉴', items, on
           runMenuItemAction(it.onClick)
           onClose()
         }
-        const itemLabel = it.disabled ? `${it.label} 사용할 수 없음` : it.label
+        const itemLabel = it.disabled ? it.disabledLabel ?? `${it.label} 사용할 수 없음` : it.label
         return (
           <button
             key={`m${i}`}

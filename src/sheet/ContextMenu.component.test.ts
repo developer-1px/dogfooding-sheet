@@ -22,7 +22,7 @@ describe('ContextMenu component', () => {
         items: [
           { label: '열기', onClick: onOpen, keyShortcuts: 'Alt+Shift+M' },
           'separator',
-          { label: '삭제', onClick: onDisabled, disabled: true },
+          { label: '삭제', onClick: onDisabled, disabled: true, disabledLabel: '삭제할 항목 없음' },
         ],
         onClose,
       }),
@@ -41,8 +41,8 @@ describe('ContextMenu component', () => {
     expect(items[0]?.getAttribute('title')).toBe('열기')
     expect(items[0]?.getAttribute('aria-label')).toBe('열기')
     expect(items[0]?.getAttribute('aria-keyshortcuts')).toBe('Alt+Shift+M')
-    expect(items[1]?.getAttribute('title')).toBe('삭제 사용할 수 없음')
-    expect(items[1]?.getAttribute('aria-label')).toBe('삭제 사용할 수 없음')
+    expect(items[1]?.getAttribute('title')).toBe('삭제할 항목 없음')
+    expect(items[1]?.getAttribute('aria-label')).toBe('삭제할 항목 없음')
     expect(items[1]?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(items[1]?.disabled).toBe(true)
 
@@ -66,5 +66,23 @@ describe('ContextMenu component', () => {
     expect(onOpen).toHaveBeenCalledTimes(1)
     expect(onClose).toHaveBeenCalledTimes(2)
     expect(onDisabled).not.toHaveBeenCalled()
+  })
+
+  it('falls back to the generic unavailable label for disabled menu items without a reason', () => {
+    const onDisabled = vi.fn()
+
+    act(() => dom.root.render(createElement(ContextMenu, {
+      x: 0,
+      y: 0,
+      items: [{ label: '삭제', onClick: onDisabled, disabled: true }],
+      onClose: vi.fn(),
+    })))
+
+    const disabled = document.querySelector<HTMLButtonElement>('.ctx-item')
+
+    expect(disabled?.textContent).toBe('삭제')
+    expect(disabled?.disabled).toBe(true)
+    expect(disabled?.getAttribute('title')).toBe('삭제 사용할 수 없음')
+    expect(disabled?.getAttribute('aria-label')).toBe('삭제 사용할 수 없음')
   })
 })
