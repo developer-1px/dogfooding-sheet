@@ -204,6 +204,8 @@ describe('OverflowMenu component', () => {
       ...emptySheet,
       cells: { A1: 'value', B2: 'next' },
       styles: { A1: { b: true } },
+      formats: { B2: 'currency' },
+      condFormat: [{ col: 'A', op: '>', value: '1', color: '#fff' }],
     })
 
     const trigger = document.querySelector<HTMLButtonElement>('.overflow-trigger')
@@ -212,10 +214,11 @@ describe('OverflowMenu component', () => {
     const clearValues = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
       .find((item) => item.textContent === '전체 값 2개 지우기')
     const clearFormats = [...document.querySelectorAll<HTMLButtonElement>('.overflow-item')]
-      .find((item) => item.textContent === '전체 서식 지우기')
+      .find((item) => item.textContent === '전체 서식 3개 지우기')
 
     expect(clearValues?.disabled).toBe(false)
     expect(clearValues?.getAttribute('title')).toBe('전체 값 2개 지우기')
     expect(clearFormats?.disabled).toBe(false)
+    expect(clearFormats?.getAttribute('title')).toBe('전체 서식 3개 지우기')
   })
 })
