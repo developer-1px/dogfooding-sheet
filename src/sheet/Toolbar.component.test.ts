@@ -761,6 +761,17 @@ describe('Toolbar component', () => {
     expect(colorPickRule).toContain(`border: ${border} solid var(--sheet-color-border);`)
   })
 
+  it('keeps the toolbar divider token-sized with the subtle border color', () => {
+    const css = appCss()
+    const toolbarRule = css.match(/\.sheet-toolbar\s*\{[^}]+\}/)?.[0] ?? ''
+    const divider = 'var(--sheet-size-toolbar-divider, 1px)'
+
+    expect(css).toContain('--sheet-size-toolbar-divider: 1px;')
+    expect(toolbarRule).toContain('display: flex;')
+    expect(toolbarRule).toContain('flex-wrap: wrap;')
+    expect(toolbarRule).toContain(`border-bottom: ${divider} solid var(--sheet-color-border-subtle);`)
+  })
+
   it('keeps the toolbar formula input contained on narrow rows', () => {
     const css = appCss()
 
