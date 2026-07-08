@@ -76,7 +76,9 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const sortDescLabel = `${focusColLabel} 내림차순 정렬`
   const freezeRowsLabel = `첫 행 고정 토글 (현재 ${freeze.rows}행 고정)`
   const freezeColsLabel = `첫 열 고정 토글 (현재 ${freeze.cols}열 고정)`
-  const filterLabel = filter ? `${filter.col}열 필터 수정` : '현재 열로 행 필터'
+  const filterCriteriaLabel = filter ? `${filter.col}열 필터: ${filter.text}` : null
+  const filterLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 수정` : '현재 열로 행 필터'
+  const clearFilterLabel = filterCriteriaLabel ? `${filterCriteriaLabel} 해제` : '필터 해제'
   const showAllTitle = '숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)'
   const focusedStyle = focusKey ? styleOf(focusKey) : undefined
   const bgColorValue = colorInputValue(focusedStyle?.bg, '#ffffff')
@@ -120,7 +122,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={clearStyle} disabled={!hasCellTarget} title="서식 모두 해제" aria-label="서식 모두 해제" aria-keyshortcuts={'Control+\\ Meta+\\'}>✕서식</button><button {...toolbarCommandButtonProps} onClick={() => canMerge && mergeSelection()} disabled={!canMerge} title="선택 셀 병합 / 병합 해제 (Alt+Shift+M)" aria-label="선택 셀 병합 또는 병합 해제" aria-keyshortcuts="Alt+Shift+M">⊞병합</button>
       <button {...toolbarCommandButtonProps} onClick={toggleFreezeRows} disabled={!canToggleFreezeRows} title={freezeRowsLabel} aria-label={freezeRowsLabel} aria-pressed={freeze.rows > 0} style={freeze.rows ? activeToolbarStateStyle : undefined}>📌행{freeze.rows > 1 ? `×${freeze.rows}` : ''}</button><button {...toolbarCommandButtonProps} onClick={toggleFreezeCols} disabled={!canToggleFreezeCols} title={freezeColsLabel} aria-label={freezeColsLabel} aria-pressed={freeze.cols > 0} style={freeze.cols ? activeToolbarStateStyle : undefined}>📌열{freeze.cols > 1 ? `×${freeze.cols}` : ''}</button>
       <button {...toolbarCommandButtonProps} onClick={openFilterPrompt} disabled={!canOpenFilterPrompt} title={filterLabel} aria-label={filterLabel} aria-pressed={!!filter} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
-      {filter && <button {...toolbarCommandButtonProps} onClick={clearFilter} title="필터 해제" aria-label="필터 해제">✕</button>}
+      {filter && <button {...toolbarCommandButtonProps} onClick={clearFilter} title={clearFilterLabel} aria-label={clearFilterLabel}>✕</button>}
       {hasHidden && <button {...toolbarCommandButtonProps} onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
       <button {...toolbarCommandButtonProps} onClick={openListValidationPrompt} disabled={!hasCellTarget} title="유효성 검사 (드롭다운 목록)" aria-label="드롭다운 목록 유효성 검사 설정">▾목록</button>
       <button {...toolbarCommandButtonProps} onClick={convertToCheckbox} disabled={!hasCellTarget} title="체크박스로 변환" aria-label="체크박스로 변환">☑체크</button>
