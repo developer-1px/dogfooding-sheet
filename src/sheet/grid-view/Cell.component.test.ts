@@ -139,6 +139,36 @@ describe('Cell component', () => {
     expect(gridKeyDown).not.toHaveBeenCalled()
   })
 
+  it('keeps wrapped textarea editor keyboard events inside the editor control', () => {
+    const gridKeyDown = vi.fn()
+    const contextKeyDown = vi.fn()
+    const inputKeyDown = vi.fn()
+    const formulaPickKeyDown = vi.fn()
+
+    renderCell({
+      cellProps: { role: 'gridcell', tabIndex: 0, onKeyDown: gridKeyDown },
+      ctxHandlers: { onContextMenu: vi.fn(), onKeyDown: contextKeyDown },
+      editing: true,
+      label: 'wrapped',
+      draft: 'wrapped',
+      styleClass: 'wrap',
+      inputProps: { value: 'wrapped', onChange: vi.fn(), onKeyDown: inputKeyDown },
+      onFormulaPickKeyDown: formulaPickKeyDown,
+    })
+
+    const textarea = document.querySelector<HTMLTextAreaElement>('textarea.cell-input')
+
+    expect(textarea?.getAttribute('aria-label')).toBe('A1 편집')
+    expect(textarea?.value).toBe('wrapped')
+
+    act(() => textarea!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })))
+
+    expect(formulaPickKeyDown).toHaveBeenCalledTimes(1)
+    expect(inputKeyDown).toHaveBeenCalledTimes(1)
+    expect(contextKeyDown).not.toHaveBeenCalled()
+    expect(gridKeyDown).not.toHaveBeenCalled()
+  })
+
   it('keeps non-checkbox cell keyboard handling on the parent gridcell', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()

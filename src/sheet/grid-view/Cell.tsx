@@ -79,6 +79,7 @@ export function Cell(p: Props) {
     onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       p.onFormulaPickKeyDown(e)
       if (!e.defaultPrevented) p.inputProps.onKeyDown?.(e)
+      e.stopPropagation()
     },
   } as React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> }
   const selectProps = {
