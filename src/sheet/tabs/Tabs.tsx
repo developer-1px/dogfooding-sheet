@@ -61,6 +61,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           {...tabProps(name)}
           {...reorder.getItemHandlers(name)}
           className={`tab${name === state.active ? ' active' : ''}${reorder.overId === name ? ` reorder-over-${reorder.overPosition}` : ''}`}
+          aria-label={name}
           onDoubleClick={() => ed.startEdit(name, undefined, { caret: 'select-all' })}
           style={state.colors[name] ? { borderBottom: `3px solid ${state.colors[name]}` } : undefined}
           title="더블클릭=이름 변경 / 드래그=순서 변경"
