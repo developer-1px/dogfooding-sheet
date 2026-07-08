@@ -132,15 +132,27 @@ describe('EditableGrid', () => {
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-readonly')).toBeNull()
       expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect([...document.querySelectorAll('[role="row"]')].map((row) => row.getAttribute('aria-rowindex'))).toEqual(['1', '2', '3'])
-      expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.textContent)).toEqual(['Name', 'Qty', 'Total'])
-      expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.getAttribute('aria-colindex'))).toEqual(['1', '2', '3'])
-      expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.getAttribute('aria-label'))).toEqual(['Name column 1', 'Qty column 2', 'Total column 3'])
-      expect([...document.querySelectorAll('[role="columnheader"]')].map((cell) => cell.getAttribute('title'))).toEqual(['Name column 1', 'Qty column 2', 'Total column 3'])
+      const columnHeaders = [...document.querySelectorAll<HTMLElement>('[role="columnheader"]')]
+      const columnHeaderIds = columnHeaders.map((cell) => cell.id)
+      expect(columnHeaderIds.every(Boolean)).toBe(true)
+      expect(new Set(columnHeaderIds).size).toBe(3)
+      expect(columnHeaders.map((cell) => cell.textContent)).toEqual(['Name', 'Qty', 'Total'])
+      expect(columnHeaders.map((cell) => cell.getAttribute('aria-colindex'))).toEqual(['1', '2', '3'])
+      expect(columnHeaders.map((cell) => cell.getAttribute('aria-label'))).toEqual(['Name column 1', 'Qty column 2', 'Total column 3'])
+      expect(columnHeaders.map((cell) => cell.getAttribute('title'))).toEqual(['Name column 1', 'Qty column 2', 'Total column 3'])
       const cells = gridCells()
       const [nameCell, qtyCell, totalCell] = cells
       expect(cells.map((cell) => cell.textContent)).toEqual(['Apple', '3', '3.00', 'Bread', '2', '4.00'])
       expect(cells.map((cell) => cell.getAttribute('aria-rowindex'))).toEqual(['2', '2', '2', '3', '3', '3'])
       expect(cells.map((cell) => cell.getAttribute('aria-colindex'))).toEqual(['1', '2', '3', '1', '2', '3'])
+      expect(cells.map((cell) => cell.getAttribute('aria-describedby'))).toEqual([
+        columnHeaderIds[0],
+        columnHeaderIds[1],
+        columnHeaderIds[2],
+        columnHeaderIds[0],
+        columnHeaderIds[1],
+        columnHeaderIds[2],
+      ])
       expect(nameCell.getAttribute('aria-readonly')).toBeNull()
       expect(qtyCell.getAttribute('aria-readonly')).toBeNull()
       expect(totalCell.getAttribute('aria-readonly')).toBe('true')

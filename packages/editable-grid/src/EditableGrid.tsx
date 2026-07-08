@@ -60,6 +60,8 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
     onChange,
     onSelectionChange,
   })
+  const columnHeaderId = (columnIndex: number): string =>
+    `${gridId}-column-${columnIndex + 1}`
 
   return (
     <EditableGridRoot
@@ -76,7 +78,13 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
           const columnLabel = column.label ?? column.id
           const headerLabel = `${columnLabel} column ${columnIndex + 1}`
           return (
-            <EditableGridColumnHeader key={column.id} colIndex={columnIndex + 1} aria-label={headerLabel} title={headerLabel}>
+            <EditableGridColumnHeader
+              key={column.id}
+              id={columnHeaderId(columnIndex)}
+              colIndex={columnIndex + 1}
+              aria-label={headerLabel}
+              title={headerLabel}
+            >
               {columnLabel}
             </EditableGridColumnHeader>
           )
@@ -118,6 +126,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 editing={isEditing}
                 focusable={selected || (!controller.activeSelection.focus && rowIndex === 0 && columnIndex === 0)}
                 aria-readonly={readonlyCell || undefined}
+                aria-describedby={columnHeaderId(columnIndex)}
                 onFocus={() => controller.focusCell(address)}
                 onClick={() => controller.focusCellWithDomFocus(address)}
                 onDoubleClick={() => controller.startEdit(address, cellValue, column, { caret: 'end' })}
