@@ -52,7 +52,8 @@ describe('ConfirmDialog component', () => {
     expect(cancel?.getAttribute('aria-keyshortcuts')).toBe('Escape')
     expect(confirm?.type).toBe('button')
     expect(confirm?.textContent).toBe('삭제')
-    expect(confirm?.getAttribute('title')).toBe('삭제')
+    expect(confirm?.getAttribute('title')).toBe('삭제 (Enter)')
+    expect(confirm?.getAttribute('aria-keyshortcuts')).toBe('Enter')
 
     act(() => keyDown(cancel!, 'Enter'))
     act(() => keyDown(confirm!, ' '))
