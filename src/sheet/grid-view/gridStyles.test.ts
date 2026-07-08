@@ -41,6 +41,21 @@ describe('grid styles', () => {
     expect(source).toContain('.cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }')
   })
 
+  it('keeps note markers token-sized at the cell corner', () => {
+    const root = appCss()
+    const source = gridCss()
+    const noteRule = source.match(/\.note-mark\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-size-note-marker: 6px;')
+    expect(noteRule).toContain('position: absolute;')
+    expect(noteRule).toContain('top: 0;')
+    expect(noteRule).toContain('right: 0;')
+    expect(noteRule).toContain('border-style: solid;')
+    expect(noteRule).toContain('border-width: 0 var(--sheet-size-note-marker, 6px) var(--sheet-size-note-marker, 6px) 0;')
+    expect(noteRule).toContain('border-color: transparent var(--sheet-color-warning, #fbbc04) transparent transparent;')
+    expect(noteRule).toContain('pointer-events: none;')
+  })
+
   it('keeps cell links constrained to the cell inline size', () => {
     const source = gridCss()
     const linkRule = source.match(/\.cell-link\s*\{[^}]+\}/)?.[0] ?? ''

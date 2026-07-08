@@ -96,7 +96,7 @@
 .note-mark {
   position: absolute; top: 0; right: 0;
   border-style: solid;
-  border-width: 0 6px 6px 0;
+  border-width: 0 var(--sheet-size-note-marker, 6px) var(--sheet-size-note-marker, 6px) 0;
   border-color: transparent var(--sheet-color-warning, #fbbc04) transparent transparent;
   pointer-events: none;
 }
