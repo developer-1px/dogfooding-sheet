@@ -117,10 +117,12 @@ describe('ContextMenu component', () => {
     expect(parentKeys).toEqual([])
   })
 
-  it('keeps long context menus scrollable on short viewports', () => {
+  it('keeps long context menus vertically scrollable and horizontally clipped', () => {
     const css = overlaysCss()
+    const menuRule = css.match(/\.ctx-menu\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(css).toMatch(/\.ctx-menu\s*\{[^}]*overflow-y:\s*auto;/)
+    expect(menuRule).toContain('overflow-x: hidden;')
+    expect(menuRule).toContain('overflow-y: auto;')
   })
 
   it('keeps long context menu labels contained on narrow viewports', () => {
