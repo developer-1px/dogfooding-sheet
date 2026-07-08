@@ -19,6 +19,7 @@ describe('FormulaBar', () => {
     })))
 
     expect(document.querySelector('button.addr')?.getAttribute('aria-label')).toBe('B12 셀로 이동')
+    expect(document.querySelector('button.addr')?.getAttribute('title')).toBe('셀로 이동 (Ctrl/⌘+G)')
     expect(document.querySelector('button.addr')?.getAttribute('aria-keyshortcuts')).toBe('Control+G Meta+G')
     expect(document.querySelector('input.formula')?.getAttribute('aria-label')).toBe('수식 입력줄')
     expect(document.querySelector('input.formula')?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape F4')
@@ -46,7 +47,9 @@ describe('FormulaBar', () => {
 
     const address = document.querySelector<HTMLButtonElement>('button.addr')
     expect(address?.disabled).toBe(true)
-    expect(address?.getAttribute('aria-label')).toBe('셀 주소')
+    expect(address?.textContent).toBe('—')
+    expect(address?.getAttribute('aria-label')).toBe('선택된 셀 없음')
+    expect(address?.getAttribute('title')).toBe('선택된 셀 없음')
     expect(document.querySelector<HTMLInputElement>('input.formula')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="실행 취소할 작업 없음"]')?.type).toBe('button')
@@ -54,6 +57,24 @@ describe('FormulaBar', () => {
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.disabled).toBe(true)
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.type).toBe('button')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="다시 실행할 작업 없음"]')?.getAttribute('title')).toBe('다시 실행할 작업 없음 (Ctrl/⌘+Shift+Z)')
+  })
+
+  it('describes the current address without a jump action when address jumping is unavailable', () => {
+    act(() => dom.root.render(createElement(FormulaBar, {
+      addr: 'C3',
+      value: '42',
+      onCommit: vi.fn(),
+      onUndo: vi.fn(),
+      onRedo: vi.fn(),
+      canUndo: false,
+      canRedo: false,
+    })))
+
+    const address = document.querySelector<HTMLButtonElement>('button.addr')
+    expect(address?.disabled).toBe(true)
+    expect(address?.textContent).toBe('C3')
+    expect(address?.getAttribute('aria-label')).toBe('C3 셀 주소')
+    expect(address?.getAttribute('title')).toBe('C3 셀 주소')
   })
 
   it('keeps button activation keys inside the formula bar controls', () => {
