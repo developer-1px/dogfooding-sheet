@@ -735,6 +735,18 @@ describe('Toolbar component', () => {
     expect(css).toContain('flex: 1 1 200px; min-width: 0; max-width: 100%;')
   })
 
+  it('keeps visible toolbar button labels contained without shrinking menu items', () => {
+    const css = appCss()
+    const toolbarButtonRule = css.match(/\.sheet-toolbar > button,\s*\.sheet-toolbar > \.overflow-menu > \.overflow-trigger\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(css).toContain('--sheet-size-toolbar-button-max: 96px;')
+    expect(toolbarButtonRule).toContain('min-width: 0;')
+    expect(toolbarButtonRule).toContain('max-width: min(100%, var(--sheet-size-toolbar-button-max, 96px));')
+    expect(toolbarButtonRule).toContain('overflow: hidden;')
+    expect(toolbarButtonRule).toContain('text-overflow: ellipsis;')
+    expect(toolbarButtonRule).toContain('white-space: nowrap;')
+  })
+
   it('keeps formatting controls enabled for selected cells without focus', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
