@@ -34,7 +34,7 @@ const contextMenuStyle = (x: number, y: number): CSSProperties => {
   const top = Math.max(0, y)
   return {
     left: `max(var(--sheet-space-1, 4px), min(${left}px, calc(100vw - 180px - var(--sheet-space-8, 24px))))`,
-    top: y,
+    top: `max(var(--sheet-space-1, 4px), min(${top}px, calc(100vh - var(--sheet-space-8, 24px))))`,
     maxWidth: `max(180px, calc(100vw - ${left}px - var(--sheet-space-8, 24px)))`,
     maxHeight: `max(var(--sheet-space-8, 24px), calc(100vh - ${top}px - var(--sheet-space-8, 24px)))`,
   }

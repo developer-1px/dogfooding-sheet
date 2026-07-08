@@ -38,6 +38,7 @@ describe('ContextMenu component', () => {
     expect(menu?.getAttribute('role')).toBe('menu')
     expect(menu?.getAttribute('aria-label')).toBe('셀 메뉴')
     expect(menu?.style.left).toBe('max(var(--sheet-space-1, 4px), min(12px, calc(100vw - 180px - var(--sheet-space-8, 24px))))')
+    expect(menu?.style.top).toBe('max(var(--sheet-space-1, 4px), min(34px, calc(100vh - var(--sheet-space-8, 24px))))')
     expect(menu?.style.maxWidth).toBe('max(180px, calc(100vw - 12px - var(--sheet-space-8, 24px)))')
     expect(menu?.style.maxHeight).toBe('max(var(--sheet-space-8, 24px), calc(100vh - 34px - var(--sheet-space-8, 24px)))')
     expect(separator?.getAttribute('role')).toBe('separator')
@@ -72,6 +73,23 @@ describe('ContextMenu component', () => {
     expect(onOpen).toHaveBeenCalledTimes(1)
     expect(onClose).toHaveBeenCalledTimes(2)
     expect(onDisabled).not.toHaveBeenCalled()
+  })
+
+  it('keeps context menu vertical position inside viewport padding', () => {
+    act(() => dom.root.render(createElement(ContextMenu, {
+      x: -10,
+      y: -20,
+      label: '셀 메뉴',
+      items: [{ label: '열기', onClick: vi.fn() }],
+      onClose: vi.fn(),
+    })))
+
+    const menu = document.querySelector<HTMLElement>('.ctx-menu')
+
+    expect(menu?.style.left).toBe('max(var(--sheet-space-1, 4px), min(0px, calc(100vw - 180px - var(--sheet-space-8, 24px))))')
+    expect(menu?.style.top).toBe('max(var(--sheet-space-1, 4px), min(0px, calc(100vh - var(--sheet-space-8, 24px))))')
+    expect(menu?.style.maxWidth).toBe('max(180px, calc(100vw - 0px - var(--sheet-space-8, 24px)))')
+    expect(menu?.style.maxHeight).toBe('max(var(--sheet-space-8, 24px), calc(100vh - 0px - var(--sheet-space-8, 24px)))')
   })
 
   it('falls back to the generic unavailable label for disabled menu items without a reason', () => {
