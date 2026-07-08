@@ -51,4 +51,15 @@ describe('grid styles', () => {
     expect(linkRule).toContain('text-overflow: ellipsis;')
     expect(linkRule).toContain('white-space: inherit;')
   })
+
+  it('keeps checkbox controls stable inside cells', () => {
+    const source = gridCss()
+    const checkboxRule = source.match(/\.cell-checkbox\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(checkboxRule).toContain('width: var(--sheet-size-control-md, 18px);')
+    expect(checkboxRule).toContain('height: var(--sheet-size-control-md, 18px);')
+    expect(checkboxRule).toContain('margin: 0;')
+    expect(checkboxRule).toContain('vertical-align: middle;')
+    expect(checkboxRule).toContain('accent-color: var(--sheet-color-accent, #1a73e8);')
+  })
 })
