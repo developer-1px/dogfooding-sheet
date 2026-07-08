@@ -4,6 +4,7 @@ import { useReorderDndGestureRaw } from '@interactive-os/aria-kernel/gesture'
 import { useEditable } from '../../interactive-os/useEditable'
 import type { KeyboardEventHandler } from 'react'
 import type { Confirm } from '../useConfirm'
+import { MAX_SHEET_TABS } from '../sheetLimits'
 import type { TabsState } from './useTabs'
 
 export const DEFAULT_TAB_COLOR = '#cccccc'
@@ -54,6 +55,8 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
     onDrop: (from, to) => { if (from !== to) reorderTab(from, to) },
     mime: 'text/x-tab',
   })
+  const atTabLimit = state.order.length >= MAX_SHEET_TABS
+  const addSheetLabel = atTabLimit ? `시트 최대 개수 ${MAX_SHEET_TABS}개 도달` : '시트 추가'
 
   return (
     <div {...rootProps} className="tabs-bar">
@@ -63,6 +66,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
         const colorPickerLabel = state.colors[name]
           ? `${name} 탭 색상 변경 (현재 색상 ${tabColor})`
           : `${name} 탭 색상 변경 (현재 기본 색상)`
+        const duplicateSheetLabel = atTabLimit ? `${name} 시트 복제 불가, 시트 최대 개수 ${MAX_SHEET_TABS}개 도달` : `${name} 시트 복제`
         const tabLabel = `${name} 시트 탭${isActive ? ', 현재 선택됨' : ''}`
         const tabTitle = `${name} 시트 탭${isActive ? ' (현재 선택됨)' : ''} - 더블클릭=이름 변경 / 드래그=순서 변경`
         return (
@@ -92,10 +96,11 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
             <button
               type="button"
               className="tab-dup"
+              disabled={atTabLimit}
               onClick={(e) => { e.stopPropagation(); duplicateSheet(name) }}
               onKeyDown={stopTabUtilityKeyDown}
-              title={`${name} 시트 복제`}
-              aria-label={`${name} 시트 복제`}
+              title={duplicateSheetLabel}
+              aria-label={duplicateSheetLabel}
             >⎘</button>
             {state.order.length > 1 && (
               <button
@@ -115,7 +120,7 @@ export function Tabs({ state, switchTab, addSheet, deleteSheet, renameSheet, dup
           </span>
         )
       })}
-      <button type="button" className="tab-add" onClick={addSheet} onKeyDown={stopTabUtilityKeyDown} title="시트 추가" aria-label="시트 추가">+</button>
+      <button type="button" className="tab-add" disabled={atTabLimit} onClick={addSheet} onKeyDown={stopTabUtilityKeyDown} title={addSheetLabel} aria-label={addSheetLabel}>+</button>
     </div>
   )
 }
