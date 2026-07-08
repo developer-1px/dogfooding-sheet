@@ -109,6 +109,10 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const showAllTitle = '숨김 행/열 모두 표시 (Ctrl/⌘+Shift+0)'
   const undoLabel = canUndo ? '실행 취소' : '실행 취소할 작업 없음'
   const redoLabel = canRedo ? '다시 실행' : '다시 실행할 작업 없음'
+  const undoTitle = canUndo ? `${undoLabel} (Ctrl/⌘+Z)` : undoLabel
+  const redoTitle = canRedo ? `${redoLabel} (Ctrl/⌘+Shift+Z)` : redoLabel
+  const undoKeyShortcuts = canUndo ? 'Control+Z Meta+Z' : undefined
+  const redoKeyShortcuts = canRedo ? 'Control+Shift+Z Meta+Shift+Z' : undefined
   const focusedStyle = focusKey ? styleOf(focusKey) : undefined
   const bgColorValue = colorInputValue(focusedStyle?.bg, DEFAULT_CELL_BACKGROUND_COLOR)
   const fgColorValue = colorInputValue(focusedStyle?.fg, DEFAULT_CELL_TEXT_COLOR)
@@ -165,7 +169,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
 
   return (
     <>
-      <button {...toolbarCommandButtonProps} onClick={undo} disabled={!canUndo} title={`${undoLabel} (Ctrl/⌘+Z)`} aria-keyshortcuts="Control+Z Meta+Z" aria-label={undoLabel}>↶</button><button {...toolbarCommandButtonProps} onClick={redo} disabled={!canRedo} title={`${redoLabel} (Ctrl/⌘+Shift+Z)`} aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z" aria-label={redoLabel}>↷</button>
+      <button {...toolbarCommandButtonProps} onClick={undo} disabled={!canUndo} title={undoTitle} aria-keyshortcuts={undoKeyShortcuts} aria-label={undoLabel}>↶</button><button {...toolbarCommandButtonProps} onClick={redo} disabled={!canRedo} title={redoTitle} aria-keyshortcuts={redoKeyShortcuts} aria-label={redoLabel}>↷</button>
       <button {...toolbarCommandButtonProps} onClick={() => focusRow !== undefined && insertRow(focusRow)} disabled={!hasFocusedRow} title={insertRowTitle} aria-label={insertRowLabel} aria-keyshortcuts="Control+Alt+= Meta+Alt+=">+행</button><button {...toolbarCommandButtonProps} onClick={() => focusRow !== undefined && deleteRow(focusRow)} disabled={!hasFocusedRow} title={deleteRowTitle} aria-label={deleteRowLabel} aria-keyshortcuts="Control+Alt+- Meta+Alt+-">−행</button>
       <button {...toolbarCommandButtonProps} onClick={() => focus && insertCol(focus.col)} disabled={!hasFocusedCol} title={insertColTitle} aria-label={insertColLabel} aria-keyshortcuts="Control+Alt+Shift+= Meta+Alt+Shift+=">+열</button><button {...toolbarCommandButtonProps} onClick={() => focus && deleteCol(focus.col)} disabled={!hasFocusedCol} title={deleteColTitle} aria-label={deleteColLabel} aria-keyshortcuts="Control+Alt+Shift+- Meta+Alt+Shift+-">−열</button>
       <button {...toolbarCommandButtonProps} onClick={() => appendRows(20)} disabled={!canAppendRows} title={appendRowsLabel} aria-label={appendRowsLabel}>+20행</button><button {...toolbarCommandButtonProps} onClick={() => appendCols(1)} disabled={!canAppendCols} title={appendColsLabel} aria-label={appendColsLabel}>+끝열</button>

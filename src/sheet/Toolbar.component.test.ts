@@ -192,12 +192,12 @@ describe('Toolbar component', () => {
 
     expect(undoButton?.textContent).toBe('↶')
     expect(undoButton?.disabled).toBe(true)
-    expect(undoButton?.getAttribute('title')).toBe('실행 취소할 작업 없음 (Ctrl/⌘+Z)')
-    expect(undoButton?.getAttribute('aria-keyshortcuts')).toBe('Control+Z Meta+Z')
+    expect(undoButton?.getAttribute('title')).toBe('실행 취소할 작업 없음')
+    expect(undoButton?.hasAttribute('aria-keyshortcuts')).toBe(false)
     expect(redoButton?.textContent).toBe('↷')
     expect(redoButton?.disabled).toBe(true)
-    expect(redoButton?.getAttribute('title')).toBe('다시 실행할 작업 없음 (Ctrl/⌘+Shift+Z)')
-    expect(redoButton?.getAttribute('aria-keyshortcuts')).toBe('Control+Shift+Z Meta+Shift+Z')
+    expect(redoButton?.getAttribute('title')).toBe('다시 실행할 작업 없음')
+    expect(redoButton?.hasAttribute('aria-keyshortcuts')).toBe(false)
   })
 
   it('labels the active alignment button state', () => {
