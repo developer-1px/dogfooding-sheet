@@ -155,8 +155,11 @@ describe('EditableGrid', () => {
         columnHeaderIds[2],
       ])
       expect(nameCell.getAttribute('aria-readonly')).toBeNull()
+      expect(nameCell.getAttribute('aria-keyshortcuts')).toBe('Enter')
       expect(qtyCell.getAttribute('aria-readonly')).toBeNull()
+      expect(qtyCell.getAttribute('aria-keyshortcuts')).toBe('Enter')
       expect(totalCell.getAttribute('aria-readonly')).toBe('true')
+      expect(totalCell.hasAttribute('aria-keyshortcuts')).toBe(false)
     } finally {
       cleanup(root, host)
     }
@@ -543,6 +546,7 @@ describe('EditableGrid', () => {
     try {
       const cells = gridCells()
       const doneCell = cells[2]
+      expect(doneCell.getAttribute('aria-keyshortcuts')).toBe('Enter Space')
       act(() => doneCell.focus())
       onSelectionChange.mockClear()
 
