@@ -38,9 +38,12 @@ describe('header restore controls', () => {
       }),
     )))
 
+    const headerRow = document.querySelector<HTMLElement>('.header-row')
     const corner = document.querySelector<HTMLElement>('.corner-cell')
 
+    expect(headerRow?.getAttribute('aria-rowindex')).toBe('1')
     expect(corner?.getAttribute('role')).toBe('columnheader')
+    expect(corner?.getAttribute('aria-colindex')).toBe('1')
     expect(corner?.getAttribute('aria-label')).toBe('전체 시트 선택')
     expect(corner?.getAttribute('title')).toBe('전체 시트 선택')
     expect(corner?.tabIndex).toBe(0)
@@ -354,6 +357,8 @@ describe('header restore controls', () => {
     const resizer = document.querySelector<HTMLElement>('.row-resizer')
 
     expect(header?.getAttribute('role')).toBe('rowheader')
+    expect(header?.getAttribute('aria-rowindex')).toBe('4')
+    expect(header?.getAttribute('aria-colindex')).toBe('1')
     expect(header?.getAttribute('aria-label')).toBe('3행')
     expect(header?.getAttribute('title')).toBe('3행 - 클릭=행 선택 / Shift+클릭=범위 / 우클릭=메뉴 / 아래쪽 가장자리 드래그=높이 조정')
     expect(header?.tabIndex).toBe(0)

@@ -28,6 +28,13 @@ const toItemProps = (props: SheetGridItemProps | undefined, id?: string): SheetG
   ...(id ? { 'data-id': id } : {}),
 })
 
+const toSheetGridItemProps = (props: SheetGridItemProps | undefined, id?: string): SheetGridItemProps => {
+  const itemProps = toItemProps(props, id)
+  return typeof itemProps['aria-colindex'] === 'number'
+    ? { ...itemProps, 'aria-colindex': itemProps['aria-colindex'] + 1 }
+    : itemProps
+}
+
 const toSheetCell = (cell: { key: Key; value: string; state: { selected: boolean } }): SheetGridCell => ({
   id: cell.key,
   label: cell.value,
@@ -115,7 +122,7 @@ export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelected
   )
   const cells = [...(headerRow?.cells ?? []), ...renderedRows.flatMap((row) => row.cells)]
   const cellPropsById = new Map<string, SheetGridItemProps>(
-    cells.map((cell) => [cell.key, toItemProps(cell.cellProps as SheetGridItemProps, cell.key)]),
+    cells.map((cell) => [cell.key, toSheetGridItemProps(cell.cellProps as SheetGridItemProps, cell.key)]),
   )
 
   const rootProps: SheetGridItemProps = {

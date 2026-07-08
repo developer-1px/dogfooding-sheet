@@ -30,11 +30,14 @@ describe('useSheetGrid', () => {
     expect(grid?.getAttribute('aria-label')).toBe('스프레드시트 그리드')
     expect(grid?.getAttribute('aria-rowcount')).toBe('3')
     expect(grid?.getAttribute('aria-colcount')).toBe('4')
+    expect(document.querySelector<HTMLElement>('[role="row"][data-row-id="r0"]')?.getAttribute('aria-rowindex')).toBe('2')
+    expect(document.querySelector<HTMLElement>('[role="columnheader"][data-id="h-A"]')?.getAttribute('aria-colindex')).toBe('2')
+    expect(document.querySelector<HTMLElement>('[role="gridcell"][data-id="r0-A"]')?.getAttribute('aria-colindex')).toBe('2')
   })
 })
 
 function GridRootProbe({ data, rowCount, colCount }: { data: PatternData; rowCount: number; colCount: number }) {
-  const { rootProps } = useSheetGrid({
+  const { rootProps, rowProps, columnHeaderProps, cellProps } = useSheetGrid({
     data,
     rowCount,
     colCount,
@@ -42,7 +45,12 @@ function GridRootProbe({ data, rowCount, colCount }: { data: PatternData; rowCou
     setSelectedIds: vi.fn(),
     setSelectAnchor: vi.fn(),
   })
-  return createElement('div', rootProps)
+  return createElement('div', rootProps,
+    createElement('span', columnHeaderProps('h-A'), 'A'),
+    createElement('div', rowProps('r0'),
+      createElement('span', cellProps('r0-A'), 'A1'),
+    ),
+  )
 }
 
 function gridData(rowCount: number, colLetters: readonly string[]): PatternData {

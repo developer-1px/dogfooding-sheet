@@ -96,6 +96,8 @@ export function RowHeader({ rIdx, focusId, setFocusId, setSelectAnchor, setSelec
       className={`row-header${selected ? ' selected-header' : ''}`}
       role="rowheader"
       tabIndex={0}
+      aria-rowindex={rIdx + 2}
+      aria-colindex={1}
       aria-label={headerLabel}
       aria-current={active ? 'true' : undefined}
       aria-selected={selected}

@@ -88,11 +88,12 @@ export function GridHeader({ gridTemplate, columnHeaderProps, widthOf, onResize,
   }
 
   return (
-    <div role="row" className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
+    <div role="row" aria-rowindex={1} className="grid-row header-row" style={{ gridTemplateColumns: gridTemplate }}>
       <span
         className={`corner-cell${allSelected ? ' selected-header' : ''}`}
         role="columnheader"
         tabIndex={0}
+        aria-colindex={1}
         aria-label={selectAllHeaderLabel(allSelected)}
         aria-selected={allSelected}
         title={selectAllHeaderLabel(allSelected)}
