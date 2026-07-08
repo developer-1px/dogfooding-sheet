@@ -54,6 +54,9 @@ describe('Tabs component', () => {
       colors: { Budget: '#ff0000' },
     })
 
+    const tabs = [...document.querySelectorAll<HTMLElement>('.tab')]
+
+    expect(tabs.map((tab) => tab.getAttribute('aria-label'))).toEqual(['Budget', 'Forecast'])
     expect(document.querySelector<HTMLInputElement>('.tab-color')?.getAttribute('aria-label')).toBe('Budget 탭 색상 변경')
     expect(document.querySelector<HTMLButtonElement>('.tab-dup')?.getAttribute('aria-label')).toBe('Budget 시트 복제')
     expect(document.querySelector<HTMLButtonElement>('.tab-close')?.getAttribute('aria-label')).toBe('Budget 시트 삭제')
