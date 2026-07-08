@@ -106,9 +106,16 @@ describe('Find component', () => {
     renderFind('find', { A1: 'Alpha', B1: 'Alpha' }, { onJump: (cellId) => jumps.push(cellId) })
 
     const query = document.querySelector<HTMLInputElement>('input[aria-label="찾을 내용"]')!
+    const previous = document.querySelector<HTMLButtonElement>('button[aria-label="이전 찾기 결과"]')!
     const next = document.querySelector<HTMLButtonElement>('button[aria-label="다음 찾기 결과"]')!
 
     act(() => setInputValue(query, 'Alpha'))
+    expect(previous.textContent).toBe('↑')
+    expect(previous.getAttribute('title')).toBe('이전 찾기 결과, 이동 셀 B1 (Shift+Enter)')
+    expect(previous.getAttribute('aria-label')).toBe('이전 찾기 결과, 이동 셀 B1')
+    expect(next.textContent).toBe('↓')
+    expect(next.getAttribute('title')).toBe('다음 찾기 결과, 이동 셀 B1 (Enter)')
+    expect(next.getAttribute('aria-label')).toBe('다음 찾기 결과, 이동 셀 B1')
     expect(next.disabled).toBe(false)
     expect(jumps).toEqual(['r0-A'])
 
