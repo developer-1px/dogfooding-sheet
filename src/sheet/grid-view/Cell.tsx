@@ -114,6 +114,7 @@ export function Cell(p: Props) {
       aria-rowspan={p.mergeRows && p.mergeRows > 1 ? p.mergeRows : undefined}
       aria-keyshortcuts={p.editing ? undefined : 'Enter'}
       aria-haspopup={p.validationOptions && !p.editing ? 'listbox' : undefined}
+      aria-expanded={p.validationOptions && !p.editing ? false : undefined}
       className={className}
       style={p.styleInline}
       data-formula-ref-index={p.formulaReference?.index}
