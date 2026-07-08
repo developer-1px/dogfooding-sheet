@@ -83,10 +83,18 @@ describe('StatusBar component', () => {
     expect(metric('MEDIAN:')?.getAttribute('aria-label')).toBe('선택 영역 숫자 값 중앙값: 15')
   })
 
-  it('keeps detailed metrics wrapping within the status bar', () => {
-    expect(overlaysCss()).toMatch(
+  it('keeps detailed metrics wrapping and contained within the status bar', () => {
+    const css = overlaysCss()
+    const statusItemRule = css.match(/\.status-bar > span\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(css).toMatch(
       /\.status-bar\s*\{\s*display: flex; flex-wrap: wrap; gap: var\(--sheet-space-1, 4px\) var\(--sheet-space-6, 16px\); align-items: center;/,
     )
+    expect(statusItemRule).toContain('min-width: 0;')
+    expect(statusItemRule).toContain('max-width: 100%;')
+    expect(statusItemRule).toContain('overflow: hidden;')
+    expect(statusItemRule).toContain('text-overflow: ellipsis;')
+    expect(statusItemRule).toContain('white-space: nowrap;')
   })
 
   it('distinguishes pending autosave from active saving', () => {
