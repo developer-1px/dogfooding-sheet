@@ -338,6 +338,9 @@ describe('EditableGrid', () => {
       act(() => scoreCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
       const input = document.querySelector<HTMLInputElement>('input.editable-grid-input')
       expect(input?.type).toBe('number')
+      expect(input?.getAttribute('aria-label')).toBe('Score row 1 편집')
+      expect(input?.getAttribute('title')).toBe('Score row 1 편집 (Enter=저장 / Esc=취소)')
+      expect(input?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
       expect(input?.value).toBe('3')
       onSelectionChange.mockClear()
 
@@ -402,7 +405,9 @@ describe('EditableGrid', () => {
       act(() => titleCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
 
       const input = document.querySelector<HTMLInputElement>('input.editable-grid-input')
-      expect(input?.getAttribute('aria-label')).toBe('Title 편집')
+      expect(input?.getAttribute('aria-label')).toBe('Title row 1 편집')
+      expect(input?.getAttribute('title')).toBe('Title row 1 편집 (Enter=저장 / Esc=취소)')
+      expect(input?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
       expect(input?.value).toBe('Spec')
 
       act(() => keyDown(input!, 'ArrowLeft'))
@@ -439,7 +444,9 @@ describe('EditableGrid', () => {
       act(() => statusCell.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
 
       const select = document.querySelector<HTMLSelectElement>('select.editable-grid-input')
-      expect(select?.getAttribute('aria-label')).toBe('Status 편집')
+      expect(select?.getAttribute('aria-label')).toBe('Status row 1 편집')
+      expect(select?.getAttribute('title')).toBe('Status row 1 편집 (Enter=저장 / Esc=취소)')
+      expect(select?.getAttribute('aria-keyshortcuts')).toBe('Enter Escape')
       expect(select?.value).toBe('todo')
 
       act(() => keyDown(select!, 'ArrowDown'))
