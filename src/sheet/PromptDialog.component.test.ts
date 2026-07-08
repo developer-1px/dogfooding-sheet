@@ -162,6 +162,16 @@ describe('PromptDialog component', () => {
     expect(css).toContain('.prompt-dialog input { min-width: 0; max-width: 100%;')
   })
 
+  it('keeps prompt dialogs constrained to the viewport', () => {
+    const css = overlaysCss()
+    const promptDialogRule = css.match(/\.prompt-dialog\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(promptDialogRule).toContain('min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(promptDialogRule).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(promptDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(promptDialogRule).toContain('overflow: auto')
+  })
+
   it('keeps prompt labels contained on narrow viewports', () => {
     const css = overlaysCss()
 

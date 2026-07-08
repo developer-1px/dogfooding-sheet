@@ -70,11 +70,12 @@ describe('HelpDialog', () => {
 
   it('keeps the shortcut dialog constrained to the viewport', () => {
     const css = overlaysCss()
+    const helpDialogRule = css.match(/\.help-dialog\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(css).toContain('min-width: min(360px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
-    expect(css).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
-    expect(css).toContain('max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
-    expect(css).toContain('overflow: auto')
+    expect(helpDialogRule).toContain('min-width: min(360px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(helpDialogRule).toContain('max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))')
+    expect(helpDialogRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)))')
+    expect(helpDialogRule).toContain('overflow: auto')
   })
 
   it('keeps the shortcut table contained on narrow viewports', () => {

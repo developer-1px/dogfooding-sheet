@@ -99,7 +99,7 @@
   background: var(--sheet-color-surface, #fff); padding: var(--sheet-space-7, 20px) var(--sheet-space-8, 24px); border-radius: var(--sheet-radius-panel, 8px);
   box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: min(360px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
   max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
-  max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
   overflow: auto;
 }
 .prompt-dialog {
@@ -107,7 +107,7 @@
   background: var(--sheet-color-surface, #fff); padding: var(--sheet-space-7, 20px) var(--sheet-space-8, 24px); border-radius: var(--sheet-radius-panel, 8px);
   box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
   max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
-  max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
   overflow: auto;
   display: flex; flex-direction: column; gap: var(--sheet-space-3, 8px);
 }
@@ -120,7 +120,7 @@
   background: var(--sheet-color-surface, #fff); padding: var(--sheet-space-7, 20px) var(--sheet-space-8, 24px); border-radius: var(--sheet-radius-panel, 8px);
   box-shadow: var(--sheet-shadow-dialog, 0 8px 32px rgba(0, 0, 0, .2)); z-index: 101; min-width: min(320px, calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
   max-width: calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
-  max-height: calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px));
+  max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));
   overflow: auto;
 }
 .confirm-dialog p { margin: 0 0 var(--sheet-space-6, 16px); font-size: var(--sheet-font-size-control, 14px); overflow-wrap: anywhere; }
