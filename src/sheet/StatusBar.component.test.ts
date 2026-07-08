@@ -12,6 +12,9 @@ describe('StatusBar component', () => {
     if (!el) throw new Error('status bar not rendered')
     return el
   }
+  const metric = (prefix: string): HTMLElement | undefined =>
+    [...footer().querySelectorAll<HTMLElement>('span')]
+      .find((span) => span.textContent?.startsWith(prefix))
 
   it('marks terse status updates as atomic live-region updates', () => {
     act(() => dom.root.render(createElement(StatusBar, {
@@ -58,6 +61,13 @@ describe('StatusBar component', () => {
     expect(saveStatus?.getAttribute('title')).toBe('변경 사항 저장 중')
     expect(saveStatus?.getAttribute('aria-label')).toBe('변경 사항 저장 중')
     expect(footer().textContent).toContain('SUM: 30')
+    expect(metric('COUNTA:')?.getAttribute('title')).toBe('선택 영역의 비어 있지 않은 셀 수')
+    expect(metric('SUM:')?.getAttribute('title')).toBe('선택 영역 숫자 값 합계')
+    expect(metric('AVG:')?.getAttribute('title')).toBe('선택 영역 숫자 값 평균')
+    expect(metric('MIN:')?.getAttribute('title')).toBe('선택 영역 숫자 값 최솟값')
+    expect(metric('MAX:')?.getAttribute('title')).toBe('선택 영역 숫자 값 최댓값')
+    expect(metric('COUNT:')?.getAttribute('title')).toBe('선택 영역 숫자 값 개수')
+    expect(metric('MEDIAN:')?.getAttribute('title')).toBe('선택 영역 숫자 값 중앙값')
   })
 
   it('distinguishes pending autosave from active saving', () => {
