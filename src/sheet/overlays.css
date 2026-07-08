@@ -25,11 +25,16 @@
   padding: var(--sheet-space-3, 8px); background: var(--sheet-color-surface, #fff); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-panel, 8px);
   box-shadow: var(--sheet-shadow-panel, 0 4px 12px rgba(0, 0, 0, .15));
 }
-.find-bar input {
+.find-bar input[type="text"] {
   padding: var(--sheet-space-2, 6px) var(--sheet-space-4, 10px); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px); outline: none;
   flex: 1 1 200px; width: 200px; max-width: 100%; font-size: var(--sheet-font-size-ui, 13px);
 }
-.find-bar input:focus { border-color: var(--sheet-color-accent, #1a73e8); }
+.find-bar input[type="text"]:focus { border-color: var(--sheet-color-accent, #1a73e8); }
+.find-bar label { display: inline-flex; align-items: center; gap: var(--sheet-space-1, 4px); white-space: nowrap; font-size: var(--sheet-font-size-sm, 12px); }
+.find-bar input[type="checkbox"] {
+  flex: 0 0 auto; width: var(--sheet-size-control-sm, 16px); height: var(--sheet-size-control-sm, 16px);
+  margin: 0; accent-color: var(--sheet-color-accent, #1a73e8);
+}
 .find-bar .count { font-size: var(--sheet-font-size-sm, 12px); color: var(--sheet-color-muted, #5f6368); min-width: 50px; text-align: center; }
 .find-bar button {
   padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-control, 4px); background: var(--sheet-color-surface, #fff);

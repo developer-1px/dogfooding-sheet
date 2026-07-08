@@ -108,6 +108,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
   return (
     <div {...rootProps} className="find-bar">
       <input
+        type="text"
         value={q}
         onChange={(e) => { setQ(e.target.value); resetIdx() }}
         onKeyDown={onTextInputKeyDown}
@@ -119,6 +120,7 @@ export function Find({ open, mode, onClose, cells, display, onJump, writeCell, w
       />
       {mode === 'replace' && (
         <input
+          type="text"
           value={r}
           onChange={(e) => setR(e.target.value)}
           onKeyDown={onTextInputKeyDown}
