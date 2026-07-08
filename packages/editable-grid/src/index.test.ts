@@ -148,7 +148,7 @@ describe('cell display model', () => {
 
     expect(isErrorLabel('#DIV/0!')).toBe(true)
     expect(model.error).toBe(true)
-    expect(model.ariaLabel).toBe('A1 #N/A 오류 병합 셀 A1:B1 수식 참조 강조됨 선택됨 현재 셀 편집 중')
+    expect(model.ariaLabel).toBe('A1 #N/A 오류 병합 셀 A1:B1 수식 참조 강조됨 자동 채우기 미리보기 선택됨 현재 셀 편집 중')
     expect(model.className).toBe('cell selected focused merged errcell ref-hi preview bold')
   })
 })
