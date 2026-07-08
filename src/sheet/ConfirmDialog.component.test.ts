@@ -49,10 +49,12 @@ describe('ConfirmDialog component', () => {
 
     expect(cancel?.type).toBe('button')
     expect(cancel?.textContent).toBe('아니요')
+    expect(cancel?.getAttribute('aria-label')).toBe('아니요')
     expect(cancel?.getAttribute('title')).toBe('아니요 (Esc)')
     expect(cancel?.getAttribute('aria-keyshortcuts')).toBe('Escape')
     expect(confirm?.type).toBe('button')
     expect(confirm?.textContent).toBe('삭제')
+    expect(confirm?.getAttribute('aria-label')).toBe('삭제')
     expect(confirm?.getAttribute('title')).toBe('삭제 (Enter)')
     expect(confirm?.getAttribute('aria-keyshortcuts')).toBe('Enter')
 
