@@ -175,12 +175,15 @@ describe('grid styles', () => {
   it('keeps checkbox controls stable inside cells', () => {
     const source = gridCss()
     const checkboxRule = source.match(/\.cell-checkbox\s*\{[^}]+\}/)?.[0] ?? ''
+    const checkboxFocusRule = source.match(/\.cell-checkbox:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(checkboxRule).toContain('width: var(--sheet-size-control-md, 18px);')
     expect(checkboxRule).toContain('height: var(--sheet-size-control-md, 18px);')
     expect(checkboxRule).toContain('margin: 0;')
     expect(checkboxRule).toContain('vertical-align: middle;')
     expect(checkboxRule).toContain('accent-color: var(--sheet-color-accent, #1a73e8);')
+    expect(checkboxFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(checkboxFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
   })
 
   it('keeps header label content contained inside header tracks', () => {
