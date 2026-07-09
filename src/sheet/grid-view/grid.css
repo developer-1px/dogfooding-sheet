@@ -13,6 +13,10 @@
 .row-header { position: sticky; left: 0; z-index: var(--sheet-z-index-grid-row-header, 1); }
 .header-cell { position: relative; cursor: pointer; }
 .header-cell:hover { background: var(--sheet-color-accent-muted, #e8f0fe); }
+.corner-cell:focus-visible, .row-header:focus-visible, .header-cell:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));
+}
 .header-cell.filtered { color: var(--sheet-color-accent, #1a73e8); background: var(--sheet-color-accent-muted, #e8f0fe); font-weight: var(--sheet-font-weight-strong, 600); }
 .header-cell-label {
   display: inline-flex; align-items: center; min-width: 0; max-width: 100%;
