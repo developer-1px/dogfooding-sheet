@@ -105,8 +105,10 @@ describe('HelpDialog', () => {
     const rootCss = appCss()
     const css = overlaysCss()
     const captionRule = css.match(/\.help-dialog caption\s*\{[^}]+\}/)?.[0] ?? ''
+    const bodyCellRule = css.match(/\.help-dialog tbody th,\s*\.help-dialog td\s*\{[^}]+\}/)?.[0] ?? ''
     const kbdRule = css.match(/\.help-dialog kbd\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-font-weight-base: 400;')
     expect(rootCss).toContain('--sheet-size-visually-hidden: 1px;')
     expect(rootCss).toContain('--sheet-offset-visually-hidden: -1px;')
     expect(rootCss).toContain('--sheet-size-shortcut-key-border: 1px;')
@@ -116,6 +118,8 @@ describe('HelpDialog', () => {
     expect(captionRule).toContain('margin: var(--sheet-offset-visually-hidden, -1px);')
     expect(captionRule).toContain('clip: rect(0 0 0 0);')
     expect(css).toContain('.help-dialog th, .help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); text-align: left; overflow-wrap: anywhere; }')
+    expect(bodyCellRule).toContain('font-weight: var(--sheet-font-weight-base, 400);')
+    expect(bodyCellRule).not.toContain('font-weight: normal;')
     expect(kbdRule).toContain('border: var(--sheet-size-shortcut-key-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(css).toContain('font-size: var(--sheet-font-size-sm, 12px); white-space: normal;')
   })
