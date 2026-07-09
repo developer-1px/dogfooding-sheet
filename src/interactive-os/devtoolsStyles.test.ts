@@ -17,8 +17,10 @@ describe('REC devtools styles', () => {
   })
 
   it('uses spreadsheet design tokens for idle overlay layout and type', () => {
+    const root = appCss()
     const source = css()
 
+    expect(root).toContain('--sheet-font-weight-bold: 700;')
     expect(source).toContain('top: var(--sheet-space-3, 8px);')
     expect(source).toContain('right: var(--sheet-space-3, 8px);')
     expect(source).toContain('gap: var(--sheet-space-2, 6px);')
@@ -27,7 +29,7 @@ describe('REC devtools styles', () => {
     expect(source).toContain('min-height: var(--sheet-size-cell-min-height, 28px);')
     expect(source).toContain('padding: var(--sheet-space-1, 4px) var(--sheet-space-4, 10px);')
     expect(source).toContain('border-radius: var(--sheet-radius-tab, 6px);')
-    expect(source).toContain('font: 700 var(--sheet-font-size-control-xs, 11px)/1 var(--sheet-font-ui, system-ui, sans-serif);')
+    expect(source).toContain('font: var(--sheet-font-weight-bold, 700) var(--sheet-font-size-control-xs, 11px)/1 var(--sheet-font-ui, system-ui, sans-serif);')
     expect(source).toContain('border-radius: var(--sheet-radius-round, 999px);')
   })
 
@@ -75,6 +77,7 @@ describe('REC devtools styles', () => {
     expect(source).not.toMatch(/min-height:\s*28px;/)
     expect(source).not.toMatch(/padding:\s*4px 10px;/)
     expect(source).not.toMatch(/border-radius:\s*6px;/)
+    expect(source).not.toContain('font: 700 var(--sheet-font-size-control-xs, 11px)/1 var(--sheet-font-ui, system-ui, sans-serif);')
     expect(source).not.toMatch(/font:\s*700 11px\/1 system-ui, sans-serif;/)
     expect(source).not.toMatch(/border-radius:\s*999px;/)
     expect(source).not.toMatch(/width:\s*7px;/)
