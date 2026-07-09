@@ -131,6 +131,26 @@ describe('grid styles', () => {
     expect(colDividerRule).toContain(`border-left: ${divider} solid var(--sheet-color-accent, #1a73e8);`)
   })
 
+  it('keeps freeze pane layers ordered through tokens', () => {
+    const root = appCss()
+    const source = gridCss()
+    const freezeColRule = source.match(/\.cell\.freeze-col\s*\{[^}]+\}/)?.[0] ?? ''
+    const freezeRowRule = source.match(/\.grid-row\.freeze-row\s*\{[^}]+\}/)?.[0] ?? ''
+    const intersectionRule = source.match(/\.grid-row\.freeze-row\s+\.cell\.freeze-col\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-z-index-grid-freeze-column: 1;')
+    expect(root).toContain('--sheet-z-index-grid-freeze-row: 2;')
+    expect(root).toContain('--sheet-z-index-grid-freeze-intersection: 3;')
+    expect(freezeColRule).toContain('position: sticky;')
+    expect(freezeRowRule).toContain('position: sticky;')
+    expect(freezeColRule).toContain('z-index: var(--sheet-z-index-grid-freeze-column, 1);')
+    expect(freezeRowRule).toContain('z-index: var(--sheet-z-index-grid-freeze-row, 2);')
+    expect(intersectionRule).toContain('z-index: var(--sheet-z-index-grid-freeze-intersection, 3);')
+    expect(freezeColRule).not.toContain('z-index: 1;')
+    expect(freezeRowRule).not.toContain('z-index: 2;')
+    expect(intersectionRule).not.toContain('z-index: 3;')
+  })
+
   it('keeps formatted cell borders token-sized with the muted border color', () => {
     const root = appCss()
     const source = gridCss()

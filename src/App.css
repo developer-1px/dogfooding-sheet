@@ -67,6 +67,9 @@
   --sheet-z-index-grid-resizer: 3;
   --sheet-z-index-grid-header: 2;
   --sheet-z-index-grid-row-header: 1;
+  --sheet-z-index-grid-freeze-column: 1;
+  --sheet-z-index-grid-freeze-row: 2;
+  --sheet-z-index-grid-freeze-intersection: 3;
   --sheet-motion-duration-fast: .15s;
   --sheet-motion-duration-rec-pulse: 1s;
 
