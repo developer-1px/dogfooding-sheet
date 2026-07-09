@@ -61,6 +61,15 @@ describe('REC devtools styles', () => {
     expect(labelRule).toContain('white-space: nowrap;')
   })
 
+  it('keeps the recording pulse duration on a motion token', () => {
+    const root = appCss()
+    const source = css()
+    const recordingDotRule = source.match(/\.rec-devtools\.recording\s+\.rec-dot\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-motion-duration-rec-pulse: 1s;')
+    expect(recordingDotRule).toContain('animation: rec-pulse var(--sheet-motion-duration-rec-pulse, 1s) infinite;')
+  })
+
   it('does not reintroduce replaced direct REC style values', () => {
     const source = css()
 
@@ -82,6 +91,7 @@ describe('REC devtools styles', () => {
     expect(source).not.toMatch(/border-radius:\s*6px;/)
     expect(source).not.toContain('font: 700 var(--sheet-font-size-control-xs, 11px)/1 var(--sheet-font-ui, system-ui, sans-serif);')
     expect(source).not.toMatch(/font:\s*700 11px\/1 system-ui, sans-serif;/)
+    expect(source).not.toContain('animation: rec-pulse 1s infinite;')
     expect(source).not.toMatch(/border-radius:\s*999px;/)
     expect(source).not.toMatch(/width:\s*7px;/)
     expect(source).not.toMatch(/height:\s*7px;/)

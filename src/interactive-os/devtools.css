@@ -42,7 +42,7 @@
 
 .rec-devtools.recording .rec-dot {
   background: var(--sheet-color-surface, #fff);
-  animation: rec-pulse 1s infinite;
+  animation: rec-pulse var(--sheet-motion-duration-rec-pulse, 1s) infinite;
 }
 
 @keyframes rec-pulse {
