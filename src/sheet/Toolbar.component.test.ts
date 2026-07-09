@@ -725,8 +725,11 @@ describe('Toolbar component', () => {
   it('keeps disabled color pickers from showing enabled pointer affordances', () => {
     const css = appCss()
 
-    expect(css).toContain('.color-pick[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }')
+    expect(css).toContain('--sheet-state-control-disabled-opacity: .4;')
+    expect(css).toContain('.sheet-toolbar button:disabled { opacity: var(--sheet-state-control-disabled-opacity, .4); cursor: not-allowed; }')
+    expect(css).toContain('.color-pick[aria-disabled="true"] { opacity: var(--sheet-state-control-disabled-opacity, .4); cursor: not-allowed; }')
     expect(css).toContain('.color-pick[aria-disabled="true"] input[type="color"] { cursor: not-allowed; }')
+    expect(css).not.toContain('opacity: .4; cursor: not-allowed;')
   })
 
   it('keeps toolbar color picker controls stable and contained', () => {
