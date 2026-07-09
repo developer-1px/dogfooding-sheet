@@ -60,6 +60,7 @@
   --sheet-z-index-context-menu: 20;
   --sheet-z-index-dialog-backdrop: 100;
   --sheet-z-index-dialog: 101;
+  --sheet-z-index-overflow-menu: 50;
   --sheet-motion-duration-fast: .15s;
   --sheet-motion-duration-rec-pulse: 1s;
 
