@@ -65,6 +65,7 @@
   --sheet-z-index-fill-handle: 2;
   --sheet-z-index-hidden-restore: 4;
   --sheet-z-index-grid-resizer: 3;
+  --sheet-z-index-grid-header: 2;
   --sheet-motion-duration-fast: .15s;
   --sheet-motion-duration-rec-pulse: 1s;
 
