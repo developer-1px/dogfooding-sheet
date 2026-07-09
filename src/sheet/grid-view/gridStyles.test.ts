@@ -164,12 +164,15 @@ describe('grid styles', () => {
   it('keeps cell links constrained to the cell inline size', () => {
     const source = gridCss()
     const linkRule = source.match(/\.cell-link\s*\{[^}]+\}/)?.[0] ?? ''
+    const linkFocusRule = source.match(/\.cell-link:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(linkRule).toContain('display: inline-block;')
     expect(linkRule).toContain('max-width: 100%;')
     expect(linkRule).toContain('overflow: hidden;')
     expect(linkRule).toContain('text-overflow: ellipsis;')
     expect(linkRule).toContain('white-space: inherit;')
+    expect(linkFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(linkFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
   })
 
   it('keeps checkbox controls stable inside cells', () => {

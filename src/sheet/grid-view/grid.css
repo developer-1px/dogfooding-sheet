@@ -135,6 +135,10 @@
   display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
   white-space: inherit; vertical-align: bottom;
 }
+.cell-link:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 
 .cell-checkbox {
   width: var(--sheet-size-control-md, 18px); height: var(--sheet-size-control-md, 18px);
