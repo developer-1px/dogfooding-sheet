@@ -92,6 +92,7 @@
   --sheet-size-fill-handle-offset: 3px;
   --sheet-size-note-marker: 6px;
   --sheet-size-rec-dot: 7px;
+  --sheet-size-app-error-button-border: 1px;
   --sheet-size-toolbar-button-max: 96px;
   --sheet-size-toolbar-control-border: 1px;
   --sheet-size-toolbar-divider: 1px;
@@ -146,7 +147,7 @@ body, html, #root {
 .app-error button {
   flex: 0 0 auto;
   padding: var(--sheet-space-2) var(--sheet-space-5);
-  border: 1px solid var(--sheet-color-border);
+  border: var(--sheet-size-app-error-button-border, 1px) solid var(--sheet-color-border);
   border-radius: var(--sheet-radius-control);
   background: var(--sheet-color-surface);
   cursor: pointer;
