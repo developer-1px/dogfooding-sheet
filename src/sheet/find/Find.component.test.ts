@@ -117,6 +117,7 @@ describe('Find component', () => {
     const textInputRule = css.match(/\.find-bar input\[type="text"\]\s*\{[^}]+\}/)?.[0] ?? ''
     const textInputFocusRule = css.match(/\.find-bar input\[type="text"\]:focus\s*\{[^}]+\}/)?.[0] ?? ''
     const checkboxRule = css.match(/\.find-bar input\[type="checkbox"\]\s*\{[^}]+\}/)?.[0] ?? ''
+    const checkboxFocusRule = css.match(/\.find-bar input\[type="checkbox"\]:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
     const labelRule = css.match(/\.find-bar label\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(rootCss).toContain('--sheet-size-find-input-width: 200px;')
@@ -134,6 +135,8 @@ describe('Find component', () => {
     expect(checkboxRule).toContain('width: var(--sheet-size-control-sm, 16px);')
     expect(checkboxRule).toContain('height: var(--sheet-size-control-sm, 16px);')
     expect(checkboxRule).toContain('margin: 0;')
+    expect(checkboxFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(checkboxFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
     expect(labelRule).toContain('display: inline-flex;')
     expect(labelRule).toContain('flex: 0 0 auto;')
     expect(labelRule).toContain('align-items: center;')
