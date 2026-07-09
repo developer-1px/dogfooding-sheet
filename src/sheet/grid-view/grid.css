@@ -102,7 +102,7 @@
 }
 .fill-handle {
   position: absolute; right: calc(-1 * var(--sheet-size-fill-handle-offset, 3px)); bottom: calc(-1 * var(--sheet-size-fill-handle-offset, 3px)); width: var(--sheet-size-fill-handle, 7px); height: var(--sheet-size-fill-handle, 7px);
-  background: var(--sheet-color-accent, #1a73e8); border: var(--sheet-size-fill-handle-border, 1px) solid var(--sheet-color-surface, #fff); cursor: crosshair; z-index: 2;
+  background: var(--sheet-color-accent, #1a73e8); border: var(--sheet-size-fill-handle-border, 1px) solid var(--sheet-color-surface, #fff); cursor: crosshair; z-index: var(--sheet-z-index-fill-handle, 2);
 }
 .cell-input {
   position: absolute; inset: 0; width: 100%; padding: var(--sheet-space-1, 4px) var(--sheet-space-2, 6px);
