@@ -19,7 +19,7 @@
 .ctx-sep { height: var(--sheet-size-context-menu-separator-height, 1px); background: var(--sheet-color-border-subtle, #e0e0e0); margin: var(--sheet-space-1, 4px) 0; }
 
 .find-bar {
-  position: fixed; top: var(--sheet-inset-find-bar-top, 60px); right: var(--sheet-inset-find-bar-inline, 16px); z-index: 10;
+  position: fixed; top: var(--sheet-inset-find-bar-top, 60px); right: var(--sheet-inset-find-bar-inline, 16px); z-index: var(--sheet-z-index-find-bar, 10);
   display: flex; flex-wrap: wrap; gap: var(--sheet-space-1, 4px); align-items: center;
   max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-inset-find-bar-inline, 16px) - var(--sheet-inset-find-bar-inline, 16px)));
   max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-inset-find-bar-top, 60px) - var(--sheet-space-8, 24px)));

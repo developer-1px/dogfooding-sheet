@@ -166,13 +166,16 @@ describe('Find component', () => {
     expect(rootCss).toContain('--sheet-inset-find-bar-top: 60px;')
     expect(rootCss).toContain('--sheet-inset-find-bar-inline: 16px;')
     expect(rootCss).toContain('--sheet-size-find-bar-border: 1px;')
+    expect(rootCss).toContain('--sheet-z-index-find-bar: 10;')
     expect(findBarRule).toContain('top: var(--sheet-inset-find-bar-top, 60px);')
     expect(findBarRule).toContain('right: var(--sheet-inset-find-bar-inline, 16px);')
+    expect(findBarRule).toContain('z-index: var(--sheet-z-index-find-bar, 10);')
     expect(findBarRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-inset-find-bar-inline, 16px) - var(--sheet-inset-find-bar-inline, 16px)));')
     expect(findBarRule).toContain('border: var(--sheet-size-find-bar-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(findBarRule).toContain('max-height: max(var(--sheet-space-8, 24px), calc(100vh - var(--sheet-inset-find-bar-top, 60px) - var(--sheet-space-8, 24px)));')
     expect(findBarRule).toContain('overflow-x: hidden;')
     expect(findBarRule).toContain('overflow-y: auto;')
+    expect(findBarRule).not.toContain('z-index: 10;')
   })
 
   it('announces no-match and matched result counts as status text', () => {
