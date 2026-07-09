@@ -44,6 +44,7 @@ describe('FormulaBar', () => {
     const titleRule = css.match(/\.sheet-toolbar > strong\s*\{[^}]+\}/)?.[0] ?? ''
     const addressRule = css.match(/\.sheet-toolbar \.addr\s*\{[^}]+\}/)?.[0] ?? ''
     const formulaRule = css.match(/\.sheet-toolbar \.formula\s*\{[^}]+\}/)?.[0] ?? ''
+    const formulaFocusRule = css.match(/\.sheet-toolbar \.formula:focus\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(titleRule).toContain('flex: 0 0 auto;')
     expect(titleRule).toContain('min-width: 0;')
@@ -58,6 +59,9 @@ describe('FormulaBar', () => {
     expect(formulaRule).toContain('flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px);')
     expect(formulaRule).toContain('min-width: 0;')
     expect(formulaRule).toContain('max-width: 100%;')
+    expect(formulaFocusRule).toContain('border-color: var(--sheet-color-accent);')
+    expect(formulaFocusRule).toContain('outline: var(--sheet-focus-ring);')
+    expect(formulaFocusRule).toContain('outline-offset: var(--sheet-focus-offset);')
   })
 
   it('keeps the address control disabled when no jump action is available', () => {
