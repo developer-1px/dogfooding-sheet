@@ -115,14 +115,21 @@ describe('Find component', () => {
     const rootCss = appCss()
     const css = overlaysCss()
     const textInputRule = css.match(/\.find-bar input\[type="text"\]\s*\{[^}]+\}/)?.[0] ?? ''
+    const textInputFocusRule = css.match(/\.find-bar input\[type="text"\]:focus\s*\{[^}]+\}/)?.[0] ?? ''
     const checkboxRule = css.match(/\.find-bar input\[type="checkbox"\]\s*\{[^}]+\}/)?.[0] ?? ''
     const labelRule = css.match(/\.find-bar label\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(rootCss).toContain('--sheet-size-find-input-width: 200px;')
     expect(rootCss).toContain('--sheet-size-find-input-border: 1px;')
+    expect(rootCss).toContain('--sheet-focus-ring: 2px solid var(--sheet-color-accent);')
+    expect(rootCss).toContain('--sheet-focus-offset: 2px;')
     expect(textInputRule).toContain('border: var(--sheet-size-find-input-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(textInputRule).toContain('flex: 1 1 var(--sheet-size-find-input-width, 200px);')
     expect(textInputRule).toContain('width: var(--sheet-size-find-input-width, 200px);')
+    expect(textInputFocusRule).toContain('border-color: var(--sheet-color-accent, #1a73e8);')
+    expect(textInputFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(textInputFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
+    expect(textInputFocusRule).not.toContain('outline: none;')
     expect(checkboxRule).toContain('flex: 0 0 auto;')
     expect(checkboxRule).toContain('width: var(--sheet-size-control-sm, 16px);')
     expect(checkboxRule).toContain('height: var(--sheet-size-control-sm, 16px);')
