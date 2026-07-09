@@ -2,7 +2,7 @@
   position: fixed;
   top: var(--sheet-space-3, 8px);
   right: var(--sheet-space-3, 8px);
-  z-index: 99999;
+  z-index: var(--sheet-z-index-rec-devtools, 99999);
   display: inline-flex;
   align-items: center;
   gap: var(--sheet-space-2, 6px);

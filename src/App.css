@@ -53,6 +53,7 @@
   --sheet-state-formula-ref-5-bg: rgba(0, 137, 123, .11);
   --sheet-focus-ring: 2px solid var(--sheet-color-accent);
   --sheet-focus-offset: 2px;
+  --sheet-z-index-rec-devtools: 99999;
 
   --sheet-shadow-menu: 0 2px 8px rgba(0, 0, 0, .1);
   --sheet-shadow-popover: 0 4px 16px rgba(0, 0, 0, .15);
