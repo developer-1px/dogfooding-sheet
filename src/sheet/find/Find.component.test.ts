@@ -140,6 +140,7 @@ describe('Find component', () => {
     expect(labelRule).toContain('display: inline-flex;')
     expect(labelRule).toContain('flex: 0 0 auto;')
     expect(labelRule).toContain('align-items: center;')
+    expect(labelRule).toContain('cursor: pointer;')
   })
 
   it('keeps find count and action buttons from shrinking', () => {
