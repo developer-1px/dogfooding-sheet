@@ -234,6 +234,7 @@ describe('grid styles', () => {
     const restoreOffset = 'calc(-1 * var(--sheet-size-control-sm, 16px) / 2)'
 
     expect(root).toContain('--sheet-z-index-hidden-restore: 4;')
+    expect(root).toContain('--sheet-line-height-compact: 1;')
     expect(restoreRule).toContain('position: absolute;')
     expect(restoreRule).toContain('display: inline-flex;')
     expect(restoreRule).toContain('align-items: center;')
@@ -241,8 +242,9 @@ describe('grid styles', () => {
     expect(restoreRule).toContain('width: var(--sheet-size-control-sm, 16px);')
     expect(restoreRule).toContain('height: var(--sheet-size-control-sm, 16px);')
     expect(restoreRule).toContain('padding: 0;')
-    expect(restoreRule).toContain('line-height: 1;')
+    expect(restoreRule).toContain('line-height: var(--sheet-line-height-compact, 1);')
     expect(restoreRule).toContain('z-index: var(--sheet-z-index-hidden-restore, 4);')
+    expect(restoreRule).not.toContain('line-height: 1;')
     expect(restoreRule).not.toContain('line-height: 14px;')
     expect(restoreRule).not.toContain('z-index: 4;')
     expect(leftRule).toContain(`left: ${restoreOffset};`)
