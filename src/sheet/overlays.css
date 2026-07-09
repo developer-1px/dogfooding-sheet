@@ -32,7 +32,7 @@
   flex: 1 1 var(--sheet-size-find-input-width, 200px); width: var(--sheet-size-find-input-width, 200px); max-width: 100%; font-size: var(--sheet-font-size-ui, 13px);
 }
 .find-bar input[type="text"]:focus { border-color: var(--sheet-color-accent, #1a73e8); outline: var(--sheet-focus-ring, 2px solid #1a73e8); outline-offset: var(--sheet-focus-offset, 2px); }
-.find-bar label { display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--sheet-space-1, 4px); white-space: nowrap; font-size: var(--sheet-font-size-sm, 12px); }
+.find-bar label { display: inline-flex; flex: 0 0 auto; align-items: center; gap: var(--sheet-space-1, 4px); white-space: nowrap; font-size: var(--sheet-font-size-sm, 12px); cursor: pointer; }
 .find-bar input[type="checkbox"] {
   flex: 0 0 auto; width: var(--sheet-size-control-sm, 16px); height: var(--sheet-size-control-sm, 16px);
   margin: 0; accent-color: var(--sheet-color-accent, #1a73e8);
