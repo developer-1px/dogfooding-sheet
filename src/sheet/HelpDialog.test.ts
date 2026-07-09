@@ -81,6 +81,26 @@ describe('HelpDialog', () => {
     expect(helpDialogRule).toContain('overflow: auto')
   })
 
+  it('keeps dialog layers on design tokens', () => {
+    const rootCss = appCss()
+    const css = overlaysCss()
+    const backdropRule = css.match(/\.dialog-backdrop\s*\{[^}]+\}/)?.[0] ?? ''
+    const helpDialogRule = css.match(/\.help-dialog\s*\{[^}]+\}/)?.[0] ?? ''
+    const promptDialogRule = css.match(/\.prompt-dialog\s*\{[^}]+\}/)?.[0] ?? ''
+    const confirmDialogRule = css.match(/\.confirm-dialog\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(rootCss).toContain('--sheet-z-index-dialog-backdrop: 100;')
+    expect(rootCss).toContain('--sheet-z-index-dialog: 101;')
+    expect(backdropRule).toContain('z-index: var(--sheet-z-index-dialog-backdrop, 100);')
+    expect(helpDialogRule).toContain('z-index: var(--sheet-z-index-dialog, 101);')
+    expect(promptDialogRule).toContain('z-index: var(--sheet-z-index-dialog, 101);')
+    expect(confirmDialogRule).toContain('z-index: var(--sheet-z-index-dialog, 101);')
+    expect(backdropRule).not.toContain('z-index: 100;')
+    expect(helpDialogRule).not.toContain('z-index: 101;')
+    expect(promptDialogRule).not.toContain('z-index: 101;')
+    expect(confirmDialogRule).not.toContain('z-index: 101;')
+  })
+
   it('keeps the shortcut table contained on narrow viewports', () => {
     const rootCss = appCss()
     const css = overlaysCss()
