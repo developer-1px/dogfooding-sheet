@@ -252,7 +252,13 @@ describe('Tabs component', () => {
 
     expect(rootCss).toContain('--sheet-size-tab-add-border: 1px;')
     expect(rootCss).toContain('--sheet-size-tab-color-swatch: 14px;')
+    expect(rootCss).toContain('--sheet-line-height-compact: 1;')
+    expect(closeAndAddRule).toContain('display: inline-flex;')
+    expect(closeAndAddRule).toContain('align-items: center;')
+    expect(closeAndAddRule).toContain('justify-content: center;')
     expect(closeAndAddRule).toContain('flex: 0 0 auto;')
+    expect(closeAndAddRule).toContain('line-height: var(--sheet-line-height-compact, 1);')
+    expect(closeAndAddRule).not.toContain('line-height: var(--sheet-size-control-sm, 16px);')
     expect(addRule).toContain('border: var(--sheet-size-tab-add-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(duplicateRule).toContain('flex: 0 0 auto;')
     expect(colorRule).toContain('flex: 0 0 auto;')
