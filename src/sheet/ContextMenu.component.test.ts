@@ -148,10 +148,13 @@ describe('ContextMenu component', () => {
 
     expect(rootCss).toContain('--sheet-size-context-menu-border: 1px;')
     expect(rootCss).toContain('--sheet-size-context-menu-width: 180px;')
+    expect(rootCss).toContain('--sheet-z-index-context-menu: 20;')
+    expect(menuRule).toContain('z-index: var(--sheet-z-index-context-menu, 20);')
     expect(menuRule).toContain(`min-width: ${contextMenuWidth};`)
     expect(menuRule).toContain('border: var(--sheet-size-context-menu-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(menuRule).toContain('overflow-x: hidden;')
     expect(menuRule).toContain('overflow-y: auto;')
+    expect(menuRule).not.toContain('z-index: 20;')
   })
 
   it('keeps context menu separator height on a design token', () => {
