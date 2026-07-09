@@ -98,6 +98,8 @@
   --sheet-size-toolbar-divider: 1px;
   --sheet-size-toolbar-address-min-width: 56px;
   --sheet-size-toolbar-formula-basis: 200px;
+  --sheet-size-visually-hidden: 1px;
+  --sheet-offset-visually-hidden: -1px;
   --sheet-size-context-menu-border: 1px;
   --sheet-size-context-menu-separator-height: 1px;
   --sheet-size-context-menu-width: 180px;
