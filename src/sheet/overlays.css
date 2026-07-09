@@ -183,7 +183,9 @@
 }
 
 .tab-dup {
-  flex: 0 0 auto; background: transparent; border: none; padding: 0 var(--sheet-space-1, 4px);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 auto; width: var(--sheet-size-control-md, 18px); height: var(--sheet-size-control-md, 18px); padding: 0; line-height: var(--sheet-line-height-compact, 1);
+  background: transparent; border: none; border-radius: var(--sheet-radius-round, 999px);
   color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-control-xs, 11px); cursor: pointer;
 }
 .tab-dup:hover:not(:disabled) { color: var(--sheet-color-accent, #1a73e8); }
