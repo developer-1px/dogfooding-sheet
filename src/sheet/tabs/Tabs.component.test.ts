@@ -273,6 +273,7 @@ describe('Tabs component', () => {
     expect(colorRule).toContain('width: var(--sheet-size-tab-color-swatch, 14px);')
     expect(colorRule).toContain('height: var(--sheet-size-tab-color-swatch, 14px);')
     expect(colorRule).toContain('border-radius: var(--sheet-radius-round, 999px);')
+    expect(colorRule).toContain('overflow: hidden;')
   })
 
   it('keeps long sheet tab labels truncated inside a stable tab width', () => {
