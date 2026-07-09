@@ -40,12 +40,12 @@
 .unhide-row.bottom { bottom: calc(-1 * var(--sheet-size-control-sm, 16px) / 2); left: 50%; transform: translateX(-50%); }
 .col-resizer {
   position: absolute; top: 0; right: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px)); width: var(--sheet-size-grid-resizer-hit-area, 6px); height: 100%;
-  cursor: col-resize; user-select: none; z-index: 3;
+  cursor: col-resize; user-select: none; z-index: var(--sheet-z-index-grid-resizer, 3);
 }
 .col-resizer:hover { background: var(--sheet-state-accent-hover, rgba(26, 115, 232, .3)); }
 .row-resizer {
   position: absolute; bottom: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px)); left: 0; width: 100%; height: var(--sheet-size-grid-resizer-hit-area, 6px);
-  cursor: row-resize; user-select: none; z-index: 3;
+  cursor: row-resize; user-select: none; z-index: var(--sheet-z-index-grid-resizer, 3);
 }
 .row-resizer:hover { background: var(--sheet-state-accent-hover, rgba(26, 115, 232, .3)); }
 

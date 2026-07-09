@@ -223,6 +223,7 @@ describe('grid styles', () => {
 
     expect(root).toContain('--sheet-size-grid-resizer-hit-area: 6px;')
     expect(root).toContain('--sheet-size-grid-resizer-offset: 3px;')
+    expect(root).toContain('--sheet-z-index-grid-resizer: 3;')
     expect(colResizerRule).toContain('right: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px));')
     expect(colResizerRule).toContain('width: var(--sheet-size-grid-resizer-hit-area, 6px);')
     expect(colResizerRule).toContain('height: 100%;')
@@ -231,6 +232,10 @@ describe('grid styles', () => {
     expect(rowResizerRule).toContain('height: var(--sheet-size-grid-resizer-hit-area, 6px);')
     expect(colResizerRule).toContain('cursor: col-resize;')
     expect(rowResizerRule).toContain('cursor: row-resize;')
+    expect(colResizerRule).toContain('z-index: var(--sheet-z-index-grid-resizer, 3);')
+    expect(rowResizerRule).toContain('z-index: var(--sheet-z-index-grid-resizer, 3);')
+    expect(colResizerRule).not.toContain('z-index: 3;')
+    expect(rowResizerRule).not.toContain('z-index: 3;')
   })
 
   it('keeps the fill handle token-sized at the focused cell corner', () => {
