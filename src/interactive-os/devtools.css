@@ -47,5 +47,5 @@
 
 @keyframes rec-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: .35; }
+  50% { opacity: var(--sheet-state-rec-pulse-dim-opacity, .35); }
 }
