@@ -191,6 +191,18 @@ describe('grid styles', () => {
     expect(headerRowRule).not.toContain('z-index: 2;')
   })
 
+  it('keeps the sticky grid row header layered through a token', () => {
+    const root = appCss()
+    const source = gridCss()
+    const rowHeaderRule = source.match(/(?:^|\n)\.row-header\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-z-index-grid-row-header: 1;')
+    expect(rowHeaderRule).toContain('position: sticky;')
+    expect(rowHeaderRule).toContain('left: 0;')
+    expect(rowHeaderRule).toContain('z-index: var(--sheet-z-index-grid-row-header, 1);')
+    expect(rowHeaderRule).not.toContain('z-index: 1;')
+  })
+
   it('keeps hidden header restore controls token-sized and centered', () => {
     const root = appCss()
     const source = gridCss()
