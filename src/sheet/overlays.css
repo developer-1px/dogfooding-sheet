@@ -181,6 +181,10 @@
   background: var(--sheet-color-surface, #fff); border: var(--sheet-size-tab-rename-border, 1px) solid var(--sheet-color-accent, #1a73e8); border-radius: var(--sheet-radius-tight, 2px);
   padding: var(--sheet-space-tab-rename-block-padding, 1px) var(--sheet-space-1, 4px); font-size: var(--sheet-font-size-ui, 13px); width: var(--sheet-size-tab-rename-width, 90px); min-width: 0; max-width: 100%; flex: 1 1 var(--sheet-size-tab-rename-width, 90px); outline: none;
 }
+.tab-rename:focus {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 
 .tab-dup {
   display: inline-flex; align-items: center; justify-content: center;
