@@ -8,7 +8,7 @@
 .ctx-item {
   display: block; width: 100%; padding: var(--sheet-space-2, 6px) var(--sheet-space-6, 16px); text-align: left;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  border: none; background: none; font-size: var(--sheet-font-size-ui, 13px); cursor: pointer;
+  border: none; background: none; font-size: var(--sheet-font-size-ui, 13px); line-height: var(--sheet-line-height-ui, 1.4); cursor: pointer;
 }
 .ctx-item:hover:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); }
 .ctx-item:focus-visible {
@@ -168,7 +168,7 @@
 .overflow-item {
   background: transparent; border: none; padding: var(--sheet-space-2, 6px) var(--sheet-space-5, 12px); text-align: left;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  cursor: pointer; font-size: var(--sheet-font-size-ui, 13px);
+  cursor: pointer; font-size: var(--sheet-font-size-ui, 13px); line-height: var(--sheet-line-height-ui, 1.4);
 }
 .overflow-item:hover:not(:disabled), .overflow-item:focus:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); outline: none; }
 .overflow-item:focus-visible {

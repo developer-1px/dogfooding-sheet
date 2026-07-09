@@ -167,8 +167,12 @@ describe('ContextMenu component', () => {
   })
 
   it('keeps long context menu labels contained on narrow viewports', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
+    const itemRule = css.match(/\.ctx-item\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-line-height-ui: 1.4;')
+    expect(itemRule).toContain('line-height: var(--sheet-line-height-ui, 1.4);')
     expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
   })
 })

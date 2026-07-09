@@ -246,14 +246,17 @@ describe('OverflowMenu component', () => {
     const rootCss = appCss()
     const css = overlaysCss()
     const listRule = css.match(/\.overflow-list\s*\{[^}]+\}/)?.[0] ?? ''
+    const itemRule = css.match(/\.overflow-item\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(rootCss).toContain('--sheet-size-overflow-menu-border: 1px;')
     expect(rootCss).toContain('--sheet-size-overflow-menu-width: 160px;')
     expect(rootCss).toContain('--sheet-z-index-overflow-menu: 50;')
+    expect(rootCss).toContain('--sheet-line-height-ui: 1.4;')
     expect(listRule).toContain('z-index: var(--sheet-z-index-overflow-menu, 50);')
     expect(listRule).toContain('border: var(--sheet-size-overflow-menu-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(listRule).toContain('min-width: min(var(--sheet-size-overflow-menu-width, 160px), max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px))));')
     expect(listRule).toContain('max-width: max(var(--sheet-space-8, 24px), calc(100vw - var(--sheet-space-8, 24px) - var(--sheet-space-8, 24px)));')
+    expect(itemRule).toContain('line-height: var(--sheet-line-height-ui, 1.4);')
     expect(listRule).not.toContain('z-index: 50;')
     expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
   })
