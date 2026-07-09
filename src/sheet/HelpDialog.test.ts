@@ -82,10 +82,14 @@ describe('HelpDialog', () => {
   })
 
   it('keeps the shortcut table contained on narrow viewports', () => {
+    const rootCss = appCss()
     const css = overlaysCss()
+    const kbdRule = css.match(/\.help-dialog kbd\s*\{[^}]+\}/)?.[0] ?? ''
 
+    expect(rootCss).toContain('--sheet-size-shortcut-key-border: 1px;')
     expect(css).toContain('.help-dialog table { border-collapse: collapse; width: 100%; table-layout: fixed; }')
     expect(css).toContain('.help-dialog th, .help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); text-align: left; overflow-wrap: anywhere; }')
+    expect(kbdRule).toContain('border: var(--sheet-size-shortcut-key-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(css).toContain('font-size: var(--sheet-font-size-sm, 12px); white-space: normal;')
   })
 

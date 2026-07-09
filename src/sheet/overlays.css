@@ -140,7 +140,7 @@
 }
 .help-dialog tbody th, .help-dialog td { font-size: var(--sheet-font-size-ui, 13px); font-weight: normal; }
 .help-dialog kbd {
-  background: var(--sheet-color-hover, #f1f3f4); border: 1px solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-kbd, 3px);
+  background: var(--sheet-color-hover, #f1f3f4); border: var(--sheet-size-shortcut-key-border, 1px) solid var(--sheet-color-border, #dadce0); border-radius: var(--sheet-radius-kbd, 3px);
   padding: var(--sheet-space-half, 2px) var(--sheet-space-2, 6px); font-family: var(--sheet-font-mono, monospace); font-size: var(--sheet-font-size-sm, 12px); white-space: normal;
 }
 .help-dialog button { margin-top: var(--sheet-space-5, 12px); max-width: 100%; overflow-wrap: anywhere; }
