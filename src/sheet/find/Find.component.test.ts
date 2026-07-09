@@ -147,6 +147,17 @@ describe('Find component', () => {
     expect(buttonRule).toContain('border: var(--sheet-size-find-button-border, 1px) solid var(--sheet-color-border, #dadce0);')
   })
 
+  it('keeps disabled find actions on the shared disabled opacity token', () => {
+    const rootCss = appCss()
+    const css = overlaysCss()
+    const disabledButtonRule = css.match(/\.find-bar button:disabled\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(rootCss).toContain('--sheet-state-control-disabled-opacity: .4;')
+    expect(disabledButtonRule).toContain('opacity: var(--sheet-state-control-disabled-opacity, .4);')
+    expect(disabledButtonRule).toContain('cursor: not-allowed;')
+    expect(css).not.toContain('.find-bar button:disabled { opacity: .4; cursor: not-allowed; }')
+  })
+
   it('keeps the find bar vertically contained within the viewport', () => {
     const rootCss = appCss()
     const css = overlaysCss()

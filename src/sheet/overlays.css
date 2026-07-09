@@ -47,7 +47,7 @@
   outline: var(--sheet-focus-ring, 2px solid #1a73e8);
   outline-offset: var(--sheet-focus-offset, 2px);
 }
-.find-bar button:disabled { opacity: .4; cursor: not-allowed; }
+.find-bar button:disabled { opacity: var(--sheet-state-control-disabled-opacity, .4); cursor: not-allowed; }
 
 .tabs-bar {
   display: flex; gap: var(--sheet-space-half, 2px); align-items: center; padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px) 0;
