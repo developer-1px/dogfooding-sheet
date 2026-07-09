@@ -20,7 +20,9 @@ describe('REC devtools styles', () => {
     const root = appCss()
     const source = css()
 
+    expect(root).toContain('--sheet-z-index-rec-devtools: 99999;')
     expect(root).toContain('--sheet-font-weight-bold: 700;')
+    expect(source).toContain('z-index: var(--sheet-z-index-rec-devtools, 99999);')
     expect(source).toContain('top: var(--sheet-space-3, 8px);')
     expect(source).toContain('right: var(--sheet-space-3, 8px);')
     expect(source).toContain('gap: var(--sheet-space-2, 6px);')
@@ -73,6 +75,7 @@ describe('REC devtools styles', () => {
     expect(source).not.toContain('box-shadow: 0 2px 10px rgba(0, 0, 0, .14);')
     expect(source).not.toMatch(/top:\s*8px;/)
     expect(source).not.toMatch(/right:\s*8px;/)
+    expect(source).not.toMatch(/z-index:\s*99999;/)
     expect(source).not.toMatch(/gap:\s*6px;/)
     expect(source).not.toMatch(/min-height:\s*28px;/)
     expect(source).not.toMatch(/padding:\s*4px 10px;/)
