@@ -27,7 +27,7 @@
   position: absolute; display: inline-flex; align-items: center; justify-content: center;
   border: var(--sheet-size-hidden-restore-border, 1px) solid var(--sheet-color-border, #dadce0); background: var(--sheet-color-surface, #fff); color: var(--sheet-color-accent, #1a73e8);
   width: var(--sheet-size-control-sm, 16px); height: var(--sheet-size-control-sm, 16px); padding: 0; border-radius: var(--sheet-radius-panel, 8px); font-size: var(--sheet-font-size-control-xs, 11px); line-height: 1;
-  cursor: pointer; z-index: 4;
+  cursor: pointer; z-index: var(--sheet-z-index-hidden-restore, 4);
 }
 .unhide-col:hover, .unhide-row:hover { background: var(--sheet-color-accent-muted, #e8f0fe); border-color: var(--sheet-color-accent, #1a73e8); }
 .unhide-col:focus-visible, .unhide-row:focus-visible {
