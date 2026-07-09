@@ -141,6 +141,10 @@
   margin: 0; vertical-align: middle; accent-color: var(--sheet-color-accent, #1a73e8);
   cursor: pointer;
 }
+.cell-checkbox:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 
 .cell.wrap { white-space: pre-wrap; word-break: break-word; }
 
