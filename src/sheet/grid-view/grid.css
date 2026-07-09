@@ -61,9 +61,9 @@
 .cell.align-left { text-align: left; }
 .cell.align-center { text-align: center; }
 .cell.align-right { text-align: right; }
-.cell.freeze-col { position: sticky; z-index: 1; background: var(--sheet-color-surface, #fff); }
-.grid-row.freeze-row { position: sticky; z-index: 2; background: var(--sheet-color-surface, #fff); }
-.grid-row.freeze-row .cell.freeze-col { z-index: 3; }
+.cell.freeze-col { position: sticky; z-index: var(--sheet-z-index-grid-freeze-column, 1); background: var(--sheet-color-surface, #fff); }
+.grid-row.freeze-row { position: sticky; z-index: var(--sheet-z-index-grid-freeze-row, 2); background: var(--sheet-color-surface, #fff); }
+.grid-row.freeze-row .cell.freeze-col { z-index: var(--sheet-z-index-grid-freeze-intersection, 3); }
 /* Visual divider — last frozen row/col gets a thicker border (Sheets parity). */
 .grid-row.freeze-row + .grid-row:not(.freeze-row) { border-top: var(--sheet-size-freeze-divider, 2px) solid var(--sheet-color-accent, #1a73e8); }
 .cell.freeze-col + .cell:not(.freeze-col) { border-left: var(--sheet-size-freeze-divider, 2px) solid var(--sheet-color-accent, #1a73e8); }
