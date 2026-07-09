@@ -52,6 +52,10 @@
   cursor: row-resize; user-select: none; z-index: var(--sheet-z-index-grid-resizer, 3);
 }
 .row-resizer:hover { background: var(--sheet-state-accent-hover, rgba(26, 115, 232, .3)); }
+.col-resizer:focus-visible, .row-resizer:focus-visible {
+  outline: var(--sheet-focus-ring, 2px solid #1a73e8);
+  outline-offset: var(--sheet-focus-offset, 2px);
+}
 
 .cell {
   position: relative; padding: var(--sheet-space-2, 6px) var(--sheet-space-3, 8px); min-height: var(--sheet-size-cell-min-height, 28px); cursor: cell; outline: none;
