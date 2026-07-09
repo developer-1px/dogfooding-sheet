@@ -280,6 +280,7 @@ describe('grid styles', () => {
     const source = gridCss()
     const colResizerRule = source.match(/\.col-resizer\s*\{[^}]+\}/)?.[0] ?? ''
     const rowResizerRule = source.match(/\.row-resizer\s*\{[^}]+\}/)?.[0] ?? ''
+    const resizerFocusRule = source.match(/\.col-resizer:focus-visible,\s*\.row-resizer:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(root).toContain('--sheet-size-grid-resizer-hit-area: 6px;')
     expect(root).toContain('--sheet-size-grid-resizer-offset: 3px;')
@@ -296,6 +297,8 @@ describe('grid styles', () => {
     expect(rowResizerRule).toContain('z-index: var(--sheet-z-index-grid-resizer, 3);')
     expect(colResizerRule).not.toContain('z-index: 3;')
     expect(rowResizerRule).not.toContain('z-index: 3;')
+    expect(resizerFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(resizerFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
   })
 
   it('keeps the fill handle token-sized at the focused cell corner', () => {
