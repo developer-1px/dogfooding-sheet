@@ -173,6 +173,8 @@ describe('ContextMenu component', () => {
 
     expect(rootCss).toContain('--sheet-line-height-ui: 1.4;')
     expect(itemRule).toContain('line-height: var(--sheet-line-height-ui, 1.4);')
+    expect(itemRule).toContain('background: transparent;')
+    expect(itemRule).not.toContain('background: none;')
     expect(css).toContain('overflow: hidden; text-overflow: ellipsis; white-space: nowrap;')
   })
 })

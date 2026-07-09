@@ -8,7 +8,7 @@
 .ctx-item {
   display: block; width: 100%; padding: var(--sheet-space-2, 6px) var(--sheet-space-6, 16px); text-align: left;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  border: none; background: none; font-size: var(--sheet-font-size-ui, 13px); line-height: var(--sheet-line-height-ui, 1.4); cursor: pointer;
+  border: none; background: transparent; font-size: var(--sheet-font-size-ui, 13px); line-height: var(--sheet-line-height-ui, 1.4); cursor: pointer;
 }
 .ctx-item:hover:not(:disabled) { background: var(--sheet-color-hover, #f1f3f4); }
 .ctx-item:focus-visible {
