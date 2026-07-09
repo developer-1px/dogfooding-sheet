@@ -210,6 +210,18 @@ describe('Tabs component', () => {
     expect(css).toMatch(/\.tab:focus-within\s+\.tab-color\s*\{\s*opacity:\s*1;\s*\}/)
   })
 
+  it('keeps tab utility fades on the shared motion token', () => {
+    const rootCss = appCss()
+    const css = overlaysCss()
+    const colorRule = css.match(/\.tab-color\s*\{[^}]+\}/)?.[0] ?? ''
+    const utilityRule = css.match(/\.tab\s+\.tab-dup,\s*\.tab\s+\.tab-close\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(rootCss).toContain('--sheet-motion-duration-fast: .15s;')
+    expect(colorRule).toContain('transition: opacity var(--sheet-motion-duration-fast, .15s);')
+    expect(utilityRule).toContain('transition: opacity var(--sheet-motion-duration-fast, .15s);')
+    expect(css).not.toContain('transition: opacity .15s;')
+  })
+
   it('keeps disabled tab creation controls from showing enabled hover affordances', () => {
     const css = overlaysCss()
 
