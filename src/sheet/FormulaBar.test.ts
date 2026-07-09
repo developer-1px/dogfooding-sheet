@@ -45,6 +45,7 @@ describe('FormulaBar', () => {
     const addressRule = css.match(/\.sheet-toolbar \.addr\s*\{[^}]+\}/)?.[0] ?? ''
     const formulaRule = css.match(/\.sheet-toolbar \.formula\s*\{[^}]+\}/)?.[0] ?? ''
     const formulaFocusRule = css.match(/\.sheet-toolbar \.formula:focus\s*\{[^}]+\}/)?.[0] ?? ''
+    const formulaDisabledRule = css.match(/\.sheet-toolbar \.formula:disabled\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(titleRule).toContain('flex: 0 0 auto;')
     expect(titleRule).toContain('min-width: 0;')
@@ -62,6 +63,8 @@ describe('FormulaBar', () => {
     expect(formulaFocusRule).toContain('border-color: var(--sheet-color-accent);')
     expect(formulaFocusRule).toContain('outline: var(--sheet-focus-ring);')
     expect(formulaFocusRule).toContain('outline-offset: var(--sheet-focus-offset);')
+    expect(formulaDisabledRule).toContain('opacity: var(--sheet-state-control-disabled-opacity, .4);')
+    expect(formulaDisabledRule).toContain('cursor: not-allowed;')
   })
 
   it('keeps the address control disabled when no jump action is available', () => {

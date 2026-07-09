@@ -202,6 +202,7 @@ body, html, #root {
   border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); outline: none;
 }
 .sheet-toolbar .formula:focus { border-color: var(--sheet-color-accent); outline: var(--sheet-focus-ring); outline-offset: var(--sheet-focus-offset); }
+.sheet-toolbar .formula:disabled { opacity: var(--sheet-state-control-disabled-opacity, .4); cursor: not-allowed; }
 .sheet-toolbar button {
   padding: var(--sheet-space-2) var(--sheet-space-5); font-size: var(--sheet-font-size-ui); cursor: pointer; background: var(--sheet-color-surface);
   border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control);
