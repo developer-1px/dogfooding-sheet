@@ -67,7 +67,7 @@
 /* Visual divider — last frozen row/col gets a thicker border (Sheets parity). */
 .grid-row.freeze-row + .grid-row:not(.freeze-row) { border-top: var(--sheet-size-freeze-divider, 2px) solid var(--sheet-color-accent, #1a73e8); }
 .cell.freeze-col + .cell:not(.freeze-col) { border-left: var(--sheet-size-freeze-divider, 2px) solid var(--sheet-color-accent, #1a73e8); }
-.cell.focused { outline: var(--sheet-size-cell-state-outline, 2px) solid var(--sheet-color-accent, #1a73e8); outline-offset: calc(-1 * var(--sheet-size-cell-state-outline, 2px)); z-index: 1; }
+.cell.focused { outline: var(--sheet-size-cell-state-outline, 2px) solid var(--sheet-color-accent, #1a73e8); outline-offset: calc(-1 * var(--sheet-size-cell-state-outline, 2px)); z-index: var(--sheet-z-index-cell-focused, 1); }
 .cell.selected { background: var(--sheet-state-accent-selected, rgba(26, 115, 232, .1)); }
 .cell.merged { box-shadow: inset 0 0 0 var(--sheet-size-cell-inset-outline, 1px) var(--sheet-state-accent-outline, rgba(26, 115, 232, .35)); }
 .cell.ref-hi {

@@ -81,9 +81,11 @@ describe('grid styles', () => {
     const insideOffset = `calc(-1 * ${outline})`
 
     expect(root).toContain('--sheet-size-cell-state-outline: 2px;')
+    expect(root).toContain('--sheet-z-index-cell-focused: 1;')
     expect(focusedRule).toContain(`outline: ${outline} solid var(--sheet-color-accent, #1a73e8);`)
     expect(focusedRule).toContain(`outline-offset: ${insideOffset};`)
-    expect(focusedRule).toContain('z-index: 1;')
+    expect(focusedRule).toContain('z-index: var(--sheet-z-index-cell-focused, 1);')
+    expect(focusedRule).not.toContain('z-index: 1;')
     expect(refRule).toContain(`outline: ${outline} solid var(--sheet-color-success, #188038);`)
     expect(refRule).toContain(`outline-offset: ${insideOffset};`)
     expect(refRule).toContain('background: var(--sheet-state-success-bg, rgba(24, 128, 56, .08));')
