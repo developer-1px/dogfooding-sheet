@@ -130,7 +130,7 @@
 .help-dialog h2 { margin: 0 0 var(--sheet-space-5, 12px); font-size: var(--sheet-font-size-title, 16px); }
 .help-dialog table { border-collapse: collapse; width: 100%; table-layout: fixed; }
 .help-dialog caption {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  position: absolute; width: var(--sheet-size-visually-hidden, 1px); height: var(--sheet-size-visually-hidden, 1px); padding: 0; margin: var(--sheet-offset-visually-hidden, -1px); overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .help-dialog th, .help-dialog td { padding: var(--sheet-space-1, 4px) var(--sheet-space-3, 8px); text-align: left; overflow-wrap: anywhere; }
