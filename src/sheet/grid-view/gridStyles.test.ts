@@ -205,6 +205,14 @@ describe('grid styles', () => {
     expect(filterMarkRule).toContain('flex: 0 0 auto;')
   })
 
+  it('keeps keyboard focus visible on grid headers', () => {
+    const source = gridCss()
+    const headerFocusRule = source.match(/\.corner-cell:focus-visible,\s*\.row-header:focus-visible,\s*\.header-cell:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(headerFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(headerFocusRule).toContain('outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));')
+  })
+
   it('keeps the sticky grid header row layered through a token', () => {
     const root = appCss()
     const source = gridCss()
