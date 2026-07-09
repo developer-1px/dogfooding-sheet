@@ -215,8 +215,12 @@ describe('OverflowMenu component', () => {
 
   it('keeps disabled overflow items from showing enabled hover affordances', () => {
     const css = overlaysCss()
+    const focusVisibleRule = css.match(/\.overflow-item:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
 
-    expect(css).toContain('.overflow-item:hover:not(:disabled), .overflow-item:focus:not(:disabled)')
+    expect(css).toContain('.overflow-item:hover:not(:disabled), .overflow-item:focus:not(:focus-visible):not(:disabled)')
+    expect(css).not.toContain('.overflow-item:hover:not(:disabled), .overflow-item:focus:not(:disabled)')
+    expect(focusVisibleRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(focusVisibleRule).toContain('outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));')
     expect(css).toContain('.overflow-item:disabled { color: var(--sheet-color-disabled, #9aa0a6); cursor: not-allowed; }')
   })
 
