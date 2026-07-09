@@ -61,6 +61,8 @@ describe('AppErrorBoundary', () => {
     expect(errorRule).toContain('flex-wrap: wrap;')
     expect(errorRule).toContain('padding: var(--sheet-space-8);')
     expect(errorRule).toContain('text-align: center;')
+    expect(css).toContain('--sheet-size-app-error-button-border: 1px;')
     expect(buttonRule).toContain('flex: 0 0 auto;')
+    expect(buttonRule).toContain('border: var(--sheet-size-app-error-button-border, 1px) solid var(--sheet-color-border);')
   })
 })
