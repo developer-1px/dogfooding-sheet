@@ -747,6 +747,8 @@ describe('Toolbar component', () => {
     expect(colorInputRule).toContain('flex: 0 0 auto;')
     expect(colorInputRule).toContain('width: var(--sheet-size-control-md);')
     expect(colorInputRule).toContain('height: var(--sheet-size-control-md);')
+    expect(colorInputRule).toContain('border-radius: var(--sheet-radius-round);')
+    expect(colorInputRule).toContain('overflow: hidden;')
   })
 
   it('keeps toolbar control borders token-sized', () => {
