@@ -234,6 +234,9 @@ describe('OverflowMenu component', () => {
     expect(menuRule).toContain('position: relative;')
     expect(menuRule).toContain('display: inline-block;')
     expect(menuRule).toContain('flex: 0 0 auto;')
+    expect(triggerRule).toContain('display: inline-flex;')
+    expect(triggerRule).toContain('align-items: center;')
+    expect(triggerRule).toContain('justify-content: center;')
     expect(triggerRule).toContain('border: var(--sheet-size-overflow-trigger-border, 1px) solid transparent;')
   })
 
