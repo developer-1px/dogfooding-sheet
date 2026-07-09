@@ -45,6 +45,7 @@
   --sheet-state-success-bg: rgba(24, 128, 56, .08);
   --sheet-state-control-hover: rgba(0, 0, 0, .1);
   --sheet-state-scrim: rgba(0, 0, 0, .3);
+  --sheet-state-rec-pulse-dim-opacity: .35;
   --sheet-state-formula-ref-0-bg: rgba(26, 115, 232, .12);
   --sheet-state-formula-ref-1-bg: rgba(217, 48, 37, .10);
   --sheet-state-formula-ref-2-bg: rgba(24, 128, 56, .11);

@@ -70,6 +70,14 @@ describe('REC devtools styles', () => {
     expect(recordingDotRule).toContain('animation: rec-pulse var(--sheet-motion-duration-rec-pulse, 1s) infinite;')
   })
 
+  it('keeps the recording pulse dim state on a state token', () => {
+    const root = appCss()
+    const source = css()
+
+    expect(root).toContain('--sheet-state-rec-pulse-dim-opacity: .35;')
+    expect(source).toContain('50% { opacity: var(--sheet-state-rec-pulse-dim-opacity, .35); }')
+  })
+
   it('does not reintroduce replaced direct REC style values', () => {
     const source = css()
 
@@ -92,6 +100,7 @@ describe('REC devtools styles', () => {
     expect(source).not.toContain('font: 700 var(--sheet-font-size-control-xs, 11px)/1 var(--sheet-font-ui, system-ui, sans-serif);')
     expect(source).not.toMatch(/font:\s*700 11px\/1 system-ui, sans-serif;/)
     expect(source).not.toContain('animation: rec-pulse 1s infinite;')
+    expect(source).not.toContain('50% { opacity: .35; }')
     expect(source).not.toMatch(/border-radius:\s*999px;/)
     expect(source).not.toMatch(/width:\s*7px;/)
     expect(source).not.toMatch(/height:\s*7px;/)
