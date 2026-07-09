@@ -1,7 +1,7 @@
 .grid { flex: 1; overflow: auto; background: var(--sheet-color-surface, #fff); }
 .grid-row { display: grid; width: max-content; min-width: 100%; border-bottom: var(--sheet-size-gridline, 1px) solid var(--sheet-color-border-subtle, #e0e0e0); }
 .header-row {
-  position: sticky; top: 0; z-index: 2;
+  position: sticky; top: 0; z-index: var(--sheet-z-index-grid-header, 2);
   background: var(--sheet-color-surface-muted, #f8f9fa); font-weight: var(--sheet-font-weight-medium, 500); color: var(--sheet-color-muted, #5f6368); font-size: var(--sheet-font-size-sm, 12px);
 }
 .corner-cell, .row-header, .header-cell {
