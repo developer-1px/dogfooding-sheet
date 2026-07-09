@@ -1,10 +1,13 @@
 import { act, createElement, type ComponentProps } from 'react'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { setupReactDOM } from '../test-utils'
 import { Cell } from './Cell'
 
 describe('Cell component', () => {
   const dom = setupReactDOM()
+  const appCss = () => readFileSync('src/App.css', 'utf8')
+  const gridCss = () => readFileSync('src/sheet/grid-view/grid.css', 'utf8')
 
   const renderCell = (overrides: Partial<ComponentProps<typeof Cell>> = {}) => {
     const props: ComponentProps<typeof Cell> = {
@@ -69,6 +72,15 @@ describe('Cell component', () => {
     act(() => checkbox!.click())
 
     expect(onCheckboxToggle).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps bold cell styling on a typography token', () => {
+    const rootCss = appCss()
+    const css = gridCss()
+    const boldRule = css.match(/\.cell\.bold\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(rootCss).toContain('--sheet-font-weight-bold: 700;')
+    expect(boldRule).toContain('font-weight: var(--sheet-font-weight-bold, 700);')
   })
 
   it('keeps the pointer-only fill handle hidden from assistive technology', () => {
