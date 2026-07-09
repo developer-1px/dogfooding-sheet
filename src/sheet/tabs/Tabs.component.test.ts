@@ -291,16 +291,22 @@ describe('Tabs component', () => {
     const rootCss = appCss()
     const css = overlaysCss()
     const renameRule = css.match(/\.tab-rename\s*\{[^}]+\}/)?.[0] ?? ''
+    const renameFocusRule = css.match(/\.tab-rename:focus\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(rootCss).toContain('--sheet-space-tab-rename-block-padding: 1px;')
     expect(rootCss).toContain('--sheet-size-tab-rename-border: 1px;')
     expect(rootCss).toContain('--sheet-size-tab-rename-width: 90px;')
+    expect(rootCss).toContain('--sheet-focus-ring: 2px solid var(--sheet-color-accent);')
+    expect(rootCss).toContain('--sheet-focus-offset: 2px;')
     expect(renameRule).toContain('border: var(--sheet-size-tab-rename-border, 1px) solid var(--sheet-color-accent, #1a73e8);')
     expect(renameRule).toContain('padding: var(--sheet-space-tab-rename-block-padding, 1px) var(--sheet-space-1, 4px);')
     expect(renameRule).toContain('width: var(--sheet-size-tab-rename-width, 90px);')
     expect(renameRule).toContain('min-width: 0;')
     expect(renameRule).toContain('max-width: 100%;')
     expect(renameRule).toContain('flex: 1 1 var(--sheet-size-tab-rename-width, 90px);')
+    expect(renameFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(renameFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
+    expect(renameFocusRule).not.toContain('outline: none;')
   })
 
   it('keeps add-sheet activation keys inside the tab add control', () => {
