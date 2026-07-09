@@ -68,7 +68,8 @@
   outline-offset: var(--sheet-focus-offset, 2px);
 }
 .tab-close, .tab-add {
-  flex: 0 0 auto; width: var(--sheet-size-control-md, 18px); height: var(--sheet-size-control-md, 18px); padding: 0; line-height: var(--sheet-size-control-sm, 16px);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 auto; width: var(--sheet-size-control-md, 18px); height: var(--sheet-size-control-md, 18px); padding: 0; line-height: var(--sheet-line-height-compact, 1);
   border: none; background: transparent; border-radius: var(--sheet-radius-round, 999px);
   color: inherit; cursor: pointer; font-size: var(--sheet-font-size-control, 14px);
 }
