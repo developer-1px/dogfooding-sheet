@@ -57,6 +57,7 @@
   --sheet-focus-offset: 2px;
   --sheet-z-index-rec-devtools: 99999;
   --sheet-z-index-find-bar: 10;
+  --sheet-z-index-context-menu: 20;
   --sheet-motion-duration-fast: .15s;
   --sheet-motion-duration-rec-pulse: 1s;
 
