@@ -56,7 +56,7 @@
 }
 .cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }
 .cell.numeric { text-align: right; font-variant-numeric: tabular-nums; }
-.cell.bold { font-weight: 700; }
+.cell.bold { font-weight: var(--sheet-font-weight-bold, 700); }
 .cell.italic { font-style: italic; }
 .cell.align-left { text-align: left; }
 .cell.align-center { text-align: center; }
