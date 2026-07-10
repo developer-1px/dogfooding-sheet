@@ -24,7 +24,7 @@ export default defineConfig([
         'error',
         {
           name: 'localStorage',
-          message: 'Use src/lib/browserStorage.ts so unavailable or quota-blocked storage cannot break editing.',
+          message: 'Use src/shared/lib/browserStorage.ts so unavailable or quota-blocked storage cannot break editing.',
         },
         {
           name: 'sessionStorage',
@@ -44,7 +44,7 @@ export default defineConfig([
         {
           object: 'globalThis',
           property: 'localStorage',
-          message: 'Use src/lib/browserStorage.ts for safe storage access.',
+          message: 'Use src/shared/lib/browserStorage.ts for safe storage access.',
         },
         {
           object: 'globalThis',
@@ -54,7 +54,7 @@ export default defineConfig([
         {
           object: 'window',
           property: 'localStorage',
-          message: 'Use src/lib/browserStorage.ts for safe storage access.',
+          message: 'Use src/shared/lib/browserStorage.ts for safe storage access.',
         },
         {
           object: 'window',
@@ -84,7 +84,7 @@ export default defineConfig([
         'error',
         {
           selector: "TSAsExpression[typeAnnotation.type='TSNeverKeyword']",
-          message: 'Route zod-crud path/value casts through src/lib/dictOps.ts instead of using `as never` at call sites.',
+          message: 'Route zod-crud path/value casts through src/shared/lib/dictOps.ts instead of using `as never` at call sites.',
         },
         {
           selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
@@ -106,13 +106,13 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/lib/dictOps.ts'],
+    files: ['src/shared/lib/dictOps.ts'],
     rules: {
       'no-restricted-syntax': 'off',
     },
   },
   {
-    files: ['src/lib/browserStorage.ts', '**/*.test.ts', 'src/sheet/test-utils.ts'],
+    files: ['src/shared/lib/browserStorage.ts', '**/*.test.ts', 'src/shared/testing/test-utils.ts'],
     rules: {
       'no-restricted-globals': 'off',
       'no-restricted-properties': 'off',

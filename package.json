@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm --dir packages/grid build && pnpm --dir packages/selection-contract build && pnpm --dir packages/formula build && pnpm --dir packages/editable-grid build && pnpm --dir packages/surface build && tsc -b && vite build",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run && pnpm --dir packages/grid test && pnpm --dir packages/selection-contract test && pnpm --dir packages/formula test && pnpm --dir packages/editable-grid test && pnpm --dir packages/surface test",
-    "check": "pnpm lint && pnpm build && pnpm test"
+    "check": "pnpm lint && pnpm check:boundaries && pnpm build && pnpm test"
   },
   "dependencies": {
     "@interactive-os/anyeditable": "file:../editable/packages/anyeditable",

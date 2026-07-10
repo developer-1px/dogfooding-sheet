@@ -1,0 +1,324 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { describe, expect, it } from 'vitest'
+
+describe('grid styles', () => {
+  const appCss = () => readFileSync(join(process.cwd(), 'src/app/App.css'), 'utf8')
+  const gridCss = () => readFileSync(join(process.cwd(), 'src/widgets/sheet-grid/grid.css'), 'utf8')
+
+  it('declares the formula reference palette as design tokens', () => {
+    const source = appCss()
+
+    expect(source).toContain('--sheet-color-formula-ref-0: var(--sheet-color-accent);')
+    expect(source).toContain('--sheet-color-formula-ref-1: var(--sheet-color-danger);')
+    expect(source).toContain('--sheet-color-formula-ref-2: var(--sheet-color-success);')
+    expect(source).toContain('--sheet-color-formula-ref-3: #a142f4;')
+    expect(source).toContain('--sheet-color-formula-ref-4: #f29900;')
+    expect(source).toContain('--sheet-color-formula-ref-5: #00897b;')
+    expect(source).toContain('--sheet-state-formula-ref-0-bg: rgba(26, 115, 232, .12);')
+    expect(source).toContain('--sheet-state-formula-ref-1-bg: rgba(217, 48, 37, .10);')
+    expect(source).toContain('--sheet-state-formula-ref-2-bg: rgba(24, 128, 56, .11);')
+    expect(source).toContain('--sheet-state-formula-ref-3-bg: rgba(161, 66, 244, .10);')
+    expect(source).toContain('--sheet-state-formula-ref-4-bg: rgba(242, 153, 0, .13);')
+    expect(source).toContain('--sheet-state-formula-ref-5-bg: rgba(0, 137, 123, .11);')
+  })
+
+  it('keeps formula reference classes wired to palette tokens', () => {
+    const source = gridCss()
+    const formulaRefRules = [...source.matchAll(/\.formula-ref-\d\s*\{[^}]+\}/g)].map((match) => match[0])
+
+    expect(formulaRefRules).toHaveLength(6)
+    for (let index = 0; index < 6; index++) {
+      expect(formulaRefRules[index]).toContain(`--formula-ref-color: var(--sheet-color-formula-ref-${index});`)
+      expect(formulaRefRules[index]).toContain(`--formula-ref-bg: var(--sheet-state-formula-ref-${index}-bg);`)
+    }
+    expect(formulaRefRules.join('\n')).not.toMatch(/#[0-9a-fA-F]{3,8}|rgba\(/)
+  })
+
+  it('reserves inline-end space for cell note and dropdown markers', () => {
+    const source = gridCss()
+
+    expect(source).toContain('.cell.has-note-marker, .cell.has-dropdown-marker { padding-inline-end: var(--sheet-space-8, 24px); }')
+  })
+
+  it('keeps base gridlines token-sized with the subtle border color', () => {
+    const root = appCss()
+    const source = gridCss()
+    const rowRule = source.match(/\.grid-row\s*\{[^}]+\}/)?.[0] ?? ''
+    const headerRule = source.match(/\.corner-cell,\s*\.row-header,\s*\.header-cell\s*\{[^}]+\}/)?.[0] ?? ''
+    const cellRule = source.match(/(?:^|\n)\.cell\s*\{[^}]+\}/)?.[0] ?? ''
+    const gridline = 'var(--sheet-size-gridline, 1px)'
+
+    expect(root).toContain('--sheet-size-gridline: 1px;')
+    expect(rowRule).toContain(`border-bottom: ${gridline} solid var(--sheet-color-border-subtle, #e0e0e0);`)
+    expect(headerRule).toContain(`border-right: ${gridline} solid var(--sheet-color-border-subtle, #e0e0e0);`)
+    expect(cellRule).toContain(`border-right: ${gridline} solid var(--sheet-color-border-subtle, #e0e0e0);`)
+  })
+
+  it('keeps note markers token-sized at the cell corner', () => {
+    const root = appCss()
+    const source = gridCss()
+    const noteRule = source.match(/\.note-mark\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-size-note-marker: 6px;')
+    expect(noteRule).toContain('position: absolute;')
+    expect(noteRule).toContain('top: 0;')
+    expect(noteRule).toContain('right: 0;')
+    expect(noteRule).toContain('border-style: solid;')
+    expect(noteRule).toContain('border-width: 0 var(--sheet-size-note-marker, 6px) var(--sheet-size-note-marker, 6px) 0;')
+    expect(noteRule).toContain('border-color: transparent var(--sheet-color-warning, #fbbc04) transparent transparent;')
+    expect(noteRule).toContain('pointer-events: none;')
+  })
+
+  it('keeps cell state outlines token-sized inside the cell', () => {
+    const root = appCss()
+    const source = gridCss()
+    const focusedRule = source.match(/\.cell\.focused\s*\{[^}]+\}/)?.[0] ?? ''
+    const refRule = source.match(/\.cell\.ref-hi\s*\{[^}]+\}/)?.[0] ?? ''
+    const previewRule = source.match(/\.cell\.preview\s*\{[^}]+\}/)?.[0] ?? ''
+    const inputRule = source.match(/\.cell-input\s*\{[^}]+\}/)?.[0] ?? ''
+    const outline = 'var(--sheet-size-cell-state-outline, 2px)'
+    const insideOffset = `calc(-1 * ${outline})`
+
+    expect(root).toContain('--sheet-size-cell-state-outline: 2px;')
+    expect(root).toContain('--sheet-z-index-cell-focused: 1;')
+    expect(focusedRule).toContain(`outline: ${outline} solid var(--sheet-color-accent, #1a73e8);`)
+    expect(focusedRule).toContain(`outline-offset: ${insideOffset};`)
+    expect(focusedRule).toContain('z-index: var(--sheet-z-index-cell-focused, 1);')
+    expect(focusedRule).not.toContain('z-index: 1;')
+    expect(refRule).toContain(`outline: ${outline} solid var(--sheet-color-success, #188038);`)
+    expect(refRule).toContain(`outline-offset: ${insideOffset};`)
+    expect(refRule).toContain('background: var(--sheet-state-success-bg, rgba(24, 128, 56, .08));')
+    expect(previewRule).toContain(`outline: ${outline} dashed var(--sheet-color-accent, #1a73e8);`)
+    expect(previewRule).toContain(`outline-offset: ${insideOffset};`)
+    expect(previewRule).toContain('background: var(--sheet-state-accent-preview, rgba(26, 115, 232, .15));')
+    expect(inputRule).toContain(`border: ${outline} solid var(--sheet-color-accent, #1a73e8);`)
+    expect(inputRule).toContain('box-sizing: border-box;')
+  })
+
+  it('keeps cell inset outlines token-sized', () => {
+    const root = appCss()
+    const source = gridCss()
+    const mergedRule = source.match(/\.cell\.merged\s*\{[^}]+\}/)?.[0] ?? ''
+    const formulaPickRule = source.match(/\.grid\.formula-pick-active\s+\.cell\.selected\.formula-ref\s*\{[^}]+\}/)?.[0] ?? ''
+    const insetOutline = 'var(--sheet-size-cell-inset-outline, 1px)'
+
+    expect(root).toContain('--sheet-size-cell-inset-outline: 1px;')
+    expect(mergedRule).toContain(`box-shadow: inset 0 0 0 ${insetOutline} var(--sheet-state-accent-outline, rgba(26, 115, 232, .35));`)
+    expect(formulaPickRule).toContain(`box-shadow: inset 0 0 0 ${insetOutline} var(--formula-ref-color);`)
+  })
+
+  it('keeps formula input accent strips token-sized', () => {
+    const root = appCss()
+    const source = gridCss()
+    const formulaInputRule = source.match(/\.cell-input\.formula-input\s*\{[^}]+\}/)?.[0] ?? ''
+    const accentStrip = 'var(--sheet-size-formula-input-accent-strip, 3px)'
+
+    expect(root).toContain('--sheet-size-formula-input-accent-strip: 3px;')
+    expect(formulaInputRule).toContain('border-color: var(--sheet-color-success, #188038);')
+    expect(formulaInputRule).toContain(`box-shadow: inset ${accentStrip} 0 0 var(--sheet-color-success, #188038);`)
+  })
+
+  it('keeps freeze dividers token-sized between frozen and scrolling panes', () => {
+    const root = appCss()
+    const source = gridCss()
+    const rowDividerRule = source.match(/\.grid-row\.freeze-row\s*\+\s*\.grid-row:not\(\.freeze-row\)\s*\{[^}]+\}/)?.[0] ?? ''
+    const colDividerRule = source.match(/\.cell\.freeze-col\s*\+\s*\.cell:not\(\.freeze-col\)\s*\{[^}]+\}/)?.[0] ?? ''
+    const divider = 'var(--sheet-size-freeze-divider, 2px)'
+
+    expect(root).toContain('--sheet-size-freeze-divider: 2px;')
+    expect(rowDividerRule).toContain(`border-top: ${divider} solid var(--sheet-color-accent, #1a73e8);`)
+    expect(colDividerRule).toContain(`border-left: ${divider} solid var(--sheet-color-accent, #1a73e8);`)
+  })
+
+  it('keeps freeze pane layers ordered through tokens', () => {
+    const root = appCss()
+    const source = gridCss()
+    const freezeColRule = source.match(/\.cell\.freeze-col\s*\{[^}]+\}/)?.[0] ?? ''
+    const freezeRowRule = source.match(/\.grid-row\.freeze-row\s*\{[^}]+\}/)?.[0] ?? ''
+    const intersectionRule = source.match(/\.grid-row\.freeze-row\s+\.cell\.freeze-col\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-z-index-grid-freeze-column: 1;')
+    expect(root).toContain('--sheet-z-index-grid-freeze-row: 2;')
+    expect(root).toContain('--sheet-z-index-grid-freeze-intersection: 3;')
+    expect(freezeColRule).toContain('position: sticky;')
+    expect(freezeRowRule).toContain('position: sticky;')
+    expect(freezeColRule).toContain('z-index: var(--sheet-z-index-grid-freeze-column, 1);')
+    expect(freezeRowRule).toContain('z-index: var(--sheet-z-index-grid-freeze-row, 2);')
+    expect(intersectionRule).toContain('z-index: var(--sheet-z-index-grid-freeze-intersection, 3);')
+    expect(freezeColRule).not.toContain('z-index: 1;')
+    expect(freezeRowRule).not.toContain('z-index: 2;')
+    expect(intersectionRule).not.toContain('z-index: 3;')
+  })
+
+  it('keeps formatted cell borders token-sized with the muted border color', () => {
+    const root = appCss()
+    const source = gridCss()
+    const borderedRule = source.match(/\.cell\.bordered\s*\{[^}]+\}/)?.[0] ?? ''
+    const border = 'var(--sheet-size-formatted-cell-border, 1px)'
+
+    expect(root).toContain('--sheet-size-formatted-cell-border: 1px;')
+    expect(borderedRule).toContain(`border: ${border} solid var(--sheet-color-muted, #5f6368);`)
+  })
+
+  it('keeps cell links constrained to the cell inline size', () => {
+    const source = gridCss()
+    const linkRule = source.match(/\.cell-link\s*\{[^}]+\}/)?.[0] ?? ''
+    const linkFocusRule = source.match(/\.cell-link:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(linkRule).toContain('display: inline-block;')
+    expect(linkRule).toContain('max-width: 100%;')
+    expect(linkRule).toContain('overflow: hidden;')
+    expect(linkRule).toContain('text-overflow: ellipsis;')
+    expect(linkRule).toContain('white-space: inherit;')
+    expect(linkFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(linkFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
+  })
+
+  it('keeps checkbox controls stable inside cells', () => {
+    const source = gridCss()
+    const checkboxRule = source.match(/\.cell-checkbox\s*\{[^}]+\}/)?.[0] ?? ''
+    const checkboxFocusRule = source.match(/\.cell-checkbox:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(checkboxRule).toContain('width: var(--sheet-size-control-md, 18px);')
+    expect(checkboxRule).toContain('height: var(--sheet-size-control-md, 18px);')
+    expect(checkboxRule).toContain('margin: 0;')
+    expect(checkboxRule).toContain('vertical-align: middle;')
+    expect(checkboxRule).toContain('accent-color: var(--sheet-color-accent, #1a73e8);')
+    expect(checkboxFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(checkboxFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
+  })
+
+  it('keeps header label content contained inside header tracks', () => {
+    const source = gridCss()
+    const headerLabelRule = source.match(/\.header-cell-label\s*\{[^}]+\}/)?.[0] ?? ''
+    const headerTextRule = source.match(/\.header-cell-text,\s*\.row-header-label\s*\{[^}]+\}/)?.[0] ?? ''
+    const rowLabelRule = source.match(/(?:^|\n)\.row-header-label\s*\{[^}]+\}/)?.[0] ?? ''
+    const filterMarkRule = source.match(/\.filter-mark\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(headerLabelRule).toContain('display: inline-flex;')
+    expect(headerLabelRule).toContain('max-width: 100%;')
+    expect(headerLabelRule).toContain('overflow: hidden;')
+    expect(headerTextRule).toContain('text-overflow: ellipsis;')
+    expect(headerTextRule).toContain('white-space: nowrap;')
+    expect(rowLabelRule).toContain('display: inline-block;')
+    expect(filterMarkRule).toContain('flex: 0 0 auto;')
+  })
+
+  it('keeps keyboard focus visible on grid headers', () => {
+    const source = gridCss()
+    const headerFocusRule = source.match(/\.corner-cell:focus-visible,\s*\.row-header:focus-visible,\s*\.header-cell:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(headerFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(headerFocusRule).toContain('outline-offset: calc(-1 * var(--sheet-focus-offset, 2px));')
+  })
+
+  it('keeps the sticky grid header row layered through a token', () => {
+    const root = appCss()
+    const source = gridCss()
+    const headerRowRule = source.match(/\.header-row\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-z-index-grid-header: 2;')
+    expect(headerRowRule).toContain('position: sticky;')
+    expect(headerRowRule).toContain('top: 0;')
+    expect(headerRowRule).toContain('z-index: var(--sheet-z-index-grid-header, 2);')
+    expect(headerRowRule).not.toContain('z-index: 2;')
+  })
+
+  it('keeps the sticky grid row header layered through a token', () => {
+    const root = appCss()
+    const source = gridCss()
+    const rowHeaderRule = source.match(/(?:^|\n)\.row-header\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-z-index-grid-row-header: 1;')
+    expect(rowHeaderRule).toContain('position: sticky;')
+    expect(rowHeaderRule).toContain('left: 0;')
+    expect(rowHeaderRule).toContain('z-index: var(--sheet-z-index-grid-row-header, 1);')
+    expect(rowHeaderRule).not.toContain('z-index: 1;')
+  })
+
+  it('keeps hidden header restore controls token-sized and centered', () => {
+    const root = appCss()
+    const source = gridCss()
+    const restoreRule = source.match(/\.unhide-col,\s*\.unhide-row\s*\{[^}]+\}/)?.[0] ?? ''
+    const leftRule = source.match(/\.unhide-col\.left\s*\{[^}]+\}/)?.[0] ?? ''
+    const rightRule = source.match(/\.unhide-col\.right\s*\{[^}]+\}/)?.[0] ?? ''
+    const topRule = source.match(/\.unhide-row\.top\s*\{[^}]+\}/)?.[0] ?? ''
+    const bottomRule = source.match(/\.unhide-row\.bottom\s*\{[^}]+\}/)?.[0] ?? ''
+    const restoreOffset = 'calc(-1 * var(--sheet-size-control-sm, 16px) / 2)'
+
+    expect(root).toContain('--sheet-z-index-hidden-restore: 4;')
+    expect(root).toContain('--sheet-line-height-compact: 1;')
+    expect(restoreRule).toContain('position: absolute;')
+    expect(restoreRule).toContain('display: inline-flex;')
+    expect(restoreRule).toContain('align-items: center;')
+    expect(restoreRule).toContain('justify-content: center;')
+    expect(restoreRule).toContain('width: var(--sheet-size-control-sm, 16px);')
+    expect(restoreRule).toContain('height: var(--sheet-size-control-sm, 16px);')
+    expect(restoreRule).toContain('padding: 0;')
+    expect(restoreRule).toContain('line-height: var(--sheet-line-height-compact, 1);')
+    expect(restoreRule).toContain('z-index: var(--sheet-z-index-hidden-restore, 4);')
+    expect(restoreRule).not.toContain('line-height: 1;')
+    expect(restoreRule).not.toContain('line-height: 14px;')
+    expect(restoreRule).not.toContain('z-index: 4;')
+    expect(leftRule).toContain(`left: ${restoreOffset};`)
+    expect(rightRule).toContain(`right: ${restoreOffset};`)
+    expect(topRule).toContain(`top: ${restoreOffset};`)
+    expect(bottomRule).toContain(`bottom: ${restoreOffset};`)
+    expect(leftRule).toContain('top: 50%;')
+    expect(rightRule).toContain('top: 50%;')
+    expect(topRule).toContain('left: 50%;')
+    expect(bottomRule).toContain('left: 50%;')
+    expect(leftRule).toContain('transform: translateY(-50%);')
+    expect(rightRule).toContain('transform: translateY(-50%);')
+    expect(topRule).toContain('transform: translateX(-50%);')
+    expect(bottomRule).toContain('transform: translateX(-50%);')
+  })
+
+  it('keeps grid resize handles token-sized around header edges', () => {
+    const root = appCss()
+    const source = gridCss()
+    const colResizerRule = source.match(/\.col-resizer\s*\{[^}]+\}/)?.[0] ?? ''
+    const rowResizerRule = source.match(/\.row-resizer\s*\{[^}]+\}/)?.[0] ?? ''
+    const resizerFocusRule = source.match(/\.col-resizer:focus-visible,\s*\.row-resizer:focus-visible\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-size-grid-resizer-hit-area: 6px;')
+    expect(root).toContain('--sheet-size-grid-resizer-offset: 3px;')
+    expect(root).toContain('--sheet-z-index-grid-resizer: 3;')
+    expect(colResizerRule).toContain('right: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px));')
+    expect(colResizerRule).toContain('width: var(--sheet-size-grid-resizer-hit-area, 6px);')
+    expect(colResizerRule).toContain('height: 100%;')
+    expect(rowResizerRule).toContain('bottom: calc(-1 * var(--sheet-size-grid-resizer-offset, 3px));')
+    expect(rowResizerRule).toContain('width: 100%;')
+    expect(rowResizerRule).toContain('height: var(--sheet-size-grid-resizer-hit-area, 6px);')
+    expect(colResizerRule).toContain('cursor: col-resize;')
+    expect(rowResizerRule).toContain('cursor: row-resize;')
+    expect(colResizerRule).toContain('z-index: var(--sheet-z-index-grid-resizer, 3);')
+    expect(rowResizerRule).toContain('z-index: var(--sheet-z-index-grid-resizer, 3);')
+    expect(colResizerRule).not.toContain('z-index: 3;')
+    expect(rowResizerRule).not.toContain('z-index: 3;')
+    expect(resizerFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')
+    expect(resizerFocusRule).toContain('outline-offset: var(--sheet-focus-offset, 2px);')
+  })
+
+  it('keeps the fill handle token-sized at the focused cell corner', () => {
+    const root = appCss()
+    const source = gridCss()
+    const fillHandleRule = source.match(/\.fill-handle\s*\{[^}]+\}/)?.[0] ?? ''
+
+    expect(root).toContain('--sheet-size-fill-handle: 7px;')
+    expect(root).toContain('--sheet-size-fill-handle-border: 1px;')
+    expect(root).toContain('--sheet-size-fill-handle-offset: 3px;')
+    expect(root).toContain('--sheet-z-index-fill-handle: 2;')
+    expect(fillHandleRule).toContain('position: absolute;')
+    expect(fillHandleRule).toContain('right: calc(-1 * var(--sheet-size-fill-handle-offset, 3px));')
+    expect(fillHandleRule).toContain('bottom: calc(-1 * var(--sheet-size-fill-handle-offset, 3px));')
+    expect(fillHandleRule).toContain('width: var(--sheet-size-fill-handle, 7px);')
+    expect(fillHandleRule).toContain('height: var(--sheet-size-fill-handle, 7px);')
+    expect(fillHandleRule).toContain('background: var(--sheet-color-accent, #1a73e8);')
+    expect(fillHandleRule).toContain('border: var(--sheet-size-fill-handle-border, 1px) solid var(--sheet-color-surface, #fff);')
+    expect(fillHandleRule).toContain('cursor: crosshair;')
+    expect(fillHandleRule).toContain('z-index: var(--sheet-z-index-fill-handle, 2);')
+    expect(fillHandleRule).not.toContain('z-index: 2;')
+  })
+})

@@ -11,13 +11,19 @@ A 10-column × 20-row sheet with 200+ formulas, conditional formatting, validati
 ## Architecture
 
 ```
-src/sheet/useSheet.ts          ← root hook, exposes ctx
-src/sheet/schema.ts            ← single SSOT TabBundle + Sheet (zod)
-src/sheet/use{Notes,Styles,…}  ← thin readers/writers over ops.replace
-src/sheet/Grid                 ← consumes @interactive-os/aria grid pattern
-src/sheet/Tabs / dialogs / …   ← consume aria-kernel legacy adapters
-packages/formula/              ← internal formula package + standardization seed
+src/app/                       ← entry, app shell, previews, and devtools wiring
+src/shared/                    ← domain-free utilities, hooks, and test support
+src/entities/                  ← stable sheet data interfaces and pure transforms
+src/features/                  ← spreadsheet use cases grouped by slice and role
+src/widgets/                   ← visible spreadsheet composition surfaces
+packages/                      ← reusable headless engines and contracts
 ```
+
+App-owned code follows `layer > slice > segment(role)`. For example,
+`src/features/validation/hooks` owns the validation runtime hook, while
+`src/widgets/sheet-grid/ui` owns the visible grid surface. Packages never import
+from `src/`. `pnpm check:boundaries` enforces package isolation, feature-slice
+independence, and downward-only layer imports.
 
 ### Standardization candidates
 
@@ -45,7 +51,8 @@ No `window.prompt` / `window.confirm` / `window.alert`. All interactions route t
 ```sh
 pnpm install
 pnpm dev          # vite dev server
-pnpm check        # lint + production build + all tests
+pnpm check        # lint + boundaries + production build + all tests
+pnpm check:boundaries
 pnpm build        # package builds + tsc -b + vite build
 pnpm test         # app + grid + formula tests
 ```
@@ -63,8 +70,8 @@ Ad-hoc 코드를 kernel 책임선 아래로 옮긴 5건. 각 1대1 매핑이 ds 
 
 | Was (ad-hoc) | Now (kernel API) | File |
 |---|---|---|
-| `<div className="dialog-backdrop" onClick={close}/>` | `useDialogPattern` `backdropProps` (self-target guard) | `src/sheet/HelpDialog.tsx` |
-| `data.entities[name].selected = name === active` mutation | `useTabsPattern({ active })` | `src/sheet/Tabs.tsx` |
-| `useEffect(()=>document.addEventListener('mousedown',...))` | `useMenuPattern({ onInteractOutside })` | `src/sheet/ContextMenu.tsx` |
-| `<input onKeyDown={...Enter/Shift+Enter}>` | `useDialogPattern({ on: { Enter, 'shift+Enter' } })` | `src/sheet/Find.tsx` |
-| F2/Enter handler in `useShortcuts` | `useGridPattern` emits `editStart` (GRID_EDIT_CHORDS = [F2, Enter]) | `src/sheet/useSheetGrid.ts` |
+| `<div className="dialog-backdrop" onClick={close}/>` | `useDialogPattern` `backdropProps` (self-target guard) | `src/widgets/dialogs/ui/HelpDialog.tsx` |
+| `data.entities[name].selected = name === active` mutation | `useTabsPattern({ active })` | `src/features/tabs/ui/Tabs.tsx` |
+| `useEffect(()=>document.addEventListener('mousedown',...))` | `useMenuPattern({ onInteractOutside })` | `src/widgets/context-menu/ui/ContextMenu.tsx` |
+| `<input onKeyDown={...Enter/Shift+Enter}>` | `useDialogPattern({ on: { Enter, 'shift+Enter' } })` | `src/features/find/ui/Find.tsx` |
+| F2/Enter handler in `useShortcuts` | `useGridPattern` emits `editStart` (GRID_EDIT_CHORDS = [F2, Enter]) | `src/widgets/sheet-grid/hooks/useSheetGrid.ts` |
