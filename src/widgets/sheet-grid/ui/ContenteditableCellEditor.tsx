@@ -1,10 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   collapseInlineEditSelection,
   createContenteditableScalarEdit,
   inlineEditSelectionOffset,
   type ContenteditableScalarEditHandle,
 } from 'nano-edit/inline-edit'
+import type { FormulaFunctionCompletion } from '@spredsheet/formula'
+import { useFormulaAutocomplete } from '../../../features/formula-autocomplete/hooks/useFormulaAutocomplete'
+import { FormulaAutocompleteList } from '../../../features/formula-autocomplete/ui/FormulaAutocompleteList'
 import type { FormulaReferenceTextDecoration } from '../../../features/selection/model/formulaReferenceDecorations'
 
 interface CommitOptions {
@@ -41,12 +44,24 @@ export function ContenteditableCellEditor({
   onKeyDown,
 }: Props) {
   const formulaMode = draft.startsWith('=')
+  const [caretOffset, setCaretOffset] = useState(draft.length)
   const elementRef = useRef<HTMLSpanElement | null>(null)
   const handleRef = useRef<ContenteditableScalarEditHandle | null>(null)
   const completedRef = useRef(false)
   const initialDraftRef = useRef(draft)
   const initialAriaLabelRef = useRef(ariaLabel)
   const callbacksRef = useRef<EditorCallbacks>({ setDraft, onCommit, onCancel })
+  const autocomplete = useFormulaAutocomplete({
+    formula: draft,
+    caretOffset,
+    enabled: formulaMode,
+    onAccept: (completion: FormulaFunctionCompletion) => {
+      const handle = handleRef.current
+      if (!handle) return
+      handle.replaceText(completion.from, completion.to, completion.insertText)
+      setCaretOffset(completion.from + completion.insertText.length)
+    },
+  })
 
   useEffect(() => {
     callbacksRef.current = { setDraft, onCommit, onCancel }
@@ -61,7 +76,10 @@ export function ContenteditableCellEditor({
       initialSelection: { kind: 'end' },
       initialText: initialDraftRef.current,
       lineBreak: 'single-line',
-      onDraftChange: (snapshot) => callbacksRef.current.setDraft(snapshot.text),
+      onDraftChange: (snapshot) => {
+        setCaretOffset(snapshot.offset)
+        callbacksRef.current.setDraft(snapshot.text)
+      },
       onHistoryIntent: () => undefined,
       onCommit: (commit) => {
         if (completedRef.current) return
@@ -111,25 +129,32 @@ export function ContenteditableCellEditor({
   }, [draft, formulaMode, textDecorations])
 
   return (
-    <span
-      ref={elementRef}
-      className={`cell-input${formulaMode ? ' formula-input' : ''}`}
-      data-formula-editor={formulaMode || undefined}
-      tabIndex={0}
-      aria-multiline={false}
-      aria-keyshortcuts={ariaKeyShortcuts}
-      title={title}
-      onBlur={() => {
-        if (completedRef.current) return
-        const text = handleRef.current?.snapshot().text ?? draft
-        completedRef.current = true
-        callbacksRef.current.onCommit(text)
-      }}
-      onKeyDown={(event) => {
-        onKeyDown?.(event)
-        event.stopPropagation()
-      }}
-    />
+    <>
+      <span
+        ref={elementRef}
+        className={`cell-input${formulaMode ? ' formula-input' : ''}`}
+        data-formula-editor={formulaMode || undefined}
+        tabIndex={0}
+        {...(formulaMode ? autocomplete.comboboxProps : { role: 'textbox' as const })}
+        aria-multiline={false}
+        aria-keyshortcuts={ariaKeyShortcuts}
+        title={title}
+        onBlur={() => {
+          if (completedRef.current) return
+          const text = handleRef.current?.snapshot().text ?? draft
+          completedRef.current = true
+          callbacksRef.current.onCommit(text)
+        }}
+        onKeyDownCapture={(event) => {
+          autocomplete.onKeyDown(event)
+        }}
+        onKeyDown={(event) => {
+          onKeyDown?.(event)
+          event.stopPropagation()
+        }}
+      />
+      <FormulaAutocompleteList autocomplete={autocomplete} />
+    </>
   )
 }
 

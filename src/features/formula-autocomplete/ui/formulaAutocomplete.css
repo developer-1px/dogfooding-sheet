@@ -1,0 +1,33 @@
+.formula-autocomplete-list {
+  position: absolute;
+  top: calc(100% + var(--sheet-space-1, 4px));
+  left: 0;
+  z-index: var(--sheet-z-index-overflow-menu, 50);
+  min-width: max(100%, var(--sheet-size-formula-suggestions-min-width, 180px));
+  max-height: var(--sheet-size-formula-suggestions-max-height, 220px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--sheet-space-1, 4px);
+  list-style: none;
+  background: var(--sheet-color-surface, #fff);
+  border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border, #dadce0);
+  border-radius: var(--sheet-radius-control, 4px);
+  box-shadow: var(--sheet-shadow-popover, 0 4px 16px rgba(0, 0, 0, .15));
+  color: var(--sheet-color-text, #202124);
+  font: var(--sheet-font-size-ui, 13px) var(--sheet-font-mono, monospace);
+  text-align: left;
+}
+
+.formula-autocomplete-list [role="option"] {
+  padding: var(--sheet-space-2, 6px) var(--sheet-space-3, 8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.formula-autocomplete-list [role="option"][aria-selected="true"] {
+  background: var(--sheet-color-accent-muted, #e8f0fe);
+  color: var(--sheet-color-accent-strong, #174ea6);
+}

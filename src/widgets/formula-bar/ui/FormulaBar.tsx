@@ -1,5 +1,8 @@
-import { useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { cycleTrailingFormulaRef } from '@spredsheet/grid'
+import { applyFormulaFunctionCompletion, type FormulaFunctionCompletion } from '@spredsheet/formula'
+import { useFormulaAutocomplete } from '../../../features/formula-autocomplete/hooks/useFormulaAutocomplete'
+import { FormulaAutocompleteList } from '../../../features/formula-autocomplete/ui/FormulaAutocompleteList'
 
 interface Props {
   addr: string | null
@@ -19,9 +22,32 @@ const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) =>
 
 export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, canRedo, extra, onAddrClick }: Props) {
   const [draftState, setDraftState] = useState({ addr, value, draft: value })
+  const [caretOffset, setCaretOffset] = useState(value.length)
+  const [focused, setFocused] = useState(false)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const pendingCaretOffset = useRef<number | null>(null)
   const skipCommitOnBlur = useRef(false)
   const draft = draftState.addr === addr && draftState.value === value ? draftState.draft : value
   const setDraft = (next: string) => setDraftState({ addr, value, draft: next })
+  const acceptCompletion = (completion: FormulaFunctionCompletion) => {
+    const applied = applyFormulaFunctionCompletion(draft, completion)
+    pendingCaretOffset.current = applied.caretOffset
+    setCaretOffset(applied.caretOffset)
+    setDraft(applied.formula)
+  }
+  const autocomplete = useFormulaAutocomplete({
+    formula: draft,
+    caretOffset,
+    enabled: focused,
+    onAccept: acceptCompletion,
+  })
+  useLayoutEffect(() => {
+    const nextCaretOffset = pendingCaretOffset.current
+    if (nextCaretOffset === null) return
+    pendingCaretOffset.current = null
+    inputRef.current?.focus({ preventScroll: true })
+    inputRef.current?.setSelectionRange(nextCaretOffset, nextCaretOffset)
+  }, [draft])
   const commitDraft = () => {
     if (draft !== value) onCommit(draft)
   }
@@ -52,34 +78,49 @@ export function FormulaBar({ addr, value, onCommit, onUndo, onRedo, canUndo, can
         disabled={!canJumpToAddress}
         onKeyDown={stopButtonActivationKeyDown}
       >{addr ?? '—'}</button>
-      <input
-        className="formula"
-        aria-label={formulaInputLabel}
-        aria-keyshortcuts={formulaInputKeyShortcuts}
-        title={formulaInputTitle}
-        value={draft}
-        onMouseDown={(e) => e.currentTarget.focus()}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={() => {
-          if (skipCommitOnBlur.current) {
-            skipCommitOnBlur.current = false
-            return
-          }
-          commitDraft()
-        }}
-        onKeyDown={(e) => {
-          e.stopPropagation()
-          if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur() }
-          else if (e.key === 'Escape') {
-            skipCommitOnBlur.current = true
-            setDraft(value)
-            e.currentTarget.blur()
-          }
-          else if (e.key === 'F4' && draft.startsWith('=')) { e.preventDefault(); setDraft(cycleTrailingFormulaRef(draft)) }
-        }}
-        placeholder="값 또는 =A1+B1"
-        disabled={!addr}
-      />
+      <div className="formula-editor">
+        <input
+          ref={inputRef}
+          className="formula"
+          aria-label={formulaInputLabel}
+          aria-keyshortcuts={formulaInputKeyShortcuts}
+          title={formulaInputTitle}
+          value={draft}
+          {...autocomplete.comboboxProps}
+          onMouseDown={(e) => e.currentTarget.focus()}
+          onFocus={(e) => {
+            setFocused(true)
+            setCaretOffset(e.currentTarget.selectionStart ?? draft.length)
+          }}
+          onSelect={(e) => setCaretOffset(e.currentTarget.selectionStart ?? draft.length)}
+          onChange={(e) => {
+            setDraft(e.target.value)
+            setCaretOffset(e.currentTarget.selectionStart ?? e.target.value.length)
+          }}
+          onBlur={() => {
+            setFocused(false)
+            if (skipCommitOnBlur.current) {
+              skipCommitOnBlur.current = false
+              return
+            }
+            commitDraft()
+          }}
+          onKeyDown={(e) => {
+            if (autocomplete.onKeyDown(e)) return
+            e.stopPropagation()
+            if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur() }
+            else if (e.key === 'Escape') {
+              skipCommitOnBlur.current = true
+              setDraft(value)
+              e.currentTarget.blur()
+            }
+            else if (e.key === 'F4' && draft.startsWith('=')) { e.preventDefault(); setDraft(cycleTrailingFormulaRef(draft)) }
+          }}
+          placeholder="값 또는 =A1+B1"
+          disabled={!addr}
+        />
+        <FormulaAutocompleteList autocomplete={autocomplete} />
+      </div>
       <button type="button" onClick={onUndo} onKeyDown={stopButtonActivationKeyDown} disabled={!canUndo} title={undoTitle} aria-keyshortcuts={undoKeyShortcuts} aria-label={undoLabel}>실행 취소</button>
       <button type="button" onClick={onRedo} onKeyDown={stopButtonActivationKeyDown} disabled={!canRedo} title={redoTitle} aria-keyshortcuts={redoKeyShortcuts} aria-label={redoLabel}>다시 실행</button>
       {extra}

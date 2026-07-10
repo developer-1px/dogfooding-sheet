@@ -122,6 +122,13 @@
   border-color: var(--sheet-color-success, #188038);
   box-shadow: inset var(--sheet-size-formula-input-accent-strip, 3px) 0 0 var(--sheet-color-success, #188038);
 }
+.cell:has(> .formula-autocomplete-list) {
+  overflow: visible;
+  z-index: var(--sheet-z-index-overflow-menu, 50);
+}
+.cell > .formula-autocomplete-list {
+  min-width: max(100%, var(--sheet-size-formula-suggestions-cell-min-width, 220px));
+}
 .formula-token {
   color: var(--formula-ref-color);
   background: var(--formula-ref-bg);

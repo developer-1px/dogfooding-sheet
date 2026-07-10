@@ -121,6 +121,9 @@
   --sheet-size-toolbar-divider: 1px;
   --sheet-size-toolbar-address-min-width: 56px;
   --sheet-size-toolbar-formula-basis: 200px;
+  --sheet-size-formula-suggestions-min-width: 180px;
+  --sheet-size-formula-suggestions-cell-min-width: 220px;
+  --sheet-size-formula-suggestions-max-height: 220px;
   --sheet-size-visually-hidden: 1px;
   --sheet-offset-visually-hidden: -1px;
   --sheet-size-context-menu-border: 1px;
@@ -197,8 +200,11 @@ body, html, #root {
   border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); background: var(--sheet-color-surface-muted);
   font: var(--sheet-font-size-ui) var(--sheet-font-mono);
 }
+.sheet-toolbar .formula-editor {
+  position: relative; flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px); min-width: 0; max-width: 100%;
+}
 .sheet-toolbar .formula {
-  flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px); min-width: 0; max-width: 100%; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
+  width: 100%; box-sizing: border-box; padding: var(--sheet-space-2) var(--sheet-space-4); font-size: var(--sheet-font-size-control);
   border: var(--sheet-size-toolbar-control-border, 1px) solid var(--sheet-color-border); border-radius: var(--sheet-radius-control); outline: none;
 }
 .sheet-toolbar .formula:focus { border-color: var(--sheet-color-accent); outline: var(--sheet-focus-ring); outline-offset: var(--sheet-focus-offset); }

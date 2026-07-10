@@ -43,6 +43,7 @@ describe('FormulaBar', () => {
     const css = appCss()
     const titleRule = css.match(/\.sheet-toolbar > strong\s*\{[^}]+\}/)?.[0] ?? ''
     const addressRule = css.match(/\.sheet-toolbar \.addr\s*\{[^}]+\}/)?.[0] ?? ''
+    const formulaEditorRule = css.match(/\.sheet-toolbar \.formula-editor\s*\{[^}]+\}/)?.[0] ?? ''
     const formulaRule = css.match(/\.sheet-toolbar \.formula\s*\{[^}]+\}/)?.[0] ?? ''
     const formulaFocusRule = css.match(/\.sheet-toolbar \.formula:focus\s*\{[^}]+\}/)?.[0] ?? ''
     const formulaDisabledRule = css.match(/\.sheet-toolbar \.formula:disabled\s*\{[^}]+\}/)?.[0] ?? ''
@@ -57,9 +58,12 @@ describe('FormulaBar', () => {
     expect(css).toContain('--sheet-size-toolbar-formula-basis: 200px;')
     expect(addressRule).toContain('flex: 0 0 auto;')
     expect(addressRule).toContain('min-width: var(--sheet-size-toolbar-address-min-width, 56px);')
-    expect(formulaRule).toContain('flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px);')
-    expect(formulaRule).toContain('min-width: 0;')
-    expect(formulaRule).toContain('max-width: 100%;')
+    expect(formulaEditorRule).toContain('flex: 1 1 var(--sheet-size-toolbar-formula-basis, 200px);')
+    expect(formulaEditorRule).toContain('min-width: 0;')
+    expect(formulaEditorRule).toContain('max-width: 100%;')
+    expect(formulaEditorRule).toContain('position: relative;')
+    expect(formulaRule).toContain('width: 100%;')
+    expect(formulaRule).toContain('box-sizing: border-box;')
     expect(formulaFocusRule).toContain('border-color: var(--sheet-color-accent);')
     expect(formulaFocusRule).toContain('outline: var(--sheet-focus-ring);')
     expect(formulaFocusRule).toContain('outline-offset: var(--sheet-focus-offset);')
@@ -225,6 +229,65 @@ describe('FormulaBar', () => {
     expect(formula.value).toBe('=B1')
     expect(onCommit).not.toHaveBeenCalled()
     expect(parentKeys).toEqual([])
+  })
+
+  it('navigates and accepts function suggestions without committing the cell', () => {
+    const onCommit = vi.fn()
+    act(() => dom.root.render(createElement(FormulaBar, {
+      addr: 'A1',
+      value: '',
+      onCommit,
+      onUndo: vi.fn(),
+      onRedo: vi.fn(),
+      canUndo: false,
+      canRedo: false,
+    })))
+
+    const formula = document.querySelector<HTMLInputElement>('input.formula')!
+    act(() => {
+      formula.focus()
+      setInputValue(formula, '=su')
+    })
+
+    expect(formula.getAttribute('role')).toBe('combobox')
+    expect(formula.getAttribute('aria-expanded')).toBe('true')
+    expect(document.querySelector('[role="option"][aria-selected="true"]')?.textContent).toBe('SUM')
+
+    act(() => keyDown(formula, 'ArrowDown'))
+    expect(document.querySelector('[role="option"][aria-selected="true"]')?.textContent).toBe('SUMIF')
+
+    act(() => keyDown(formula, 'Enter'))
+    expect(formula.value).toBe('=SUMIF(')
+    expect(document.activeElement).toBe(formula)
+    expect(onCommit).not.toHaveBeenCalled()
+  })
+
+  it('dismisses suggestions before Escape cancels the formula edit', () => {
+    const onCommit = vi.fn()
+    act(() => dom.root.render(createElement(FormulaBar, {
+      addr: 'A1',
+      value: 'old',
+      onCommit,
+      onUndo: vi.fn(),
+      onRedo: vi.fn(),
+      canUndo: false,
+      canRedo: false,
+    })))
+
+    const formula = document.querySelector<HTMLInputElement>('input.formula')!
+    act(() => {
+      formula.focus()
+      setInputValue(formula, '=su')
+    })
+    act(() => keyDown(formula, 'Escape'))
+
+    expect(formula.value).toBe('=su')
+    expect(document.activeElement).toBe(formula)
+    expect(document.querySelector('[role="listbox"]')).toBeNull()
+
+    act(() => keyDown(formula, 'Escape'))
+    expect(formula.value).toBe('old')
+    expect(onCommit).not.toHaveBeenCalled()
   })
 
   it('prevents Enter from submitting an enclosing form while committing the draft', () => {
