@@ -19,14 +19,10 @@ import {
   isReadonlyColumn,
   sameAddress,
 } from './editableGridFieldModel'
+import { addressIsInGrid, extendedSelectionForAddress, selectionForAddress } from './editableGridSelectionModel'
 
 export type UseEditableGridControllerArgs<TValue = unknown, TMeta = unknown> =
   EditableGridHostContract<TValue, TMeta>
-
-const selectionForAddress = (address: EditableGridAddress): EditableGridSelection => ({
-  focus: address,
-  ranges: [{ anchor: address, focus: address }],
-})
 
 const sameOptionalAddress = (
   left: EditableGridAddress | undefined,
@@ -73,13 +69,20 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     onSelectionChange?.(next)
   }
 
-  const focusCell = (address: EditableGridAddress) => {
-    setSelection(selectionForAddress(address))
+  const focusCell = (address: EditableGridAddress, opts: { extend?: boolean } = {}) => {
+    setSelection(opts.extend
+      ? extendedSelectionForAddress(activeSelection, address, surface.columns, rows.length)
+      : selectionForAddress(address))
   }
 
-  const focusCellWithDomFocus = (address: EditableGridAddress) => {
-    domFocus.requestCellFocusRestore(addressDomId(address))
+  const syncDomFocus = (address: EditableGridAddress) => {
+    if (addressIsInGrid(activeSelection.focus, surface.columns, rows.length)) return
     focusCell(address)
+  }
+
+  const focusCellWithDomFocus = (address: EditableGridAddress, opts: { extend?: boolean } = {}) => {
+    domFocus.requestCellFocusRestore(addressDomId(address))
+    focusCell(address, opts)
   }
 
   const startEdit = (
@@ -146,7 +149,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     setSelection(nextSelection)
   }
 
-  const moveFocus = (address: EditableGridAddress, dRow: number, dCol: number) => {
+  const moveFocus = (address: EditableGridAddress, dRow: number, dCol: number, extend = false) => {
     const currentCol = surface.columns.findIndex((column) => column.id === address.columnId)
     const nextRow = Math.max(0, Math.min(rows.length - 1, address.rowIndex + dRow))
     const nextCol = Math.max(0, Math.min(surface.columns.length - 1, currentCol + dCol))
@@ -154,7 +157,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     if (!nextColumn) return
     const nextAddress = { rowIndex: nextRow, columnId: nextColumn.id }
     if (nextAddress.rowIndex === address.rowIndex && nextAddress.columnId === address.columnId) return
-    focusCellWithDomFocus(nextAddress)
+    focusCellWithDomFocus(nextAddress, { extend })
   }
 
   const onCellKeyDown = (
@@ -176,10 +179,10 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
       startEdit(address, cellValue, column, { caret: 'end' })
       return
     }
-    if (event.key === 'ArrowUp') { event.preventDefault(); moveFocus(address, -1, 0) }
-    else if (event.key === 'ArrowDown') { event.preventDefault(); moveFocus(address, 1, 0) }
-    else if (event.key === 'ArrowLeft') { event.preventDefault(); moveFocus(address, 0, -1) }
-    else if (event.key === 'ArrowRight') { event.preventDefault(); moveFocus(address, 0, 1) }
+    if (event.key === 'ArrowUp') { event.preventDefault(); moveFocus(address, -1, 0, event.shiftKey) }
+    else if (event.key === 'ArrowDown') { event.preventDefault(); moveFocus(address, 1, 0, event.shiftKey) }
+    else if (event.key === 'ArrowLeft') { event.preventDefault(); moveFocus(address, 0, -1, event.shiftKey) }
+    else if (event.key === 'ArrowRight') { event.preventDefault(); moveFocus(address, 0, 1, event.shiftKey) }
   }
 
   return {
@@ -190,6 +193,7 @@ export function useEditableGridController<TValue = unknown, TMeta = unknown>({
     setDraft,
     domFocus,
     focusCell,
+    syncDomFocus,
     focusCellWithDomFocus,
     startEdit,
     commitEdit,

@@ -49,7 +49,8 @@ Everything else is allowed to evolve behind this boundary.
 - State changes leave the grid as grouped JSON Pointer patches.
 - The grid does not own persistence, undo history, network calls, localStorage,
   tabs, toolbars, or spreadsheet-specific menus.
-- Selection state is serializable.
+- Selection state is serializable; rectangular ranges preserve a distinct
+  anchor and focus while the renderer keeps one DOM focus cell.
 - Capabilities are negotiated by string identifiers, not by new callback props.
 - Table family is declared by `profile`; it is not inferred from styling.
 - Field type is declared by `column.field.type`; renderers must not infer table
