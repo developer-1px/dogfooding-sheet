@@ -1,7 +1,7 @@
 import { act, createElement, type ComponentProps, type KeyboardEventHandler } from 'react'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
-import { keyDown, setInputValue, setupReactDOM } from '../../../shared/testing/test-utils'
+import { keyDown, mouseClick, setInputValue, setupReactDOM } from '../../../shared/testing/test-utils'
 import { DEFAULT_CELL_BACKGROUND_COLOR, DEFAULT_CELL_TEXT_COLOR, Toolbar } from './Toolbar'
 import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from '../../../entities/Sheet/schema'
 import { activeToolbarStateStyle } from './toolbarStyles'
@@ -9,10 +9,8 @@ import { activeToolbarStateStyle } from './toolbarStyles'
 const appCss = () => readFileSync('src/app/App.css', 'utf8')
 
 const toolbarActionMocks = vi.hoisted(() => ({
-  applyCheckboxValidation: vi.fn(() => false),
   applyToolbarFormat: vi.fn(() => false),
   clearToolbarStyle: vi.fn(() => false),
-  promptListValidation: vi.fn(() => Promise.resolve('cancelled')),
   promptToolbarFilter: vi.fn(() => Promise.resolve('cancelled')),
   setToolbarAlignment: vi.fn(() => false),
   setToolbarColor: vi.fn(() => false),
@@ -20,11 +18,9 @@ const toolbarActionMocks = vi.hoisted(() => ({
 }))
 
 vi.mock('../model/toolbarActions', () => ({
-  applyCheckboxValidation: toolbarActionMocks.applyCheckboxValidation,
   applyToolbarAutoSum: () => false,
   applyToolbarFormat: toolbarActionMocks.applyToolbarFormat,
   clearToolbarStyle: toolbarActionMocks.clearToolbarStyle,
-  promptListValidation: toolbarActionMocks.promptListValidation,
   promptToolbarFilter: toolbarActionMocks.promptToolbarFilter,
   setToolbarAlignment: toolbarActionMocks.setToolbarAlignment,
   setToolbarColor: toolbarActionMocks.setToolbarColor,
@@ -176,16 +172,46 @@ describe('Toolbar component', () => {
     expect(mergeButton?.getAttribute('title')).toBe('병합 가능한 셀 범위 없음')
     expect(mergeButton?.hasAttribute('aria-keyshortcuts')).toBe(false)
 
-    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="B2 드롭다운 목록 유효성 검사 설정"]')
-    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="B2 체크박스로 변환"]')
-    expect(listValidation?.disabled).toBe(false)
-    expect(listValidation?.getAttribute('title')).toBe('B2 드롭다운 목록 유효성 검사 설정')
-    expect(checkbox?.disabled).toBe(false)
-    expect(checkbox?.getAttribute('title')).toBe('B2 체크박스로 변환')
+    const validation = document.querySelector<HTMLButtonElement>('button[aria-label="B2 데이터 유효성 설정 (현재 없음)"]')
+    expect(validation?.textContent).toBe('유효성')
+    expect(validation?.disabled).toBe(false)
+    expect(validation?.getAttribute('title')).toBe('B2 데이터 유효성 설정 (현재 없음)')
     const addCondFormat = document.querySelector<HTMLButtonElement>('button[aria-label="B열 조건부 서식 추가"]')
     expect(addCondFormat?.disabled).toBe(false)
     expect(addCondFormat?.getAttribute('title')).toBe('B열 조건부 서식 추가')
     expect(document.querySelector<HTMLButtonElement>('button[aria-label="조건부 서식 1개 모두 해제"]')?.disabled).toBe(false)
+  })
+
+  it('opens one validation editor with the current rule summary', () => {
+    renderToolbar({
+      sheet: {
+        ...initialSheet,
+        validation: { B2: { type: 'list', options: ['Open', 'Closed'] } },
+      },
+    })
+
+    const validation = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="B2 데이터 유효성 설정 (현재 드롭다운 2개)"]',
+    )
+
+    expect(validation?.textContent).toBe('유효성')
+    expect(validation?.getAttribute('aria-haspopup')).toBe('dialog')
+    expect(validation?.getAttribute('aria-expanded')).toBe('false')
+
+    act(() => {
+      validation!.focus()
+      mouseClick(validation!)
+    })
+
+    expect(validation?.getAttribute('aria-expanded')).toBe('true')
+    const dialog = document.querySelector<HTMLElement>('[role="dialog"]')
+    expect(dialog?.getAttribute('aria-label')).toBe('B2 데이터 유효성')
+    expect(document.querySelector<HTMLTextAreaElement>('textarea[aria-label="드롭다운 항목"]')?.value).toBe('Open\nClosed')
+
+    act(() => keyDown(dialog!, 'Escape'))
+
+    expect(document.querySelector('[role="dialog"]')).toBeNull()
+    expect(document.activeElement).toBe(validation)
   })
 
   it('clarifies disabled toolbar undo and redo labels', () => {
@@ -304,9 +330,7 @@ describe('Toolbar component', () => {
 
   it('keeps direct toolbar command activation keys inside the toolbar controls', async () => {
     const parentKeys: string[] = []
-    toolbarActionMocks.applyCheckboxValidation.mockClear()
     toolbarActionMocks.clearToolbarStyle.mockClear()
-    toolbarActionMocks.promptListValidation.mockClear()
     toolbarActionMocks.promptToolbarFilter.mockClear()
     toolbarActionMocks.setToolbarAlignment.mockClear()
 
@@ -341,8 +365,7 @@ describe('Toolbar component', () => {
       document.querySelector<HTMLButtonElement>('button[aria-label="필터 켜짐, B열 필터: needle 수정"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="B열 필터: needle 해제"]'),
       document.querySelector<HTMLButtonElement>('button[aria-label="숨김 행과 열 모두 표시"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 드롭다운 목록 유효성 검사 설정"]'),
-      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 체크박스로 변환"]'),
+      document.querySelector<HTMLButtonElement>('button[aria-label="선택 셀 2개 데이터 유효성 설정 (현재 없음)"]'),
     ]
 
     for (const [index, button] of directButtons.entries()) {
@@ -365,11 +388,7 @@ describe('Toolbar component', () => {
     })
     act(() => directButtons[8]!.click())
     act(() => directButtons[9]!.click())
-    await act(async () => {
-      directButtons[10]!.click()
-      await Promise.resolve()
-    })
-    act(() => directButtons[11]!.click())
+    act(() => directButtons[10]!.click())
 
     expect(props.undo).toHaveBeenCalledTimes(1)
     expect(props.insertRow).toHaveBeenCalledWith(1)
@@ -381,8 +400,7 @@ describe('Toolbar component', () => {
     expect(toolbarActionMocks.promptToolbarFilter).toHaveBeenCalledTimes(1)
     expect(props.clearFilter).toHaveBeenCalledTimes(1)
     expect(props.showAll).toHaveBeenCalledTimes(1)
-    expect(toolbarActionMocks.promptListValidation).toHaveBeenCalledTimes(1)
-    expect(toolbarActionMocks.applyCheckboxValidation).toHaveBeenCalledTimes(1)
+    expect(document.querySelector('[role="dialog"]')?.getAttribute('aria-label')).toBe('선택 셀 2개 데이터 유효성')
   })
 
   it('disables toolbar merge for a single unmerged focused cell', () => {
@@ -608,30 +626,23 @@ describe('Toolbar component', () => {
     expect(filterButton?.hasAttribute('aria-pressed')).toBe(false)
   })
 
-  it('disables validation commands without target cells', () => {
+  it('disables validation without target cells', () => {
     renderToolbar({ focusKey: null, selectedIds: [], filter: null })
 
-    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="드롭다운 목록을 설정할 셀 없음"]')
-    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="체크박스로 변환할 셀 없음"]')
+    const validation = document.querySelector<HTMLButtonElement>('button[aria-label="데이터 유효성을 설정할 셀 없음"]')
 
-    expect(listValidation?.textContent).toBe('▾목록')
-    expect(listValidation?.disabled).toBe(true)
-    expect(listValidation?.getAttribute('title')).toBe('드롭다운 목록을 설정할 셀 없음')
-    expect(checkbox?.textContent).toBe('☑체크')
-    expect(checkbox?.disabled).toBe(true)
-    expect(checkbox?.getAttribute('title')).toBe('체크박스로 변환할 셀 없음')
+    expect(validation?.textContent).toBe('유효성')
+    expect(validation?.disabled).toBe(true)
+    expect(validation?.getAttribute('title')).toBe('데이터 유효성을 설정할 셀 없음')
   })
 
-  it('keeps validation commands enabled for selected cells without focus', () => {
+  it('keeps validation enabled for selected cells without focus', () => {
     renderToolbar({ focusKey: null, selectedIds: ['B2'], filter: null })
 
-    const listValidation = document.querySelector<HTMLButtonElement>('button[aria-label="B2 드롭다운 목록 유효성 검사 설정"]')
-    const checkbox = document.querySelector<HTMLButtonElement>('button[aria-label="B2 체크박스로 변환"]')
+    const validation = document.querySelector<HTMLButtonElement>('button[aria-label="B2 데이터 유효성 설정 (현재 없음)"]')
 
-    expect(listValidation?.disabled).toBe(false)
-    expect(listValidation?.getAttribute('title')).toBe('B2 드롭다운 목록 유효성 검사 설정')
-    expect(checkbox?.disabled).toBe(false)
-    expect(checkbox?.getAttribute('title')).toBe('B2 체크박스로 변환')
+    expect(validation?.disabled).toBe(false)
+    expect(validation?.getAttribute('title')).toBe('B2 데이터 유효성 설정 (현재 없음)')
   })
 
   it('disables formatting controls without target cells', () => {

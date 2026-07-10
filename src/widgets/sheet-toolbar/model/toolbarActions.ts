@@ -2,30 +2,15 @@ import { autoSumFormula } from '@spredsheet/grid'
 import type { Format } from '../../../entities/CellFormat/formatTypes'
 import { CLEAR_STYLE, type CellStyle, type StyleLookup } from '../../../features/formatting/hooks/useStyles'
 import { normalizeFilterText, type Filter } from '../../../features/visibility/hooks/useFilter'
-import type { ValidationActions } from '../../../features/validation/hooks/useValidation'
 import type { Ask } from '../../../shared/ports/dialog'
-import { cellIdToKey, cellKey, isSafeColor, normalizeValidationOptions, parseA1, type Display, type WriteCell } from '../../../entities/Sheet/schema'
+import { cellKey, isSafeColor, parseA1, type Display, type WriteCell } from '../../../entities/Sheet/schema'
+import { targetCellKeys } from './toolbarTargets'
 export { clearAllFormatsPatch, clearCellValuesPatch } from '../../../features/sheet-document/model/sheetClearPatches'
+export { targetCellKeys } from './toolbarTargets'
 
 export type ToolbarActionResult = 'applied' | 'cleared' | 'cancelled' | 'invalid' | 'no-target'
 export type ToolbarStyleFlag = 'b' | 'i' | 'u' | 's' | 'w' | 'bd'
 export type ToolbarAlignment = CellStyle['a']
-
-export const targetCellKeys = (selectedIds: readonly string[], focusKey: string | null): string[] => {
-  const rawKeys = (selectedIds.length > 0 ? selectedIds.map(cellIdToKey) : focusKey ? [focusKey] : [])
-  const keys: string[] = []
-  const seen = new Set<string>()
-  for (const key of rawKeys) {
-    const parsed = parseA1(key)
-    if (!parsed || parsed.row < 0 || seen.has(key)) continue
-    seen.add(key)
-    keys.push(key)
-  }
-  return keys
-}
-
-export const validationOptionsFromCsv = (csv: string): string[] =>
-  normalizeValidationOptions(csv.split(','))
 
 export function applyToolbarAutoSum({
   focusKey,
@@ -75,54 +60,6 @@ export async function promptToolbarFilter({
   }
   applyFilter(focus.col, normalized)
   return 'applied'
-}
-
-export async function promptListValidation({
-  ask,
-  selectedIds,
-  focusKey,
-  setListRule,
-  clearRule,
-}: {
-  ask: Ask
-  selectedIds: readonly string[]
-  focusKey: string | null
-  setListRule: ValidationActions['setListRule']
-  clearRule: ValidationActions['clearRule']
-}): Promise<ToolbarActionResult> {
-  const keys = targetCellKeys(selectedIds, focusKey)
-  if (keys.length === 0) return 'no-target'
-
-  let csv: string | null
-  try {
-    csv = await ask({ label: '허용 값 (쉼표 구분, 비우면 해제)', submitLabel: '적용' })
-  } catch {
-    return 'cancelled'
-  }
-  if (csv === null) return 'cancelled'
-
-  const options = validationOptionsFromCsv(csv)
-  if (options.length === 0) {
-    clearRule(keys)
-    return 'cleared'
-  }
-  setListRule(keys, options)
-  return 'applied'
-}
-
-export function applyCheckboxValidation({
-  selectedIds,
-  focusKey,
-  setCheckboxRule,
-}: {
-  selectedIds: readonly string[]
-  focusKey: string | null
-  setCheckboxRule: ValidationActions['setCheckboxRule']
-}): boolean {
-  const keys = targetCellKeys(selectedIds, focusKey)
-  if (keys.length === 0) return false
-  setCheckboxRule(keys)
-  return true
 }
 
 export function applyToolbarFormat({
