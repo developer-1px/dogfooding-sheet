@@ -15,19 +15,19 @@ import { StyleToggleButtons } from '../../../features/formatting/ui/StyleToggleB
 import { cellId, cellIdToKey, MAX_COL_COUNT, MAX_ROW_COUNT, parseA1 } from '../../../entities/Sheet/schema'
 import { canMergeSelection } from '../../../features/structure/model/mergeSelection'
 import {
-  applyCheckboxValidation,
   applyToolbarFormat,
   applyToolbarAutoSum,
   clearToolbarStyle,
-  promptListValidation,
   promptToolbarFilter,
   setToolbarAlignment,
   setToolbarColor,
   toggleToolbarStyle,
   type ToolbarStyleFlag,
 } from '../model/toolbarActions'
+import { targetCellKeys } from '../model/toolbarTargets'
 import { stopToolbarActivationKeyDown } from '../../../shared/ui/toolbarKeyEvents'
 import { activeToolbarStateStyle } from './toolbarStyles'
+import { ValidationRuleControl } from '../../../features/validation/ui/ValidationRuleControl'
 
 const toolbarCommandButtonProps = {
   type: 'button',
@@ -125,9 +125,6 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const bgColorLabel = hasCellTarget ? `${cellTarget} 배경색 선택 (현재 색상 ${focusedStyle?.bg ?? bgColorValue})` : '배경색을 적용할 셀 없음'
   const fgColorLabel = hasCellTarget ? `${cellTarget} 글자색 선택 (현재 색상 ${focusedStyle?.fg ?? fgColorValue})` : '글자색을 적용할 셀 없음'
   const colorPickerDisabled = hasCellTarget ? undefined : true
-  const listValidationLabel = hasCellTarget ? `${cellTarget} 드롭다운 목록 유효성 검사 설정` : '드롭다운 목록을 설정할 셀 없음'
-  const listValidationTitle = listValidationLabel
-  const checkboxLabel = hasCellTarget ? `${cellTarget} 체크박스로 변환` : '체크박스로 변환할 셀 없음'
   const leftAlignPressed = focusedStyle?.a === 'left'
   const centerAlignPressed = focusedStyle?.a === 'center'
   const rightAlignPressed = focusedStyle?.a === 'right'
@@ -177,8 +174,7 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
   const clearStyle = () => clearToolbarStyle({ selectedIds, focusKey, updateStyle })
   const runAutoSum = () => applyToolbarAutoSum({ focusKey, display, writeCell })
   const openFilterPrompt = () => { void promptToolbarFilter({ ask, focusKey, filter, applyFilter, clearFilter }) }
-  const openListValidationPrompt = () => { void promptListValidation({ ask, selectedIds, focusKey, setListRule, clearRule }) }
-  const convertToCheckbox = () => applyCheckboxValidation({ selectedIds, focusKey, setCheckboxRule })
+  const validationTargetKeys = targetCellKeys(selectedIds, focusKey)
 
   return (
     <>
@@ -199,8 +195,14 @@ export function Toolbar({ display, writeCell, writeCells, writeCellRange, focusK
       <button {...toolbarCommandButtonProps} onClick={openFilterPrompt} disabled={!canOpenFilterPrompt} title={filterLabel} aria-label={filterLabel} aria-pressed={activeFilterPressed} style={filter ? activeToolbarStateStyle : undefined}>🔽필터{filter ? ` ${filter.col}` : ''}</button>
       {filter && <button {...toolbarCommandButtonProps} onClick={clearFilter} title={clearFilterLabel} aria-label={clearFilterLabel}>✕</button>}
       {hasHidden && <button {...toolbarCommandButtonProps} onClick={showAll} title={showAllTitle} aria-label="숨김 행과 열 모두 표시" aria-keyshortcuts="Control+Shift+0 Meta+Shift+0">👁모두표시</button>}
-      <button {...toolbarCommandButtonProps} onClick={openListValidationPrompt} disabled={!hasCellTarget} title={listValidationTitle} aria-label={listValidationLabel}>▾목록</button>
-      <button {...toolbarCommandButtonProps} onClick={convertToCheckbox} disabled={!hasCellTarget} title={checkboxLabel} aria-label={checkboxLabel}>☑체크</button>
+      <ValidationRuleControl
+        targetLabel={cellTarget}
+        targetKeys={validationTargetKeys}
+        rules={sheet.validation}
+        setListRule={setListRule}
+        setCheckboxRule={setCheckboxRule}
+        clearRule={clearRule}
+      />
       <CondFmtButtons col={focus?.col ?? null} ruleCount={condRuleCount} addCondRule={addCondRule} clearCondRules={clearCondRules} ask={ask} />
       <FormatButtons apply={applyF} current={focusKey ? formatOf(focusKey) : 'plain'} targetLabel={cellTarget} disabled={!hasCellTarget} />
       <OverflowMenu display={display} writeCell={writeCell} writeCells={writeCells} writeCellRange={writeCellRange} openHelp={openHelp} insertLink={insertLink} canInsertLink={!!focusKey} sheet={sheet} previewSheetReplacement={previewSheetReplacement} applySheetReplacement={applySheetReplacement} clearCellValues={clearCellValues} confirm={confirm} showFormulas={showFormulas} toggleShowFormulas={toggleShowFormulas} showGridlines={showGridlines} toggleShowGridlines={toggleShowGridlines} clearAllFormats={clearAllFormats} />

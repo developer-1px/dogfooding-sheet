@@ -18,8 +18,9 @@ export const keyDown = (target: EventTarget, key: string, mod: KeyMod = {}): voi
  * Set an input's value via React's native setter and fire an `input` event —
  * the only way to make React see a programmatic value change in jsdom.
  */
-export const setInputValue = (input: HTMLInputElement, value: string): void => {
-  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!
+export const setInputValue = (input: HTMLInputElement | HTMLTextAreaElement, value: string): void => {
+  const prototype = input instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype
+  const setter = Object.getOwnPropertyDescriptor(prototype, 'value')!.set!
   setter.call(input, value)
   input.dispatchEvent(new Event('input', { bubbles: true }))
 }

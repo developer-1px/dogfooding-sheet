@@ -160,13 +160,14 @@ describe('PromptDialog component', () => {
   it('keeps prompt inputs contained on narrow viewports', () => {
     const rootCss = appCss()
     const css = overlaysCss()
-    const inputRule = css.match(/\.prompt-dialog input\s*\{[^}]+\}/)?.[0] ?? ''
-    const inputFocusRule = css.match(/\.prompt-dialog input:focus\s*\{[^}]+\}/)?.[0] ?? ''
+    const inputRule = css.match(/\.prompt-dialog input:not\(\[type="radio"\]\), \.prompt-dialog textarea\s*\{[^}]+\}/)?.[0] ?? ''
+    const inputFocusRule = css.match(/\.prompt-dialog input:not\(\[type="radio"\]\):focus, \.prompt-dialog textarea:focus\s*\{[^}]+\}/)?.[0] ?? ''
 
     expect(rootCss).toContain('--sheet-size-prompt-input-border: 1px;')
     expect(rootCss).toContain('--sheet-focus-ring: 2px solid var(--sheet-color-accent);')
     expect(rootCss).toContain('--sheet-focus-offset: 2px;')
-    expect(css).toContain('.prompt-dialog input { min-width: 0; max-width: 100%;')
+    expect(inputRule).toContain('box-sizing: border-box;')
+    expect(inputRule).toContain('min-width: 0; max-width: 100%;')
     expect(inputRule).toContain('border: var(--sheet-size-prompt-input-border, 1px) solid var(--sheet-color-border, #dadce0);')
     expect(inputFocusRule).toContain('border-color: var(--sheet-color-accent, #1a73e8);')
     expect(inputFocusRule).toContain('outline: var(--sheet-focus-ring, 2px solid #1a73e8);')

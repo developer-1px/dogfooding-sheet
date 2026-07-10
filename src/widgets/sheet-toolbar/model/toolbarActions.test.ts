@@ -1,18 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import {
-  applyCheckboxValidation,
   clearAllFormatsPatch,
   clearCellValuesPatch,
   applyToolbarFormat,
   applyToolbarAutoSum,
   clearToolbarStyle,
-  promptListValidation,
   promptToolbarFilter,
   setToolbarAlignment,
   setToolbarColor,
   targetCellKeys,
   toggleToolbarStyle,
-  validationOptionsFromCsv,
 } from './toolbarActions'
 import type { Ask, PromptOptions } from '../../../shared/ports/dialog'
 import { MAX_CELL_TEXT_LENGTH } from '../../../entities/CellValue/cellValue'
@@ -36,11 +33,6 @@ describe('toolbarActions', () => {
   it('deduplicates and drops invalid toolbar target keys', () => {
     expect(targetCellKeys(['r0-A', 'r0-A', 'bad-id', 'r1-B'], 'C3')).toEqual(['A1', 'B2'])
     expect(targetCellKeys([], 'A0')).toEqual([])
-  })
-
-  it('parses comma-separated validation options', () => {
-    expect(validationOptionsFromCsv(' open,closed,  pending ,,')).toEqual(['open', 'closed', 'pending'])
-    expect(validationOptionsFromCsv('open,open,' + 'x'.repeat(10_001))).toEqual(['open'])
   })
 
   it('applies an auto-sum formula at the focused cell', () => {
@@ -126,75 +118,6 @@ describe('toolbarActions', () => {
     })).resolves.toBe('cancelled')
 
     expect(calls).toEqual([])
-  })
-
-  it('prompts for list validation and applies or clears the target keys', async () => {
-    const calls: string[] = []
-    const prompts: PromptOptions[] = []
-
-    await expect(promptListValidation({
-      ask: askValue('yes, no', prompts),
-      selectedIds: ['r0-A', 'r1-A'],
-      focusKey: 'C3',
-      setListRule: (keys, options) => calls.push(`list:${keys.join('|')}:${options.join('|')}`),
-      clearRule: (keys) => calls.push(`clear:${keys.join('|')}`),
-    })).resolves.toBe('applied')
-
-    await expect(promptListValidation({
-      ask: askValue(''),
-      selectedIds: [],
-      focusKey: 'C3',
-      setListRule: (keys, options) => calls.push(`list:${keys.join('|')}:${options.join('|')}`),
-      clearRule: (keys) => calls.push(`clear:${keys.join('|')}`),
-    })).resolves.toBe('cleared')
-
-    expect(prompts[0]).toMatchObject({ label: '허용 값 (쉼표 구분, 비우면 해제)', submitLabel: '적용' })
-    expect(calls).toEqual(['list:A1|A2:yes|no', 'clear:C3'])
-  })
-
-  it('does not prompt list validation when there is no target', async () => {
-    const prompts: PromptOptions[] = []
-    const result = await promptListValidation({
-      ask: askValue('yes', prompts),
-      selectedIds: [],
-      focusKey: null,
-      setListRule: () => { throw new Error('setListRule should not run') },
-      clearRule: () => { throw new Error('clearRule should not run') },
-    })
-
-    expect(result).toBe('no-target')
-    expect(prompts).toEqual([])
-  })
-
-  it('treats rejected list validation prompts as cancelled', async () => {
-    const calls: string[] = []
-
-    await expect(promptListValidation({
-      ask: rejectingAsk(),
-      selectedIds: ['r0-A'],
-      focusKey: null,
-      setListRule: (keys, options) => calls.push(`list:${keys.join('|')}:${options.join('|')}`),
-      clearRule: (keys) => calls.push(`clear:${keys.join('|')}`),
-    })).resolves.toBe('cancelled')
-
-    expect(calls).toEqual([])
-  })
-
-  it('applies checkbox validation to selection or focus', () => {
-    const calls: string[] = []
-
-    expect(applyCheckboxValidation({
-      selectedIds: ['r1-B'],
-      focusKey: 'C3',
-      setCheckboxRule: (keys) => calls.push(keys.join('|')),
-    })).toBe(true)
-    expect(applyCheckboxValidation({
-      selectedIds: [],
-      focusKey: null,
-      setCheckboxRule: (keys) => calls.push(keys.join('|')),
-    })).toBe(false)
-
-    expect(calls).toEqual(['B2'])
   })
 
   it('applies number formats to the target keys', () => {
