@@ -77,6 +77,12 @@ Field intent changes runtime behavior:
 - `number` commits finite numeric values.
 - `formula` and `rollup` are treated as readonly derived fields.
 
+Selection stays controlled by `EditableGridSelection`. Click or an unmodified
+arrow key selects one cell. Shift+Click and Shift+Arrow extend one rectangular
+range from its original anchor. Controlled hosts may provide multiple ranges;
+the renderer marks every valid covered cell selected while keeping one focus
+cell in the roving tab order.
+
 ## Minimal Renderer
 
 `EditableGrid` is the smallest reusable React island for the contract. It is

@@ -2,7 +2,7 @@ import { act, createElement, type KeyboardEventHandler } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
-import { EDITABLE_GRID_CONTRACT, EDITABLE_GRID_KIND, defineEditableGridSurface } from './contract'
+import { EDITABLE_GRID_CONTRACT, EDITABLE_GRID_KIND, defineEditableGridSurface, type EditableGridSelection } from './contract'
 import { EditableGrid } from './EditableGrid'
 
 const surface = defineEditableGridSurface({
@@ -108,8 +108,8 @@ const expectFocusedGridCell = (cells: readonly HTMLElement[], focusedCell: HTMLE
   expect(document.activeElement).toBe(focusedCell)
   expect(cells.filter((cell) => cell.tabIndex === 0)).toEqual([focusedCell])
 }
-const keyDown = (target: HTMLElement, key: string) => {
-  target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }))
+const keyDown = (target: HTMLElement, key: string, mod: { shiftKey?: boolean } = {}) => {
+  target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, ...mod }))
 }
 const setInputValue = (input: HTMLInputElement, value: string) => {
   const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
@@ -130,7 +130,8 @@ describe('EditableGrid', () => {
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe('3')
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-label')).toBe('Editable grid')
       expect(document.querySelector('[role="grid"]')?.getAttribute('aria-readonly')).toBeNull()
-      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown ArrowLeft ArrowRight Enter')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-keyshortcuts')).toBe('ArrowUp ArrowDown ArrowLeft ArrowRight Shift+ArrowUp Shift+ArrowDown Shift+ArrowLeft Shift+ArrowRight Enter')
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-multiselectable')).toBe('true')
       expect(document.querySelector('[role="grid"]')?.getAttribute('data-editable-grid-profile')).toBe('database-table')
       expect([...document.querySelectorAll('[role="row"]')].map((row) => row.getAttribute('aria-rowindex'))).toEqual(['1', '2', '3'])
       const columnHeaders = [...document.querySelectorAll<HTMLElement>('[role="columnheader"]')]
@@ -218,6 +219,42 @@ describe('EditableGrid', () => {
     }
   })
 
+  it('extends a rectangular selection with Shift and arrow keys', () => {
+    const { host, root, onSelectionChange } = setup()
+    try {
+      const cells = gridCells()
+      const [first, qtyCell] = cells
+      act(() => first.focus())
+      onSelectionChange.mockClear()
+
+      act(() => keyDown(first, 'ArrowRight', { shiftKey: true }))
+
+      expect(onSelectionChange).toHaveBeenLastCalledWith({
+        focus: { rowIndex: 0, columnId: 'qty' },
+        ranges: [{
+          anchor: { rowIndex: 0, columnId: 'name' },
+          focus: { rowIndex: 0, columnId: 'qty' },
+        }],
+      })
+      expect(cells.map((cell) => cell.getAttribute('aria-selected'))).toEqual([
+        'true', 'true', 'false',
+        'false', 'false', 'false',
+      ])
+      expectFocusedGridCell(cells, qtyCell)
+
+      act(() => keyDown(qtyCell, 'ArrowDown', { shiftKey: true }))
+
+      expect(cells.map((cell) => cell.getAttribute('aria-selected'))).toEqual([
+        'true', 'true', 'false',
+        'true', 'true', 'false',
+      ])
+      expectFocusedGridCell(cells, cells[4])
+      expect(document.querySelector('[role="grid"]')?.getAttribute('aria-multiselectable')).toBe('true')
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
   it('keeps keyboard navigation at grid bounds without redundant selection changes', () => {
     const { host, root, onSelectionChange } = setup()
     try {
@@ -276,6 +313,53 @@ describe('EditableGrid', () => {
     }
   })
 
+  it('extends a rectangular selection with Shift and pointer selection', () => {
+    const { host, root, onSelectionChange } = setup()
+    try {
+      const cells = gridCells()
+      const [first] = cells
+      const target = cells[4]
+      act(() => first.focus())
+      onSelectionChange.mockClear()
+
+      act(() => target.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, shiftKey: true })))
+
+      expect(onSelectionChange).toHaveBeenLastCalledWith({
+        focus: { rowIndex: 1, columnId: 'qty' },
+        ranges: [{
+          anchor: { rowIndex: 0, columnId: 'name' },
+          focus: { rowIndex: 1, columnId: 'qty' },
+        }],
+      })
+      expect(cells.map((cell) => cell.getAttribute('aria-selected'))).toEqual([
+        'true', 'true', 'false',
+        'true', 'true', 'false',
+      ])
+      expectFocusedGridCell(cells, target)
+
+      onSelectionChange.mockClear()
+      act(() => target.dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true })))
+      expect(onSelectionChange).not.toHaveBeenCalled()
+      expectFocusedGridCell(cells, target)
+
+      act(() => first.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true })))
+      expect(onSelectionChange).toHaveBeenLastCalledWith({
+        focus: { rowIndex: 0, columnId: 'name' },
+        ranges: [{
+          anchor: { rowIndex: 0, columnId: 'name' },
+          focus: { rowIndex: 0, columnId: 'name' },
+        }],
+      })
+      expect(cells.map((cell) => cell.getAttribute('aria-selected'))).toEqual([
+        'true', 'false', 'false',
+        'false', 'false', 'false',
+      ])
+      expectFocusedGridCell(cells, first)
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
   it('restores DOM focus when pointer reselects the active cell', () => {
     const { host, root, onSelectionChange } = setup()
     const outsideButton = document.createElement('button')
@@ -296,6 +380,113 @@ describe('EditableGrid', () => {
       expectFocusedGridCell(cells, qtyCell)
     } finally {
       outsideButton.remove()
+      cleanup(root, host)
+    }
+  })
+
+  it('does not intercept pointer input from an active cell editor', () => {
+    const { host, root } = setup()
+    try {
+      const [first] = gridCells()
+      act(() => first.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })))
+      const input = document.querySelector<HTMLInputElement>('.editable-grid-input')!
+      const pointerDown = new MouseEvent('pointerdown', { bubbles: true, cancelable: true })
+
+      act(() => input.dispatchEvent(pointerDown))
+
+      expect(pointerDown.defaultPrevented).toBe(false)
+      expect(document.querySelector<HTMLInputElement>('.editable-grid-input')).toBe(input)
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('renders valid controlled ranges and ignores out-of-bounds ranges', () => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+    const onSelectionChange = vi.fn()
+    const selection: EditableGridSelection = {
+      focus: { rowIndex: 1, columnId: 'total' },
+      ranges: [
+        {
+          anchor: { rowIndex: 0, columnId: 'name' },
+          focus: { rowIndex: 0, columnId: 'qty' },
+        },
+        {
+          anchor: { rowIndex: 1, columnId: 'total' },
+          focus: { rowIndex: 1, columnId: 'total' },
+        },
+        {
+          anchor: { rowIndex: 99, columnId: 'name' },
+          focus: { rowIndex: 100, columnId: 'missing' },
+        },
+      ],
+    }
+    act(() => root.render(createElement(EditableGrid, {
+      surface,
+      value,
+      selection,
+      onChange: vi.fn(),
+      onSelectionChange,
+      renderCell: ({ value: cellValue, selected }) => createElement(
+        'span',
+        { 'data-render-selected': selected ? 'true' : 'false' },
+        String(cellValue ?? ''),
+      ),
+    })))
+    try {
+      const cells = gridCells()
+      expect(cells.map((cell) => cell.getAttribute('aria-selected'))).toEqual([
+        'true', 'true', 'false',
+        'false', 'false', 'true',
+      ])
+      expect(cells.map((cell) => cell.classList.contains('selected'))).toEqual([
+        true, true, false,
+        false, false, true,
+      ])
+      expect([...document.querySelectorAll('[data-render-selected]')].map((cell) => cell.getAttribute('data-render-selected'))).toEqual([
+        'true', 'true', 'false',
+        'false', 'false', 'true',
+      ])
+      expect(cells.filter((cell) => cell.tabIndex === 0)).toEqual([cells[5]])
+
+      act(() => keyDown(cells[5], 'ArrowLeft', { shiftKey: true }))
+      expect(onSelectionChange).toHaveBeenLastCalledWith({
+        focus: { rowIndex: 1, columnId: 'qty' },
+        ranges: [{
+          anchor: { rowIndex: 1, columnId: 'total' },
+          focus: { rowIndex: 1, columnId: 'qty' },
+        }],
+      })
+    } finally {
+      cleanup(root, host)
+    }
+  })
+
+  it('keeps a keyboard entry cell when controlled focus is out of bounds', () => {
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = createRoot(host)
+    act(() => root.render(createElement(EditableGrid, {
+      surface,
+      value,
+      selection: {
+        focus: { rowIndex: 99, columnId: 'missing' },
+        ranges: [{
+          anchor: { rowIndex: 99, columnId: 'missing' },
+          focus: { rowIndex: 100, columnId: 'missing' },
+        }],
+      },
+      onChange: vi.fn(),
+    })))
+    try {
+      const cells = gridCells()
+      expect(cells.every((cell) => cell.getAttribute('aria-selected') === 'false')).toBe(true)
+      expect(cells.filter((cell) => cell.tabIndex === 0)).toEqual([cells[0]])
+    } finally {
       cleanup(root, host)
     }
   })

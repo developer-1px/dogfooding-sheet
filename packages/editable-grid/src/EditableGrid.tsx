@@ -24,8 +24,15 @@ import {
   isReadonlyColumn,
   sameAddress,
 } from './editableGridFieldModel'
+import { addressIsInGrid, addressIsSelected } from './editableGridSelectionModel'
 
-const gridKeyShortcuts = 'ArrowUp ArrowDown ArrowLeft ArrowRight Enter'
+const gridKeyShortcuts = 'ArrowUp ArrowDown ArrowLeft ArrowRight Shift+ArrowUp Shift+ArrowDown Shift+ArrowLeft Shift+ArrowRight Enter'
+const interactiveCellSelector = 'input, select, textarea, button, a, [contenteditable="true"]'
+
+const isInteractiveCellDescendant = (target: EventTarget | null, cell: HTMLElement): boolean =>
+  target instanceof Element
+  && target !== cell
+  && target.closest(interactiveCellSelector) !== null
 
 export interface EditableGridRenderCell {
   readonly address: EditableGridAddress
@@ -64,6 +71,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
   })
   const columnHeaderId = (columnIndex: number): string =>
     `${gridId}-column-${columnIndex + 1}`
+  const hasRenderedFocus = addressIsInGrid(controller.activeSelection.focus, surface.columns, controller.rows.length)
 
   return (
     <EditableGridRoot
@@ -74,6 +82,7 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
       className={className}
       aria-label={ariaLabel}
       aria-readonly={readonly || undefined}
+      aria-multiselectable={true}
       aria-keyshortcuts={gridKeyShortcuts}
     >
       <EditableGridRow header rowIndex={1}>
@@ -98,7 +107,8 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
           {surface.columns.map((column, columnIndex) => {
             const address = { rowIndex, columnId: column.id }
             const cellValue = readJsonPointer(row, column.path)
-            const selected = sameAddress(controller.activeSelection.focus, address)
+            const focused = sameAddress(controller.activeSelection.focus, address)
+            const selected = addressIsSelected(controller.activeSelection, address, surface.columns, controller.rows.length)
             const isEditing = sameAddress(controller.editing ?? undefined, address)
             const fieldType = fieldTypeOf(column)
             const readonlyCell = isReadonlyColumn(readonly, column)
@@ -130,14 +140,22 @@ export function EditableGrid<TValue = unknown, TMeta = unknown>({
                 colIndex={columnIndex + 1}
                 selected={selected}
                 editing={isEditing}
-                focusable={selected || (!controller.activeSelection.focus && rowIndex === 0 && columnIndex === 0)}
+                focusable={focused || (!hasRenderedFocus && rowIndex === 0 && columnIndex === 0)}
                 aria-readonly={readonlyCell || undefined}
                 aria-describedby={columnHeaderId(columnIndex)}
                 aria-keyshortcuts={isEditing ? undefined : cellKeyShortcuts}
                 aria-haspopup={hasSelectPopup ? 'listbox' : undefined}
                 aria-expanded={hasSelectPopup ? false : undefined}
-                onFocus={() => controller.focusCell(address)}
-                onClick={() => controller.focusCellWithDomFocus(address)}
+                onFocus={() => controller.syncDomFocus(address)}
+                onPointerDown={(event) => {
+                  if (isInteractiveCellDescendant(event.target, event.currentTarget)) return
+                  event.preventDefault()
+                  controller.focusCellWithDomFocus(address, { extend: event.shiftKey })
+                }}
+                onClick={(event) => {
+                  if (isInteractiveCellDescendant(event.target, event.currentTarget)) return
+                  controller.focusCellWithDomFocus(address, { extend: event.shiftKey })
+                }}
                 onDoubleClick={() => controller.startEdit(address, cellValue, column, { caret: 'end' })}
                 onKeyDown={(event) => controller.onCellKeyDown(event, address, cellValue, column)}
               >
