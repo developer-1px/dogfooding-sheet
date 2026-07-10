@@ -15,8 +15,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@aria/engine": ["./src/interactive-os/devtoolsARIAShims.ts"],
-      "@aria/primitives": ["./src/interactive-os/devtoolsARIAShims.ts"],
+      "@aria/engine": ["./src/app/interactive-os/devtoolsARIAShims.ts"],
+      "@aria/primitives": ["./src/app/interactive-os/devtoolsARIAShims.ts"],
       "@interactive-os/playground-catalog": ["../playground-catalog/src/index.d.mts"],
       "@spredsheet/editable-grid/cell-display": ["./packages/editable-grid/src/cellDisplay.ts"],
       "@spredsheet/editable-grid/contract": ["./packages/editable-grid/src/contract.ts"],

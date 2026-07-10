@@ -1,9 +1,9 @@
 # Spreadsheet Design System
 
 This app uses an app-local design system, not a separate component package. The
-source of truth is the CSS token set in `src/App.css`, with spreadsheet-specific
-surfaces consuming those tokens from `src/sheet/grid-view/grid.css` and
-`src/sheet/overlays.css`.
+source of truth is the CSS token set in `src/app/App.css`, with spreadsheet-specific
+surfaces consuming those tokens from `src/widgets/sheet-grid/grid.css` and
+`src/app/overlays.css`.
 
 ## Principles
 
@@ -19,7 +19,7 @@ surfaces consuming those tokens from `src/sheet/grid-view/grid.css` and
 
 ## Token Source
 
-`src/App.css` defines the shared token categories:
+`src/app/App.css` defines the shared token categories:
 
 | Category | Prefix examples | Purpose |
 |---|---|---|
