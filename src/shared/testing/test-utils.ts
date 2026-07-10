@@ -29,6 +29,12 @@ export const cellEditor = (): HTMLElement | null =>
 
 export const setContenteditableText = (editor: HTMLElement, value: string): void => {
   editor.textContent = value
+  const range = document.createRange()
+  range.selectNodeContents(editor)
+  range.collapse(false)
+  const selection = window.getSelection()
+  selection?.removeAllRanges()
+  selection?.addRange(range)
   editor.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
