@@ -122,7 +122,8 @@ export function useSheetGrid({ data, rowCount, colCount, setFocusId, setSelected
     reducePatternData(gridDefinition, dataWithLastReason, event).state?.activeKey ?? null
 
   const onEvent = (event: PatternEvent) => {
-    setLastEventReason(event.meta?.reason)
+    const updatesActiveFocus = event.type === 'navigate' || event.type === 'focus'
+    setLastEventReason(updatesActiveFocus ? event.meta?.reason : undefined)
 
     if (event.type === 'navigate') {
       const next = nextFocusFor(event)

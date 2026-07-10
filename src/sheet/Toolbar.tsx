@@ -49,7 +49,7 @@ const cellTargetLabel = (selectedIds: string[], focusKey: string | null): string
   return selectedIds[0] ? cellIdToKey(selectedIds[0]) : '선택 셀'
 }
 
-interface Props extends SheetMutations, OverflowProps, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
+interface Props extends SheetMutations, Omit<OverflowProps, 'canInsertLink'>, ValidationActions, CondActions, FreezeActions, Pick<HiddenActions, 'showAll'> {
   focusKey: string | null
   selectedIds: string[]
   setFormat: (keys: string[], f: Format) => void

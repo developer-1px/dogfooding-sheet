@@ -52,7 +52,7 @@ describe('StatusBar component', () => {
       colCount: 10,
       display: (key) => key === 'A1' ? '10' : '20',
       parseId: parseCellId,
-      persistence: { status: 'saving', dirty: true },
+      persistence: { status: 'saving', dirty: true, savedAt: null, error: null },
     })))
 
     expect(footer().getAttribute('role')).toBe('status')

@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { keyDown, setInputValue, setupReactDOM } from './test-utils'
 import { DEFAULT_CELL_BACKGROUND_COLOR, DEFAULT_CELL_TEXT_COLOR, Toolbar } from './Toolbar'
 import { initialSheet, MAX_COL_COUNT, MAX_ROW_COUNT } from './schema'
+import { activeToolbarStateStyle } from './toolbarStyles'
 
 const appCss = () => readFileSync('src/App.css', 'utf8')
 
@@ -510,10 +511,12 @@ describe('Toolbar component', () => {
     expect(freezeRows?.disabled).toBe(false)
     expect(freezeRows?.getAttribute('aria-pressed')).toBe('true')
     expect(freezeRows?.getAttribute('title')).toBe('첫 행 고정 토글 켜짐 (현재 1행 고정)')
+    expect(freezeRows?.style.background).toBe(activeToolbarStateStyle.background)
     expect(freezeCols?.textContent).toBe('📌열')
     expect(freezeCols?.disabled).toBe(false)
     expect(freezeCols?.getAttribute('aria-pressed')).toBe('true')
     expect(freezeCols?.getAttribute('title')).toBe('첫 열 고정 토글 켜짐 (현재 1열 고정)')
+    expect(freezeCols?.style.background).toBe(activeToolbarStateStyle.background)
   })
 
   it('disables AutoSum when no contiguous numeric range exists', () => {
@@ -553,6 +556,7 @@ describe('Toolbar component', () => {
     expect(filterButton?.disabled).toBe(true)
     expect(filterButton?.getAttribute('title')).toBe('필터 켜짐, B열 필터: needle, 수정할 열 없음')
     expect(filterButton?.getAttribute('aria-pressed')).toBe('true')
+    expect(filterButton?.style.background).toBe(activeToolbarStateStyle.background)
     expect(clearFilter?.disabled).toBe(false)
     expect(clearFilter?.getAttribute('title')).toBe('B열 필터: needle 해제')
   })
