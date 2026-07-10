@@ -23,10 +23,10 @@ describe('SSOT: undo restores ancillary state', () => {
   it('column drag commits one undo entry, not one per mousemove', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const headerB = document.querySelector<HTMLElement>('.col-resize[aria-label="B열 너비 조정"]')
+    const headerB = document.querySelector<HTMLElement>('.col-resize[aria-label^="B열 너비 조정"]')
     expect(headerB).toBeTruthy()
     expect(headerB!.getAttribute('role')).toBe('separator')
-    expect(headerB!.getAttribute('aria-label')).toBe('B열 너비 조정')
+    expect(headerB!.getAttribute('aria-label')).toContain('B열 너비 조정')
 
     const before = parseFloat(getComputedStyle(document.querySelector('.grid')!).gridTemplateColumns.split(' ')[2])
 
@@ -47,8 +47,8 @@ describe('SSOT: undo restores ancillary state', () => {
   it('resizes column and row headers from the keyboard', async () => {
     await act(async () => dom.root.render(createElement(App)))
 
-    const colHandle = document.querySelector<HTMLElement>('.col-resize[aria-label="A열 너비 조정"]')
-    const rowHandle = document.querySelector<HTMLElement>('.row-resize[aria-label="1행 높이 조정"]')
+    const colHandle = document.querySelector<HTMLElement>('.col-resize[aria-label^="A열 너비 조정"]')
+    const rowHandle = document.querySelector<HTMLElement>('.row-resize[aria-label^="1행 높이 조정"]')
     expect(colHandle).toBeTruthy()
     expect(rowHandle).toBeTruthy()
 

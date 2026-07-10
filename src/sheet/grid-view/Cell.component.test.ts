@@ -1,4 +1,4 @@
-import { act, createElement, type ComponentProps } from 'react'
+import { act, createElement, type ComponentProps, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { setupReactDOM } from '../test-utils'
@@ -338,7 +338,7 @@ describe('Cell component', () => {
   it('keeps default-prevented contenteditable editor keys inside the editor control', () => {
     const gridKeyDown = vi.fn()
     const contextKeyDown = vi.fn()
-    const formulaPickKeyDown = vi.fn((event: KeyboardEvent) => event.preventDefault())
+    const formulaPickKeyDown = vi.fn((event: ReactKeyboardEvent<Element>) => event.preventDefault())
 
     renderCell({
       cellProps: { role: 'gridcell', tabIndex: 0, onKeyDown: gridKeyDown },

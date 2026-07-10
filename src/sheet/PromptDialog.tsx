@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { useId, useRef, useState, type KeyboardEvent } from 'react'
 import { useDialogModalPattern } from '@interactive-os/aria-kernel/patterns'
 
 interface Props {
@@ -17,19 +17,17 @@ const stopButtonActivationKeyDown = (event: KeyboardEvent<HTMLButtonElement>) =>
 const inputShortcutTitle = (submitLabel: string) => `Enter=${submitLabel} / Esc=취소`
 const inputKeyShortcuts = 'Enter Escape'
 
-export function PromptDialog({ open, label, placeholder, initial = '', submitLabel = '확인', onSubmit, onCancel }: Props) {
+type OpenPromptProps = Omit<Props, 'open' | 'initial'> & { initial: string }
+
+function OpenPromptDialog({ label, placeholder, initial, submitLabel = '확인', onSubmit, onCancel }: OpenPromptProps) {
   const inputId = useId()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [value, setValue] = useState(initial)
-  useEffect(() => {
-    if (open) setValue(initial)
-  }, [initial, open])
   const { rootProps } = useDialogModalPattern({
-    open, label,
+    open: true, label,
     initialFocusRef: inputRef,
     onOpenChange: (next) => { if (!next) onCancel() },
   })
-  if (!open) return null
   const submit = () => onSubmit(value)
   const cancelActionLabel = `${label} 취소`
   const submitActionLabel = `${label} ${submitLabel}`
@@ -68,4 +66,9 @@ export function PromptDialog({ open, label, placeholder, initial = '', submitLab
       </div>
     </>
   )
+}
+
+export function PromptDialog({ open, initial = '', ...props }: Props) {
+  if (!open) return null
+  return <OpenPromptDialog key={`${props.label}\u0000${initial}`} {...props} initial={initial} />
 }

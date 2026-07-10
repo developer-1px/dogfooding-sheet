@@ -191,6 +191,8 @@ export function useSheetDocument() {
         return { savedAt: result.savedAt }
       },
     })
+    // The effect creates this external store, so seed its immediate snapshot before subscribing.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPersistence(persistenceFromAutoSave(autosave.current()))
     const stopAutoSave = autosave.subscribe((snapshot) => {
       setPersistence(persistenceFromAutoSave(snapshot))

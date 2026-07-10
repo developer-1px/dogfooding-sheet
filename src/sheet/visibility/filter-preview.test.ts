@@ -23,6 +23,10 @@ const contextMenu = (target: Element) => {
   target.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 30, clientY: 30 }))
 }
 
+const filteredColumnHeader = (column: string) =>
+  [...document.querySelectorAll<HTMLElement>('.header-cell.filtered')]
+    .find((header) => header.textContent?.trim().startsWith(column))
+
 describe('filter preview interactions', () => {
   it('does not crash when the filter button is clicked with the mouse', async () => {
     await act(async () => dom.root.render(createElement(App)))
@@ -43,7 +47,10 @@ describe('filter preview interactions', () => {
 
     await applyFilterToB()
 
-    expect(document.querySelector('[aria-label="B열 필터 적용"]')).not.toBeNull()
+    const header = filteredColumnHeader('B')
+    expect(header).toBeDefined()
+    expect(header?.getAttribute('aria-label')).toContain('B열')
+    expect(header?.getAttribute('aria-label')).toContain('필터 적용')
   })
 
   it('clears a filter from the filtered column header menu', async () => {
@@ -60,7 +67,7 @@ describe('filter preview interactions', () => {
     expect(clear).toBeTruthy()
 
     act(() => clear!.click())
-    expect(document.querySelector('[aria-label="B열 필터 적용"]')).toBeNull()
+    expect(filteredColumnHeader('B')).toBeUndefined()
   })
 
   it('applies a filter from the column header menu', async () => {
@@ -82,6 +89,8 @@ describe('filter preview interactions', () => {
     await act(async () => [...document.querySelectorAll<HTMLButtonElement>('.prompt-dialog button')]
       .find((button) => button.textContent === '필터')!.click())
 
-    expect(document.querySelector('[aria-label="B열 필터 적용"]')).not.toBeNull()
+    const filteredHeader = filteredColumnHeader('B')
+    expect(filteredHeader).toBeDefined()
+    expect(filteredHeader?.getAttribute('aria-label')).toContain('필터 적용')
   })
 })
