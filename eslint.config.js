@@ -84,7 +84,7 @@ export default defineConfig([
         'error',
         {
           selector: "TSAsExpression[typeAnnotation.type='TSNeverKeyword']",
-          message: 'Route zod-crud path/value casts through src/shared/lib/dictOps.ts instead of using `as never` at call sites.',
+          message: 'Route json-document path/value casts through src/shared/lib/dictOps.ts instead of using `as never` at call sites.',
         },
         {
           selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",

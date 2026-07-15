@@ -1,4 +1,4 @@
-import { appendSegment, type JSONPatchOperation, type Pointer } from 'zod-crud'
+import { appendSegment, type JSONPatchOperation, type Pointer } from '@interactive-os/json-document'
 
 /** JSON-patch ops accepted by `ops.patch()`. Value typed loosely; site narrows as needed. */
 export type Patch = Array<Extract<JSONPatchOperation, { op: 'add' | 'replace' | 'remove' }>>
@@ -38,7 +38,7 @@ const childPath = (base: string, key: string): string =>
 
 /**
  * Surgical add/replace/remove for one key inside a dict-record stored in the SSOT doc.
- * Per zod-crud guidance — avoids `ops.replace('/path', { ...all, [k]: v })` anti-pattern
+ * Per json-document guidance — avoids `ops.replace('/path', { ...all, [k]: v })` anti-pattern
  * that collapses every key into one history entry.
  */
 export function upsertKey<V>(

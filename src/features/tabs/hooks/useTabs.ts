@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { appendSegment, type Pointer } from 'zod-crud'
+import { appendSegment, type Pointer } from '@interactive-os/json-document'
 import {
   MAX_SHEET_TABS,
   SheetSchema,

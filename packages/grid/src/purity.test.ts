@@ -28,7 +28,6 @@ describe('@spredsheet/grid package boundary', () => {
     const forbidden = [
       /\bfrom ['"]react['"]/,
       /\bfrom ['"]react-dom/,
-      /\bfrom ['"]zod-crud['"]/,
       /\bfrom ['"]@interactive-os\//,
       /\bdocument\b/,
       /\bwindow\b/,

@@ -1,4 +1,4 @@
-import type { AutoSaveSnapshot } from '@zod-crud/autosave'
+import type { AutoSaveSnapshot } from '@interactive-os/json-document-autosave'
 
 export type SheetPersistenceStatus = 'pending' | 'saving' | 'saved' | 'error'
 

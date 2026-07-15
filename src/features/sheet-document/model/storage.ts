@@ -2,7 +2,7 @@ import {
   defaultDocumentPersistenceCodec,
   type DocumentPersistenceCodec,
   type DocumentPersistencePayload,
-} from '@zod-crud/persist-web'
+} from '@interactive-os/json-document-persist-web'
 import { SheetSchema, initialSheet, colLettersFor, ROW_COUNT, cellKey, cellId, type Sheet } from '../../../entities/Sheet/schema'
 import { type PatternData } from '@interactive-os/aria'
 import { getBrowserStorage, MAX_STORED_JSON_LENGTH, readStoredJson, type KeyValueStorage } from '../../../shared/lib/browserStorage'
@@ -13,7 +13,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
 const storedSheetValue = (raw: unknown): unknown => {
-  if (isRecord(raw) && raw.kind === 'zod-crud.persistence+json' && raw.version === 1 && 'value' in raw) {
+  if (
+    isRecord(raw) &&
+    (raw.kind === 'json-document.persistence+json' || raw.kind === 'zod-crud.persistence+json') &&
+    raw.version === 1 &&
+    'value' in raw
+  ) {
     return raw.value
   }
   return raw

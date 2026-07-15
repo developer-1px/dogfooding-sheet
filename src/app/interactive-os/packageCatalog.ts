@@ -11,12 +11,12 @@ const summary = docFor(CATALOG_SOURCE, 'interactiveOsPackages') ?? ''
 export const interactiveOsPackages = [
   '@interactive-os/aria',
   '@interactive-os/aria-kernel',
-  '@interactive-os/anyeditable',
+  '@interactive-os/editable',
   '@interactive-os/keyboard',
   '@interactive-os/devtools',
   '@interactive-os/document',
   '@interactive-os/playground-catalog',
-  'zod-crud',
+  '@interactive-os/json-document',
 ].map((name) => createPackageDoc({
   packageJson: { name, version: 'local', description: summary, license: 'MIT' },
   readme: summary,
