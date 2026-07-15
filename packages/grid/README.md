@@ -48,4 +48,4 @@ Non-scope:
 - DOM events
 - system clipboard calls
 - aria-kernel/APG behavior
-- zod-crud patches/history
+- json-document patches/history

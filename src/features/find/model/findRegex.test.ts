@@ -38,7 +38,7 @@ describe('find regex helpers', () => {
     expect(replaceFindText('a', 'a', replacement)).toBe('a')
   })
 
-  it('builds zod-crud JSONPath only for case-sensitive raw-cell searches', () => {
+  it('builds json-document JSONPath only for case-sensitive raw-cell searches', () => {
     expect(rawCellTextJsonPath('a.b', { caseSensitive: true })).toBe('$.cells[?search(@, "a\\\\.b")]')
     expect(rawCellTextJsonPath('\\d+', { caseSensitive: true, regex: true })).toBe('$.cells[?search(@, "\\\\d+")]')
     expect(rawCellTextJsonPath('a.b')).toBeNull()

@@ -5,7 +5,7 @@ import { cellByText, cells as gridCells, mouseClick as click, press, setInputVal
 
 const dom = setupReactDOM()
 
-describe('surgical key-path undo (zod-crud audit fix)', () => {
+describe('surgical key-path undo (json-document audit fix)', () => {
   it('bolding two cells then one undo only un-bolds the second', async () => {
     await act(async () => dom.root.render(createElement(App)))
 

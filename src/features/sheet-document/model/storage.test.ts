@@ -42,6 +42,24 @@ describe('sheet storage', () => {
     expect(loadInitial(storage).cells.A1).toBe('Saved')
   })
 
+  it.each(['json-document.persistence+json', 'zod-crud.persistence+json'])(
+    'loads the %s persistence envelope',
+    (kind) => {
+      const saved = { ...initialSheet, cells: { A1: 'Saved' } }
+      const { storage } = memoryStorage({
+        [SHEET_STORAGE_KEY]: JSON.stringify({
+          kind,
+          version: 1,
+          value: saved,
+          selection: null,
+          savedAt: '2026-07-16T00:00:00.000Z',
+        }),
+      })
+
+      expect(loadInitial(storage).cells.A1).toBe('Saved')
+    },
+  )
+
   it('drops oversized persisted cells while preserving the rest of the sheet', () => {
     const saved = { ...initialSheet, cells: { A1: 'Saved', B1: 'x'.repeat(MAX_CELL_TEXT_LENGTH + 1) } }
     const { storage } = memoryStorage({ [SHEET_STORAGE_KEY]: JSON.stringify(saved) })
@@ -80,7 +98,11 @@ describe('sheet storage', () => {
   it('saves best effort without throwing on quota failures', () => {
     const { storage, values } = memoryStorage()
     saveSheet(initialSheet, storage)
-    expect(JSON.parse(values.get(SHEET_STORAGE_KEY) ?? '{}').value).toEqual(initialSheet)
+    expect(JSON.parse(values.get(SHEET_STORAGE_KEY) ?? '{}')).toMatchObject({
+      kind: 'json-document.persistence+json',
+      version: 1,
+      value: initialSheet,
+    })
 
     const failing: KeyValueStorage = {
       getItem: () => null,

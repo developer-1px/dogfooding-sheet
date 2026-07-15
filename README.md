@@ -4,7 +4,7 @@ Browser-only spreadsheet built on top of two local packages — used as their do
 
 - **`@interactive-os/aria`** — current APG pattern runtime; grid focus/navigation uses this.
 - **`@interactive-os/aria-kernel`** — legacy gestures and remaining dialog/menu/tabs adapters during migration.
-- **[`zod-crud`](https://github.com/developer-1px/zod-crud)** — single-document JSON-Patch CRUD with undo/redo over a Zod schema.
+- **[`@interactive-os/json-document`](https://github.com/developer-1px/json-document)** — single-document JSON-Patch CRUD with undo/redo over a Zod schema.
 
 A 10-column × 20-row sheet with 200+ formulas, conditional formatting, validation, multiple tabs, and end-to-end undo. ~5k LOC under `src/`.
 
@@ -60,9 +60,9 @@ pnpm test         # app + grid + formula tests
 ## Open issues filed during dogfooding
 
 - aria-kernel#137 — `useDialogPattern` controlled-mode Escape doesn't reach parent (added `onOpenChange`)
-- zod-crud#57 — `ops.replace` invalidates references for unrelated paths (structural-sharing proposal)
-- zod-crud#58 — expose `undoDepth` / `redoDepth` for indicator UIs
-- zod-crud#59 — coalesce rapid ops into a single undo entry (drag interactions)
+- json-document#57 — `ops.replace` invalidates references for unrelated paths (structural-sharing proposal)
+- json-document#58 — expose `undoDepth` / `redoDepth` for indicator UIs
+- json-document#59 — coalesce rapid ops into a single undo entry (drag interactions)
 
 ## ARIA-punt absorption (kernel ↔ spredsheet)
 

@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import type { JSONCapabilityResult, JSONPatchOperation, JSONResult } from 'zod-crud'
+import type { JSONDocumentEditResult, JSONPatchOperation, JSONResult } from '@interactive-os/json-document'
 import type { Rect } from '@spredsheet/grid'
 import { MAX_SHEET_TABS } from './sheetLimits'
 import { isSafeSheetName, isSafeTabColor } from '../CellStyle/sheetStyleModel'
@@ -58,7 +58,7 @@ export const SheetSchema = z.preprocess(sanitizeRawTabBundleInput, RawSheetShape
 export type Sheet = z.infer<typeof SheetSchema>
 export type WriteCellRange = (range: Rect, matrix: readonly (readonly string[])[]) => boolean
 export type FillCellRange = (source: Rect, target: Rect) => boolean
-type SheetEditResult = JSONResult | Exclude<JSONCapabilityResult, { ok: true }>
+type SheetEditResult = JSONResult | Extract<JSONDocumentEditResult<Sheet>, { ok: false }>
 export interface SheetOps {
   add(path: string, value: unknown): SheetEditResult
   remove(path: string): SheetEditResult

@@ -48,7 +48,7 @@ describe('useSheetDocument', () => {
     expect(getItem.mock.calls.filter(([key]) => key === SHEET_STORAGE_KEY)).toHaveLength(1)
   })
 
-  it('delegates checkbox value cycling to zod-crud for existing cells', () => {
+  it('delegates checkbox value cycling to json-document for existing cells', () => {
     let doc!: ReturnType<typeof useSheetDocument>
 
     function Harness() {
@@ -68,7 +68,7 @@ describe('useSheetDocument', () => {
     expect(document.querySelector('output')?.textContent).toBe('FALSE')
   })
 
-  it('delegates sparse checkbox creation to zod-crud defaults', () => {
+  it('delegates sparse checkbox creation to json-document defaults', () => {
     let doc!: ReturnType<typeof useSheetDocument>
 
     function Harness() {
@@ -82,7 +82,7 @@ describe('useSheetDocument', () => {
     expect(document.querySelector('output')?.textContent).toBe('TRUE')
   })
 
-  it('delegates fill handle series application to zod-crud grid-range', () => {
+  it('delegates fill handle series application to json-document grid-range', () => {
     let doc!: ReturnType<typeof useSheetDocument>
 
     function Harness() {
@@ -108,7 +108,7 @@ describe('useSheetDocument', () => {
     expect(doc.sheet.cells.A5).toBe('5')
   })
 
-  it('delegates rightward fill handle series application to zod-crud grid-range', () => {
+  it('delegates rightward fill handle series application to json-document grid-range', () => {
     let doc!: ReturnType<typeof useSheetDocument>
 
     function Harness() {

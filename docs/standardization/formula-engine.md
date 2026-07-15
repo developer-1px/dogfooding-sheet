@@ -88,7 +88,7 @@ The public engine does not own:
 - spreadsheet grid UI,
 - localStorage,
 - file download behavior,
-- zod-crud document operations,
+- json-document document operations,
 - app-specific schema,
 - complete Excel compatibility.
 
@@ -182,7 +182,7 @@ src/core
 src/spreadsheet
 ```
 
-`src/core` must not know about A1 cells, sheets, React, DOM, zod, or zod-crud.
+`src/core` must not know about A1 cells, sheets, React, DOM, zod, or json-document.
 `src/spreadsheet` may own A1 parsing, range expansion, and cell-map adapters.
 
 ### Phase 3: Second Consumer
@@ -208,7 +208,7 @@ Promote to `@interactive-os/formula-engine` after:
 
 The internal package split is accepted when:
 
-- `packages/formula` imports no React, DOM, zod, or zod-crud,
+- `packages/formula` imports no React, DOM, zod, or json-document,
 - current spreadsheet tests continue to pass,
 - `spredsheet` imports formula through a package boundary,
 - README explains that this is Excel-like, not Excel-complete.

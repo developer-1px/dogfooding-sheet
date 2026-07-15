@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { AutoSaveSnapshot } from '@zod-crud/autosave'
+import type { AutoSaveSnapshot } from '@interactive-os/json-document-autosave'
 import { persistenceFromAutoSave } from './sheetPersistence'
 
 const autoSaveSnapshot = (overrides: Partial<AutoSaveSnapshot>): AutoSaveSnapshot => ({
